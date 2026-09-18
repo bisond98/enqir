@@ -112,6 +112,13 @@ export function MapLocationPicker({
   const [placeOpen, setPlaceOpen] = useState(false);
   const [pickedLabel, setPickedLabel] = useState<string | null>(null);
   const pickedLabelRef = useRef<string | null>(null);
+  // Lets the async permission pre-check invoke the current attempt's denial
+  // handler (the handler locals don't exist yet when the query is issued).
+  const showPermissionDeniedRef = useRef<(() => void) | null>(null);
+  // Lets the precision-upgrade watcher skip auto-confirm when the user has
+  // already closed the picker (manually confirmed or cancelled).
+  const openRef = useRef(open);
+  useEffect(() => { openRef.current = open; }, [open]);
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lng: number; nonce: number } | null>(null);
   const searchSeqRef = useRef(0);
 
@@ -209,72 +216,6 @@ export function MapLocationPicker({
     setError(null);
   }, []);
 
-  const handleUseMyLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setGeoError("Your browser does not support GPS location. Pick a point on the map instead.");
-      return;
-    }
-    setGeoLoading(true);
-    setGeoError(null);
-    setError(null);
-
-    // Two-stage request: GPS first (accurate but slow), then network location
-    // (fast, works on Wi-Fi-only devices). Whichever answers first wins.
-    let settled = false;
-    const succeed = async (pos: GeolocationPosition) => {
-      if (settled) return;
-      settled = true;
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-        setGeoError("Invalid coordinates from device. Pick on the map.");
-        setGeoLoading(false);
-        return;
-      }
-      setPosition([lat, lng]);
-      setMapInstanceKey((k) => k + 1);
-      // One-tap flow: drop the pin AND confirm immediately — no second button press.
-      setGeoLoading(false);
-      await doConfirm([lat, lng]);
-    };
-    const fail = (err: GeolocationPositionError) => {
-      if (settled) return;
-      settled = true;
-      setGeoLoading(false);
-      setGeoError(geolocationErrorMessage(err.code, err.message));
-    };
-
-    // Stage 1: high accuracy (GPS). Short timeout — if GPS is slow, stage 2 covers it.
-    navigator.geolocation.getCurrentPosition(succeed, () => {
-      // Stage 2: network-based location — much faster, works without GPS.
-      navigator.geolocation.getCurrentPosition(
-        succeed,
-        fail,
-        {
-          enableHighAccuracy: false,
-          timeout: 15_000,
-          maximumAge: 300_000, // accept a position cached up to 5 min ago
-        }
-      );
-    }, {
-      enableHighAccuracy: true,
-      timeout: 8_000,
-      maximumAge: 30_000,
-    });
-  }, []);
-
-  // Auto-request the device location when the picker opens with autoLocate enabled
-  const autoLocateFiredRef = useRef(false);
-  useEffect(() => {
-    if (open && autoLocate && !autoLocateFiredRef.current) {
-      autoLocateFiredRef.current = true;
-      handleUseMyLocation();
-    }
-    if (!open) {
-      autoLocateFiredRef.current = false;
-    }
-  }, [open, autoLocate, handleUseMyLocation]);
-
   // Shared confirm: reverse-geocode the given coords, emit selection, close.
   const doConfirm = useCallback(async (coords: [number, number]) => {
     const [lat, lng] = coords;
@@ -290,6 +231,276 @@ export function MapLocationPicker({
       setConfirming(false);
     }
   }, [onSelect, onOpenChange]);
+
+  // Keep the latest doConfirm in a ref so the geolocation callbacks below always
+  // invoke the current version (with fresh onSelect / pendingDistanceSort),
+  // never a stale closure from an earlier render.
+  const doConfirmRef = useRef(doConfirm);
+  useEffect(() => {
+    doConfirmRef.current = doConfirm;
+  }, [doConfirm]);
+
+  // Stage 3 fallback: approximate location from the user's public IP address.
+  // Used when the browser's GPS/network geolocation fails entirely (common on
+  // desktops without GPS and on networks that block Wi-Fi triangulation).
+  const ipLocate = useCallback(async (): Promise<{ lat: number; lng: number } | null> => {
+    const endpoints = [
+      { url: "https://ipapi.co/json/", parse: (d: any) => ({ lat: Number(d.latitude), lng: Number(d.longitude) }) },
+      { url: "https://ipwho.is/", parse: (d: any) => (d.success === false ? null : { lat: Number(d.latitude), lng: Number(d.longitude) }) },
+      { url: "https://get.geojs.io/v1/ip/geo.json", parse: (d: any) => ({ lat: Number(d.latitude), lng: Number(d.longitude) }) },
+    ];
+    for (const ep of endpoints) {
+      try {
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 6_000);
+        const res = await fetch(ep.url, { signal: ctrl.signal });
+        clearTimeout(t);
+        if (!res.ok) continue;
+        const data = await res.json();
+        const { lat, lng } = ep.parse(data);
+        if (Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)) {
+          return { lat, lng };
+        }
+      } catch {
+        // Try the next provider
+      }
+    }
+    return null;
+  }, []);
+
+  const handleUseMyLocation = useCallback(() => {
+    setGeoError(null);
+    setError(null);
+
+    // Hard blocks we can detect BEFORE asking: no geolocation support at all,
+    // or an insecure context (geolocation requires https:// or localhost and
+    // is silently denied — no permission prompt — over plain http).
+    if (!navigator.geolocation) {
+      setGeoError("Your browser does not support GPS location. Pick a point on the map instead.");
+      return;
+    }
+    if (window.isSecureContext === false) {
+      setGeoError("Location is blocked because this page is not on a secure connection. Open the app via https:// (or localhost during development), or pick a point on the map.");
+      return;
+    }
+
+    setGeoLoading(true);
+
+    // If the site's location permission is already remembered as DENIED, the
+    // browser will not re-show the prompt — the request just fails silently.
+    // Detect that up front so we can tell the user to unblock it in settings.
+    if (navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: "geolocation" as PermissionName })
+        .then((status) => {
+          if (status.state === "denied" && !settledRef.current) {
+            showPermissionDeniedRef.current?.();
+          }
+        })
+        .catch(() => {}); // Safari may not support this query — ignore
+    }
+
+    // IMPORTANT: the browser's geolocation can hang FOREVER on some machines
+    // (e.g. macOS with Location Services disabled) — neither success nor the
+    // error callback ever fires, and even the `timeout` option is ignored.
+    // So we never rely on geolocation callbacks alone: we race them against
+    // our own watchdog timers and an IP-based lookup running in parallel,
+    // and guarantee a decision within a few seconds no matter what.
+    let settled = false;
+    let upgraded = false;
+    let gpsAnswered = false;
+    let gpsErrorCode = 0;
+    let watchId: number | null = null;
+    let best: { lat: number; lng: number; accuracy: number } | null = null;
+    // Refs so the async permission pre-check (which runs before these locals
+    // exist in its closure timeline) can always see the latest state.
+    const settledRef = { current: false };
+    const settle = () => { settled = true; settledRef.current = true; };
+
+    const finish = async (lat: number, lng: number) => {
+      if (settled) return;
+      settle();
+      setPosition([lat, lng]);
+      setMapInstanceKey((k) => k + 1);
+      setGeoLoading(false);
+      await doConfirmRef.current([lat, lng]);
+    };
+
+    const stopWatch = () => {
+      if (watchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+    };
+
+    // Coarse fallback (network Wi-Fi fix or IP approximation): NEVER auto-
+    // confirm — a city-level guess committed silently as "your location" is
+    // worse than no location. Drop an approximate pin, keep the picker open,
+    // and keep LISTENING for a precise fix in the background: as soon as one
+    // lands (GPS often needs a few extra seconds after a cold start), the pin
+    // is upgraded and the location auto-confirms.
+    const settleCoarse = (lat: number, lng: number) => {
+      if (settled) return;
+      settle();
+      clearTimeout(t2);
+      clearTimeout(tFail);
+      setPosition([lat, lng]);
+      setMapInstanceKey((k) => k + 1);
+      setGeoLoading(false);
+      setGeoError("Approximate location placed — searching for your precise GPS position… The pin will jump to your exact spot automatically, or drag it / search to adjust.");
+      startPrecisionWatch();
+    };
+
+    // Background listener for a precise fix AFTER the approximate pin is set.
+    // Runs up to 30s; upgrades + auto-confirms once the fix is street-level.
+    const startPrecisionWatch = () => {
+      if (watchId !== null || !navigator.geolocation) return;
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          const c = pos.coords;
+          if (upgraded || !Number.isFinite(c.latitude) || !Number.isFinite(c.longitude)) return;
+          if (c.accuracy <= 100) {
+            upgraded = true;
+            stopWatch();
+            if (!openRef.current) return; // user already closed the picker
+            setPosition([c.latitude, c.longitude]);
+            setMapInstanceKey((k) => k + 1);
+            setGeoError(null);
+            setGeoLoading(false);
+            doConfirmRef.current([c.latitude, c.longitude]);
+          }
+        },
+        () => {},
+        { enableHighAccuracy: true, timeout: 30_000, maximumAge: 0 }
+      );
+      // Safety: stop listening after 30s regardless.
+      tWatchEnd = setTimeout(stopWatch, 30_000);
+    };
+
+    const recordCoarse = (lat: number, lng: number, accuracy: number) => {
+      if (settled) return;
+      // Coarse fixes (Wi-Fi triangulation, IP lookup) are only HELD as
+      // provisional results — never confirmed on arrival. A network fix can
+      // claim 30m accuracy yet be off by streets, and an IP fix is city-level;
+      // confirming them instantly would beat the slower-but-precise GPS fix.
+      // They are used only if GPS never answers (see watchdogs below).
+      if (!best || accuracy < best.accuracy) {
+        best = { lat, lng, accuracy };
+      }
+    };
+
+    const showPermissionDenied = () => {
+      if (settled) return;
+      settle();
+      clearTimeout(t2);
+      clearTimeout(tFail);
+      stopWatch();
+      setGeoLoading(false);
+      setGeoError(geolocationErrorMessage(1, ""));
+    };
+    // The async permission pre-check above runs before these timer variables
+    // are initialised, so expose the handler through a ref it can read safely.
+    showPermissionDeniedRef.current = showPermissionDenied;
+
+    // Source 1: GPS — the accurate fix. Wins the moment it lands.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          gpsAnswered = true;
+          if (settled) return;
+          const c = pos.coords;
+          if (Number.isFinite(c.latitude) && Number.isFinite(c.longitude)) {
+            finish(c.latitude, c.longitude);
+          }
+        },
+        (err) => {
+          gpsAnswered = true;
+          gpsErrorCode = err.code;
+          if (err.code === 1) {
+            // Permission denied: every other source will be denied too, and an
+            // IP guess would hide the real problem. Surface it immediately.
+            showPermissionDenied();
+            return;
+          }
+          // GPS failed (unavailable / timeout). Give the pending network fix a
+          // grace window, then drop an APPROXIMATE pin (never auto-confirmed)
+          // from the best provisional result and keep listening for GPS.
+          tFail = setTimeout(() => {
+            if (!settled && best) settleCoarse(best.lat, best.lng);
+            else if (!settled) {
+              settle();
+              setGeoLoading(false);
+              setGeoError(geolocationErrorMessage(gpsErrorCode, ""));
+            }
+          }, 6_000);
+        },
+        { enableHighAccuracy: true, timeout: 15_000, maximumAge: 0 }
+      );
+
+      // Source 2: network location — fast, coarse; held as a provisional result.
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const c = pos.coords;
+          if (Number.isFinite(c.latitude) && Number.isFinite(c.longitude)) {
+            recordCoarse(c.latitude, c.longitude, c.accuracy);
+          }
+        },
+        () => {},
+        { enableHighAccuracy: false, timeout: 8_000, maximumAge: 60_000 }
+      );
+    }
+
+    // Source 3: IP-based location — always available, city-level accuracy.
+    // Runs in parallel from the start so its result is ready when needed.
+    // Held as the LOWEST-priority provisional result: only used if neither GPS
+    // nor the network fix ever answers.
+    (async () => {
+      const loc = await ipLocate();
+      if (settled) return;
+      if (loc) recordCoarse(loc.lat, loc.lng, 20_000);
+    })();
+
+    // Watchdog 1: settled by the GPS error callback (tFail grace window) — see below.
+    let tFail: ReturnType<typeof setTimeout> | undefined;
+    let tWatchEnd: ReturnType<typeof setTimeout> | undefined;
+
+    // Watchdog 2: absolute deadline — GPS gets its full 15s (its own timeout)
+    // plus 1s of slack before we take over. NEVER settle for a coarse fix
+    // (network Wi-Fi / IP) while GPS is still pending: a GPS cold start can
+    // legitimately take 8–15s, and stealing its slot with a city-level guess
+    // puts the pin in the wrong place. This watchdog only covers the case
+    // where geolocation HANGS entirely (no callback ever fires).
+    const t2 = setTimeout(() => {
+      if (settled) return;
+      if (best) {
+        // Geolocation hung entirely — drop an approximate pin instead of
+        // silently committing a guess as the confirmed location.
+        settleCoarse(best.lat, best.lng);
+      } else {
+        settle();
+        setGeoLoading(false);
+        // Surface the real geolocation error when we have one (e.g. permission
+        // denied) instead of a vague "check your connection" message.
+        setGeoError(
+          gpsErrorCode
+            ? geolocationErrorMessage(gpsErrorCode, "Could not determine your location. Check your connection, or pick a point on the map.")
+            : "Could not determine your location. Check your connection, or pick a point on the map."
+        );
+      }
+    }, 16_000);
+
+    return () => { clearTimeout(t2); clearTimeout(tFail); clearTimeout(tWatchEnd); stopWatch(); };
+  }, [ipLocate]);
+  const autoLocateFiredRef = useRef(false);
+  useEffect(() => {
+    if (open && autoLocate && !autoLocateFiredRef.current) {
+      autoLocateFiredRef.current = true;
+      handleUseMyLocation();
+    }
+    if (!open) {
+      autoLocateFiredRef.current = false;
+    }
+  }, [open, autoLocate, handleUseMyLocation]);
 
   const handleConfirm = async () => {
     await doConfirm(position);

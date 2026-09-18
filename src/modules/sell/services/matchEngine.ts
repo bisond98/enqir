@@ -6,6 +6,8 @@
 import { db } from '@/firebase';
 import { addDoc, collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore';
 import type { SellListing } from '../types';
+import { haversineKm } from '@/lib/haversine';
+import { geocodeLocationText } from '@/lib/geocodeText';
 
 // ---------- public types ----------
 
@@ -28,6 +30,8 @@ export interface EnquiryForMatch {
   categories?: string[];
   budget: string;
   location: string;
+  latitude?: number | null;
+  longitude?: number | null;
   userId: string;
   status?: string;
   deadline?: any;
@@ -135,6 +139,52 @@ const sameCity = (a?: string, b?: string): boolean => {
   if (!x || !y) return false;
   return x === y || x.includes(y) || y.includes(x);
 };
+
+// ---------- real-estate distance gate ----------
+// Real-estate matches are location-sensitive (a flat in Kochi should not match a
+// listing in Delhi): when a pair involves real estate, the listing must be within
+// REAL_ESTATE_MAX_DISTANCE_KM of the enquiry's location. All other categories are
+// unaffected. Coordinates come from stored lat/lng when present, otherwise the
+// text location is forward-geocoded (cached). If neither side can be resolved,
+// the pair is kept (fail-open) so matching never silently hides everything.
+
+const REAL_ESTATE_CATS = new Set(['real-estate', 'real-estate-services']);
+export const REAL_ESTATE_MAX_DISTANCE_KM = 100;
+
+type Coords = { lat: number; lng: number } | null;
+
+async function resolveCoords(entity: { latitude?: any; longitude?: any; location?: string }): Promise<Coords> {
+  const lat = Number(entity.latitude);
+  const lng = Number(entity.longitude);
+  if (Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)) return { lat, lng };
+  const text = (entity.location ?? '').trim();
+  if (!text) return null;
+  try {
+    return await geocodeLocationText(text);
+  } catch {
+    return null;
+  }
+}
+
+function involvesRealEstate(listing: SellListing, enquiry: EnquiryForMatch): boolean {
+  const listingCats = [listing.category, ...((listing as any).categories ?? [])].filter(Boolean).map((c) => String(c).toLowerCase());
+  const enquiryCats = [enquiry.category, ...(enquiry.categories ?? [])].filter(Boolean).map((c) => String(c).toLowerCase());
+  return listingCats.some((c) => REAL_ESTATE_CATS.has(c)) || enquiryCats.some((c) => REAL_ESTATE_CATS.has(c));
+}
+
+/** Real-estate distance gate — returns true when the pair may be shown. */
+async function passesDistanceGate(
+  listing: SellListing,
+  enquiry: EnquiryForMatch,
+  listingCoords?: Coords,
+  enquiryCoords?: Coords
+): Promise<boolean> {
+  if (!involvesRealEstate(listing, enquiry)) return true;
+  const lc = listingCoords !== undefined ? listingCoords : await resolveCoords(listing as any);
+  const ec = enquiryCoords !== undefined ? enquiryCoords : await resolveCoords(enquiry as any);
+  if (!lc || !ec) return true; // can't determine distance — keep existing behavior
+  return haversineKm(lc.lat, lc.lng, ec.lat, ec.lng) <= REAL_ESTATE_MAX_DISTANCE_KM;
+}
 
 // ---------- scoring ----------
 
@@ -274,8 +324,11 @@ export async function computeUserMatches(userId: string): Promise<UserMatches> {
 
   const forNeeds: MatchItem[] = [];
   for (const e of myEnquiries) {
+    // Real-estate gate: resolve the enquiry's coords once, reuse for all listings
+    const enquiryCoords = await resolveCoords(e as any);
     for (const l of listings) {
       if (l.sellerId === userId) continue; // never match own listing
+      if (!(await passesDistanceGate(l, e, undefined, enquiryCoords))) continue;
       const { score, reasons } = scoreMatch(l, e);
       if (score >= MIN_MATCH_SCORE) {
         forNeeds.push({ listingId: l.id, enquiryId: e.id, score, label: labelFor(score), reasons, listing: l, enquiry: e });
@@ -287,9 +340,12 @@ export async function computeUserMatches(userId: string): Promise<UserMatches> {
   const forListings: MatchItem[] = [];
   for (const l of myListings) {
     if (l.status !== 'live') continue;
+    // Real-estate gate: resolve the listing's coords once, reuse for all enquiries
+    const listingCoords = await resolveCoords(l as any);
     for (const e of enquiries) {
       if (e.userId === userId) continue; // never match own enquiry
       if (!isEnquiryLive(e)) continue;
+      if (!(await passesDistanceGate(l, e, listingCoords, undefined))) continue;
       const { score, reasons } = scoreMatch(l, e);
       if (score >= MIN_MATCH_SCORE) {
         forListings.push({ listingId: l.id, enquiryId: e.id, score, label: labelFor(score), reasons, listing: l, enquiry: e });
@@ -307,9 +363,12 @@ export async function computeUserMatches(userId: string): Promise<UserMatches> {
  */
 export async function matchesForEnquiry(enquiry: EnquiryForMatch, listings?: SellListing[]): Promise<MatchItem[]> {
   const pool = listings ?? (await fetchLiveListings());
+  // Real-estate gate: resolve the enquiry's coords once, reuse for all listings
+  const enquiryCoords = await resolveCoords(enquiry as any);
   const out: MatchItem[] = [];
   for (const l of pool) {
     if (l.sellerId === enquiry.userId) continue;
+    if (!(await passesDistanceGate(l, enquiry, undefined, enquiryCoords))) continue;
     const { score, reasons } = scoreMatch(l, enquiry);
     if (score >= MIN_MATCH_SCORE) {
       out.push({ listingId: l.id, enquiryId: enquiry.id, score, label: labelFor(score), reasons, listing: l, enquiry });
@@ -323,10 +382,13 @@ export async function matchesForEnquiry(enquiry: EnquiryForMatch, listings?: Sel
  */
 export async function matchesForListing(listing: SellListing, enquiries?: EnquiryForMatch[]): Promise<MatchItem[]> {
   const pool = enquiries ?? (await fetchLiveEnquiries());
+  // Real-estate gate: resolve the listing's coords once, reuse for all enquiries
+  const listingCoords = await resolveCoords(listing as any);
   const out: MatchItem[] = [];
   for (const e of pool) {
     if (e.userId === listing.sellerId) continue;
     if (!isEnquiryLive(e)) continue;
+    if (!(await passesDistanceGate(listing, e, listingCoords, undefined))) continue;
     const { score, reasons } = scoreMatch(listing, e);
     if (score >= MIN_MATCH_SCORE) {
       out.push({ listingId: listing.id, enquiryId: e.id, score, label: labelFor(score), reasons, listing, enquiry: e });

@@ -134,6 +134,8 @@ export async function createListingResponse(input: Omit<SellListingResponse, 'id
       senderName: input.buyerName || 'Buyer',
       senderType: 'buyer',
       recipientId: input.sellerId,
+      // Required for real-time chat listeners (ChatContext onSnapshot filters on participants)
+      participants: [input.buyerId, input.sellerId],
       message: input.offeredPrice ? `₹${Number(input.offeredPrice).toLocaleString("en-IN")}${input.message ? " - " + input.message : ""}` : input.message,
       timestamp: serverTimestamp(),      offeringPrice: input.offeredPrice || null,
       voiceUrl: input.voiceUrl || null,

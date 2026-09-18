@@ -91,7 +91,7 @@ export default function EnquiryWall() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showTrustBadgeOnly, setShowTrustBadgeOnly] = useState(false);
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'default' | 'nearest' | 'farthest'>('default');
   const [sortReferenceLocation, setSortReferenceLocation] = useState<SortReferenceLocation | null>(() =>
@@ -1997,13 +1997,10 @@ export default function EnquiryWall() {
         return '';
       }
       
-      return date.toLocaleString('en-US', { 
+      return date.toLocaleDateString('en-US', { 
         month: 'short', 
         day: 'numeric', 
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
+        year: 'numeric'
       });
     } catch (error) {
       return '';
@@ -6584,28 +6581,14 @@ export default function EnquiryWall() {
                                   </Button>
                                 ) : (
                                   <Button 
-                                    className="w-full sm:w-auto h-8 sm:h-10 md:h-12 px-2 sm:px-4 md:px-6 text-[9px] sm:text-xs md:text-sm font-black !text-white !border !border-black !rounded-xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]"
+                                    className="w-full sm:w-auto h-8 sm:h-10 md:h-12 px-2 sm:px-4 md:px-6 text-[9px] sm:text-xs md:text-sm font-black !text-white !rounded-xl !border-[0.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                   >
-                                    {/* 3D Border Effect */}
-                                    <div className="absolute inset-0 rounded-md sm:rounded-xl border-2 border-blue-800/50 pointer-events-none" 
-                                      style={{
-                                        boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.2), inset 0 -1px 3px rgba(0,0,0,0.4)'
-                                      }}
-                                    />
+                                    {/* Top highlight overlay — same as Connect button */}
+                                    <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
                                     
-                                    {/* Top highlight for 3D effect */}
-                                    <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-md sm:rounded-t-xl bg-gradient-to-b from-white/30 via-white/10 to-transparent pointer-events-none" />
-                                    
-                                    {/* Side highlights for depth */}
-                                    <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-md sm:rounded-l-xl bg-gradient-to-r from-white/20 to-transparent pointer-events-none" />
-                                    <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-md sm:rounded-r-xl bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
-                                    
-                                    {/* Bottom shadow for depth */}
-                                    <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-md sm:rounded-b-xl bg-gradient-to-t from-black/30 via-black/20 to-transparent pointer-events-none" />
-                                    
-                                    {/* Inner depth shadow */}
-                                    <div className="absolute inset-0.5 rounded-sm sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/20 pointer-events-none" />
+                                    {/* Shine sweep on hover — same as Connect button */}
+                                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                                     
                                     <span className="relative z-10 flex items-center" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
                                       respond / sell / provide
@@ -6615,9 +6598,11 @@ export default function EnquiryWall() {
                                 )
                               ) : (
                                 <Link to="/signin" className="w-full sm:w-auto block">
-                                  <Button className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden">
-                                    {/* Physical button depth effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
+                                  <Button className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
+                                    {/* Top highlight overlay — same as Connect button */}
+                                    <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                                    {/* Shine sweep on hover — same as Connect button */}
+                                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                                     <span className="relative z-10">Sign In to Respond</span>
                                   </Button>
                                 </Link>
@@ -6671,28 +6656,14 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-10 text-[11px] font-black !text-white !border !border-black !rounded-xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_4px_0_0_rgba(0,0,0,0.2)]"
+                                className="w-full h-10 text-[11px] font-black !text-white !rounded-xl !border-[0.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
-                                {/* 3D Border Effect */}
-                                <div className="absolute inset-0 rounded-md border-2 border-blue-800/50 pointer-events-none" 
-                                  style={{
-                                    boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.2), inset 0 -1px 3px rgba(0,0,0,0.4)'
-                                  }}
-                                />
+                                {/* Top highlight overlay — same as Connect button */}
+                                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
                                 
-                                {/* Top highlight for 3D effect */}
-                                <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-md bg-gradient-to-b from-white/30 via-white/10 to-transparent pointer-events-none" />
-                                
-                                {/* Side highlights for depth */}
-                                <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-md bg-gradient-to-r from-white/20 to-transparent pointer-events-none" />
-                                <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-md bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
-                                
-                                {/* Bottom shadow for depth */}
-                                <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-md bg-gradient-to-t from-black/30 via-black/20 to-transparent pointer-events-none" />
-                                
-                                {/* Inner depth shadow */}
-                                <div className="absolute inset-0.5 rounded-sm bg-gradient-to-br from-transparent via-transparent to-black/20 pointer-events-none" />
+                                {/* Shine sweep on hover — same as Connect button */}
+                                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                                 
                                 <span className="relative z-10 flex items-center" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
                                   respond / sell / provide
@@ -6702,9 +6673,11 @@ export default function EnquiryWall() {
                               )
                             ) : (
                               <Link to="/signin" className="w-full block">
-                                <Button className="w-full h-9 text-[9px] font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black hover:scale-105 active:scale-95 transition-all duration-200 rounded-md relative overflow-hidden">
-                                  {/* Physical button depth effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md pointer-events-none" />
+                                <Button className="w-full h-9 text-[9px] font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
+                                  {/* Top highlight overlay — same as Connect button */}
+                                  <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                                  {/* Shine sweep on hover — same as Connect button */}
+                                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                                   <span className="relative z-10">Sign In to Respond</span>
                                 </Button>
                               </Link>
@@ -6734,28 +6707,14 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-8 sm:h-10 text-[8px] sm:text-xs font-black !text-white !border-[0.5px] !border-black !rounded-2xl !bg-black hover:!bg-gray-900 !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)]"
+                                className="w-full h-8 sm:h-10 text-[8px] sm:text-xs font-black !text-white !rounded-2xl !border-[0.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
-                                {/* 3D Border Effect */}
-                                <div className="absolute inset-0 rounded-md sm:rounded-xl border-2 border-blue-800/50 pointer-events-none" 
-                                  style={{
-                                    boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.2), inset 0 -1px 3px rgba(0,0,0,0.4)'
-                                  }}
-                                />
+                                {/* Top highlight overlay — same as Connect button */}
+                                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                                 
-                                {/* Top highlight for 3D effect */}
-                                <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-md sm:rounded-t-xl bg-gradient-to-b from-white/30 via-white/10 to-transparent pointer-events-none" />
-                                
-                                {/* Side highlights for depth */}
-                                <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-md sm:rounded-l-xl bg-gradient-to-r from-white/20 to-transparent pointer-events-none" />
-                                <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-md sm:rounded-r-xl bg-gradient-to-l from-white/20 to-transparent pointer-events-none" />
-                                
-                                {/* Bottom shadow for depth */}
-                                <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-md sm:rounded-b-xl bg-gradient-to-t from-black/30 via-black/20 to-transparent pointer-events-none" />
-                                
-                                {/* Inner depth shadow */}
-                                <div className="absolute inset-0.5 rounded-sm sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/20 pointer-events-none" />
+                                {/* Shine sweep on hover — same as Connect button */}
+                                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                                 
                                 <span className="relative z-10 flex items-center" style={{ transform: 'translateZ(10px)', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
                                   respond / sell / provide
@@ -6765,9 +6724,11 @@ export default function EnquiryWall() {
                               )
                             ) : (
                               <Link to="/signin">
-                                <Button className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white border-[0.5px] border-black hover:scale-105 active:scale-95 transition-all duration-200 rounded-md sm:rounded-xl relative overflow-hidden">
-                                  {/* Physical button depth effect */}
-                                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-md sm:rounded-xl pointer-events-none" />
+                                <Button className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
+                                  {/* Top highlight overlay — same as Connect button */}
+                                  <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
+                                  {/* Shine sweep on hover — same as Connect button */}
+                                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                                   <span className="relative z-10">Sign In to Respond</span>
                                 </Button>
                               </Link>
