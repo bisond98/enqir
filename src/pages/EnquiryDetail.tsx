@@ -787,8 +787,12 @@ const EnquiryDetail = () => {
                 <CardContent className="p-4 sm:p-5 lg:p-6">
                   {/* Description — merged into the same card */}
                   <div className="mb-5 sm:mb-6">
-                    <h3 className="text-sm sm:text-sm font-black text-slate-800 mb-3 sm:mb-3 text-center">Description</h3>
-                    <p className="text-xs sm:text-xs md:text-sm text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
+                    <div className="flex items-start gap-3 mb-6 sm:mb-7">
+                      <div className="w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
+                      <h2 style={{ fontFamily: "'Manrope', 'Inter', sans-serif" }} className="text-xl sm:text-2xl font-extrabold tracking-tight text-black leading-tight break-words">Need: {enquiry.title}</h2>
+                    </div>
+                    <h3 className="text-xs sm:text-xs font-black text-slate-500 mb-3 sm:mb-3 text-center uppercase tracking-wide">Description</h3>
+                    <p className="text-xs sm:text-xs md:text-sm text-slate-900 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
                     {/* Detail chips — brand/year/variant + job direction/skills */}
                     {(() => {
                       const d = enquiry.details;
@@ -884,11 +888,8 @@ const EnquiryDetail = () => {
                   )}
 
                   <div className="flex flex-wrap items-stretch gap-3 sm:gap-4">
-                    <div className="bg-white rounded-full p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/budget">
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/budget:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                    <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                           <IndianRupee className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
@@ -900,11 +901,8 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-full p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/location">
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/location:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                    <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                           <MapPin className="h-6 w-6 sm:h-6 sm:w-6 text-white" />
@@ -916,11 +914,8 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-full p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/deadline">
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/deadline:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                    <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Calendar className="h-6 w-6 sm:h-6 sm:w-6 text-white" />
@@ -947,11 +942,8 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-full p-3.5 sm:p-4 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden group/posted">
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/posted:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
+                    <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Clock className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
@@ -1011,24 +1003,19 @@ const EnquiryDetail = () => {
                     {user && enquiry.userId === user.uid ? (
                       <div className="space-y-3">
                         <p className="text-xs sm:text-xs text-gray-600 mb-4 leading-relaxed">View responses and manage from dashboard</p>
-                        <Button
+                        <button
                           disabled
-                          className="w-full h-12 sm:h-11 text-sm sm:text-sm bg-black text-white cursor-not-allowed min-h-[44px] rounded-xl font-semibold"
+                          className="w-full h-[50px] sm:h-[54px] !text-[15px] !rounded-2xl !border-[1.5px] !border-black bg-black text-white cursor-not-allowed font-black flex items-center justify-center select-none opacity-90"
                         >
                           <MessageSquare className="h-4 w-4 mr-2" />
                           Your Enquiry
-                        </Button>
-                        <Button
+                        </button>
+                        <button
                           onClick={() => navigate('/dashboard')}
-                          variant="outline"
-                          className="w-full h-12 sm:h-11 text-sm sm:text-sm border-[0.5px] border-black bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 min-h-[44px] rounded-xl font-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/viewdashboard"
+                          className="w-full h-[50px] sm:h-[54px] !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !bg-white hover:!bg-gray-50 !text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] font-black touch-manipulation select-none"
                         >
-                          {/* Physical button depth effect */}
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                          {/* Shimmer effect */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/viewdashboard:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                           <span className="relative z-10">View Dashboard</span>
-                        </Button>
+                        </button>
                         
                         {/* Upgrade Button - Only show for plans below premium (free, basic, standard) */}
                         {(() => {
