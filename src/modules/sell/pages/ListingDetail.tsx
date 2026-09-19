@@ -722,6 +722,7 @@ export default function ListingDetail() {
                     removeAttachedFile={removeAttachedFile}
                     sending={sending}
                     user={user}
+                    formatRecordingTime={formatRecordingTime}
                     submitResponse={submitResponse}
                     navigate={navigate}
                     listingId={listing.id}
@@ -859,7 +860,7 @@ function MessageSellerInline({
   uploadingMedia, voiceUploadProgress,
   voicePreviewUrl, playPauseVoice, clearVoice, isPlayingVoice,
   recordingTime, fileInputRef, handleFileAttach, removeAttachedFile,
-  sending, user, submitResponse, navigate, listingId, callButton,
+  sending, user, submitResponse, navigate, listingId, callButton, formatRecordingTime,
 }: any) {
   return (
     <div className="border-t border-gray-100 pt-5 mt-8 space-y-3">
