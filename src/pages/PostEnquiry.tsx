@@ -3024,28 +3024,28 @@ export default function PostEnquiry() {
                             <div className="border-t border-gray-200" />
                           </div>
                         )}
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Location</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{location || '—'}</span>
+                        <div className="flex flex-col">
+                          <span className="text-[8px] text-gray-500 uppercase tracking-wide font-bold">Title</span>
+                          <span className="text-xs sm:text-sm font-bold text-black text-center truncate max-w-full">{title || '—'}</span>
                         </div>
-                        <div className="border-t border-gray-200 pt-2.5 flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : 'Budget'}</span>
-                          <span className="text-sm sm:text-base font-black text-black">{budget ? `₹${budget}` : '—'}</span>
+                        <div className="flex flex-col">
+                          <span className="text-[8px] text-gray-500 uppercase tracking-wide font-bold">{isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : 'Budget'}</span>
+                          <span className="text-sm sm:text-base font-black text-black text-center">{budget ? `₹${budget}` : '—'}</span>
+                        </div>
+                        <div className="flex items-center justify-center gap-1">
+                          <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-600 flex-shrink-0 self-start mt-0.5" />
+                          <span className="text-xs sm:text-sm font-bold text-black text-center max-w-full">{location || '—'}</span>
                         </div>
                         {/* Full description + job details filled on the description step */}
                         {description.trim() && (
-                          <div className="border-t border-gray-200 pt-2.5">
-                            <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Description</span>
-                            <p className="text-xs text-black mt-1 whitespace-pre-wrap break-words">{description}</p>
+                          <div className="flex flex-col">
+                            <span className="text-[8px] text-gray-500 uppercase tracking-wide font-bold">Description</span>
+                            <p className="text-xs text-black mt-1 whitespace-pre-wrap break-words text-center">{description}</p>
                           </div>
                         )}
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Title</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{title || '—'}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Category</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{selectedCategories.map(c => categories.find(cat => cat.value === c)?.label).join(', ') || '—'}</span>
+                        <div className="flex flex-col">
+                          <span className="text-[8px] text-gray-500 uppercase tracking-wide font-bold">Category</span>
+                          <span className="text-xs sm:text-sm font-bold text-black text-center max-w-full">{selectedCategories.map(c => categories.find(cat => cat.value === c)?.label).join(', ') || '—'}</span>
                         </div>
                       </div>
                     </div>

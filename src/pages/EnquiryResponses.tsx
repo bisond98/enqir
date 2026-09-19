@@ -41,6 +41,7 @@ interface Enquiry {
   location?: string;
   status: 'pending' | 'live' | 'rejected' | 'completed';
   userId: string;
+  mobileNumber?: string | null;
   createdAt: any;
   responses: number;
   likes: number;
@@ -76,6 +77,7 @@ interface SellerSubmission {
   updatedAt: any;
   buyerViewed: boolean;
   chatEnabled: boolean;
+  mobileNumber?: string | null;
 }
 
 interface ChatMessage {
@@ -148,29 +150,14 @@ const EnquiryResponses = () => {
   const [isCalling, setIsCalling] = useState(false);
   const [isInCall, setIsInCall] = useState(false);
   const [callStatus, setCallStatus] = useState<'idle' | 'calling' | 'ringing' | 'connecting' | 'active' | 'ended'>('idle');
-  const [callsEnabled, setCallsEnabled] = useState(false); // Call feature disabled - Coming Soon
-  const [showMobileCallPopup, setShowMobileCallPopup] = useState(false); // Mobile call popup visibility
-  const [showDesktopCallPopup, setShowDesktopCallPopup] = useState(false); // Desktop call popup visibility
+  const [callsEnabled, setCallsEnabled] = useState(false); // Legacy flag - no longer used
+  const [showCallNumberPopup, setShowCallNumberPopup] = useState(false); // Tap-to-call number popup
   
-  // Auto-hide mobile call popup after 3 seconds
-  useEffect(() => {
-    if (showMobileCallPopup) {
-      const timer = setTimeout(() => {
-        setShowMobileCallPopup(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showMobileCallPopup]);
-  
-  // Auto-hide desktop call popup after 3 seconds
-  useEffect(() => {
-    if (showDesktopCallPopup) {
-      const timer = setTimeout(() => {
-        setShowDesktopCallPopup(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [showDesktopCallPopup]);
+  // The other party's mobile number: buyer sees seller's number, seller sees buyer's number
+  const isBuyerInChat = !!enquiry && !!user && enquiry.userId === user.uid;
+  const otherPartyMobile = isBuyerInChat
+    ? (selectedResponse?.mobileNumber && String(selectedResponse.mobileNumber).trim() ? String(selectedResponse.mobileNumber).trim() : null)
+    : (enquiry?.mobileNumber && String(enquiry.mobileNumber).trim() ? String(enquiry.mobileNumber).trim() : null);
   
   // Microphone permission state
   const [microphonePermission, setMicrophonePermission] = useState<MicrophonePermissionStatus>('checking');
@@ -3027,49 +3014,18 @@ const EnquiryResponses = () => {
                           ) : null;
                         })()}
                         
-                        {/* Call Feature - Coming Soon Badge */}
-                        {canUserChat(selectedResponse) && (
-                          <div className="relative" style={{ zIndex: showDesktopCallPopup || showMobileCallPopup ? 10000 : 'auto' }}>
+                        {/* Call Icon - opens number popup (buyer sees seller's number, seller sees buyer's) */}
+                        {otherPartyMobile && canUserChat(selectedResponse) && (
+                          <div className="relative" style={{ zIndex: showCallNumberPopup ? 10000 : 'auto' }}>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={toggleCallsEnabled}
+                              onClick={() => setShowCallNumberPopup(true)}
                               className="h-9 w-9 sm:h-10 sm:w-10 lg:h-11 lg:w-11 p-0 rounded-md transition-colors duration-200 flex-shrink-0 relative z-10 text-white hover:text-white hover:bg-white/10 cursor-pointer min-touch"
-                              title="Call feature coming soon"
+                              title="Call"
                             >
                               <Phone className="h-4.5 w-4.5 sm:h-5 sm:w-5 lg:h-5.5 lg:w-5.5 text-white" />
                             </Button>
-                            
-                            {/* Coming Soon Tooltip/Badge - Desktop */}
-                            {showDesktopCallPopup && (
-                              <div className="hidden sm:block absolute top-full left-1/2 -translate-x-1/2 mt-2 pointer-events-none" style={{ zIndex: 10000 }}>
-                                <div className="bg-black text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xl border-2 border-black whitespace-nowrap relative">
-                                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
-                                  <div className="flex items-center gap-2">
-                                    <Phone className="h-3.5 w-3.5 animate-pulse" />
-                                    <span>Call Feature Coming Soon</span>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* Coming Soon Tooltip/Badge - Mobile */}
-                            {showMobileCallPopup && (
-                              <div className="sm:hidden absolute top-full left-1/2 -translate-x-1/2 mt-2 pointer-events-none" style={{ 
-                                zIndex: 10000,
-                                maxWidth: 'calc(100% - 1rem)',
-                                left: '50%',
-                                transform: 'translateX(-50%)'
-                              }}>
-                                <div className="bg-black text-white text-[10px] font-bold px-3 py-2 rounded-lg shadow-xl border-2 border-black relative" style={{ width: 'max-content', maxWidth: '160px' }}>
-                                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
-                                  <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                    <Phone className="h-3 w-3 animate-pulse flex-shrink-0" />
-                                    <span>Call Feature Coming Soon</span>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
                           </div>
                         )}
                         
@@ -4641,6 +4597,33 @@ const EnquiryResponses = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center">
           <div className="bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl max-w-md w-[90%] mx-auto">
             <LoadingAnimation message="Payment successful! Redirecting..." />
+          </div>
+        </div>
+      )}
+      {/* Call Number Popup - buyer sees seller's number, seller sees buyer's */}
+      {showCallNumberPopup && otherPartyMobile && (
+        <div
+          className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4"
+          onClick={() => setShowCallNumberPopup(false)}
+        >
+          <div
+            className="bg-white rounded-2xl border-2 border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3)] p-6 w-full max-w-sm text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xs font-black uppercase tracking-wider text-gray-500 mb-4">Connect</h3>
+            <a
+              href={`tel:${otherPartyMobile.replace(/[^\d+]/g, '')}`}
+              className="block bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-xl border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[3px] transition-all px-4 py-3 mb-5 break-words"
+            >
+              {otherPartyMobile}
+            </a>
+            <button
+              onClick={() => setShowCallNumberPopup(false)}
+              className="w-10 h-10 mx-auto rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-[0_3px_0_0_rgba(0,0,0,0.3)] active:translate-y-[2px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] transition-all"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
         </div>
       )}

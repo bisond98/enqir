@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Filter } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Filter, Phone } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -49,6 +49,8 @@ interface Response {
   message: string;
   price: string;
   notes: string;
+  /** Seller's contact mobile number (e.g. "+91 98765 43210") — never displayed on the page, only revealed via the call popup. */
+  mobileNumber?: string | null;
   imageUrls: string[];
   imageNames: string[];
   imageCount: number;
@@ -76,6 +78,9 @@ const EnquiryResponsesPage = () => {
   const [responses, setResponses] = useState<Response[]>([]);
   const [loading, setLoading] = useState(true);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  // Call Seller — popup shows the seller's number directly (buyer already paid to view responses)
+  const [showCallPopup, setShowCallPopup] = useState(false);
+  const [callPopupNumber, setCallPopupNumber] = useState<string | null>(null);
   const fullscreenModalRef = useRef<HTMLDivElement>(null);
   // User profiles for trust badge checking
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
@@ -1010,23 +1015,38 @@ const EnquiryResponsesPage = () => {
                     Finalize deals securely, with optional contact exchange through encrypted chat.
                   </p>
                   
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-                  <div className="invisible text-[10px] sm:text-xs lg:text-base text-gray-600 flex items-center space-x-1.5 sm:space-x-2 bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl px-2.5 sm:px-4 py-1.5 sm:py-2.5 shadow-sm w-full sm:w-auto pointer-events-none">
-                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-gray-500 flex-shrink-0" />
-                    <span className="font-medium text-[10px] sm:text-xs lg:text-sm">Submitted: {response.createdAt?.toDate ? response.createdAt.toDate().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
-                  </div>
+                  {/* Call Seller + Start Chat — side by side, Call first */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3">
+                  {(() => {
+                    const sellerMobile = response.mobileNumber && String(response.mobileNumber).trim() ? String(response.mobileNumber).trim() : null;
+                    if (!sellerMobile) return null;
+                    return (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCallPopupNumber(sellerMobile);
+                          setShowCallPopup(true);
+                        }}
+                        className="w-full sm:w-auto !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/call min-touch flex items-center justify-center"
+                      >
+                        <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-[1.5px] border-white flex items-center justify-center mr-1.5 sm:mr-2 flex-shrink-0 relative z-10">
+                          <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white relative z-10" />
+                        </span>
+                        <span className="whitespace-nowrap tracking-tight relative z-10">Call Seller</span>
+                      </Button>
+                    );
+                  })()}
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`)}
-                    className="w-full sm:w-auto border-[0.5px] border-black bg-gradient-to-r from-[#15803d] to-[#16a34a] hover:from-[#166534] hover:to-[#15803d] text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.5)] sm:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] sm:hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 sm:hover:scale-105 active:scale-95 relative overflow-hidden group/startchat min-touch"
+                    className="w-full sm:w-auto !border-[1.5px] !border-black !bg-emerald-500 hover:!bg-emerald-600 !text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/startchat min-touch flex items-center justify-center"
                   >
-                    {/* Shimmer effect */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full sm:group-hover/startchat:translate-x-full transition-transform duration-700 pointer-events-none" />
-                    <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-6 lg:w-6 mr-1.5 sm:mr-2 flex-shrink-0 sm:group-hover/startchat:scale-110 transition-transform duration-200 relative z-10" />
+                    <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-6 lg:w-6 mr-1.5 sm:mr-2 flex-shrink-0 relative z-10" />
                     <span className="whitespace-nowrap tracking-tight relative z-10">Start Chat</span>
                   </Button>
-                </div>
+                  </div>
                 </div>
               </div>
               </motion.div>
@@ -1131,6 +1151,31 @@ const EnquiryResponsesPage = () => {
         </div>
       )}
 
+      {/* Call Seller Popup — tap number to make the real call */}
+      {showCallPopup && callPopupNumber && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" onClick={() => setShowCallPopup(false)}>
+          <div
+            className="bg-white rounded-2xl border-[1.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.85)] w-full max-w-xs p-6 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-2">Connect</p>
+            <a
+              href={`tel:${callPopupNumber.replace(/[^\d+]/g, '')}`}
+              className="block text-xl font-black text-white bg-blue-600 !border-[1.5px] !border-black rounded-2xl px-4 py-3 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150"
+            >
+              {callPopupNumber}
+            </a>
+            <button
+              type="button"
+              onClick={() => setShowCallPopup(false)}
+              aria-label="Close"
+              className="mt-4 w-8 h-8 mx-auto rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-all active:scale-95"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
     </Layout>
   );

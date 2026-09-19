@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, Star, FileText, X, ChevronRight, Verified, Eye, Check, File, Lock, ImageIcon } from "lucide-react";
+import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, Star, FileText, X, ChevronRight, Verified, Eye, Check, File, Lock, ImageIcon, Phone } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
@@ -49,6 +49,8 @@ interface SellerSubmission {
   message: string;
   price: string;
   notes: string;
+  /** Seller's contact mobile number (e.g. "+91 98765 43210") — never displayed on the page, only revealed via the call popup to paid buyers. */
+  mobileNumber?: string | null;
   imageUrls: string[];
   imageNames: string[];
   imageCount: number;
@@ -209,6 +211,11 @@ const SellerResponse = () => {
   const [formProgress, setFormProgress] = useState(0);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [hasAlreadySubmitted, setHasAlreadySubmitted] = useState(false);
+
+  // Contact mobile number (optional) — shown only to paid users via the call popup
+  const [mobileNumber, setMobileNumber] = useState("");
+  // Country code for the mobile number (default: India +91)
+  const [countryCode, setCountryCode] = useState('+91');
   const [existingSubmission, setExistingSubmission] = useState<SellerSubmission | null>(null);
   const [adminStatus, setAdminStatus] = useState<string | null>(null);
   const [isApproved, setIsApproved] = useState(false);
@@ -939,6 +946,7 @@ const SellerResponse = () => {
           message: description.trim(),
           price: price.trim(),
           notes: notes.trim(),
+          mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
           imageUrls: validImageUrls,
           imageNames: validImageNames,
           imageCount: validImageUrls.length,
@@ -1550,32 +1558,6 @@ const SellerResponse = () => {
               {/* Separator */}
               <Separator className="my-12 sm:my-16 bg-gray-300 h-[2px]" />
 
-              {/* Enhanced Additional Notes */}
-              <div className="space-y-3">
-                <Label htmlFor="notes" className="text-sm sm:text-lg font-black text-black flex items-center">
-                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-black" />
-                  <span className="text-black">
-                    Additional Information (Optional)
-                  </span>
-                </Label>
-                <p className="text-[8px] sm:text-sm text-black">
-                  Payment Terms, Delivery Details, Warranties, Or Any Special Conditions
-                </p>
-                <div className="relative">
-                <Textarea
-                  id="notes"
-                  placeholder="Payment terms, delivery details, etc..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value.slice(0, 300))}
-                    className="min-h-[120px] text-base !border-[1.5px] !border-black focus:!border-[2px] focus:border-black focus:ring-0 focus-visible:!border-[2px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 touch-manipulation"
-                    style={{ fontSize: '16px' }}
-                />
-                </div>
-                <span className="text-[10px] sm:text-xs text-black">
-                  {notes.length}/300 characters
-                </span>
-              </div>
-
               {/* Separator */}
               <Separator className="my-8" />
 
@@ -1713,6 +1695,7 @@ const SellerResponse = () => {
                         description,
                         price,
                         notes,
+                        mobileNumber,
                         imageUrls: images,
                       }));
                       navigate(`/profile?returnTo=/respond/${enquiryId}`);
@@ -1729,6 +1712,56 @@ const SellerResponse = () => {
                     <ChevronRight className="h-4 w-4 text-white/70 flex-shrink-0" />
                   </button>
                 )}
+              </div>
+
+              {/* Contact Mobile Number (optional) — shown only to paid buyers via the call popup */}
+              <div className="mt-6">
+                <Label htmlFor="response-mobile" className="text-xs font-bold flex items-center gap-2">
+                  <Phone className="h-3.5 w-3.5" />
+                  Mobile Number <span className="text-[9px] text-slate-500 font-normal">(Optional)</span>
+                </Label>
+                <div className="flex gap-1.5 mt-1.5">
+                  <select
+                    aria-label="Country code"
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-xs !font-black focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation appearance-none text-center"
+                  >
+                    {[
+                      ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
+                      ['+971', '🇦🇪 +971'], ['+966', '🇸🇦 +966'], ['+65', '🇸🇬 +65'], ['+60', '🇲🇾 +60'],
+                      ['+49', '🇩🇪 +49'], ['+33', '🇫🇷 +33'], ['+81', '🇯🇵 +81'], ['+82', '🇰🇷 +82'],
+                      ['+86', '🇨🇳 +86'], ['+55', '🇧🇷 +55'], ['+27', '🇿🇦 +27'], ['+94', '🇱🇰 +94'],
+                      ['+880', '🇧🇩 +880'], ['+92', '🇵🇰 +92'], ['+977', '🇳🇵 +977'], ['+20', '🇪🇬 +20'],
+                      ['+234', '🇳🇬 +234'], ['+7', '🇷🇺 +7'], ['+39', '🇮🇹 +39'], ['+34', '🇪🇸 +34'],
+                    ].map(([code, label]) => (
+                      <option key={code} value={code}>{label}</option>
+                    ))}
+                  </select>
+                  <input
+                    id="response-mobile"
+                    type="tel"
+                    inputMode="tel"
+                    value={mobileNumber}
+                    onChange={(e) => {
+                      // Digits and spaces only (country code handled by the dropdown); India +91 limited to 10 digits
+                      const digitsOnly = e.target.value.replace(/[^\d ]/g, '');
+                      if (countryCode === '+91') {
+                        const digitCount = digitsOnly.replace(/ /g, '').length;
+                        if (digitCount >= 10 && e.target.value.length > mobileNumber.length && !/\d/.test(e.target.value.slice(-1))) return;
+                        setMobileNumber(digitsOnly.replace(/(\d{5})(?=\d)/g, '$1 ').slice(0, 11));
+                      } else {
+                        setMobileNumber(digitsOnly);
+                      }
+                    }}
+                    maxLength={countryCode === '+91' ? 11 : 14}
+                    placeholder={countryCode === '+91' ? '98765 43210' : 'Mobile number'}
+                    className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
+                  />
+                </div>
+                <p className="text-[9px] text-black font-semibold mt-1.5 text-right">
+                  Connect with privacy
+                </p>
               </div>
 
               {/* Enhanced Submit Button */}
