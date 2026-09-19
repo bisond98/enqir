@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -137,6 +137,57 @@ export default function ListingDetail() {
   const isOwner = useMemo(() => !!user && !!listing && listing.sellerId === user.uid, [user, listing]);
   const chatUnlocked = useMemo(() => !!user && responses.some(r => r.buyerId === user.uid), [user, responses]);
   const [sellerProfile, setSellerProfile] = useState<any>(null);
+
+  // Call seller — premium feature integrated with Connect (same ₹10 payment unlocks both)
+  const [callPaid, setCallPaid] = useState(false); // paid via call icon this session (connect unlock is per-response)
+  const [showCallPopup, setShowCallPopup] = useState(false);
+  const [callingPayment, setCallingPayment] = useState(false);
+
+  const handleCallClick = async () => {
+    if (!user) {
+      sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller');
+      navigate('/signin');
+      return;
+    }
+    if (!listing) return;
+    // Seller never added a number — tell the user to use chat (before any payment)
+    if (!listing.mobileNumber || !String(listing.mobileNumber).trim()) {
+      toast({ title: 'No number available', description: "User didn't put the number, use chat.", variant: 'destructive' });
+      return;
+    }
+    // Already unlocked via Connect (has a response = paid) or paid via call icon → show number directly
+    if (chatUnlocked || callPaid) {
+      setShowCallPopup(true);
+      return;
+    }
+    // Not unlocked → open Razorpay ₹10 (same premium that unlocks Connect)
+    setCallingPayment(true);
+    try {
+      const plan = PAYMENT_PLANS.find(p => p.id === 'premium');
+      if (!plan) {
+        toast({ title: 'Error', description: 'Payment plan not found.', variant: 'destructive' });
+        setCallingPayment(false);
+        return;
+      }
+      const result = await processPayment(listing.id, user.uid, plan, {
+        name: user.displayName || user.email?.split('@')[0] || '',
+        email: user.email || '',
+        contact: '',
+      });
+      if (!result.success) {
+        toast({ title: 'Payment Unsuccessful', description: result.error || 'Payment failed.', variant: 'destructive' });
+        setCallingPayment(false);
+        return;
+      }
+      setCallPaid(true);
+      setShowCallPopup(true);
+    } catch (err: any) {
+      console.error('Call payment failed:', err);
+      toast({ title: 'Payment Failed', description: err?.message || 'Something went wrong.', variant: 'destructive' });
+    } finally {
+      setCallingPayment(false);
+    }
+  };
 
   useEffect(() => {
     if (!listing?.sellerId) return;
@@ -269,8 +320,8 @@ export default function ListingDetail() {
     setUploadingMedia(true);
     setPaymentDone(false);
     try {
-      // Check if user already has a response on this listing (already paid)
-      const alreadyPaid = responses.some(r => r.buyerId === user.uid);
+      // Check if user already has a response on this listing (already paid), or paid via the call icon (integrated premium — call payment unlocks Connect too)
+      const alreadyPaid = responses.some(r => r.buyerId === user.uid) || callPaid;
       console.log(alreadyPaid ? '✅ Chat already unlocked — skipping payment' : '💳 First message — opening Razorpay checkout');
 
       if (!alreadyPaid) {
@@ -437,6 +488,30 @@ export default function ListingDetail() {
               <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-red-600 flex-shrink-0 animate-bounce drop-shadow-[0_2px_4px_rgba(220,38,38,0.4)]" />
               <span className="text-base sm:text-2xl font-black text-black tracking-wide">Do not press back</span>
             </div>
+          </div>
+        </div>,
+        document.body
+      )}
+      {/* Call popup — shows the seller's number; tapping it makes the real call */}
+      {showCallPopup && listing?.mobileNumber && createPortal(
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 px-4" onClick={() => setShowCallPopup(false)}>
+          <div className="bg-white rounded-2xl border-[1.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.85)] p-6 w-full max-w-xs text-center" onClick={(e) => e.stopPropagation()}>
+            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-2">Connect</p>
+            <a
+              href={`tel:${String(listing.mobileNumber).replace(/[^\d+]/g, '')}`}
+              className="block text-xl font-black text-white bg-blue-600 !border-[1.5px] !border-black rounded-2xl px-4 py-3 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150"
+            >
+              {listing.mobileNumber}
+            </a>
+            <p className="hidden text-[9px] text-gray-500 mt-3">Tap the number to call</p>
+            <button
+              type="button"
+              onClick={() => setShowCallPopup(false)}
+              aria-label="Close"
+              className="mt-4 w-8 h-8 mx-auto rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-all active:scale-95"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
         </div>,
         document.body
@@ -613,7 +688,19 @@ export default function ListingDetail() {
               </div>
               {/* Message Seller — integrated inside the main card (not for the owner) */}
               {!isOwner && (chatUnlocked ? (
-                <div className="mt-4 w-full flex justify-center">
+                <div className="mt-4 w-full space-y-2">
+                  {listing.mobileNumber && String(listing.mobileNumber).trim() && (
+                    <button
+                      type="button"
+                      onClick={handleCallClick}
+                      className="relative w-full !h-14 !text-lg !font-black !bg-white hover:!bg-gray-50 !text-black !rounded-2xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 touch-manipulation select-none flex items-center justify-center"
+                    >
+                      <span className="w-9 h-9 rounded-full border-[1.5px] border-black flex items-center justify-center mr-3 bg-white">
+                        <Phone className="h-4 w-4 text-black" />
+                      </span>
+                      <span>Call Seller</span>
+                    </button>
+                  )}
                   <Button
                     variant="outline"
                     className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
@@ -653,6 +740,19 @@ export default function ListingDetail() {
                     submitResponse={submitResponse}
                     navigate={navigate}
                     listingId={listing.id}
+                    callButton={listing.mobileNumber && String(listing.mobileNumber).trim() ? (
+                      <button
+                        type="button"
+                        onClick={handleCallClick}
+                        disabled={callingPayment}
+                        className="relative w-full !h-14 !text-lg !font-black !bg-white hover:!bg-gray-50 !text-black !rounded-2xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 touch-manipulation select-none flex items-center justify-center"
+                      >
+                        <span className="w-9 h-9 rounded-full border-[1.5px] border-black flex items-center justify-center mr-3 bg-white">
+                          <Phone className="h-4 w-4 text-black" />
+                        </span>
+                        <span>{callingPayment ? 'Opening payment…' : 'Call Seller'}</span>
+                      </button>
+                    ) : null}
                   />
                 </div>
               ))}
@@ -774,14 +874,16 @@ function MessageSellerInline({
   uploadingMedia, voiceUploadProgress,
   voicePreviewUrl, playPauseVoice, clearVoice, isPlayingVoice,
   recordingTime, fileInputRef, handleFileAttach, removeAttachedFile,
-  sending, user, submitResponse, navigate, listingId,
+  sending, user, submitResponse, navigate, listingId, callButton,
 }: any) {
   return (
     <div className="border-t border-gray-100 pt-5 mt-8 space-y-3">
       <h3 className="text-sm font-black text-black flex items-center justify-center gap-1.5">
         <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-600"><MessageSquare className="h-3 w-3 text-white" /></span>
-        Message Seller
+        Connect Seller
       </h3>
+      {/* Call Seller — premium shortcut above Connect */}
+      {callButton}
       <div>
         <Label className="text-[8px] font-bold text-gray-700 uppercase mb-1 block">Your Price (optional)</Label>
         <div className="relative">

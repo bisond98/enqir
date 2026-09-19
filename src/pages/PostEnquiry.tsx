@@ -12,7 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { MapLocationPicker } from "@/components/MapLocationPicker";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -219,6 +219,11 @@ export default function PostEnquiry() {
   // Reference images (optional for buyers, up to 5)
   const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
+
+  // Contact mobile number (optional) — shown only to paid users via the call popup
+  const [mobileNumber, setMobileNumber] = useState("");
+  // Country code for the mobile number (default: India +91)
+  const [countryCode, setCountryCode] = useState("+91");
   
   // AI Location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
@@ -310,6 +315,7 @@ export default function PostEnquiry() {
         if (d.jobSkills) setJobSkills(d.jobSkills);
         if (d.jobDetails) setJobDetails(d.jobDetails);
         if (d.referenceImageUrls) setReferenceImageUrls(d.referenceImageUrls);
+        if (d.mobileNumber) setMobileNumber(d.mobileNumber);
         if (d.selectedPlanId) {
           const plan = PAYMENT_PLANS.find(p => p.id === d.selectedPlanId);
           if (plan) setSelectedPlan(plan);
@@ -509,6 +515,7 @@ export default function PostEnquiry() {
             userEmail: user?.email,
             userName: user?.displayName || user?.email?.split('@')[0],
             notes: notes.trim() || null,
+            mobileNumber: mobileNumber.trim() || null,
             details: {
               ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
               ...(vehicleDetails.year && { year: vehicleDetails.year }),
@@ -665,6 +672,7 @@ export default function PostEnquiry() {
           userEmail: user.email,
           userName: user.displayName || user.email?.split('@')[0],
           notes: notes.trim() || null,
+          mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
           details: {
             ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
             ...(vehicleDetails.year && { year: vehicleDetails.year }),
@@ -814,6 +822,7 @@ export default function PostEnquiry() {
           userEmail: user?.email,
           userName: user?.displayName || user?.email?.split('@')[0],
           notes: notes.trim() || null,
+          mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
           details: {
             ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
             ...(vehicleDetails.year && { year: vehicleDetails.year }),
@@ -971,7 +980,8 @@ export default function PostEnquiry() {
         userId: user?.uid,
         userEmail: user?.email,
         userName: user?.displayName || user?.email?.split('@')[0],
-        notes: notes.trim() || null,            details: {
+        notes: notes.trim() || null,
+        mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,            details: {
               ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
               ...(vehicleDetails.year && { year: vehicleDetails.year }),
               ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
@@ -2876,7 +2886,7 @@ export default function PostEnquiry() {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
                                 title, description, selectedCategories, budget, location, vehicleDetails, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
-                                referenceImageUrls, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails
+                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails
                               }));
                               navigate('/profile?returnTo=/post-enquiry');
                             }}
@@ -3042,6 +3052,55 @@ export default function PostEnquiry() {
                   )}
                 </div>
 
+                {/* Contact Mobile Number (optional) — shown only to paid users via the call icon popup */}
+                <div className={step === totalSteps - 1 ? 'mt-6' : 'hidden'}>
+                  <Label htmlFor="enquiry-mobile" className="text-xs font-bold flex items-center gap-2">
+                    <Phone className="h-3.5 w-3.5" />
+                    Mobile Number <span className="text-[9px] text-slate-500 font-normal">(Optional)</span>
+                  </Label>
+                  <div className="flex gap-1.5 mt-1.5">
+                    <select
+                      aria-label="Country code"
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
+                      className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-xs !font-black focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation appearance-none text-center"
+                    >
+                      {[
+                        ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
+                        ['+971', '🇦🇪 +971'], ['+966', '🇸🇦 +966'], ['+65', '🇸🇬 +65'], ['+60', '🇲🇾 +60'],
+                        ['+49', '🇩🇪 +49'], ['+33', '🇫🇷 +33'], ['+81', '🇯🇵 +81'], ['+82', '🇰🇷 +82'],
+                        ['+86', '🇨🇳 +86'], ['+55', '🇧🇷 +55'], ['+27', '🇿🇦 +27'], ['+94', '🇱🇰 +94'],
+                        ['+880', '🇧🇩 +880'], ['+92', '🇵🇰 +92'], ['+977', '🇳🇵 +977'], ['+20', '🇪🇬 +20'],
+                        ['+234', '🇳🇬 +234'], ['+7', '🇷🇺 +7'], ['+39', '🇮🇹 +39'], ['+34', '🇪🇸 +34'],
+                      ].map(([code, label]) => (
+                        <option key={code} value={code}>{label}</option>
+                      ))}
+                    </select>
+                    <input
+                      id="enquiry-mobile"
+                      type="tel"
+                      inputMode="tel"
+                      value={mobileNumber}
+                      onChange={(e) => {
+                        // Digits and spaces only (country code handled by the dropdown); India +91 limited to 10 digits
+                        const digitsOnly = e.target.value.replace(/[^\d ]/g, '');
+                        if (countryCode === '+91') {
+                          const digitCount = digitsOnly.replace(/ /g, '').length;
+                          if (digitCount >= 10 && e.target.value.length > mobileNumber.length && !/\d/.test(e.target.value.slice(-1))) return;
+                          setMobileNumber(digitsOnly.replace(/(\d{5})(?=\d)/g, '$1 ').slice(0, 11));
+                        } else {
+                          setMobileNumber(digitsOnly);
+                        }
+                      }}
+                      maxLength={countryCode === '+91' ? 11 : 14}
+                      placeholder={countryCode === '+91' ? '98765 43210' : 'Mobile number'}
+                      className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
+                    />
+                  </div>
+                  <p className="text-[9px] text-black font-semibold mt-1.5 text-right">
+                    Connect with privacy
+                  </p>
+                </div>
 
                 {/* Navigation Buttons */}
                 <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center pt-2 border-t border-slate-100">

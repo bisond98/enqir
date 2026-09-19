@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState as useStateTooltip } from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, MessageSquare, Send, X, IndianRupee, User, Mic, Square, Phone, Settings, Paperclip, Image, File, Package, Users, MapPin, CheckCircle, Play, Pause, AlertTriangle } from 'lucide-react';
 import Layout from '@/components/Layout';
@@ -115,6 +116,18 @@ export default function ListingChat() {
   const [attachments, setAttachments] = useState<File[]>([]);
   const [showAttachmentOptions, setShowAttachmentOptions] = useState(false);
   const [showCallTooltip, setShowCallTooltip] = useState(false);
+  // Call seller popup — buyer only; number lives on the listing, revealed here since chat = premium unlocked
+  const [showCallPopup, setShowCallPopup] = useState(false);
+  const isBuyer = !!user && !!listing && user.uid !== listing.sellerId;
+  const sellerHasNumber = !!(listing?.mobileNumber && String(listing.mobileNumber).trim());
+
+  const handleChatCallClick = () => {
+    if (!sellerHasNumber) {
+      toast({ title: 'No number available', description: "User didn't put the number, use chat.", variant: 'destructive' });
+      return;
+    }
+    setShowCallPopup(true);
+  };
 
   // Block user state (mirrors EnquiryResponses)
   const [blockedUsers, setBlockedUsers] = useState<string[]>([]);
@@ -597,28 +610,18 @@ export default function ListingChat() {
                         #Response {buyerResponse.number || '1'}
                       </span>
                     )}
-                    <div className="relative" style={{ zIndex: showCallTooltip ? 10000 : 'auto' }}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowCallTooltip(!showCallTooltip)}
-                        onMouseLeave={() => setShowCallTooltip(false)}
-                        className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md flex-shrink-0 relative z-10 cursor-pointer"
-                      >
-                        <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
-                      </Button>
-                      {showCallTooltip && (
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 pointer-events-none" style={{ zIndex: 10000 }}>
-                          <div className="bg-black text-white text-[10px] font-bold px-3 py-2 rounded-lg shadow-xl border-2 border-black whitespace-nowrap relative" style={{ width: 'max-content', maxWidth: '160px' }}>
-                            <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black border-l border-t border-black rotate-45"></div>
-                            <div className="flex items-center gap-1.5 whitespace-nowrap">
-                              <Phone className="h-3 w-3 animate-pulse flex-shrink-0" />
-                              <span>Call Feature Coming Soon</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    {isBuyer && sellerHasNumber && (
+                      <div className="relative">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleChatCallClick}
+                          className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md flex-shrink-0 relative z-10 cursor-pointer"
+                        >
+                          <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                        </Button>
+                      </div>
+                    )}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md flex-shrink-0 cursor-pointer">
@@ -995,6 +998,31 @@ export default function ListingChat() {
                   Block
                 </Button>
               </div>
+            </div>
+          </div>
+        )}
+        {/* Call Seller Popup — tap number to make the real call */}
+        {showCallPopup && listing?.mobileNumber && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" onClick={() => setShowCallPopup(false)}>
+            <div
+              className="bg-white rounded-2xl border-[1.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.85)] w-full max-w-xs p-6 text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-2">Seller's Number</p>
+              <a
+                href={`tel:${String(listing.mobileNumber).replace(/[^\d+]/g, '')}`}
+                className="block text-xl font-black text-black bg-gray-100 !border-[1.5px] !border-black rounded-2xl px-4 py-3 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150"
+              >
+                {listing.mobileNumber}
+              </a>
+              <p className="text-[9px] text-gray-500 mt-3">Tap the number to call</p>
+              <button
+                type="button"
+                onClick={() => setShowCallPopup(false)}
+                className="mt-4 text-xs font-bold text-gray-500 hover:text-black transition-colors"
+              >
+                Close
+              </button>
             </div>
           </div>
         )}

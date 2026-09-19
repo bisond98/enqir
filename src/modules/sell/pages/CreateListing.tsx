@@ -94,6 +94,7 @@ import {
   Ruler,
   Compass,
   Cog,
+  Phone,
 } from 'lucide-react';
 
 // H-pattern stick-shift (manual gearbox) icon
@@ -257,6 +258,11 @@ export default function CreateListing() {
   const [uploadProgresses, setUploadProgresses] = useState<number[]>([]);
   const [publishing, setPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
+
+  // Contact mobile number (optional) — shown only to paid users via the call popup
+  const [mobileNumber, setMobileNumber] = useState('');
+  // Country code for the mobile number (default: India +91)
+  const [countryCode, setCountryCode] = useState('+91');
 
   const parsedTags = useMemo(() => {
     return tags
@@ -578,6 +584,7 @@ export default function CreateListing() {
       if (details['houseBhk']) estateSaved.houseBhk = details['houseBhk'];
 
       const newListingId = await createListing(user.uid, {
+        mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
         title: title.trim(),
         description: description.trim(),
         category,
@@ -1546,8 +1553,57 @@ export default function CreateListing() {
             </div>
           )}
 
+
+          {/* Contact Mobile Number (optional) — shown only to paid users via the call icon popup */}
           {step === totalSteps - 1 && (
-            <p className="text-center text-[10px] sm:text-xs text-gray-400 font-normal truncate mt-3">We don't offer anything free at the cost of your time and safety.</p>
+            <div className="mt-6">
+              <Label htmlFor="listing-mobile" className="text-xs font-bold flex items-center gap-2">
+                <Phone className="h-3.5 w-3.5" />
+                Mobile Number <span className="text-[9px] text-slate-500 font-normal">(Optional)</span>
+              </Label>
+              <div className="flex gap-1.5 mt-1.5">
+                <select
+                  aria-label="Country code"
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-xs !font-black focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation appearance-none text-center"
+                >
+                  {[
+                    ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
+                    ['+971', '🇦🇪 +971'], ['+966', '🇸🇦 +966'], ['+65', '🇸🇬 +65'], ['+60', '🇲🇾 +60'],
+                    ['+49', '🇩🇪 +49'], ['+33', '🇫🇷 +33'], ['+81', '🇯🇵 +81'], ['+82', '🇰🇷 +82'],
+                    ['+86', '🇨🇳 +86'], ['+55', '🇧🇷 +55'], ['+27', '🇿🇦 +27'], ['+94', '🇱🇰 +94'],
+                    ['+880', '🇧🇩 +880'], ['+92', '🇵🇰 +92'], ['+977', '🇳🇵 +977'], ['+20', '🇪🇬 +20'],
+                    ['+234', '🇳🇬 +234'], ['+7', '🇷🇺 +7'], ['+39', '🇮🇹 +39'], ['+34', '🇪🇸 +34'],
+                  ].map(([code, label]) => (
+                    <option key={code} value={code}>{label}</option>
+                  ))}
+                </select>
+                <input
+                  id="listing-mobile"
+                  type="tel"
+                  inputMode="tel"
+                  value={mobileNumber}
+                  onChange={(e) => {
+                    // Digits and spaces only (country code handled by the dropdown); India +91 limited to 10 digits
+                    const digitsOnly = e.target.value.replace(/[^\d ]/g, '');
+                    if (countryCode === '+91') {
+                      const digitCount = digitsOnly.replace(/ /g, '').length;
+                      if (digitCount >= 10 && e.target.value.length > mobileNumber.length && !/\d/.test(e.target.value.slice(-1))) return;
+                      setMobileNumber(digitsOnly.replace(/(\d{5})(?=\d)/g, '$1 ').slice(0, 11));
+                    } else {
+                      setMobileNumber(digitsOnly);
+                    }
+                  }}
+                  maxLength={countryCode === '+91' ? 11 : 14}
+                  placeholder={countryCode === '+91' ? '98765 43210' : 'Mobile number'}
+                  className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
+                />
+              </div>
+              <p className="text-[9px] text-black font-semibold mt-1.5 text-right">
+                Connect with privacy
+              </p>
+            </div>
           )}
           <div className="mt-2 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
             <Button
