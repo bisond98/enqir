@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useContext, useMemo } from "react";
+import CallNumberPopup from "@/components/CallNumberPopup";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -4602,30 +4603,7 @@ const EnquiryResponses = () => {
       )}
       {/* Call Number Popup - buyer sees seller's number, seller sees buyer's */}
       {showCallNumberPopup && otherPartyMobile && (
-        <div
-          className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4"
-          onClick={() => setShowCallNumberPopup(false)}
-        >
-          <div
-            className="bg-white rounded-2xl border-2 border-black shadow-[0_8px_0_0_rgba(0,0,0,0.3)] p-6 w-full max-w-sm text-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-xs font-black uppercase tracking-wider text-gray-500 mb-4">Connect</h3>
-            <a
-              href={`tel:${otherPartyMobile.replace(/[^\d+]/g, '')}`}
-              className="block bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-xl border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[3px] transition-all px-4 py-3 mb-5 break-words"
-            >
-              {otherPartyMobile}
-            </a>
-            <button
-              onClick={() => setShowCallNumberPopup(false)}
-              className="w-10 h-10 mx-auto rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-[0_3px_0_0_rgba(0,0,0,0.3)] active:translate-y-[2px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] transition-all"
-              aria-label="Close"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
+        <CallNumberPopup number={otherPartyMobile} onClose={() => setShowCallNumberPopup(false)} />
       )}
     </Layout>
   );

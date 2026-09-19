@@ -22,6 +22,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { PAYMENT_PLANS, getUpgradeOptions } from "../config/paymentPlans";
 import { savePaymentRecord, updateUserPaymentPlan } from "../services/paymentService";
 import { X } from "lucide-react";
+import CallNumberPopup from "../components/CallNumberPopup";
 import { LoadingAnimation } from "../components/LoadingAnimation";
 import { listMyListings, listResponsesForSeller } from "../modules/sell/services/sellDb";
 import SellerDashboard from "../modules/sell/pages/SellerDashboard";
@@ -2938,28 +2939,7 @@ const Dashboard = () => {
 
         {/* Call Buyer Popup — tap number to make the real call */}
         {showCallPopup && callPopupNumber && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4" onClick={() => setShowCallPopup(false)}>
-            <div
-              className="bg-white rounded-2xl border-[1.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.85)] w-full max-w-xs p-6 text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-2">Connect</p>
-              <a
-                href={`tel:${callPopupNumber.replace(/[^\d+]/g, '')}`}
-                className="block text-xl font-black text-white bg-blue-600 !border-[1.5px] !border-black rounded-2xl px-4 py-3 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150"
-              >
-                {callPopupNumber}
-              </a>
-              <button
-                type="button"
-                onClick={() => setShowCallPopup(false)}
-                aria-label="Close"
-                className="mt-4 w-8 h-8 mx-auto rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-all active:scale-95"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
+          <CallNumberPopup number={callPopupNumber} onClose={() => setShowCallPopup(false)} />
         )}
         </div>
       </div>

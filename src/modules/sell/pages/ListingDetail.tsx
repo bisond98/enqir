@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import CallNumberPopup from '@/components/CallNumberPopup';
 import { createPortal } from 'react-dom';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import SellShell from '../components/SellShell';
@@ -494,26 +495,10 @@ export default function ListingDetail() {
       )}
       {/* Call popup — shows the seller's number; tapping it makes the real call */}
       {showCallPopup && listing?.mobileNumber && createPortal(
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 px-4" onClick={() => setShowCallPopup(false)}>
-          <div className="bg-white rounded-2xl border-[1.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.85)] p-6 w-full max-w-xs text-center" onClick={(e) => e.stopPropagation()}>
-            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-2">Connect</p>
-            <a
-              href={`tel:${String(listing.mobileNumber).replace(/[^\d+]/g, '')}`}
-              className="block text-xl font-black text-white bg-blue-600 !border-[1.5px] !border-black rounded-2xl px-4 py-3 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150"
-            >
-              {listing.mobileNumber}
-            </a>
-            <p className="hidden text-[9px] text-gray-500 mt-3">Tap the number to call</p>
-            <button
-              type="button"
-              onClick={() => setShowCallPopup(false)}
-              aria-label="Close"
-              className="mt-4 w-8 h-8 mx-auto rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-all active:scale-95"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>,
+        <CallNumberPopup
+          number={String(listing.mobileNumber)}
+          onClose={() => setShowCallPopup(false)}
+        />,
         document.body
       )}
       <div className="space-y-4 pb-6">

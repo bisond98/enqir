@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import CallNumberPopup from '@/components/CallNumberPopup';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Card, CardHeader } from '@/components/ui/card';
 import {
@@ -1003,28 +1004,10 @@ export default function ListingChat() {
         )}
         {/* Call Seller Popup — tap number to make the real call */}
         {showCallPopup && listing?.mobileNumber && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" onClick={() => setShowCallPopup(false)}>
-            <div
-              className="bg-white rounded-2xl border-[1.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.85)] w-full max-w-xs p-6 text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-2">Seller's Number</p>
-              <a
-                href={`tel:${String(listing.mobileNumber).replace(/[^\d+]/g, '')}`}
-                className="block text-xl font-black text-black bg-gray-100 !border-[1.5px] !border-black rounded-2xl px-4 py-3 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150"
-              >
-                {listing.mobileNumber}
-              </a>
-              <p className="text-[9px] text-gray-500 mt-3">Tap the number to call</p>
-              <button
-                type="button"
-                onClick={() => setShowCallPopup(false)}
-                className="mt-4 text-xs font-bold text-gray-500 hover:text-black transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
+          <CallNumberPopup
+            number={String(listing.mobileNumber)}
+            onClose={() => setShowCallPopup(false)}
+          />
         )}
       </div>
     </Layout>
