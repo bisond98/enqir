@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight, CalendarIcon, Sparkles, Flame, IndianRupee, BadgeCheck } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight, CalendarIcon, Sparkles, Flame, IndianRupee, BadgeCheck, Phone } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -52,6 +52,7 @@ interface Enquiry {
   dealClosed?: boolean;
   dealClosedAt?: any;
   dealClosedBy?: string;
+  mobileNumber?: string | null;
 }
 
 interface SellerSubmission {
@@ -107,6 +108,11 @@ const Dashboard = () => {
   const [selectedEnquiryForUpgrade, setSelectedEnquiryForUpgrade] = useState<Enquiry | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string>('free');
   const [deletedEnquiries, setDeletedEnquiries] = useState<Set<string>>(new Set()); // Track deleted enquiry IDs
+  // Call Buyer — popup shows the buyer's number directly (Connect already paid on the response form)
+  const [showCallPopup, setShowCallPopup] = useState(false);
+  const [callPopupNumber, setCallPopupNumber] = useState<string | null>(null);
+  // Enquiries the user responded to (buyers' enquiries) — keyed by id, used for the Call button lookup
+  const [respondedEnquiriesById, setRespondedEnquiriesById] = useState<{ [key: string]: Enquiry }>({});
   const [, forceUpdate] = useState({});
   const [sellListings, setSellListings] = useState<SellListing[]>([]);
   const [sellResponses, setSellResponses] = useState<SellListingResponse[]>([]);
@@ -611,6 +617,8 @@ const Dashboard = () => {
       );
       
       setDeletedEnquiries(deletedSet);
+      // Store buyers' enquiries (fetched for deletion/expiry checks) so the Call button can read their mobileNumber
+      setRespondedEnquiriesById(enquiryDataMap);
       
       // Sort by live first, then deleted, then expired (each group sorted by date - newest first)
       const now = new Date();
@@ -872,6 +880,8 @@ const Dashboard = () => {
           })
         ).then(() => {
           setDeletedEnquiries(deletedSet);
+          // Store buyers' enquiries (fetched for deletion/expiry checks) so the Call button can read their mobileNumber
+          setRespondedEnquiriesById(enquiryDataMap);
           
           // Sort by live first, then deleted, then expired (each group sorted by date - newest first)
           const now = new Date();
@@ -2652,20 +2662,45 @@ const Dashboard = () => {
 
                             {/* Action Buttons */}
                               <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5 flex-wrap lg:flex-nowrap">
+                                {/* Call + Chat — side by side, Call first */}
+                                <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 w-full sm:w-auto">
+                                {submission.status === 'approved' && !isEnquiryDeleted && !isEnquiryExpired && (() => {
+                                  const respondedEnquiry = respondedEnquiriesById[submission.enquiryId];
+                                  const enquiryMobile = respondedEnquiry?.mobileNumber && String(respondedEnquiry.mobileNumber).trim() ? String(respondedEnquiry.mobileNumber).trim() : null;
+                                  if (!enquiryMobile) return null;
+                                  return (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCallPopupNumber(enquiryMobile);
+                                        setShowCallPopup(true);
+                                      }}
+                                      className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/call flex items-center justify-center sm:min-w-[110px] lg:min-w-[100px] xl:min-w-[110px] relative overflow-hidden touch-manipulation select-none"
+                                    >
+                                      <span className="w-5 h-5 rounded-full border-[1.5px] border-white flex items-center justify-center mr-1.5 lg:mr-1 flex-shrink-0 relative z-10">
+                                        <Phone className="h-2.5 w-2.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
+                                      </span>
+                                      <span className="tracking-tight whitespace-nowrap relative z-10">Call</span>
+                                    </Button>
+                                  );
+                                })()}
                                 {submission.status === 'approved' && !isEnquiryDeleted && !isEnquiryExpired && (
                                 <Button
                                   size="sm"
                                   variant="outline"
                                   onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
-                                    className="w-full sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-emerald-500 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
+                                    className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-emerald-500 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
                                 >
                                     <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Chat</span>
                                 </Button>
                               )}
+                                </div>
                               
-                              {/* View Details & Delete - Side by side on mobile */}
-                              <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+                              {/* View Details & Delete - Stacked (Delete under View Details) */}
+                              <div className="flex flex-col items-stretch gap-2.5 sm:gap-3 w-full sm:w-auto">
                               <Button 
                                 variant="outline" 
                                 size="sm" 
@@ -2899,6 +2934,32 @@ const Dashboard = () => {
               </div>
             </DialogContent>
           </Dialog>
+        )}
+
+        {/* Call Buyer Popup — tap number to make the real call */}
+        {showCallPopup && callPopupNumber && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4" onClick={() => setShowCallPopup(false)}>
+            <div
+              className="bg-white rounded-2xl border-[1.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.85)] w-full max-w-xs p-6 text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wide mb-2">Connect</p>
+              <a
+                href={`tel:${callPopupNumber.replace(/[^\d+]/g, '')}`}
+                className="block text-xl font-black text-white bg-blue-600 !border-[1.5px] !border-black rounded-2xl px-4 py-3 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150"
+              >
+                {callPopupNumber}
+              </a>
+              <button
+                type="button"
+                onClick={() => setShowCallPopup(false)}
+                aria-label="Close"
+                className="mt-4 w-8 h-8 mx-auto rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-all active:scale-95"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
         )}
         </div>
       </div>
