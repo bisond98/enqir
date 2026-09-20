@@ -1092,8 +1092,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
         </Suspense>
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      {isMobile && showNavigation && (
+      {/* Mobile Bottom Navigation — hidden for signed-out users on sign-in pages */}
+      {isMobile && showNavigation && user && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t border-border/50 safe-area-bottom">
           <div className="flex items-center justify-around py-2 px-1 safe-area-left safe-area-right">
             {navigationItems.filter(item => item.path !== "/").map((item) => {
