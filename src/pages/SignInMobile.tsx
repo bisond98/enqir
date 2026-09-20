@@ -445,7 +445,7 @@ const SignInMobile = () => {
           )}
 
           {stage === 'phone' ? (
-            <div className="space-y-4 -translate-y-[4.5cm]">
+            <div className="space-y-4 -translate-y-[3.5cm]">
               {/* Phone input row */}
               <div className="flex gap-2">
                 {/* Country code — locked to India for this page */}
