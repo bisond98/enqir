@@ -243,12 +243,15 @@ const SignInMobile = () => {
   const { user, loading: authLoading, sendPhoneOTP, verifyPhoneOTP } = useAuth();
 
   const [phoneDigits, setPhoneDigits] = useState("");
-  const [otp, setOtp] = useState("");
+  const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
+  const otp = otpDigits.join("");
   const [stage, setStage] = useState<"phone" | "otp">("phone");
   const [verificationId, setVerificationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const otpRef = useRef<HTMLInputElement>(null);
+  const RESEND_SECONDS = 60;
+  const [resendSeconds, setResendSeconds] = useState(RESEND_SECONDS);
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Already signed in and verified? Go straight through.
   useEffect(() => {
@@ -268,10 +271,39 @@ const SignInMobile = () => {
     return () => unsubscribe();
   }, [user, authLoading, navigate]);
 
-  // Focus OTP input when entering OTP stage
+  // Focus first OTP box when entering OTP stage
   useEffect(() => {
-    if (stage === 'otp') otpRef.current?.focus();
+    if (stage === 'otp') {
+      otpRefs.current[0]?.focus();
+      setResendSeconds(RESEND_SECONDS);
+    }
   }, [stage]);
+
+  // Count down the resend timer while on the OTP stage
+  useEffect(() => {
+    if (stage !== 'otp' || resendSeconds <= 0) return;
+    const id = setInterval(() => setResendSeconds((s) => s - 1), 1000);
+    return () => clearInterval(id);
+  }, [stage, resendSeconds]);
+
+  // OTP box helpers
+  const setOtpDigit = (index: number, raw: string) => {
+    const digit = raw.replace(/\D/g, "").slice(-1);
+    setOtpDigits((prev) => {
+      const next = [...prev];
+      next[index] = digit;
+      return next;
+    });
+    if (digit && index < 5) otpRefs.current[index + 1]?.focus();
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    const digits = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!digits) return;
+    e.preventDefault();
+    setOtpDigits(digits.split("").concat(Array(6 - digits.length).fill("")));
+    otpRefs.current[Math.min(digits.length, 5)]?.focus();
+  };
 
   const handleSendOtp = async () => {
     setError("");
@@ -279,24 +311,35 @@ const SignInMobile = () => {
     if (digits.length !== maxDigits) {
       setError(`Please enter a valid ${maxDigits}-digit mobile number.`);
       return;
-    }
-    setLoading(true);
-    try {
-      const result = await sendPhoneOTP(`${INDIA_CODE}${digits}`);
-      if (result?.error) {
-        setError(result.error.message || "Failed to send OTP. Please try again.");
-      } else if (result?.verificationId) {
-        setVerificationId(result.verificationId);
-        setStage("otp");
+    }      setLoading(true);
+      try {
+        const result = await sendPhoneOTP(`${INDIA_CODE}${digits}`);
+        if (result?.error) {
+          setError(result.error.message || "Failed to send OTP. Please try again.");
+          return false;
+        } else if (result?.verificationId) {
+          setVerificationId(result.verificationId);
+          setStage("otp");
+          return true;
+        }
+        return false;
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
+    };
+
+  const handleResend = async () => {
+    const ok = await handleSendOtp();
+    if (ok) {
+      setResendSeconds(RESEND_SECONDS);
+      setOtpDigits(["", "", "", "", "", ""]);
+      otpRefs.current[0]?.focus();
     }
   };
 
   const handleVerifyOtp = async () => {
     setError("");
-    const code = otp.replace(/\D/g, "");
+    const code = otp;
     if (code.length < 6) {
       setError("Please enter the 6-digit OTP.");
       return;
@@ -319,13 +362,6 @@ const SignInMobile = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleChangeNumber = () => {
-    setStage("phone");
-    setOtp("");
-    setVerificationId(null);
-    setError("");
   };
 
   return (
@@ -409,7 +445,7 @@ const SignInMobile = () => {
           )}
 
           {stage === 'phone' ? (
-            <div className="space-y-4 -translate-y-[3cm]">
+            <div className="space-y-4 -translate-y-[4.5cm]">
               {/* Phone input row */}
               <div className="flex gap-2">
                 {/* Country code — locked to India for this page */}
@@ -461,19 +497,29 @@ const SignInMobile = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* OTP input */}
-              <input
-                ref={otpRef}
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                placeholder="• • • • • •"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                onKeyDown={(e) => { if (e.key === 'Enter') handleVerifyOtp(); }}
-                className="w-full h-14 sm:h-16 rounded-xl border-2 border-black bg-white px-4 text-center text-2xl font-bold tracking-[0.5em] text-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] focus:outline-none"
-                style={{ fontSize: '24px' }}
-              />
+              {/* OTP input — one box per digit */}
+              <div className="flex gap-2 justify-center -translate-y-[2cm]" onPaste={handleOtpPaste}>
+                {otpDigits.map((digit, i) => (
+                  <input
+                    key={i}
+                    ref={(el) => { otpRefs.current[i] = el; }}
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete={i === 0 ? "one-time-code" : "off"}
+                    aria-label={`OTP digit ${i + 1}`}
+                    value={digit}
+                    onChange={(e) => setOtpDigit(i, e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Backspace' && !otpDigits[i] && i > 0) otpRefs.current[i - 1]?.focus();
+                      if (e.key === 'ArrowLeft' && i > 0) otpRefs.current[i - 1]?.focus();
+                      if (e.key === 'ArrowRight' && i < 5) otpRefs.current[i + 1]?.focus();
+                      if (e.key === 'Enter') handleVerifyOtp();
+                    }}
+                    className="w-11 h-14 sm:w-12 sm:h-16 rounded-xl border-2 border-black bg-white text-center text-2xl font-bold text-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] focus:outline-none"
+                    style={{ fontSize: '24px' }}
+                  />
+                ))}
+              </div>
 
               {/* Verify button */}
               <button
@@ -484,12 +530,13 @@ const SignInMobile = () => {
                 {loading ? 'Verifying…' : 'Verify & Sign In'}
               </button>
 
-              {/* Change number */}
+              {/* Resend OTP with countdown */}
               <button
-                onClick={handleChangeNumber}
-                className="w-full text-center text-sm font-semibold text-gray-500 hover:text-gray-800 underline cursor-pointer"
+                onClick={handleResend}
+                disabled={loading || resendSeconds > 0}
+                className="w-full text-center text-sm font-semibold text-gray-500 hover:text-gray-800 underline cursor-pointer disabled:opacity-50 disabled:pointer-events-none disabled:no-underline"
               >
-                Change number / resend
+                {resendSeconds > 0 ? `Resend OTP in ${resendSeconds}s` : 'Resend OTP'}
               </button>
             </div>
           )}
