@@ -219,7 +219,7 @@ const SignInOptions = () => {
 
         {/* Heading layered over the homescreen story doodle — same composition as the landing page,
             where the sketch wraps around the brand at the center hub */}
-        <div className="relative z-10 w-full h-44 sm:h-96 max-w-[24rem] sm:max-w-md mx-auto mb-4 sm:mb-5">
+        <div className="relative z-10 w-full h-44 sm:h-96 max-w-[24rem] sm:max-w-md mx-auto mb-4 sm:mb-5 -translate-y-[7rem]">
           <HomescreenSketchDoodle />
 
           {/* Heading text just above the centre of the doodle */}
@@ -234,7 +234,7 @@ const SignInOptions = () => {
         </div>
 
         {/* Provider buttons — pushed to the lower part of the screen on mobile, heading stays put */}
-        <div className="relative z-10 w-full max-w-sm space-y-3 sm:space-y-3.5 mt-auto sm:mt-0">
+        <div className="relative z-10 w-full max-w-sm space-y-3 sm:space-y-3.5 mt-auto sm:mt-0 -translate-y-[4.75rem]">
           {/* Mobile */}
           <button
             onClick={() => navigate('/signin/mobile', { state: (location.state as any) || undefined })}
@@ -280,7 +280,7 @@ const SignInOptions = () => {
         </div>
 
         {/* Footer */}
-        <p className="relative z-10 mt-5 sm:mt-8 text-[10px] text-gray-500 font-medium text-center max-w-xs">
+        <p className="relative z-10 mt-5 sm:mt-8 text-[10px] text-gray-500 font-medium text-center max-w-xs -translate-y-[4.75rem]">
           By continuing you agree to our{' '}
           <a href="/terms" className="underline text-blue-600/90 hover:text-blue-700">Terms</a>
           {' '}and{' '}

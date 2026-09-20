@@ -122,10 +122,10 @@ const SignInMobile = () => {
           {/* Back */}
           <button
             onClick={() => navigate('/signin')}
-            className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+            aria-label="Back to sign-in options"
+            className="mb-6 inline-flex items-center justify-center h-9 w-9 rounded-full text-gray-900 hover:bg-gray-200 transition-colors cursor-pointer"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Other sign-in options
+            <ArrowLeft className="h-5 w-5" />
           </button>
 
           {/* Heading */}
