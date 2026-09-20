@@ -21,8 +21,12 @@ import {
   linkWithCredential,
   EmailAuthProvider,
   signInWithCredential,
+  signInWithPopup,
+  GoogleAuthProvider,
+  OAuthProvider,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, onSnapshot, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { fetchSignInMethodsForEmail } from 'firebase/auth';
 import { db } from '@/firebase';
 
 interface AuthContextType {
@@ -40,6 +44,8 @@ interface AuthContextType {
   confirmPasswordReset: (oobCode: string, newPassword: string) => Promise<{ error: any | null }>;
   verifyPhoneOTP: (otp: string, verificationId: string) => Promise<{ error: any | null }>;
   sendPhoneOTP: (phoneNumber: string) => Promise<{ error: any | null; verificationId?: string }>;
+  signInWithGoogle: () => Promise<{ error: any | null }>;
+  signInWithApple: () => Promise<{ error: any | null }>;
   deleteAccount: (password: string) => Promise<{ error: any | null }>;
   verifyPassword: (password: string) => Promise<{ error: any | null; isValid: boolean }>;
   closeWelcomePopup: () => void;
@@ -813,6 +819,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const u = result.user;
+
+      // Ensure a Firestore users doc exists (same shape as email flow)
+      const userDocRef = doc(db, 'users', u.uid);
+      const snap = await getDoc(userDocRef);
+      if (!snap.exists()) {
+        await setDoc(userDocRef, {
+          uid: u.uid,
+          email: u.email,
+          displayName: u.displayName || u.email?.split('@')[0] || 'User',
+          photoURL: u.photoURL || null,
+          full_name: u.displayName || '',
+          first_name: (u.displayName || '').split(' ')[0] || '',
+          createdAt: new Date(),
+          provider: 'google.com',
+        });
+      }
+
+      toast({ title: 'Signed in with Google', description: `Welcome${u.displayName ? `, ${u.displayName.split(' ')[0]}` : ''}!` });
+      return { error: null };
+    } catch (error: any) {
+      // Account exists with same email but a different sign-in method -> explain linking
+      if (error?.code === 'auth/account-exists-with-different-credential') {
+        try {
+          const email = error?.customData?.email;
+          if (email) {
+            const methods = await fetchSignInMethodsForEmail(auth, email);
+            const passwordProvider = methods.includes('password');
+            toast({
+              title: 'Email already registered',
+              description: passwordProvider
+                ? 'This email is registered with a password. Log in with email once and this Google account gets linked automatically.'
+                : 'This email is already registered with another sign-in method.',
+            });
+          }
+        } catch {
+          // best-effort hint only
+        }
+      } else if (error?.code !== 'auth/popup-closed-by-user' && error?.code !== 'auth/cancelled-popup-request') {
+        toast({
+          title: 'Google sign-in failed',
+          description: error?.message || 'Please try again.',
+          variant: 'destructive',
+        });
+      }
+      return { error };
+    }
+  };
+
+  const signInWithApple = async () => {
+    // Apple sign-in requires Apple Developer account setup in Firebase Console.
+    toast({
+      title: 'Apple sign-in coming soon',
+      description: 'Apple ID sign-in is not configured yet. Please use Google, Mobile, or Email for now.',
+    });
+    return { error: { code: 'apple-not-configured' } };
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -829,6 +897,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       confirmPasswordReset,
       sendPhoneOTP,
       verifyPhoneOTP,
+      signInWithGoogle,
+      signInWithApple,
       deleteAccount,
       verifyPassword,
       closeWelcomePopup,

@@ -51,8 +51,9 @@ const DetailedResponses = lazy(() => import("./pages/DetailedResponses"));
 const EnquiryResponsesPage = lazy(() => import("./pages/EnquiryResponsesPage"));
 const EnquiryDetail = lazy(() => import("./pages/EnquiryDetail"));
 const DataClear = lazy(() => import("./pages/DataClear"));
-const Profile = lazy(() => import("./pages/Profile"));
-const SignIn = lazy(() => import("./pages/SignIn"));
+const Profile = lazy(() => import("./pages/Profile"));  const SignIn = lazy(() => import("./pages/SignIn"));
+  const SignInOptions = lazy(() => import("./pages/SignInOptions"));
+  const SignInMobile = lazy(() => import("./pages/SignInMobile"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
@@ -163,7 +164,9 @@ const App = () => {
                   <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
                   <Route path="/likes" element={<AuthGuard><MyLikes /></AuthGuard>} />
                   <Route path="/notifications" element={<AuthGuard><Notifications /></AuthGuard>} />
-                  <Route path="/signin" element={<SignIn />} />
+                  <Route path="/signin" element={<SignInOptions />} />
+                  <Route path="/signin/email" element={<SignIn />} />
+                  <Route path="/signin/mobile" element={<SignInMobile />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
