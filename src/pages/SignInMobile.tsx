@@ -431,11 +431,11 @@ const SignInMobile = () => {
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
               {stage === 'phone' ? 'Enter your phone number' : 'Enter the OTP'}
             </h1>
-            <p className="mt-2 text-xs text-gray-500 font-medium">
-              {stage === 'phone'
-                ? 'We\'ll send you an OTP code to verify'
-                : `Sent to ${INDIA_CODE} ${formatDigits(phoneDigits)}`}
-            </p>
+            {stage !== 'phone' && (
+              <p className="mt-2 text-xs text-gray-500 font-medium">
+                {`Sent to ${INDIA_CODE} ${formatDigits(phoneDigits)}`}
+              </p>
+            )}
           </div>
 
           {error && (
