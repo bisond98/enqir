@@ -55,6 +55,14 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
     return <>{children}</>;
   }
 
+  // Phone-auth users have no email to verify — OTP itself is the verification.
+  // Google/Apple sign-ins are also inherently verified by their providers.
+  const providerId = user.providerData?.[0]?.providerId || '';
+  const isNonEmailProvider = providerId === 'phone' || providerId === 'google.com' || providerId === 'apple.com';
+  if (isNonEmailProvider) {
+    return <>{children}</>;
+  }
+
   // Check email verification from both state AND user object (user object is source of truth)
   // This ensures we catch cases where state hasn't updated yet
   const emailIsVerified = isEmailVerified || user.emailVerified;
