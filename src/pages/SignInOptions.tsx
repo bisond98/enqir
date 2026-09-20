@@ -225,11 +225,9 @@ const SignInOptions = () => {
           {/* Heading text just above the centre of the doodle */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center translate-y-24 text-center">
             <h1 className="flex items-baseline justify-center gap-1 flex-wrap">
-              <span className="text-sm sm:text-base font-bold tracking-tight text-gray-900">Welcome to</span>
-              <span className="text-7xl sm:text-8xl font-extrabold tracking-tight text-blue-600">Enqir</span>
-              <span className="text-sm sm:text-base font-bold tracking-tight text-gray-900">.in</span>
+              <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
             </h1>
-            <p className="mt-3 text-xs sm:text-sm text-gray-500 font-medium">
+            <p className="mt-3 text-[10px] sm:text-sm text-black font-bold">
               The AI-powered trusted marketplace
             </p>
           </div>
@@ -237,24 +235,6 @@ const SignInOptions = () => {
 
         {/* Provider buttons — pushed to the lower part of the screen on mobile, heading stays put */}
         <div className="relative z-10 w-full max-w-sm space-y-3 sm:space-y-3.5 mt-auto sm:mt-0">
-          {/* Google */}
-          <button
-            onClick={handleGoogle}
-            className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-3 rounded-xl border-2 border-black bg-white text-gray-900 font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] cursor-pointer"
-          >
-            <GoogleIcon />
-            Continue with Google
-          </button>
-
-          {/* Apple */}
-          <button
-            onClick={handleApple}
-            className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-3 rounded-xl border-2 border-black bg-black text-white font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.45)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.45)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] cursor-pointer"
-          >
-            <AppleIcon />
-            Sign in with Apple
-          </button>
-
           {/* Mobile */}
           <button
             onClick={() => navigate('/signin/mobile', { state: (location.state as any) || undefined })}
@@ -264,6 +244,24 @@ const SignInOptions = () => {
             Continue with Mobile
           </button>
 
+          {/* Email */}
+          <button
+            onClick={() => navigate('/signin/email', { state: (location.state as any) || undefined })}
+            className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-3 rounded-xl border-2 border-black bg-white text-gray-900 font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] cursor-pointer"
+          >
+            <MailIcon />
+            Continue with Email
+          </button>
+
+          {/* Google */}
+          <button
+            onClick={handleGoogle}
+            className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-3 rounded-xl border-2 border-black bg-white text-gray-900 font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] cursor-pointer"
+          >
+            <GoogleIcon />
+            Continue with Google
+          </button>
+
           {/* Divider */}
           <div className="flex items-center gap-3 py-1.5" aria-hidden="true">
             <div className="h-px flex-1 bg-gray-300" />
@@ -271,22 +269,22 @@ const SignInOptions = () => {
             <div className="h-px flex-1 bg-gray-300" />
           </div>
 
-          {/* Email */}
+          {/* Apple */}
           <button
-            onClick={() => navigate('/signin/email', { state: (location.state as any) || undefined })}
-            className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-3 rounded-xl border-2 border-gray-800 bg-gray-50 text-gray-900 font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.35)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.35)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] cursor-pointer"
+            onClick={handleApple}
+            className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-3 rounded-xl border-2 border-black bg-black text-white font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.45)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.45)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] cursor-pointer"
           >
-            <MailIcon />
-            Continue with Email
+            <AppleIcon />
+            Sign in with Apple
           </button>
         </div>
 
         {/* Footer */}
-        <p className="relative z-10 mt-5 sm:mt-8 text-xs text-gray-400 text-center max-w-xs">
+        <p className="relative z-10 mt-5 sm:mt-8 text-[10px] text-gray-500 font-medium text-center max-w-xs">
           By continuing you agree to our{' '}
-          <a href="/terms" className="underline hover:text-gray-600">Terms</a>
+          <a href="/terms" className="underline text-blue-600/90 hover:text-blue-700">Terms</a>
           {' '}and{' '}
-          <a href="/privacy" className="underline hover:text-gray-600">Privacy Policy</a>
+          <a href="/privacy" className="underline text-blue-600/90 hover:text-blue-700">Privacy Policy</a>
         </p>
       </div>
     </Layout>
