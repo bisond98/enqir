@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Share2, MessageCircle, Facebook, Copy, Check, Smartphone, Instagram, Mail } from 'lucide-react';
+import { Share2, MessageCircle, Facebook, Copy, Check, Smartphone, Mail } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { shareListing } from '../services/shareService';
 import type { SellListing } from '../types';
@@ -116,20 +116,6 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
       >
         <MessageCircle className="h-4 w-4 text-green-600" />
         WhatsApp Status
-      </button>
-      <button
-        onMouseDown={(e) => { e.preventDefault(); handleShare('instagram_dm'); }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
-      >
-        <Instagram className="h-4 w-4 text-pink-600" />
-        Instagram Message
-      </button>
-      <button
-        onMouseDown={(e) => { e.preventDefault(); handleShare('instagram_story'); }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
-      >
-        <Instagram className="h-4 w-4 text-purple-600" />
-        Instagram Story
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('twitter'); }}

@@ -1,20 +1,19 @@
 /**
  * Deep-link share targets for enquiries and sell listings.
  *
- * Platform notes (why some targets can't be direct links):
+ * Platform notes:
  * - WhatsApp message: proper deep link exists (wa.me) — works everywhere.
- * - WhatsApp Status / Instagram Story: no web deep link exists. On mobile the
- *   native share sheet (Web Share API) surfaces these targets when the apps
- *   are installed. On desktop we copy the content and open the app's site.
- * - Instagram DM: Instagram has no public web share-intent URL, so we copy
- *   the text and open Instagram for pasting.
+ * - WhatsApp Status: no web deep link exists. On mobile the native share
+ *   sheet (Web Share API) surfaces it when the app is installed. On desktop
+ *   we copy the content and open WhatsApp Web.
+ * - Instagram DM/Story: deliberately NOT offered as direct targets —
+ *   Instagram blocks websites from pre-filling content (no share-intent
+ *   URL exists). The native share sheet covers it on mobile.
  */
 
 export type SocialShareTarget =
   | 'whatsapp'
   | 'whatsapp_status'
-  | 'instagram_dm'
-  | 'instagram_story'
   | 'twitter'
   | 'facebook'
   | 'email'
@@ -108,38 +107,6 @@ export async function shareToTarget(
         success: copied,
         message: copied
           ? 'Copied! Paste it into your WhatsApp Status.'
-          : 'Could not copy — please copy the link manually.',
-      };
-    }
-
-    case 'instagram_dm': {
-      // Instagram has no web DM share-intent: copy, open the app/site, paste.
-      const copied = await copyText(fullText);
-      if (isMobileDevice()) {
-        openUrl('https://www.instagram.com/');
-      } else {
-        openUrl('https://www.instagram.com/');
-      }
-      return {
-        success: copied,
-        message: copied
-          ? 'Copied! Paste it into an Instagram DM.'
-          : 'Could not copy — please copy the link manually.',
-      };
-    }
-
-    case 'instagram_story': {
-      // Mobile: native sheet offers "Instagram Stories" when the app is installed.
-      if (isMobileDevice() && navigator.share) {
-        const shared = await openNativeShareSheet(content);
-        if (shared) return { success: true, message: 'Shared!' };
-      }
-      const copied = await copyText(fullText);
-      openUrl('https://www.instagram.com/');
-      return {
-        success: copied,
-        message: copied
-          ? 'Copied! Paste it into your Instagram Story.'
           : 'Could not copy — please copy the link manually.',
       };
     }

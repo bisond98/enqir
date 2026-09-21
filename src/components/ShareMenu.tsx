@@ -130,20 +130,6 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
         WhatsApp Status
       </button>
       <button
-        onMouseDown={(e) => { e.preventDefault(); handleShare('instagram_dm'); }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
-      >
-        <Instagram className="h-4 w-4 text-pink-600" />
-        Instagram Message
-      </button>
-      <button
-        onMouseDown={(e) => { e.preventDefault(); handleShare('instagram_story'); }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
-      >
-        {copiedKey === 'instagram_story' ? <Check className="h-4 w-4 text-green-500" /> : <Instagram className="h-4 w-4 text-purple-600" />}
-        {copiedKey === 'instagram_story' ? 'Copied!' : 'Instagram Story'}
-      </button>
-      <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('twitter'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
