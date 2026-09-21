@@ -2018,64 +2018,6 @@ const Landing = () => {
               </button>
             </Link>
             </div>
-            {/* PROTECTED: Search Bar - DO NOT MODIFY OR REVERSE WITHOUT CONFIRMATION
-                - Text centered with slight right offset (paddingLeft: '2.75rem')
-                - Icon positioned at left-2.5 sm:left-5
-                - Search bar and button connected (gap-0, rounded corners adjusted)
-                - Placeholder text size matches "Show All Enquiries" (text-xs sm:text-base)
-                Last updated: Search bar styling and positioning finalized
-                - Hidden on mobile, visible on desktop (sm: and above)
-            */}
-            <div className="hidden sm:block w-full sm:w-auto relative z-50" style={{ zIndex: 50 }}>
-              <div className="flex gap-0">
-                <div className="relative flex-1" style={{ zIndex: 50 }}>
-                  <Search className="absolute left-2.5 sm:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black z-10 pointer-events-none" />
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    placeholder="Search enquiries..."
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setShowSearchSuggestions(true);
-                      updateSearchPosition();
-                    }}
-                    onFocus={() => {
-                      setShowSearchSuggestions(true);
-                      updateSearchPosition();
-                    }}
-                    onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
-                    onKeyPress={handleKeyPress}
-                    className="w-full h-11 sm:h-12 pl-11 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-base placeholder:text-xs sm:placeholder:text-base border-[0.5px] border-r-0 border-black rounded-l-xl sm:rounded-l-xl rounded-r-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
-                    style={{ 
-                      lineHeight: '1.5',
-                      paddingTop: '0.75rem',
-                      paddingBottom: '0.75rem',
-                      textAlign: 'center',
-                      paddingLeft: '2.75rem'
-                    }}
-                  />
-                  {/* Physical button depth effect for input */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-l-xl pointer-events-none" style={{ right: '4px' }} />
-                  
-                </div>
-              <button
-                onClick={handleSearch}
-                disabled={isSearching}
-                className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 sm:h-12 px-3 sm:px-3 rounded-r-xl sm:rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] sm:min-w-[52px] border-[0.5px] border-l-0 border-black relative overflow-hidden"
-              >
-                {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                {isSearching ? (
-                  <div className="w-3 h-3 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10"></div>
-                ) : (
-                  <Search className="h-3 w-3 sm:h-5 sm:w-5 relative z-10" />
-                )}
-              </button>
-              </div>
-            </div>
           </div>
 
           {/* Mobile: All cards in one container for equal spacing and centering */}
@@ -2786,13 +2728,12 @@ const Landing = () => {
 
             {/* Show All Enquiries Button */}
             <div className="text-center mt-8">
-              <Link to="/enquiries" className="group inline-block">
+              <Link to="/enquiries" className="group inline-block" aria-label="Show All Enquiries">
                 <Button 
                   variant="outline" 
-                  className="h-[38px] sm:h-[40px] px-4 sm:px-5 !text-[12px] sm:!text-[13px] font-black !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center gap-1.5"
+                  className="h-14 w-14 sm:h-16 sm:w-16 p-0 !rounded-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center justify-center"
                 >
-                  <Eye className="h-3.5 w-3.5 relative z-10" />
-                  <span className="relative z-10">Show All Enquiries</span>
+                  <Eye className="h-5 w-5 sm:h-6 sm:w-6 relative z-10" />
                 </Button>
               </Link>
             </div>
@@ -2802,78 +2743,6 @@ const Landing = () => {
           {user && (
             <div className="mb-6 sm:mb-12 animate-slide-up px-4 sm:px-0" style={{ animationDelay: '1s' }}>
               <div className="max-w-4xl mx-auto text-center">
-                {/* Search Bar - Mobile Only */}
-                <div className="block sm:hidden w-full relative z-50 mb-4" style={{ zIndex: 50 }}>
-                  <div className="flex gap-0">
-                    <div className="relative flex-1" style={{ zIndex: 50 }}>
-                      <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black z-10 pointer-events-none" />
-                      <input
-                        ref={searchInputRef}
-                        type="text"
-                        placeholder="Search enquiries..."
-                        value={searchTerm}
-                        onChange={(e) => {
-                          setSearchTerm(e.target.value);
-                          setShowSearchSuggestions(true);
-                          updateSearchPosition();
-                        }}
-                        onFocus={() => {
-                          setShowSearchSuggestions(true);
-                          updateSearchPosition();
-                        }}
-                        onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
-                        onKeyPress={handleKeyPress}
-                        className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
-                        style={{ 
-                          lineHeight: '1.5',
-                          paddingTop: '0.75rem',
-                          paddingBottom: '0.75rem',
-                          textAlign: 'center',
-                          paddingLeft: '2.75rem'
-                        }}
-                      />
-                      {/* Physical button depth effect for input */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-l-xl pointer-events-none" style={{ right: '4px' }} />
-                    </div>
-                    <button
-                      onClick={handleSearch}
-                      disabled={isSearching}
-                      className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 px-3 rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] border-[0.5px] border-l-0 border-black relative overflow-hidden"
-                    >
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                      {isSearching ? (
-                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10"></div>
-                      ) : (
-                        <Search className="h-3 w-3 relative z-10" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="flex flex-row gap-1.5 sm:gap-2 justify-center items-center">
-                  <Link to="/dashboard" className="group">
-                    <button className="bg-white hover:bg-gray-50 text-black px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-full pointer-events-none" />
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
-                      <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4 relative z-10" />
-                    </button>
-                  </Link>
-                  <Link to="/post-enquiry" className="group">
-                    <button className="bg-white hover:bg-gray-50 text-black px-3 sm:px-4 py-3 sm:py-4 text-[10px] sm:text-xs rounded-full inline-flex items-center justify-center aspect-square w-12 h-12 sm:w-14 sm:h-14 border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
-                      {/* Physical button depth effect */}
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-full pointer-events-none" />
-                      {/* Shimmer effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-full" />
-                      <Pen className="h-3 w-3 sm:h-4 sm:w-4 relative z-10" />
-                    </button>
-                  </Link>
-                </div>
-                
                 {/* Stay Encrypted Text */}
                 <p className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mt-3 sm:mt-4 leading-tight">
                   Stay Encrypted and Anonymous — let everyone be surprised!
@@ -3042,52 +2911,12 @@ const Landing = () => {
                         })}
                       </AnimatePresence>
                     </div>
-                    <Link to="/sell/marketplace" className="group mt-8">
-                      <button className="h-[38px] sm:h-[40px] px-4 sm:px-5 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white !text-[12px] sm:!text-[13px] font-black !rounded-2xl inline-flex items-center gap-1 transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] relative overflow-hidden touch-manipulation select-none">
-                        <span className="relative z-10">Show All</span>
-                        <ArrowRight className="h-3.5 w-3.5 relative z-10" />
-                      </button>
-                    </Link>
-
-                    {/* Product Search Bar */}
-                    <div className="w-full max-w-md mx-auto mt-4">
-                      <div className="flex gap-0">
-                        <div className="relative flex-1">
-                          <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black z-10 pointer-events-none" />
-                          <input
-                            type="text"
-                            placeholder="Search products for sale..."
-                            id="product-search-input"
-                            className="w-full h-11 pl-11 pr-3 text-xs placeholder:text-xs border-[0.5px] border-r-0 border-black rounded-l-xl rounded-r-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 transition-all duration-300 ease-out bg-white placeholder-gray-400 relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)]"
-                            style={{
-                              lineHeight: '1.5',
-                              paddingTop: '0.75rem',
-                              paddingBottom: '0.75rem',
-                              textAlign: 'center',
-                              paddingLeft: '2.75rem'
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                const val = (e.target as HTMLInputElement).value.trim();
-                                if (val) navigate(`/sell/marketplace?search=${encodeURIComponent(val)}`);
-                              }
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-l-xl pointer-events-none" style={{ right: '4px' }} />
-                        </div>
-                        <button
-                          onClick={() => {
-                            const input = document.getElementById('product-search-input') as HTMLInputElement;
-                            const val = input?.value.trim();
-                            if (val) navigate(`/sell/marketplace?search=${encodeURIComponent(val)}`);
-                          }}
-                          className="bg-gradient-to-b from-black to-gray-900 hover:from-gray-900 hover:to-black text-white font-black h-11 px-3 rounded-r-xl rounded-l-none flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.3)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] min-w-[44px] border-[0.5px] border-l-0 border-black relative overflow-hidden"
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-r-xl pointer-events-none" />
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                          <Search className="h-3.5 w-3.5 relative z-10" />
+                    <div className="mt-8 flex justify-center">
+                      <Link to="/sell/marketplace" className="group inline-block" aria-label="Show All Products">
+                        <button className="h-14 w-14 sm:h-16 sm:w-16 p-0 !rounded-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center justify-center">
+                          <Eye className="h-5 w-5 sm:h-6 sm:w-6 relative z-10" />
                         </button>
-                      </div>
+                      </Link>
                     </div>
                   </div>
                 )}
@@ -3497,7 +3326,7 @@ const Landing = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Search input + Search button */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black pointer-events-none" />
                 <input
@@ -3506,7 +3335,7 @@ const Landing = () => {
                   placeholder="Search enquiries & for sale..."
                   value={globalSearchTerm}
                   onChange={(e) => setGlobalSearchTerm(e.target.value)}
-                  className="w-full h-11 pl-10 pr-3 text-sm border-2 border-black rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black bg-white placeholder-gray-400 placeholder:text-xs shadow-[0_4px_0_0_rgba(0,0,0,0.25)]"
+                  className="w-full h-12 pl-10 pr-3 text-sm rounded-l-2xl rounded-r-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white placeholder-gray-400 placeholder:text-xs transition-all !duration-150"
                 />
               </div>
               <button
@@ -3518,7 +3347,7 @@ const Landing = () => {
                   }
                 }}
                 disabled={!globalSuggestions.length}
-                className="h-11 px-4 bg-gradient-to-b from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 text-white text-sm font-black rounded-xl border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[3px] transition-all flex-shrink-0"
+                className="h-12 px-4 !bg-blue-600 hover:!bg-blue-700 disabled:opacity-50 text-white text-sm font-black rounded-r-2xl rounded-l-none transition-all !duration-150 flex-shrink-0"
               >
                 Search
               </button>

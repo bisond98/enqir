@@ -952,7 +952,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
             )}
 
             {/* User Actions */}
-            <div className="flex items-center justify-end gap-1.5 md:gap-2">
+            <div className="flex items-center justify-end gap-1.5 md:gap-2 ml-auto">
               {user ? (
                 <>
                   {/* Desktop-only buttons */}
@@ -1052,8 +1052,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                               )}
                             </div>
                     </Button>
-                  </Link>
-                        <Link to="/settings">
+                  </Link>                        <Link to="/settings">
                           <Button 
                             variant="ghost" 
                             size="sm" 
@@ -1064,9 +1063,23 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   </Link>
                 </div>
                     )}
+                    {/* Mobile home-screen Search icon — rightmost in header; same global search popup as the footer Search icon; works signed-out */}
+                    {isMobile && location.pathname === '/' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label="Search"
+                        className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black"
+                        onClick={() => {
+                          sessionStorage.setItem('openGlobalSearch', '1');
+                          window.dispatchEvent(new Event('open-global-search'));
+                        }}
+                      >
+                        <Search className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </Button>
+                    )}
                   </div>
-                </>
-              ) : (
+                </>              ) : (
                 <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0">
                   {/* Hide Sign In button on sign in/sign up page */}
                   {location.pathname !== '/signin' && location.pathname !== '/signup' && (
@@ -1075,6 +1088,21 @@ export default function Layout({ children, showNavigation = true }: { children: 
                           Sign In
                         </Button>
                       </Link>
+                  )}
+                  {/* Mobile home-screen Search icon (signed-out) — rightmost in header */}
+                  {isMobile && location.pathname === '/' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      aria-label="Search"
+                      className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black"
+                      onClick={() => {
+                        sessionStorage.setItem('openGlobalSearch', '1');
+                        window.dispatchEvent(new Event('open-global-search'));
+                      }}
+                    >
+                      <Search className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </Button>
                   )}
                 </div>
               )}
