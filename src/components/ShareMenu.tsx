@@ -1,35 +1,42 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Share2, MessageCircle, Facebook, Copy, Check, Smartphone, Instagram, Mail } from 'lucide-react';
+import { MessageCircle, Instagram, Mail, Facebook, Copy, Check, Smartphone, Twitter } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { shareListing } from '../services/shareService';
-import type { SellListing } from '../types';
+import { shareToTarget } from '@/lib/socialShare';
+import type { SocialShareTarget } from '@/lib/socialShare';
 
-interface ShareButtonProps {
-  listing: SellListing;
-  variant?: 'icon' | 'full';
-  className?: string;
+interface ShareMenuProps {
+  open: boolean;
+  onClose: () => void;
+  /** Anchor element the menu positions against. */
+  anchorRef: React.RefObject<HTMLElement | null>;
+  title: string;
+  text: string;
+  url: string;
+  /** Optional callback fired after the user picks any target (e.g. to bump a share counter). */
+  onShared?: () => void;
 }
 
-export default function ShareButton({ listing, variant = 'icon', className = '' }: ShareButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+/**
+ * Reusable share dropdown for enquiries — WhatsApp, WhatsApp Status,
+ * Instagram DM and Instagram Story targets, matching the listing
+ * ShareButton's physical-button menu style.
+ */
+export default function ShareMenu({ open, onClose, anchorRef, title, text, url, onShared }: ShareMenuProps) {
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
 
   // Close on outside click
   useEffect(() => {
-    if (!isOpen) return;
+    if (!open) return;
     const handleClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      // Don't close if clicking inside the button or the portal menu
-      if (btnRef.current?.contains(target)) return;
-      if (target.closest('[data-share-menu]')) return;
-      setIsOpen(false);
+      if (anchorRef.current?.contains(target)) return;
+      if (target.closest('[data-enquiry-share-menu]')) return;
+      onClose();
     };
-    // Use setTimeout to avoid catching the same click that opened the menu
     const id = setTimeout(() => {
       document.addEventListener('click', handleClick);
     }, 0);
@@ -37,17 +44,18 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
       clearTimeout(id);
       document.removeEventListener('click', handleClick);
     };
-  }, [isOpen]);
+  }, [open, onClose, anchorRef]);
 
   useEffect(() => {
-    if (isOpen && btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect();
-      const menuHeight = hasNativeShare ? 450 : 400;
+    if (open && anchorRef.current) {
+      const rect = anchorRef.current.getBoundingClientRect();
+      const menuHeight = 460;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const margin = 8;
 
-      // Vertical: below anchor, else above, else pin inside viewport (menu scrolls)
+      // Vertical: prefer below the anchor; if it would overflow the bottom,
+      // open upward; if even that overflows, pin it inside the viewport.
       const spaceBelow = vh - rect.bottom;
       const spaceAbove = rect.top;
       let top: number;
@@ -56,36 +64,40 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
       } else if (spaceAbove >= menuHeight + margin) {
         top = rect.top - menuHeight - 4;
       } else {
+        // Doesn't fit either side — pin with margin and let the menu scroll
         top = Math.min(Math.max(rect.bottom + 4, margin), Math.max(margin, vh - menuHeight - margin));
       }
 
+      // Horizontal: keep fully inside the viewport
       const left = Math.min(Math.max(rect.left, margin), Math.max(margin, vw - 216 - margin));
+
       setMenuPos({ top, left });
     }
-  }, [isOpen, hasNativeShare]);
+  }, [open, anchorRef]);
 
-  const handleShare = useCallback(async (platform: 'whatsapp' | 'twitter' | 'facebook' | 'copy' | 'native' | 'whatsapp_status' | 'instagram_dm' | 'instagram_story' | 'email') => {
-    setIsOpen(false);
-    
-    // Small delay to ensure menu closes before opening share window
+  if (!open) return null;
+
+  const handleShare = (target: SocialShareTarget) => {
+    onClose();
+    onShared?.();
     setTimeout(async () => {
-      const result = await shareListing(listing, platform);
+      const result = await shareToTarget(target, { title, text, url });
       if (result.success) {
-        toast({ title: 'Shared!', description: result.message });
-        if (platform === 'copy') {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
+        toast({ title: 'Share', description: result.message });
+        if (target === 'copy') {
+          setCopiedKey(target);
+          setTimeout(() => setCopiedKey(null), 2000);
         }
       } else {
         toast({ title: 'Failed', description: result.message, variant: 'destructive' });
       }
     }, 100);
-  }, [listing]);
+  };
 
-  const menu = isOpen ? createPortal(
+  return createPortal(
     <div
-      data-share-menu
-      className="fixed bg-white border-2 border-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.2)] min-w-[180px] py-1 overflow-y-auto"
+      data-enquiry-share-menu
+      className="fixed bg-white border-2 border-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.2)] min-w-[200px] py-1 overflow-y-auto"
       style={{
         zIndex: 9999,
         top: menuPos.top,
@@ -96,11 +108,11 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
     >
       {hasNativeShare && (
         <button
-          onMouseDown={(e) => { e.preventDefault(); handleShare('native'); }}
+          onMouseDown={(e) => { e.preventDefault(); handleShare('whatsapp_status'); }}
           className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
         >
           <Smartphone className="h-4 w-4 text-blue-500" />
-          Share via...
+          Share to Story / Status…
         </button>
       )}
       <button
@@ -128,15 +140,15 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
         onMouseDown={(e) => { e.preventDefault(); handleShare('instagram_story'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <Instagram className="h-4 w-4 text-purple-600" />
-        Instagram Story
+        {copiedKey === 'instagram_story' ? <Check className="h-4 w-4 text-green-500" /> : <Instagram className="h-4 w-4 text-purple-600" />}
+        {copiedKey === 'instagram_story' ? 'Copied!' : 'Instagram Story'}
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('twitter'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <svg className="h-3.5 w-3.5 text-black" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        X
+        <Twitter className="h-4 w-4 text-black" />
+        X (Twitter)
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('facebook'); }}
@@ -156,35 +168,10 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
         onMouseDown={(e) => { e.preventDefault(); handleShare('copy'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors"
       >
-        {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-500" />}
-        {copied ? 'Copied!' : 'Copy Link'}
+        {copiedKey === 'copy' ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-500" />}
+        {copiedKey === 'copy' ? 'Copied!' : 'Copy Link'}
       </button>
     </div>,
     document.body
-  ) : null;
-
-  return (
-    <div className="relative" onClick={(e) => e.stopPropagation()}>
-      <button
-        ref={btnRef}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsOpen((v) => !v);
-        }}
-        className={`
-          ${variant === 'full'
-            ? 'flex items-center gap-2 px-3 py-2 text-xs font-bold bg-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all'
-            : 'p-1 text-gray-600 hover:text-black hover:bg-gray-100 rounded-lg active:scale-95 transition-all'
-          }
-          ${className}
-        `}
-        aria-label="Share listing"
-      >
-        <Share2 className={variant === 'full' ? 'h-4 w-4 text-black' : 'h-4 w-4'} />
-        {variant === 'full' && <span>Share</span>}
-      </button>
-      {menu}
-    </div>
   );
 }

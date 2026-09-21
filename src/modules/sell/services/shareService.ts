@@ -1,4 +1,5 @@
 import type { SellListing } from '../types';
+import { shareToTarget } from '@/lib/socialShare';
 
 // AI-generated share messages for listings
 const shareTemplates = [
@@ -88,13 +89,21 @@ export async function nativeShare(title: string, text: string, url: string): Pro
 // Main share function with AI message
 export async function shareListing(
   listing: SellListing,
-  platform: 'whatsapp' | 'twitter' | 'facebook' | 'copy' | 'native'
+  platform: 'whatsapp' | 'twitter' | 'facebook' | 'copy' | 'native' | 'whatsapp_status' | 'instagram_dm' | 'instagram_story' | 'email'
 ): Promise<{ success: boolean; message: string }> {
   const aiMessage = generateShareMessage(listing);
   const url = getListingUrl(listing.id);
   
   try {
     switch (platform) {
+      case 'whatsapp_status':
+      case 'instagram_dm':
+      case 'instagram_story':
+      case 'email': {
+        const result = await shareToTarget(platform, { title: listing.title, text: aiMessage, url });
+        return result;
+      }
+      
       case 'whatsapp':
         shareToWhatsApp(aiMessage, url);
         return { success: true, message: 'Opening WhatsApp...' };

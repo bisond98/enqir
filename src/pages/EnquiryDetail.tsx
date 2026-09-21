@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,7 @@ import {
   Fuel
 } from 'lucide-react';
 import Layout from '@/components/Layout';
+import ShareMenu from '@/components/ShareMenu';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
 import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -417,6 +418,21 @@ const EnquiryDetail = () => {
 
     setResponding(true);
     navigate(`/respond/${enquiry?.id}`);
+  };
+
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const shareBtnRef = useRef<HTMLButtonElement>(null);
+
+  const openShareMenu = async () => {
+    if (!enquiry) return;
+    // Keep the existing share-count behavior from the old direct-share flow
+    try {
+      await updateDoc(doc(db, 'enquiries', enquiry.id), { shares: increment(1) });
+      setEnquiry(prev => prev ? { ...prev, shares: (prev.shares || 0) + 1 } : null);
+    } catch (err) {
+      console.error('Error updating share count:', err);
+    }
+    setShareMenuOpen(true);
   };
 
   const handleShare = async () => {
@@ -1063,13 +1079,26 @@ const EnquiryDetail = () => {
                       </button>
                     )}
                     <button
-                      onClick={handleShare}
+                      ref={shareBtnRef}
+                      onClick={openShareMenu}
                       title="Share"
                       className="p-1.5 text-slate-800 hover:text-black transition-all duration-200 hover:scale-110 active:scale-95"
                     >
                       <Share2 className="h-4 w-4" />
                     </button>
                   </div>
+
+                  {/* Social share targets — WhatsApp, WhatsApp Status, Instagram DM & Story */}
+                  {enquiry && (
+                    <ShareMenu
+                      open={shareMenuOpen}
+                      onClose={() => setShareMenuOpen(false)}
+                      anchorRef={shareBtnRef}
+                      title={enquiry.title}
+                      text={buildEnquiryShareText(enquiry, `${window.location.origin}/enquiry/${enquiry.id}`)}
+                      url={`${window.location.origin}/enquiry/${enquiry.id}`}
+                    />
+                  )}
 
                   {/* Connect — inside the card, below save/share */}
                   <div className="mt-4 pt-5 border-t-[0.5px] border-black">

@@ -17,8 +17,21 @@ import { formatIndianCurrency } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { listMarketplace } from "@/modules/sell/services/sellDb";
 import { buildEnquiryShareText } from "@/lib/enquiryShare";
+import ShareMenu from "@/components/ShareMenu";
 
 const Landing = () => {
+  // Enquiry card share menu state (shared by mobile + desktop card variants)
+  const [shareMenuEnquiry, setShareMenuEnquiry] = useState<any>(null);
+  const shareTriggerRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  const openShareMenu = (enquiry: any, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = e.currentTarget as HTMLElement;
+    if (el) shareTriggerRefs.current.set(enquiry.id, el);
+    setShareMenuEnquiry(enquiry);
+  };
+
   const features = [
     {
       icon: Search,
@@ -2612,7 +2625,7 @@ const Landing = () => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 if (!isEnquiryOutdated(enquiry)) {
-                                  handleShare(enquiry, e);
+                                  openShareMenu(enquiry, e);
                                 }
                               }}
                               disabled={isEnquiryOutdated(enquiry)}
@@ -2694,7 +2707,7 @@ const Landing = () => {
                               e.preventDefault();
                               e.stopPropagation();
                               if (!isEnquiryOutdated(enquiry)) {
-                                handleShare(enquiry, e);
+                                openShareMenu(enquiry, e);
                               }
                             }}
                             disabled={isEnquiryOutdated(enquiry)}
@@ -3552,6 +3565,25 @@ const Landing = () => {
           </div>
         </div>,
         document.body
+      )}
+
+      {/* Enquiry share menu — WhatsApp, WhatsApp Status, Instagram DM & Story */}
+      {shareMenuEnquiry && (
+        <ShareMenu
+          open={true}
+          onClose={() => setShareMenuEnquiry(null)}
+          anchorRef={{ current: shareTriggerRefs.current.get(shareMenuEnquiry.id) || null }}
+          title={shareMenuEnquiry.title}
+          text={buildEnquiryShareText(shareMenuEnquiry, `${window.location.origin}/respond/${shareMenuEnquiry.id}`)}
+          url={`${window.location.origin}/respond/${shareMenuEnquiry.id}`}
+          onShared={() => {
+            // Keep the existing share-count behavior from the old direct-share flow
+            const enquiryRef = doc(db, 'enquiries', shareMenuEnquiry.id);
+            updateDoc(enquiryRef, { shares: (shareMenuEnquiry.shares || 0) + 1 }).catch(
+              (error) => console.error('Error updating share count:', error)
+            );
+          }}
+        />
       )}
     </Layout>
   );
