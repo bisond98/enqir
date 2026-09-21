@@ -1628,7 +1628,7 @@ export default function CreateListing() {
                 disabled={!user || uploading || publishing}
                 className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
               >
-                <span className="relative z-10">{publishing ? 'Connecting…' : 'Connect'}</span>
+                <span className="relative z-10">{publishing ? 'Selling…' : 'Sell'}</span>
               </Button>
             )}
           </div>

@@ -22,6 +22,7 @@ import { processPayment } from '@/services/paymentService';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import { uploadToCloudinaryAuto } from '@/integrations/cloudinary';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
+import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 
 
 function formatPrice(l: SellListing) {
@@ -566,6 +567,34 @@ export default function ListingDetail() {
               </h2>
             </div>
 
+            {/* One-line summary from details — e.g. "Used iPhone 12 128 GB for sale in Bengaluru" */}
+            {(() => {
+              const d = (listing.details || {}) as Record<string, string>;
+              const parts: string[] = [];
+              if (listing.condition) parts.push(listing.condition.toLowerCase());
+              const brandName = d.mobileBrand || d.brand;
+              if (brandName) parts.push(brandName);
+              const variant = d.variant || d.model;
+              if (variant) parts.push(variant);
+              if (d.year && !['mobiles', 'laptops', 'real-estate', 'real-estate-services'].includes(listing.category || '')) parts.push(`${d.year} model`);
+              if (d.storage) parts.push(d.storage);
+              if (d.memory) parts.push(d.memory);
+              if (d.ram && !d.memory) parts.push(`${d.ram} RAM`);
+              if (d.fuelType || d.fuel) parts.push((d.fuelType || d.fuel).toLowerCase());
+              if (d.transmission) parts.push(d.transmission.toLowerCase());
+              const tail = ['service', 'services', 'jobs'].includes(listing.category || '') ? 'available' : 'for sale';
+              const loc = listing.location ? ` in ${listing.location}` : '';
+              const price = listing.price != null ? ` for ${listing.price.toLocaleString("en-IN", { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}` : '';
+              if (parts.length === 0 && !loc && !price) return null;
+              const sentence = `${parts.join(' ')} ${tail}${loc}${price}`.replace(/^\s*/, '');
+              const capitalized = sentence.charAt(0).toUpperCase() + sentence.slice(1);
+              return (
+                <div className="flex justify-center mt-2">
+                  <p className="text-xs sm:text-sm font-bold text-white bg-red-600 border border-black rounded-xl px-4 py-2 shadow-[0_3px_0_0_rgba(0,0,0,0.85)] text-center">{capitalized}</p>
+                </div>
+              );
+            })()}
+
             {/* Amount + Info Chips on one row — amount right side next to location etc */}
             <div className="flex flex-wrap items-center justify-center gap-2 mt-4 sm:mt-3 text-[11px]">
               {(() => {
@@ -593,7 +622,7 @@ export default function ListingDetail() {
                 );
               })()}
 
-              <span className="bg-red-600 text-white border border-black font-black text-sm sm:text-base rounded-xl px-3.5 py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+              <span className="bg-white text-black border border-black font-black text-sm sm:text-base rounded-xl px-3.5 py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
 
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
                 <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl uppercase">
@@ -603,11 +632,7 @@ export default function ListingDetail() {
                 <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
                   <MapPin className="h-5 w-5 text-red-500" />{listing.location}
                 </span>
-              {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[13px] sm:text-sm font-black bg-white text-black border border-black px-3.5 py-2 rounded-xl">
-                  <Calendar className="h-3.5 w-3.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
-                </span>
-              )}                {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
+              {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
                 (() => {
                   const detailLabels: Record<string, string> = {
                     transmission: 'Transmission',
@@ -616,19 +641,24 @@ export default function ListingDetail() {
                     kmsDriven: 'KM driven',
                     ownership: '',
                     brand: 'Brand',
+                    mobileBrand: 'Brand',
+                    ram: 'RAM',
+                    memory: 'Memory',
+                    storage: 'Storage',
+                    warranty: 'Warranty',
                     facing: 'Facing',
                     furnishing: 'Furnishing',
                   };
                   const entries = Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key));
                   return entries.map(([key, val], i) => {
                     const label = key in detailLabels ? detailLabels[key] : '';
-                    const brandLogo = key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
+                    const brandLogo = key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
                       <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
-                        {key === 'brand' && brandLogo && <img src={brandLogo} alt="" className="h-3.5 w-3.5 object-contain flex-shrink-0" loading="lazy" />}
                         {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
                         {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
-                        {label && key !== 'transmission' && key !== 'fuel' && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
+                        {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
+                        {brandLogo && <img src={brandLogo} alt="" className="h-3.5 w-3.5 object-contain flex-shrink-0" loading="lazy" />}
                         {key === 'facing' && !label && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Facing:</span>}
                         {key === 'furnishing' && !label && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Furnishing:</span>}
                         {String(val)}
@@ -644,6 +674,11 @@ export default function ListingDetail() {
                     {tag}
                   </span>
                 ))
+              )}
+              {formatPostedDate(listing.createdAt) && (
+                <span className="inline-flex items-center gap-1 text-[13px] sm:text-sm font-black bg-white text-black border border-black px-3.5 py-2 rounded-xl">
+                  <Calendar className="h-3.5 w-3.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
+                </span>
               )}
             </div>
 
