@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -282,9 +282,9 @@ const SignInOptions = () => {
         {/* Footer */}
         <p className="relative z-10 mt-5 sm:mt-8 text-[10px] text-gray-500 font-medium text-center max-w-xs -translate-y-[4.75rem]">
           By continuing you agree to our{' '}
-          <a href="/terms" className="underline text-blue-600/90 hover:text-blue-700">Terms</a>
+          <Link to="/terms-and-conditions" className="underline text-blue-600/90 hover:text-blue-700">Terms</Link>
           {' '}and{' '}
-          <a href="/privacy" className="underline text-blue-600/90 hover:text-blue-700">Privacy Policy</a>
+          <Link to="/privacy-policy" className="underline text-blue-600/90 hover:text-blue-700">Privacy Policy</Link>
         </p>
       </div>
     </Layout>

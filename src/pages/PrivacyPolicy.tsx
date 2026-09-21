@@ -1,12 +1,22 @@
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Shield, Lock, Eye, Database, UserCheck, Bell } from 'lucide-react';
+import { Shield, Lock, Eye, Database, UserCheck, Bell, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const PrivacyPolicy = () => {
+  const navigate = useNavigate();
   return (
     <Layout>
-      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4 max-w-4xl">
+      <div className="container mx-auto px-2 sm:px-4 pt-12 pb-2 sm:pb-4 max-w-4xl relative">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          aria-label="Go back"
+          className="absolute top-0 left-0 z-20 p-2 rounded-full text-black hover:bg-black/5 active:bg-black/10 transition-colors duration-150 cursor-pointer"
+        >
+          <ArrowLeft className="h-6 w-6" />
+        </button>
         <Card className="shadow-2xl border-0 overflow-hidden rounded-2xl sm:rounded-3xl">
           <CardHeader className="bg-black p-2 sm:p-3 md:p-4">
             <div className="flex items-center gap-1.5 sm:gap-2">

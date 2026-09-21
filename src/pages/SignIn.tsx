@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { Mail, Lock, User, AlertTriangle, CheckCircle } from "lucide-react";
+import { Mail, Lock, User, AlertTriangle, CheckCircle, ArrowLeft } from "lucide-react";
 import { auth } from "@/firebase";
 import { signInWithEmailLink, isSignInWithEmailLink, onAuthStateChanged, sendSignInLinkToEmail } from "firebase/auth";
 import { toast } from "@/hooks/use-toast";
@@ -613,6 +613,16 @@ const SignIn = () => {
           <div className="absolute top-40 right-20 w-32 h-32 bg-slate-100/60 rounded-full blur-3xl hidden sm:block"></div>
           <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-blue-100/40 rounded-full blur-3xl hidden sm:block"></div>
         </div>
+
+        {/* Back button — return to the sign-in options page (Continue with Email/Mobile/Google) */}
+        <button
+          type="button"
+          onClick={() => navigate('/signin', { state: (location.state as any) || undefined })}
+          aria-label="Back to sign up options"
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 z-30 p-2 rounded-full text-black hover:bg-black/5 active:bg-black/10 transition-colors duration-150 cursor-pointer"
+        >
+          <ArrowLeft className="h-6 w-6" />
+        </button>
 
         <div className="signin-container w-full max-w-md lg:max-w-lg relative z-10" style={{ overflow: 'visible' }}>
           {/* Clean Header Section */}
