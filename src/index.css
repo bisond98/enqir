@@ -223,8 +223,8 @@
   .animate-spin {
     animation: spin-ultra-smooth 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     will-change: transform;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    /* NOTE: never set `transform` here — a static transform (e.g. translateZ(0))
+       overrides the rotation from the keyframes and freezes the spinner. */
   }
 
   /* Smooth fade-in utility */

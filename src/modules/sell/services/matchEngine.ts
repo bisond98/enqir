@@ -7,7 +7,7 @@ import { db } from '@/firebase';
 import { addDoc, collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore';
 import type { SellListing } from '../types';
 import { haversineKm } from '@/lib/haversine';
-import { geocodeLocationText } from '@/lib/geocodeText';
+import { geocodeLocationText, getCachedTextCoords } from '@/lib/geocodeText';
 
 // ---------- public types ----------
 
@@ -151,7 +151,42 @@ const sameCity = (a?: string, b?: string): boolean => {
 const REAL_ESTATE_CATS = new Set(['real-estate', 'real-estate-services']);
 export const REAL_ESTATE_MAX_DISTANCE_KM = 100;
 
+// Scan-wide geocoding budget: a scan must NEVER hang because of third-party
+// geocoding. Each unique location gets at most one 8s attempt, and the whole
+// scan gets a total budget; once it's spent we resolve to null (fail-open —
+// the pair is kept, matching keeps working offline/slow-network).
+const MAX_GEOCODES_PER_SCAN = 12;
+let geocodesUsedThisScan = 0;
+
+const budgetedResolveCoords = async (entity: { latitude?: any; longitude?: any; location?: string }): Promise<Coords> => {
+  const lat = Number(entity.latitude);
+  const lng = Number(entity.longitude);
+  if (Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)) return { lat, lng };
+  const text = (entity.location ?? '').trim();
+  if (!text) return null;
+  if (geocodesUsedThisScan >= MAX_GEOCODES_PER_SCAN) {
+    const cached = getCachedTextCoords(text);
+    return cached ?? null;
+  }
+  geocodesUsedThisScan++;
+  try {
+    return await withTimeout(geocodeLocationText(text), 8000, null);
+  } catch {
+    return null;
+  }
+};
+
 type Coords = { lat: number; lng: number } | null;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return new Promise<T>((resolve) => {
+    const timer = setTimeout(() => resolve(fallback), ms);
+    promise.then(
+      (v) => { clearTimeout(timer); resolve(v); },
+      () => { clearTimeout(timer); resolve(fallback); }
+    );
+  });
+}
 
 async function resolveCoords(entity: { latitude?: any; longitude?: any; location?: string }): Promise<Coords> {
   const lat = Number(entity.latitude);
@@ -172,16 +207,19 @@ function involvesRealEstate(listing: SellListing, enquiry: EnquiryForMatch): boo
   return listingCats.some((c) => REAL_ESTATE_CATS.has(c)) || enquiryCats.some((c) => REAL_ESTATE_CATS.has(c));
 }
 
-/** Real-estate distance gate — returns true when the pair may be shown. */
+/** Real-estate distance gate — returns true when the pair may be shown.
+ *  Pass a (budgeted) resolver in scan contexts; the plain one is only for
+ *  single-pair helpers like matchesForEnquiry / matchesForListing. */
 async function passesDistanceGate(
   listing: SellListing,
   enquiry: EnquiryForMatch,
   listingCoords?: Coords,
-  enquiryCoords?: Coords
+  enquiryCoords?: Coords,
+  resolver: typeof resolveCoords = resolveCoords
 ): Promise<boolean> {
   if (!involvesRealEstate(listing, enquiry)) return true;
-  const lc = listingCoords !== undefined ? listingCoords : await resolveCoords(listing as any);
-  const ec = enquiryCoords !== undefined ? enquiryCoords : await resolveCoords(enquiry as any);
+  const lc = listingCoords !== undefined ? listingCoords : await resolver(listing as any);
+  const ec = enquiryCoords !== undefined ? enquiryCoords : await resolver(enquiry as any);
   if (!lc || !ec) return true; // can't determine distance — keep existing behavior
   return haversineKm(lc.lat, lc.lng, ec.lat, ec.lng) <= REAL_ESTATE_MAX_DISTANCE_KM;
 }
@@ -317,6 +355,7 @@ export const MIN_MATCH_SCORE = 45;
  * Skips the user's own listings/enquiries (never match yourself).
  */
 export async function computeUserMatches(userId: string): Promise<UserMatches> {
+  geocodesUsedThisScan = 0; // fresh budget per scan
   const [listings, enquiries] = await Promise.all([fetchLiveListings(), fetchLiveEnquiries()]);
 
   const myEnquiries = enquiries.filter((e) => e.userId === userId && isEnquiryLive(e));
@@ -325,10 +364,10 @@ export async function computeUserMatches(userId: string): Promise<UserMatches> {
   const forNeeds: MatchItem[] = [];
   for (const e of myEnquiries) {
     // Real-estate gate: resolve the enquiry's coords once, reuse for all listings
-    const enquiryCoords = await resolveCoords(e as any);
+    const enquiryCoords = await budgetedResolveCoords(e as any);
     for (const l of listings) {
       if (l.sellerId === userId) continue; // never match own listing
-      if (!(await passesDistanceGate(l, e, undefined, enquiryCoords))) continue;
+      if (!(await passesDistanceGate(l, e, undefined, enquiryCoords, budgetedResolveCoords))) continue;
       const { score, reasons } = scoreMatch(l, e);
       if (score >= MIN_MATCH_SCORE) {
         forNeeds.push({ listingId: l.id, enquiryId: e.id, score, label: labelFor(score), reasons, listing: l, enquiry: e });
@@ -341,11 +380,11 @@ export async function computeUserMatches(userId: string): Promise<UserMatches> {
   for (const l of myListings) {
     if (l.status !== 'live') continue;
     // Real-estate gate: resolve the listing's coords once, reuse for all enquiries
-    const listingCoords = await resolveCoords(l as any);
+    const listingCoords = await budgetedResolveCoords(l as any);
     for (const e of enquiries) {
       if (e.userId === userId) continue; // never match own enquiry
       if (!isEnquiryLive(e)) continue;
-      if (!(await passesDistanceGate(l, e, listingCoords, undefined))) continue;
+      if (!(await passesDistanceGate(l, e, listingCoords, undefined, budgetedResolveCoords))) continue;
       const { score, reasons } = scoreMatch(l, e);
       if (score >= MIN_MATCH_SCORE) {
         forListings.push({ listingId: l.id, enquiryId: e.id, score, label: labelFor(score), reasons, listing: l, enquiry: e });

@@ -45,8 +45,11 @@ export async function geocodeLocationText(text: string): Promise<TextCoords | nu
   if (delay > 0) await new Promise((r) => setTimeout(r, delay));
 
   try {
+    // AbortSignal.timeout keeps a hung Nominatim request from stalling match
+    // scans / filters forever — treat it like any other network failure.
     const res = await fetch(buildSearchUrl(trimmed), {
       headers: { Accept: 'application/json', 'Accept-Language': 'en' },
+      signal: AbortSignal.timeout(6000),
     });
     if (!res.ok) {
       cache.set(key, null);
