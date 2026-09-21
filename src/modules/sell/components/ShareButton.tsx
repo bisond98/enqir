@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Share2, MessageCircle, Facebook, Copy, Check, Smartphone, Mail } from 'lucide-react';
+import { Share2, Copy, Check, Smartphone, Mail } from 'lucide-react';
+import { WhatsAppIcon, XIcon, FacebookIcon } from '@/components/BrandIcons';
 import { toast } from '@/hooks/use-toast';
 import { shareListing } from '../services/shareService';
 import type { SellListing } from '../types';
@@ -107,28 +108,28 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
         onMouseDown={(e) => { e.preventDefault(); handleShare('whatsapp'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <MessageCircle className="h-4 w-4 text-green-500" />
+        <WhatsAppIcon className="h-4 w-4 text-[#25D366]" />
         WhatsApp
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('whatsapp_status'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <MessageCircle className="h-4 w-4 text-green-600" />
+        <WhatsAppIcon className="h-4 w-4 text-[#128C7E]" />
         WhatsApp Status
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('twitter'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <svg className="h-3.5 w-3.5 text-black" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        <XIcon className="h-4 w-4 text-black" />
         X
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('facebook'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <Facebook className="h-4 w-4 text-blue-600" />
+        <FacebookIcon className="h-4 w-4 text-[#1877F2]" />
         Facebook
       </button>
       <button

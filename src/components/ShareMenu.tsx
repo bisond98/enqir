@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { MessageCircle, Instagram, Mail, Facebook, Copy, Check, Smartphone, Twitter } from 'lucide-react';
+import { Mail, Copy, Check, Smartphone } from 'lucide-react';
+import { WhatsAppIcon, XIcon, FacebookIcon } from '@/components/BrandIcons';
 import { toast } from '@/hooks/use-toast';
 import { shareToTarget } from '@/lib/socialShare';
 import type { SocialShareTarget } from '@/lib/socialShare';
@@ -119,28 +120,28 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
         onMouseDown={(e) => { e.preventDefault(); handleShare('whatsapp'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <MessageCircle className="h-4 w-4 text-green-500" />
+        <WhatsAppIcon className="h-4 w-4 text-[#25D366]" />
         WhatsApp
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('whatsapp_status'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <MessageCircle className="h-4 w-4 text-green-600" />
+        <WhatsAppIcon className="h-4 w-4 text-[#128C7E]" />
         WhatsApp Status
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('twitter'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <Twitter className="h-4 w-4 text-black" />
+        <XIcon className="h-4 w-4 text-black" />
         X (Twitter)
       </button>
       <button
         onMouseDown={(e) => { e.preventDefault(); handleShare('facebook'); }}
         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold text-black hover:bg-gray-50 transition-colors border-b border-gray-100"
       >
-        <Facebook className="h-4 w-4 text-blue-600" />
+        <FacebookIcon className="h-4 w-4 text-[#1877F2]" />
         Facebook
       </button>
       <button

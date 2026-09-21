@@ -1281,7 +1281,6 @@ export default function CreateListing() {
 
                 {(condition === 'used' || hideCondition) && fieldsForCategoryStep(category, 'details').map((f) => (
                   <div key={f.key} className="space-y-2">
-                    <Label className="text-[10px] sm:text-xs font-bold">{f.label}</Label>
                     <div className="relative">
                       {f.type === 'select' ? (
                         <>
@@ -1357,11 +1356,9 @@ export default function CreateListing() {
                   </div>
                 ))}
                 <div className="space-y-2">
-                  <Label className="text-xs font-bold flex items-center gap-2">
+                  <Label className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
                     <Upload className="h-3.5 w-3.5" />
-                    {categoriesRequireImage(category)
-                      ? 'Photos — at least 1 required for this category'
-                      : 'Photos (up to 5)'}
+                    Photos (up to 5)
                   </Label>
                   {images.length > 0 && (
                     <div className="grid grid-cols-3 gap-2 mb-3">

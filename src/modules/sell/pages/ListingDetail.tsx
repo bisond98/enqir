@@ -640,6 +640,8 @@ export default function ListingDetail() {
                     year: 'Year of manufacture',
                     kmsDriven: 'KM driven',
                     ownership: '',
+                    accidentHistory: 'Accident history',
+                    registrationState: 'Registration',
                     brand: 'Brand',
                     mobileBrand: 'Brand',
                     ram: 'RAM',

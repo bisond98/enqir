@@ -23,6 +23,21 @@ export interface CategoryDetailField {
 // Unit options for composite 'land-area' fields (number input + unit dropdown).
 export const LAND_AREA_UNITS = ['Cents', 'Acre', 'Hectare', 'Sqft'];
 
+// Indian RTO registration state codes (all states + union territories),
+// shown as "CODE — State" so sellers can pick easily; the chip displays the full selection.
+const REGISTRATION_STATES = [
+  'AP — Andhra Pradesh', 'AR — Arunachal Pradesh', 'AS — Assam', 'BR — Bihar',
+  'CG — Chhattisgarh', 'GA — Goa', 'GJ — Gujarat', 'HR — Haryana',
+  'HP — Himachal Pradesh', 'JH — Jharkhand', 'JK — Jammu & Kashmir',
+  'KA — Karnataka', 'KL — Kerala', 'LA — Ladakh',
+  'MP — Madhya Pradesh', 'MH — Maharashtra', 'MN — Manipur', 'ML — Meghalaya',
+  'MZ — Mizoram', 'NL — Nagaland', 'DL — Delhi', 'OD — Odisha',
+  'PY — Puducherry', 'PB — Punjab', 'RJ — Rajasthan', 'SK — Sikkim',
+  'TN — Tamil Nadu', 'TS — Telangana', 'TR — Tripura', 'UP — Uttar Pradesh',
+  'UK — Uttarakhand', 'WB — West Bengal', 'AN — Andaman & Nicobar Islands',
+  'CH — Chandigarh', 'DNHDD — Dadra & Nagar Haveli and Daman & Diu',
+];
+
 export type CategoryDetailsConfig = Record<string, CategoryDetailField[]>;
 
 const MOBILE_BRANDS = [
@@ -46,8 +61,10 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'title' },
     { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
     { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
-    { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'e.g., 45,000', suffix: 'km', min: 0, step: 'details' },
+    { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },
+    { key: 'accidentHistory', label: 'Accident history', type: 'select', options: ['No accidents', 'Minor accidents', 'Major accidents'], placeholder: 'Select accident history', step: 'details' },
+    { key: 'registrationState', label: 'Registration state', type: 'select', options: REGISTRATION_STATES, placeholder: 'Registration state (e.g., KL, TN)', step: 'details' },
   ],
   vehicles: [
     { key: 'brand', label: 'Brand', type: 'select', options: CAR_BRANDS, placeholder: 'Select brand', step: 'title' },
@@ -55,15 +72,19 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'title' },
     { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
     { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
-    { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'e.g., 45,000', suffix: 'km', min: 0, step: 'details' },
+    { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },
+    { key: 'accidentHistory', label: 'Accident history', type: 'select', options: ['No accidents', 'Minor accidents', 'Major accidents'], placeholder: 'Select accident history', step: 'details' },
+    { key: 'registrationState', label: 'Registration state', type: 'select', options: REGISTRATION_STATES, placeholder: 'Registration state (e.g., KL, TN)', step: 'details' },
   ],
   bike: [
     { key: 'brand', label: 'Brand', type: 'select', options: BIKE_BRANDS, placeholder: 'Select brand', step: 'title' },
     { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year', typeable: true, step: 'title' },
     { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., 350 Standard, Dual Channel ABS', step: 'title' },
-    { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'e.g., 12,000', suffix: 'km', min: 0, step: 'details' },
+    { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },
+    { key: 'accidentHistory', label: 'Accident history', type: 'select', options: ['No accidents', 'Minor accidents', 'Major accidents'], placeholder: 'Select accident history', step: 'details' },
+    { key: 'registrationState', label: 'Registration state', type: 'select', options: REGISTRATION_STATES, placeholder: 'Registration state (e.g., KL, TN)', step: 'details' },
   ],
   mobiles: [
     { key: 'brand', label: 'Brand', type: 'select', options: MOBILE_BRANDS, placeholder: 'Select brand', step: 'title' },
