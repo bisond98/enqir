@@ -1073,6 +1073,11 @@ export default function EnquiryWall() {
     bicycle: ['bicycle', 'bicycles', 'cycle', 'cycles'],
     bicycles: ['bicycle', 'bicycles', 'cycle', 'cycles'],
     cycle: ['cycle', 'cycles', 'bicycle', 'bicycles'],
+    shoe: ['shoe', 'shoes', 'sneaker', 'sneakers', 'footwear', 'trainers', 'sports shoes', 'running shoes'],
+    shoes: ['shoe', 'shoes', 'sneaker', 'sneakers', 'footwear', 'trainers', 'sports shoes', 'running shoes'],
+    sneaker: ['sneaker', 'sneakers', 'shoe', 'shoes', 'footwear', 'trainers', 'sports shoes', 'running shoes'],
+    sneakers: ['sneaker', 'sneakers', 'shoe', 'shoes', 'footwear', 'trainers', 'sports shoes', 'running shoes'],
+    footwear: ['footwear', 'shoe', 'shoes', 'sneaker', 'sneakers'],
   };
 
   // Expand a search term into all its synonym variants (includes the term itself,

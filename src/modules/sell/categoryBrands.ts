@@ -20,3 +20,10 @@ export const MOBILE_BRANDS = [
   'Karbonn', 'Lava', 'Lenovo', 'Micromax', 'Motorola', 'Nokia', 'Nothing',
   'OnePlus', 'Oppo', 'Other', 'Realme', 'Redmi', 'Samsung', 'Tecno', 'Vivo', 'Xiaomi',
 ];
+
+export const SNEAKER_BRANDS = [
+  'Adidas', 'Asics', 'Balenciaga', 'Bata', 'Campus', 'Converse', 'Fila',
+  'Hoka', 'Jordan', 'Li-Ning', 'New Balance', 'Nike', 'On Running',
+  'Puma', 'Reebok', 'Salomon', 'Skechers', 'Sparx', 'Under Armour', 'Vans', 'Yonex',
+  'Other',
+];

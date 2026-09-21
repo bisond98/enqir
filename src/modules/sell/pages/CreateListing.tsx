@@ -11,6 +11,7 @@ import { uploadToCloudinaryUnsigned } from '@/integrations/cloudinary';
 import { toast } from '@/hooks/use-toast';
 import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
+import { filterCategoriesBySearch } from '@/constants/categories';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
@@ -95,6 +96,7 @@ import {
   Compass,
   Cog,
   Phone,
+  Footprints,
 } from 'lucide-react';
 
 // H-pattern stick-shift (manual gearbox) icon
@@ -174,7 +176,7 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
   'repair-services': Wrench,
   'cleaning-services': Sparkles,
   'security-safety': Lock,
-  sneakers: Gem,
+  sneakers: Footprints,
   souvenir: MapPin,
   'sports-outdoor': Dumbbell,
   technology: Monitor,
@@ -705,9 +707,7 @@ export default function CreateListing() {
 
           <div key={step} className="flex-1 space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
             {step === 0 && (() => {
-              const filteredCats = catSearch.trim()
-                ? SELL_CATEGORIES.filter(c => c.label.toLowerCase().includes(catSearch.toLowerCase()))
-                : SELL_CATEGORIES;
+              const filteredCats = filterCategoriesBySearch(SELL_CATEGORIES, catSearch);
               // Selected categories float to the top (stable sort keeps the rest in order)
               const sortedCats = [...filteredCats].sort((a, b) =>
                 Number(selectedCats.includes(b.value)) - Number(selectedCats.includes(a.value))

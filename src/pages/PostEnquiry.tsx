@@ -12,7 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { MapLocationPicker } from "@/components/MapLocationPicker";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -32,9 +32,10 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
-import { APP_CATEGORIES } from "@/constants/categories";
+import { APP_CATEGORIES, filterCategoriesBySearch } from "@/constants/categories";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
-import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS } from "@/modules/sell/categoryBrands";
+import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS } from "@/modules/sell/categoryBrands";
+import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
@@ -56,6 +57,40 @@ const isJobEnquiry = (cats: string[], legacy?: string) =>
   [...cats, legacy ?? ''].some((c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job')));
 
 const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
+
+// 2D cartoon buyer — character with a magnifying glass and a "need" speech
+// bubble. Echoes the landing hero's BUYER motif: a buyer posting what they're
+// looking for and sellers responding. Used as a light background decoration
+// on the "What are you looking for?" step.
+const BuyerCartoon = ({ className = "" }: { className?: string }) => (
+  <svg viewBox="0 0 120 110" className={className} fill="none">
+    {/* Speech bubble with "I need this!" */}
+    <g stroke="black" strokeWidth="2.5">
+      <ellipse cx="62" cy="22" rx="30" ry="15" fill="#dbeafe" />
+      <path d="M52 35 L46 45 L60 36" fill="#dbeafe" strokeLinejoin="round" />
+    </g>
+    <text x="62" y="26" textAnchor="middle" fontSize="9" fontWeight="bold" fill="black" fontFamily="'Manrope','Inter',sans-serif">I need this!</text>
+    {/* Head */}
+    <circle cx="40" cy="58" r="11" fill="#fef3c7" stroke="black" strokeWidth="2.5" />
+    {/* Eyes */}
+    <circle cx="36.5" cy="56" r="1.6" fill="black" />
+    <circle cx="43.5" cy="56" r="1.6" fill="black" />
+    {/* Smile */}
+    <path d="M36 61 Q40 64 44 61" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
+    {/* Body */}
+    <rect x="30" y="70" width="20" height="26" rx="6" fill="#dbeafe" stroke="black" strokeWidth="2.5" />
+    {/* Legs */}
+    <path d="M35 96 L35 106 M45 96 L45 106" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
+    {/* Arm holding magnifying glass */}
+    <path d="M50 76 L60 70" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
+    {/* Magnifying glass */}
+    <circle cx="68" cy="64" r="8" fill="#bfdbfe" stroke="black" strokeWidth="2.5" />
+    <path d="M74 70 L82 80" stroke="black" strokeWidth="3" strokeLinecap="round" />
+    {/* Sparkles around the glass */}
+    <path d="M90 52 L90 58 M87 55 L93 55" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M95 68 L95 72 M93 70 L97 70" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
 
 // Hand-drawn H-pattern gear shifter icon (manual car gearbox)
 const GearShifterIcon = ({ className = "" }: { className?: string }) => (
@@ -172,6 +207,8 @@ export default function PostEnquiry() {
   const [vehicleDetails, setVehicleDetails] = useState<{ brand: string; year: string; variant: string; transmission: string; fuelType: string }>({ brand: '', year: '', variant: '', transmission: '', fuelType: '' });
   // Mobile details (brand/RAM/memory) — filled when the mobiles category is selected
   const [mobileDetails, setMobileDetails] = useState<{ brand: string; ram: string; memory: string }>({ brand: '', ram: '', memory: '' });
+  // Sneaker details (brand) — filled when the sneakers category is selected
+  const [sneakerBrand, setSneakerBrand] = useState('');
   // Job enquiry direction: employer hiring vs seeker looking for work (jobs category only)
   const [jobDirection, setJobDirection] = useState<'hiring' | 'seeking' | ''>('');
   // Job-specific extra fields
@@ -539,6 +576,7 @@ export default function PostEnquiry() {
               ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+              ...(sneakerBrand && { sneakerBrand }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...(jobDirection && { jobDirection }),
@@ -701,6 +739,7 @@ export default function PostEnquiry() {
             ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+            ...(sneakerBrand && { sneakerBrand }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
@@ -856,6 +895,7 @@ export default function PostEnquiry() {
             ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+            ...(sneakerBrand && { sneakerBrand }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
@@ -1019,6 +1059,7 @@ export default function PostEnquiry() {
               ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+              ...(sneakerBrand && { sneakerBrand }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...(estateDealType && { listingType: estateDealType }),
@@ -1324,7 +1365,7 @@ export default function PostEnquiry() {
     "real-estate-services": Home,
     "renewable-energy": Zap,
     "security-safety": Lock,
-    "sneakers": Gem,
+    "sneakers": Footprints,
     "souvenir": MapPin,
     "sports-outdoor": Dumbbell,
     "technology": Monitor,
@@ -1705,6 +1746,7 @@ export default function PostEnquiry() {
           ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
           ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
           ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+          ...(sneakerBrand && { sneakerBrand }),
           ...(mobileDetails.ram && { ram: mobileDetails.ram }),
           ...(mobileDetails.memory && { memory: mobileDetails.memory }),
           ...(jobDirection && { jobDirection }),
@@ -2214,7 +2256,10 @@ export default function PostEnquiry() {
 
                   {/* Step 0: Title */}
                   {step === 0 && (
-                    <div className="space-y-2 max-w-lg mx-auto w-full">
+                    <div className="relative space-y-2 max-w-lg mx-auto w-full">
+                      {/* 2D cartoon buyer — light background decoration tied to the
+                          buyer-posts-need / sellers-respond business model */}
+                      <BuyerCartoon className="pointer-events-none absolute -top-10 -right-6 sm:-right-12 h-24 w-24 sm:h-28 sm:w-28 opacity-[0.16] select-none" aria-hidden="true" />
                       <p className="text-[8px] font-bold text-black text-left tracking-wide">Need</p>
                       <Input
                         id="enquiry-title"
@@ -2231,9 +2276,7 @@ export default function PostEnquiry() {
 
                   {/* Step 1: Category (swipeable horizontal pages) */}
                   {step === 1 && (() => {
-                    const filteredCategories = catSearch.trim()
-                      ? categories.filter(c => c.label.toLowerCase().includes(catSearch.toLowerCase()))
-                      : categories;
+                    const filteredCategories = filterCategoriesBySearch(categories, catSearch);
                     // Selected categories float to the top (stable sort keeps the rest in order)
                     const sortedCategories = [...filteredCategories].sort((a, b) =>
                       Number(selectedCategories.includes(b.value)) - Number(selectedCategories.includes(a.value))
@@ -2652,6 +2695,45 @@ export default function PostEnquiry() {
                               <p className="flex-1 text-[8px] font-bold text-black text-center tracking-wide">brand</p>
                               <p className="flex-1 text-[8px] font-bold text-black text-center tracking-wide">ram</p>
                               <p className="flex-1 text-[8px] font-bold text-black text-center tracking-wide">memory</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Sneaker details — brand above the description when the sneakers category is selected */}
+                      {selectedCategories.includes('sneakers') && (() => {
+                        return (
+                          <div className="mb-6">
+                            <div className="flex items-start justify-between gap-3">
+                              {/* Brand */}
+                              <div className="flex-1 min-w-0 relative">
+                                {(() => {
+                                  const sneakerLogo = sneakerBrand ? getSneakerBrandLogoUrl(sneakerBrand) : null;
+                                  return (
+                                    <>
+                                      <select
+                                        value={sneakerBrand}
+                                        onChange={(e) => setSneakerBrand(e.target.value)}
+                                        className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrand ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
+                                      >
+                                        <option value="">Brand</option>
+                                        {SNEAKER_BRANDS.map((b) => (
+                                          <option key={b} value={b}>{b}</option>
+                                        ))}
+                                      </select>
+                                      {sneakerLogo && (
+                                        <img
+                                          src={sneakerLogo}
+                                          alt=""
+                                          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 object-contain pointer-events-none"
+                                          loading="lazy"
+                                        />
+                                      )}
+                                    </>
+                                  );
+                                })()}
+                                <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
                             </div>
                           </div>
                         );

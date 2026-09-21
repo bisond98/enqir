@@ -7,7 +7,7 @@ import {
   Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse,
   ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory,
   Home, Zap, Lock, MapPin, Dumbbell, Truck, Mic, Camera, TreePine, FileText,
-  Sparkles, Music, MoreHorizontal, LayoutGrid,
+  Sparkles, Music, MoreHorizontal, LayoutGrid, Footprints,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -58,7 +58,7 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "real-estate-services": Home,
   "renewable-energy": Zap,
   "security-safety": Lock,
-  "sneakers": Gem,
+  "sneakers": Footprints,
   "souvenir": MapPin,
   "sports-outdoor": Dumbbell,
   "technology": Monitor,

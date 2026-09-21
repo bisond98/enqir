@@ -93,3 +93,40 @@ export const LEGACY_CATEGORY_ALIASES: Record<string, string> = {
   'home-furniture': 'home',
   'services': 'service',
 };
+
+// Category search synonyms — common words people type into category search
+// that don't appear in the label ("shoes" → Sneakers, "phone" → Mobiles, ...).
+// Shared by the Post Enquiry and Sell category pickers.
+export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
+  sneakers: ['shoe', 'shoes', 'footwear', 'trainers', 'sports shoes', 'running shoes'],
+  fashion: ['clothes', 'clothing', 'apparel', 'dress'],
+  mobiles: ['phone', 'phones', 'smartphone', 'mobile phone'],
+  laptops: ['computer', 'notebook', 'macbook'],
+  electronics: ['tv', 'headphones', 'earphones', 'speaker', 'gadget'],
+  bicycles: ['cycle', 'cycles'],
+  car: ['vehicle', 'automobile'],
+  bike: ['motorcycle', 'motorbike', 'scooter', 'two-wheeler'],
+  furniture: ['sofa', 'bed', 'table', 'chair', 'wardrobe'],
+  'real-estate': ['flat', 'apartment', 'house', 'plot', 'land', 'property'],
+  appliances: ['fridge', 'refrigerator', 'washing machine', 'microwave', 'ac', 'air conditioner'],
+  'sports-outdoor': ['gym', 'fitness', 'cricket', 'badminton'],
+  'baby-kids': ['toys', 'stroller', 'pram'],
+  pets: ['dog', 'cat', 'puppy', 'kitten'],
+  'photography-cameras': ['dslr', 'camera lens', 'gopro'],
+  'musical-instruments': ['guitar', 'piano', 'drums', 'keyboard'],
+  gaming: ['playstation', 'ps5', 'ps4', 'xbox', 'console'],
+};
+
+/**
+ * Filter categories by a search query, matching label, value, and synonyms.
+ * Used by the category pickers so words like "shoes" find Sneakers.
+ */
+export function filterCategoriesBySearch<T extends AppCategory>(categories: T[], query: string): T[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return categories;
+  return categories.filter(c =>
+    c.label.toLowerCase().includes(q) ||
+    c.value.includes(q) ||
+    (CATEGORY_SEARCH_SYNONYMS[c.value] ?? []).some(syn => syn.includes(q) || q.includes(syn))
+  );
+}

@@ -34,6 +34,7 @@ import { toast } from '@/hooks/use-toast';
 import CountdownTimer from '@/components/CountdownTimer';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
+import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import PaymentPlanSelector from '@/components/PaymentPlanSelector';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
@@ -866,7 +867,8 @@ const EnquiryDetail = () => {
                         d.mobileBrand && { label: 'Brand', value: d.mobileBrand, icon: 'mobileBrand', logoUrl: getMobileBrandLogoUrl(d.mobileBrand), highlight: true },
                         d.ram && { label: 'RAM', value: d.ram, highlight: true },
                         d.memory && { label: 'Memory', value: d.memory, highlight: true },
-                      ].filter(Boolean) as { label: string; value: string; highlight?: boolean }[];
+                        d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },
+                      ].filter(Boolean) as { label: string; value: string; highlight?: boolean; icon?: string; logoUrl?: string | null }[];
                       if (chips.length === 0) return null;
                       // Hand-drawn H-pattern gear shifter (manual gearbox)
                       const GearShifterIcon = ({ className = "" }: { className?: string }) => (
@@ -878,6 +880,8 @@ const EnquiryDetail = () => {
                         icon === 'brand' && logoUrl ? (
                           <img src={logoUrl} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />
                         ) : icon === 'mobileBrand' && logoUrl ? (
+                          <img src={logoUrl} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />
+                        ) : icon === 'sneakerBrand' && logoUrl ? (
                           <img src={logoUrl} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />
                         ) : icon === 'gear' ? (
                           <GearShifterIcon className="h-3 w-3 text-black" />

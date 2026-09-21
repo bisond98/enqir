@@ -10,7 +10,7 @@ import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { listMarketplace } from '../services/sellDb';
 import { parseNLSearch, isNLSearchQuery, type NLFilters } from '../services/nlSearch';
 import type { SellListing } from '../types';
-import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, Navigation, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale, Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User, Bookmark } from 'lucide-react';
+import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, Navigation, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale,  Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User, Bookmark, Footprints } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress, SortReferenceLocation } from '@/types/mapLocation';
@@ -76,7 +76,7 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
   'repair-services': Wrench,
   'cleaning-services': Sparkles,
   'security-safety': Shield,
-  'sneakers': Shirt,
+  'sneakers': Footprints,
   'souvenir': Gift,
   'sports-outdoor': Dumbbell,
   'thrift': ShoppingBag,
