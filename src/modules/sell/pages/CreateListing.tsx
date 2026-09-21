@@ -688,7 +688,7 @@ export default function CreateListing() {
 
   return (
     <SellShell title="Sell">
-      <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
+      <Card className="rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden border-0">
         <CardHeader className="space-y-2 border-b border-black/10 pb-4">
           <Progress value={progressPct} className="h-2 rounded-full bg-slate-200" />
         </CardHeader>
@@ -869,7 +869,7 @@ export default function CreateListing() {
                             inputMode="numeric"
                             maxLength={4}
                             value={details[f.key] ?? ''}
-                            onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, ''))}
+                            onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
                             placeholder={f.placeholder ?? 'Type year'}
                             className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
                           />

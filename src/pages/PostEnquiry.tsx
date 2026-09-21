@@ -12,7 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { MapLocationPicker } from "@/components/MapLocationPicker";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -33,7 +33,7 @@ import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { APP_CATEGORIES } from "@/constants/categories";
-import { categoriesRequireImage, categoriesRequireImageForEnquiry } from "@/lib/imageRequiredCategories";
+import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS } from "@/modules/sell/categoryBrands";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
@@ -56,6 +56,19 @@ const isJobEnquiry = (cats: string[], legacy?: string) =>
   [...cats, legacy ?? ''].some((c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job')));
 
 const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
+
+// Hand-drawn H-pattern gear shifter icon (manual car gearbox)
+const GearShifterIcon = ({ className = "" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 4v16M5 12h14M5 12v-4M19 12v-4M5 12v4M19 12v4" />
+    <circle cx="5" cy="6" r="1.6" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="4" r="1.6" fill="currentColor" stroke="none" />
+    <circle cx="19" cy="6" r="1.6" fill="currentColor" stroke="none" />
+    <circle cx="5" cy="18" r="1.6" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="20" r="1.6" fill="currentColor" stroke="none" />
+    <circle cx="19" cy="18" r="1.6" fill="currentColor" stroke="none" />
+  </svg>
+);
 
 export default function PostEnquiry() {
   // Version: 3.0 - Multi-step wizard (matching sell listing flow)
@@ -155,8 +168,8 @@ export default function PostEnquiry() {
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan | null>(() => PAYMENT_PLANS.find(p => p.id === 'premium') || null);
   const [notes, setNotes] = useState("");
-  // Vehicle details (brand/year/variant) — filled when a vehicle category is selected
-  const [vehicleDetails, setVehicleDetails] = useState<{ brand: string; year: string; variant: string }>({ brand: '', year: '', variant: '' });
+  // Vehicle details (brand/year/variant + transmission/fuel for cars) — filled when a vehicle category is selected
+  const [vehicleDetails, setVehicleDetails] = useState<{ brand: string; year: string; variant: string; transmission: string; fuelType: string }>({ brand: '', year: '', variant: '', transmission: '', fuelType: '' });
   // Job enquiry direction: employer hiring vs seeker looking for work (jobs category only)
   const [jobDirection, setJobDirection] = useState<'hiring' | 'seeking' | ''>('');
   // Job-specific extra fields
@@ -520,6 +533,8 @@ export default function PostEnquiry() {
               ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
               ...(vehicleDetails.year && { year: vehicleDetails.year }),
               ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+              ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
+              ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(jobDirection && { jobDirection }),
               ...(jobSkills.trim() && { skills: jobSkills.trim() }),
               ...(jobDetails.experience && { experience: jobDetails.experience }),
@@ -677,6 +692,8 @@ export default function PostEnquiry() {
             ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
             ...(vehicleDetails.year && { year: vehicleDetails.year }),
             ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+            ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
+            ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(jobDirection && { jobDirection }),
             ...(jobSkills.trim() && { skills: jobSkills.trim() }),
             ...(estateDealType && { listingType: estateDealType }),
@@ -827,6 +844,8 @@ export default function PostEnquiry() {
             ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
             ...(vehicleDetails.year && { year: vehicleDetails.year }),
             ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+            ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
+            ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(jobDirection && { jobDirection }),
             ...(jobSkills.trim() && { skills: jobSkills.trim() }),
             ...(estateDealType && { listingType: estateDealType }),
@@ -985,6 +1004,8 @@ export default function PostEnquiry() {
               ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
               ...(vehicleDetails.year && { year: vehicleDetails.year }),
               ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+              ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
+              ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(estateDealType && { listingType: estateDealType }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
               ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -1505,12 +1526,8 @@ export default function PostEnquiry() {
       return;
     }
 
-    // Reference images are required for physical-item categories (cars, bikes, mobiles, etc.)
-    // Real-estate enquiries keep images optional.
-    if (categoriesRequireImageForEnquiry(selectedCategories) && referenceImageUrls.length === 0) {
-      alert('At least 1 image is required for this category. Physical items like cars, bikes and mobiles need a photo so sellers can see them.');
-      return;
-    }
+    // Reference images are optional for all enquiries — sellers respond without needing a buyer photo.
+    // (Previously required for physical-item categories like cars, bikes, mobiles.)
 
     // ALL enquiries require ₹10 Razorpay payment before posting
     // handleDirectPayment manages its own loading/error states
@@ -1670,6 +1687,8 @@ export default function PostEnquiry() {
           ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
           ...(vehicleDetails.year && { year: vehicleDetails.year }),
           ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
+          ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
+          ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
           ...(jobDirection && { jobDirection }),
           ...(jobSkills.trim() && { skills: jobSkills.trim() }),
           ...(jobDetails.experience && { experience: jobDetails.experience }),
@@ -2139,7 +2158,7 @@ export default function PostEnquiry() {
 
           {/* Main Form - Multi-step wizard (matching sell listing) */}
           {!isSubmitted && (
-            <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
+            <Card className="rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden border-0">
               <div className="space-y-2 border-b border-black/10 pb-4 px-5 sm:px-6 lg:px-8 pt-4">
                 <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
                   <div
@@ -2482,7 +2501,7 @@ export default function PostEnquiry() {
                                   inputMode="numeric"
                                   maxLength={4}
                                   value={vehicleDetails.year}
-                                  onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '') }))}
+                                  onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
                                   placeholder="Year"
                                   className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
                                 />
@@ -2507,6 +2526,55 @@ export default function PostEnquiry() {
                                 </div>
                               )}
                             </div>
+                            {/* Transmission / Fuel Type / Ownership — cars & automobiles only */}
+                            {isCarLike && (
+                              <div className="flex items-start justify-between gap-3 mt-3">
+                                {/* Transmission */}
+                                <div className="flex-1 min-w-0">
+                                  <div className="relative">
+                                    <select
+                                      value={vehicleDetails.transmission}
+                                      onChange={(e) => setVehicleDetails(v => ({ ...v, transmission: e.target.value }))}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.transmission ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                    >
+                                      <option value="">Transmission</option>
+                                      {['Manual', 'Automatic'].map((t) => (
+                                        <option key={t} value={t}>{t}</option>
+                                      ))}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center gap-0.5 pr-3 pointer-events-none">
+                                      <GearShifterIcon className="h-4 w-4 text-black" />
+                                      <ChevronDown className="h-4 w-4 text-gray-500" />
+                                    </div>
+                                  </div>
+                                  <div className="h-3">
+                                    <p className="text-[8px] font-bold text-black text-center tracking-wide">transmission</p>
+                                  </div>
+                                </div>
+                                {/* Fuel Type */}
+                                <div className="flex-1 min-w-0">
+                                  <div className="relative">
+                                    <select
+                                      value={vehicleDetails.fuelType}
+                                      onChange={(e) => setVehicleDetails(v => ({ ...v, fuelType: e.target.value }))}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.fuelType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                    >
+                                      <option value="">Fuel Type</option>
+                                      {['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'LPG'].map((f) => (
+                                        <option key={f} value={f}>{f}</option>
+                                      ))}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center gap-0.5 pr-3 pointer-events-none">
+                                      <Fuel className="h-4 w-4 text-black" />
+                                      <ChevronDown className="h-4 w-4 text-gray-500" />
+                                    </div>
+                                  </div>
+                                  <div className="h-3">
+                                    <p className="text-[8px] font-bold text-black text-center tracking-wide">fuel type</p>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         );
                       })()}
@@ -2816,11 +2884,9 @@ export default function PostEnquiry() {
                         <Label className="text-xs font-bold flex items-center gap-2">
                           <Upload className="h-3.5 w-3.5" />
                           {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking'
-                            ? 'Upload your Resume'
+                            ? 'Upload your Resume (optional)'
                             : isJobEnquiry(selectedCategories, category) && jobDirection === 'hiring'
-                            ? 'Workspace, etc.'
-                            : categoriesRequireImageForEnquiry(selectedCategories)
-                            ? 'Show your need'
+                            ? 'Workspace, etc. (optional)'
                             : 'Show your need (optional)'}
                         </Label>
                         {referenceImageUrls.length > 0 && (

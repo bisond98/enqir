@@ -23,7 +23,8 @@ import {
   IndianRupee,
   Bookmark,
   ImageIcon,
-  Flag
+  Flag,
+  Fuel
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,6 +32,7 @@ import { db } from '@/firebase';
 import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, setDoc, serverTimestamp } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import CountdownTimer from '@/components/CountdownTimer';
+import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import PaymentPlanSelector from '@/components/PaymentPlanSelector';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
@@ -69,7 +71,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string } | null;
 }
 
 interface UserProfile {
@@ -752,12 +754,7 @@ const EnquiryDetail = () => {
                 <div className="text-center">
                   {/* Badges Row */}
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-5">
-                    {user && user.uid === enquiry.userId && enquiry.isPremium && (
-                    <Badge className="bg-white text-black border-white border-2 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[8px] sm:text-[9px] shadow-sm">
-                        <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5 sm:mr-1" />
-                        Premium
-                      </Badge>
-                    )}
+                    {/* Premium badge hidden per product decision */}
                     {enquiry.isUrgent && (
                     <Badge className="bg-white text-black border-white border-2 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
                         <Clock className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
@@ -791,8 +788,26 @@ const EnquiryDetail = () => {
                       <div className="hidden sm:block w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
                       <h2 style={{ fontFamily: "'Manrope', 'Inter', sans-serif" }} className="text-xl sm:text-2xl font-extrabold tracking-tight text-black leading-tight break-words !bg-gray-200 !border-[1.5px] !border-black rounded-2xl px-4 py-3 text-center"><span className="text-red-600 bg-gray-200 rounded-md px-1.5 py-0.5">Need:</span> {enquiry.title}</h2>
                     </div>
-                    <h3 className="text-xs sm:text-xs font-black text-slate-700 mb-3 sm:mb-3 text-center uppercase tracking-wide">Description</h3>
-                    <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
+                    {/* One-line summary from vehicle chips — car categories only, red background white text */}
+                    {(() => {
+                      const d = enquiry.details as any;
+                      if (!d || !d.brand) return null;
+                      // Build summary from available details
+                      const parts: string[] = [];
+                      parts.push(d.brand);
+                      if (d.variant) parts.push(d.variant);
+                      if (d.year) parts.push(`${d.year} model`);
+                      if (d.fuelType) parts.push(d.fuelType.toLowerCase());
+                      if (d.transmission) parts.push(d.transmission.toLowerCase());
+                      const dl = formatDeadlineReadable(enquiry.deadline);
+                      const deadlinePhrase = dl ? ` before ${dl}` : '';
+                      const sentence = `Need ${parts.join(' ')}${deadlinePhrase}`;
+                      return (
+                        <p className="mt-3 text-center inline-block mx-auto text-xs sm:text-sm font-bold text-white bg-red-600 border border-black rounded-xl px-4 py-2 shadow-[0_3px_0_0_rgba(0,0,0,0.85)]">
+                          {sentence}
+                        </p>
+                      );
+                    })()}
                     {/* Detail chips — brand/year/variant + job direction/skills */}
                     {(() => {
                       const d = enquiry.details;
@@ -820,11 +835,29 @@ const EnquiryDetail = () => {
                         d.landArea && { label: 'Land / Plot', value: d.landArea, highlight: true },
                         d.builtUpArea && { label: 'Buildings', value: d.builtUpArea, highlight: true },
                         d.houseArea && { label: 'House / Flat', value: d.houseBhk ? `${d.houseArea} · ${d.houseBhk}` : d.houseArea, highlight: true },
-                        d.brand && { label: 'Brand', value: d.brand },
-                        d.year && { label: 'Year', value: d.year },
+                        d.brand && { label: 'Brand', value: d.brand, icon: 'brand', logoUrl: getCarBrandLogoUrl(d.brand) },
+                        d.year && { label: 'Year', value: d.year, icon: 'calendar' },
                         d.variant && { label: 'Variant', value: d.variant },
+                        d.transmission && { label: 'Transmission', value: d.transmission, icon: 'gear' },
+                        d.fuelType && { label: 'Fuel', value: d.fuelType, icon: 'fuel' },
                       ].filter(Boolean) as { label: string; value: string; highlight?: boolean }[];
                       if (chips.length === 0) return null;
+                      // Hand-drawn H-pattern gear shifter (manual gearbox)
+                      const GearShifterIcon = ({ className = "" }: { className?: string }) => (
+                        <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 4v16M5 12h14M5 12v-4M19 12v-4M5 12v4M19 12v4" />
+                        </svg>
+                      );
+                      const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) =>
+                        icon === 'brand' && logoUrl ? (
+                          <img src={logoUrl} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />
+                        ) : icon === 'gear' ? (
+                          <GearShifterIcon className="h-3 w-3 text-black" />
+                        ) : icon === 'fuel' ? (
+                          <Fuel className="h-3 w-3 text-black" />
+                        ) : icon === 'calendar' ? (
+                          <Calendar className="h-3 w-3 text-black" />
+                        ) : null;
                       return (
                         <div className="flex flex-wrap justify-center gap-1.5 mt-3">
                           {chips.map((c) => (
@@ -840,6 +873,7 @@ const EnquiryDetail = () => {
                               </span>
                             ) : (
                               <span key={c.label} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
+                                <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />
                                 <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>
                                 {c.value}
                               </span>
@@ -848,6 +882,12 @@ const EnquiryDetail = () => {
                         </div>
                       );
                     })()}
+
+                    {/* Description — below the detail chips */}
+                    <div className="mt-5 sm:mt-6">
+                      <h3 className="text-xs sm:text-xs font-black text-slate-700 mb-3 sm:mb-3 text-center uppercase tracking-wide">Description</h3>
+                      <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
+                    </div>
                   </div>
 
                   <div className="flex flex-wrap items-stretch gap-3 sm:gap-4">

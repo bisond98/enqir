@@ -327,12 +327,7 @@ const DetailedResponses = () => {
                     <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full"></div>
                     <span>{visibleResponses.length} available</span>
                   </div>
-                  {enquiry.isPremium && (
-                    <div className="flex items-center gap-1">
-                      <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
-                      <span className="text-yellow-300">Premium</span>
-                    </div>
-                  )}
+                  {/* Premium tag hidden per product decision */}
                 </div>
               </div>
               

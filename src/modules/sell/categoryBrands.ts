@@ -2,15 +2,15 @@
 // and the Post Enquiry form's vehicle detail inputs.
 
 export const CAR_BRANDS = [
-  'Maruti Suzuki', 'Hyundai', 'Tata', 'Mahindra', 'Toyota', 'Honda', 'Kia',
-  'Renault', 'Nissan', 'MG', 'Volkswagen', 'Skoda', 'Jeep', 'Citroën',
-  'BMW', 'Mercedes-Benz', 'Audi', 'Volvo', 'Jaguar', 'Land Rover', 'Porsche',
-  'Lexus', 'Isuzu', 'Force', 'Datsun', 'Fiat', 'Chevrolet', 'Ford',
-  'Hindustan Motors', 'Opel', 'Rolls-Royce', 'Bentley', 'Ferrari', 'Lamborghini', 'Other',
+  'Audi', 'Bentley', 'BMW', 'Chevrolet', 'Citroën', 'Datsun', 'Ferrari', 'Fiat',
+  'Force', 'Ford', 'Hindustan Motors', 'Honda', 'Hyundai', 'Isuzu', 'Jaguar',
+  'Jeep', 'Kia', 'Lamborghini', 'Land Rover', 'Lexus', 'Mahindra', 'Maruti Suzuki',
+  'Mercedes-Benz', 'MG', 'Nissan', 'Opel', 'Other', 'Porsche', 'Renault',
+  'Rolls-Royce', 'Skoda', 'Tata', 'Toyota', 'Volkswagen', 'Volvo',
 ];
 
 export const BIKE_BRANDS = [
-  'Hero', 'Bajaj', 'TVS', 'Honda', 'Royal Enfield', 'Yamaha', 'Suzuki',
-  'KTM', 'Mahindra', 'Jawa', 'Yezdi', 'Ather', 'Ola Electric', 'Revolt',
-  'Harley-Davidson', 'Kawasaki', 'Ducati', 'Benelli', 'UM', 'Other',
+  'Ather', 'Bajaj', 'Benelli', 'Ducati', 'Harley-Davidson', 'Hero', 'Honda',
+  'Jawa', 'Kawasaki', 'KTM', 'Mahindra', 'Ola Electric', 'Other', 'Revolt',
+  'Royal Enfield', 'Suzuki', 'TVS', 'UM', 'Yamaha', 'Yezdi',
 ];
