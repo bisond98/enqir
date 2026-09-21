@@ -18,6 +18,7 @@ import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep } from '../categoryDetails';
+import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
 import { processPayment } from '@/services/paymentService';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
@@ -844,7 +845,9 @@ export default function CreateListing() {
             })()}
 
             {step === 1 && (
-              <div className="space-y-2 max-w-lg mx-auto w-full">
+              <div className="relative space-y-2 max-w-lg mx-auto w-full">
+                {/* Single quiet line-art doodle — seller offering */}
+                <SellerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.35] select-none" aria-hidden="true" />
                 <Label htmlFor="listing-title" className="text-[10px] sm:text-xs font-bold">
                   Listing title
                 </Label>

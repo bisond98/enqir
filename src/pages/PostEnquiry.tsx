@@ -39,6 +39,9 @@ import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
+// 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
+// @/components/doodles, used as light background decorations on wizard steps.
+import { BuyerCartoon } from "@/components/doodles";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -57,40 +60,6 @@ const isJobEnquiry = (cats: string[], legacy?: string) =>
   [...cats, legacy ?? ''].some((c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job')));
 
 const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
-
-// 2D cartoon buyer — character with a magnifying glass and a "need" speech
-// bubble. Echoes the landing hero's BUYER motif: a buyer posting what they're
-// looking for and sellers responding. Used as a light background decoration
-// on the "What are you looking for?" step.
-const BuyerCartoon = ({ className = "" }: { className?: string }) => (
-  <svg viewBox="0 0 120 110" className={className} fill="none">
-    {/* Speech bubble with "I need this!" */}
-    <g stroke="black" strokeWidth="2.5">
-      <ellipse cx="62" cy="22" rx="30" ry="15" fill="#dbeafe" />
-      <path d="M52 35 L46 45 L60 36" fill="#dbeafe" strokeLinejoin="round" />
-    </g>
-    <text x="62" y="26" textAnchor="middle" fontSize="9" fontWeight="bold" fill="black" fontFamily="'Manrope','Inter',sans-serif">I need this!</text>
-    {/* Head */}
-    <circle cx="40" cy="58" r="11" fill="#fef3c7" stroke="black" strokeWidth="2.5" />
-    {/* Eyes */}
-    <circle cx="36.5" cy="56" r="1.6" fill="black" />
-    <circle cx="43.5" cy="56" r="1.6" fill="black" />
-    {/* Smile */}
-    <path d="M36 61 Q40 64 44 61" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-    {/* Body */}
-    <rect x="30" y="70" width="20" height="26" rx="6" fill="#dbeafe" stroke="black" strokeWidth="2.5" />
-    {/* Legs */}
-    <path d="M35 96 L35 106 M45 96 L45 106" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-    {/* Arm holding magnifying glass */}
-    <path d="M50 76 L60 70" stroke="black" strokeWidth="2.5" strokeLinecap="round" />
-    {/* Magnifying glass */}
-    <circle cx="68" cy="64" r="8" fill="#bfdbfe" stroke="black" strokeWidth="2.5" />
-    <path d="M74 70 L82 80" stroke="black" strokeWidth="3" strokeLinecap="round" />
-    {/* Sparkles around the glass */}
-    <path d="M90 52 L90 58 M87 55 L93 55" stroke="black" strokeWidth="1.8" strokeLinecap="round" />
-    <path d="M95 68 L95 72 M93 70 L97 70" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
 
 // Hand-drawn H-pattern gear shifter icon (manual car gearbox)
 const GearShifterIcon = ({ className = "" }: { className?: string }) => (
@@ -2257,9 +2226,8 @@ export default function PostEnquiry() {
                   {/* Step 0: Title */}
                   {step === 0 && (
                     <div className="relative space-y-2 max-w-lg mx-auto w-full">
-                      {/* 2D cartoon buyer — light background decoration tied to the
-                          buyer-posts-need / sellers-respond business model */}
-                      <BuyerCartoon className="pointer-events-none absolute -top-10 -right-6 sm:-right-12 h-24 w-24 sm:h-28 sm:w-28 opacity-[0.16] select-none" aria-hidden="true" />
+                      {/* Single quiet line-art doodle — buyer seeking */}
+                      <BuyerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.35] select-none" aria-hidden="true" />
                       <p className="text-[8px] font-bold text-black text-left tracking-wide">Need</p>
                       <Input
                         id="enquiry-title"
