@@ -3,8 +3,8 @@
 // thin gray (#6B7280) strokes, small labeled nodes, dashed flow lines.
 // Strictly gray-on-white, quiet, professional.
 
-const GRAY = '#6B7280';
-const TEXT = '#4B5563';
+const GRAY = '#374151';
+const TEXT = '#111827';
 
 // Buyer doodle — mini flow sketch: You → Need → Seller.
 // Used on the Post Enquiry title step.

@@ -2227,7 +2227,7 @@ export default function PostEnquiry() {
                   {step === 0 && (
                     <div className="relative space-y-2 max-w-lg mx-auto w-full">
                       {/* Single quiet line-art doodle — buyer seeking */}
-                      <BuyerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.35] select-none" aria-hidden="true" />
+                      <BuyerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
                       <p className="text-[8px] font-bold text-black text-left tracking-wide">Need</p>
                       <Input
                         id="enquiry-title"

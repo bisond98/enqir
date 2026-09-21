@@ -847,7 +847,7 @@ export default function CreateListing() {
             {step === 1 && (
               <div className="relative space-y-2 max-w-lg mx-auto w-full">
                 {/* Single quiet line-art doodle — seller offering */}
-                <SellerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.35] select-none" aria-hidden="true" />
+                <SellerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
                 <Label htmlFor="listing-title" className="text-[10px] sm:text-xs font-bold">
                   Listing title
                 </Label>
