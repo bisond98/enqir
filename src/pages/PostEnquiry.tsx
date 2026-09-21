@@ -38,6 +38,7 @@ import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS } from "@/module
 import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
+import { generateDescription, improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { useToast } from "@/components/ui/use-toast";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
@@ -60,6 +61,28 @@ const isJobEnquiry = (cats: string[], legacy?: string) =>
   [...cats, legacy ?? ''].some((c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job')));
 
 const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
+
+// ✨ AI description assistant — pen icon inside the textarea's top-right corner.
+// Absolutely positioned over the textarea; wraps the icon in a padded hit area.
+const AiDescriptionBar = ({ onRun, generating }: { onRun: () => void; generating: boolean }) => (
+  <button
+    type="button"
+    onClick={onRun}
+    disabled={generating}
+    aria-label="AI description assistant"
+    className="absolute right-3 bottom-3 z-10 flex items-center justify-center h-9 w-9 rounded-full bg-black hover:bg-gray-900 shadow-sm transition-colors disabled:opacity-60 touch-manipulation"
+    style={{ width: 36, height: 36, minWidth: 36, minHeight: 36, padding: 0 }}
+  >
+    {generating ? (
+      <Loader2 className="h-4 w-4 text-white animate-spin" />
+    ) : (
+      <span className="relative inline-flex items-center justify-center">
+        <Pen className="h-4 w-4 text-white" />
+        <Sparkles className="h-3 w-3 text-white absolute -top-1.5 -right-1.5 drop-shadow" />
+      </span>
+    )}
+  </button>
+);
 
 // Hand-drawn H-pattern gear shifter icon (manual car gearbox)
 const GearShifterIcon = ({ className = "" }: { className?: string }) => (
@@ -236,6 +259,52 @@ export default function PostEnquiry() {
   const idVerificationCardRef = useRef<HTMLDivElement>(null);
   const inlineVerificationRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Build AI-assistant input from whatever the user has filled so far
+  const aiDescriptionInput = (): Parameters<typeof generateDescription>[0] => ({
+    title,
+    category,
+    categories: selectedCategories,
+    budget,
+    location: mapLocation?.city || location,
+    deadline,
+    notes,
+    vehicleDetails,
+    mobileDetails,
+  });
+
+  // ✨ Generate (empty field) or improve (typed text) — instant, local, no API
+  const runDescriptionAI = () => {
+    setAiGenerating(true);
+    // Brief delay so the tap feels responsive but the state change renders
+    setTimeout(() => {
+      try {
+        if (description.trim()) {
+          const { suggestion, additions } = improveDescription(description, aiDescriptionInput());
+          setAiSuggestion(suggestion);
+          setAiAdditions(additions);
+        } else {
+          setAiSuggestion(generateDescription(aiDescriptionInput()));
+          setAiAdditions([]);
+        }
+      } catch {
+        toast({ title: 'AI assistant unavailable', description: 'Please write the description manually.' });
+      } finally {
+        setAiGenerating(false);
+      }
+    }, 250);
+  };
+
+  const acceptAiSuggestion = () => {
+    if (aiSuggestion) setDescription(aiSuggestion.slice(0, 500));
+    setAiSuggestion(null);
+    setAiAdditions([]);
+  };
+
+  const dismissAiSuggestion = () => {
+    setAiSuggestion(null);
+    setAiAdditions([]);
+  };
   
   // Reference images (optional for buyers, up to 5)
   const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>([]);
@@ -249,6 +318,11 @@ export default function PostEnquiry() {
   // AI Location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+
+  // AI description assistant — suggestion preview with accept/reject
+  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
+  const [aiAdditions, setAiAdditions] = useState<string[]>([]);
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   // Scroll to ID verification card when verification is successful
   useEffect(() => {
@@ -2573,7 +2647,9 @@ export default function PostEnquiry() {
                                       ))}
                                     </select>
                                     <div className="absolute inset-y-0 right-0 flex items-center gap-0.5 pr-3 pointer-events-none">
-                                      <GearShifterIcon className="h-4 w-4 text-black" />
+                                      <span className="flex items-center justify-center h-6 w-6 rounded-full bg-black">
+                                        <GearShifterIcon className="h-3.5 w-3.5 text-white" />
+                                      </span>
                                       <ChevronDown className="h-4 w-4 text-gray-500" />
                                     </div>
                                   </div>
@@ -2595,7 +2671,9 @@ export default function PostEnquiry() {
                                       ))}
                                     </select>
                                     <div className="absolute inset-y-0 right-0 flex items-center gap-0.5 pr-3 pointer-events-none">
-                                      <Fuel className="h-4 w-4 text-black" />
+                                      <span className="flex items-center justify-center h-6 w-6 rounded-full bg-black">
+                                        <Fuel className="h-3.5 w-3.5 text-white" />
+                                      </span>
                                       <ChevronDown className="h-4 w-4 text-gray-500" />
                                     </div>
                                   </div>
@@ -2839,17 +2917,20 @@ export default function PostEnquiry() {
 
                       {selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && estateType && (
                         <>
-                          <Textarea
-                            id="enquiry-desc"
-                            value={description}
-                            onChange={(e) => {
-                              if (e.target.value.length <= 500) setDescription(e.target.value);
-                            }}
-                            placeholder="Specifications, requirements, timeline..."
-                            maxLength={500}
-                            className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
-                            autoFocus
-                          />
+                          <div className="relative">
+                            <AiDescriptionBar onRun={runDescriptionAI} generating={aiGenerating} />
+                            <Textarea
+                              id="enquiry-desc"
+                              value={description}
+                              onChange={(e) => {
+                                if (e.target.value.length <= 500) setDescription(e.target.value);
+                              }}
+                              placeholder="Specifications, requirements, timeline..."
+                              maxLength={500}
+                              className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                              autoFocus
+                            />
+                          </div>
                           <div className="h-3">
                             <p className="text-[8px] font-bold text-black text-center tracking-wide">description</p>
                           </div>
@@ -2858,22 +2939,54 @@ export default function PostEnquiry() {
                       )}
                       {!selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && (
                         <>
-                          <Textarea
-                            id="enquiry-desc"
-                            value={description}
-                            onChange={(e) => {
-                              if (e.target.value.length <= 500) setDescription(e.target.value);
-                            }}
-                            placeholder="Specifications, requirements, timeline..."
-                            maxLength={500}
-                            className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
-                            autoFocus
-                          />
+                          <div className="relative">
+                            <AiDescriptionBar onRun={runDescriptionAI} generating={aiGenerating} />
+                            <Textarea
+                              id="enquiry-desc"
+                              value={description}
+                              onChange={(e) => {
+                                if (e.target.value.length <= 500) setDescription(e.target.value);
+                              }}
+                              placeholder="Specifications, requirements, timeline..."
+                              maxLength={500}
+                              className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                              autoFocus
+                            />
+                          </div>
                           <div className="h-3">
                             <p className="text-[8px] font-bold text-black text-center tracking-wide">description</p>
                           </div>
                           <p className="text-[11px] text-slate-500 text-right">{description.length}/500</p>
                         </>
+                      )}
+
+                      {/* AI suggestion preview — accept or keep yours, never overwrites silently */}
+                      {aiSuggestion && (
+                        <div className="max-w-xl mx-auto w-full rounded-2xl border-2 border-black bg-black p-4 space-y-2 shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-blue-400" /> AI suggestion
+                          </p>
+                          <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">{aiSuggestion}</p>
+                          {aiAdditions.length > 0 && (
+                            <p className="text-[11px] text-blue-300">Added from your form: {aiAdditions.join(', ')}</p>
+                          )}
+                          <div className="flex gap-2 pt-1">
+                            <button
+                              type="button"
+                              onClick={acceptAiSuggestion}
+                              className="flex-1 rounded-full bg-white text-black font-bold text-xs py-2.5 hover:bg-blue-50 transition-colors"
+                            >
+                              Use suggestion
+                            </button>
+                            <button
+                              type="button"
+                              onClick={dismissAiSuggestion}
+                              className="flex-1 rounded-full border-2 border-white text-white font-bold text-xs py-2.5 hover:bg-white/10 transition-colors"
+                            >
+                              Keep mine
+                            </button>
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}

@@ -804,7 +804,10 @@ const EnquiryDetail = () => {
                   <div className="mb-5 sm:mb-6">
                     <div className="flex items-start justify-center gap-3 mb-6 sm:mb-7">
                       <div className="hidden sm:block w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
-                      <h2 style={{ fontFamily: "'Manrope', 'Inter', sans-serif" }} className="text-xl sm:text-2xl font-extrabold tracking-tight text-black leading-tight break-words !bg-gray-200 !border-[1.5px] !border-black rounded-2xl px-4 py-3 text-center"><span className="text-red-600 bg-gray-200 rounded-md px-1.5 py-0.5">Need:</span> {enquiry.title}</h2>
+                      <div className="inline-flex items-center gap-2 sm:gap-3">
+                      <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase text-red-600 flex-shrink-0">Looking for</span>
+                      <h2 style={{ fontFamily: "'Manrope', 'Inter', sans-serif", letterSpacing: '-0.02em', boxShadow: '0 1px 2px rgba(0,0,0,0.12), 0 4px 12px rgba(185,28,28,0.25)', WebkitFontSmoothing: 'antialiased' }} className="text-lg sm:text-2xl font-bold leading-snug break-words !text-white !bg-red-600 !border-0 rounded-xl px-4 py-3 text-center">{enquiry.title}</h2>
+                    </div>
                     </div>
                     {/* One-line summary from vehicle chips — car categories only, red background white text */}
                     {(() => {
