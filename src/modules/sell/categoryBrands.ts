@@ -11,7 +11,7 @@ export const CAR_BRANDS = [
 
 export const BIKE_BRANDS = [
   'Ather', 'Bajaj', 'Benelli', 'Ducati', 'Harley-Davidson', 'Hero', 'Honda',
-  'Jawa', 'Kawasaki', 'KTM', 'Mahindra', 'Ola Electric', 'Other', 'Revolt',
+  'Jawa', 'Kawasaki', 'KTM', 'Mahindra', 'Ola Electric', 'Revolt',
   'Royal Enfield', 'Suzuki', 'TVS', 'UM', 'Yamaha', 'Yezdi',
 ];
 

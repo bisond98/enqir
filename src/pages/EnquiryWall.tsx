@@ -841,12 +841,14 @@ export default function EnquiryWall() {
       if (value.trim()) {
         // Generate suggestions from actual enquiry data
         const suggestions = generateSuggestions(value);
-        setSearchSuggestions(suggestions);
         // Only show suggestions if we're not preventing them (e.g., after selecting a suggestion or clicking search button)
         if (!preventSuggestionsRef.current) {
+          setSearchSuggestions(suggestions);
           setShowSuggestions(suggestions.length > 0);
         } else {
-          // If preventing, ensure dropdown is closed
+          // If preventing (explicit submit), keep the dropdown closed AND keep the
+          // suggestion list empty so refocusing the input doesn't reopen it
+          setSearchSuggestions([]);
           setShowSuggestions(false);
         }
         
@@ -888,6 +890,25 @@ export default function EnquiryWall() {
       setSearchParams(newParams, { replace: true });
     }
   }, [debouncedSearch, searchParams, setSearchParams]);
+
+  // Explicit search submit (search icon / Enter / Search button):
+  // runs the search but NEVER re-opens the suggestions dropdown afterwards
+  const submitSearch = useCallback((value: string) => {
+    preventSuggestionsRef.current = true;
+    setShowSuggestions(false);
+    setSearchSuggestions([]);
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current);
+      blurTimeoutRef.current = null;
+    }
+    if (value.trim()) {
+      handleSearchChange(value);
+      // Keep the flag up long enough to cover the 300ms debounced search run
+      setTimeout(() => { preventSuggestionsRef.current = false; }, 700);
+    } else {
+      preventSuggestionsRef.current = false;
+    }
+  }, [handleSearchChange]);
 
   // Find matching category for a suggestion
   const findMatchingCategory = (suggestion: string): string | null => {
@@ -1033,6 +1054,43 @@ export default function EnquiryWall() {
     }
   };
 
+  // Synonym expansion for search terms — "bike" should also match "motorcycle",
+  // "scooter", "bikes", etc. Same word families as the NL search module.
+  const SEARCH_SYNONYMS: Record<string, string[]> = {
+    bike: ['bike', 'bikes', 'motorcycle', 'motorcycles', 'motorbike', 'motorbikes', 'scooter', 'scooters', 'scooty', 'two-wheeler', 'two-wheeler'],
+    motorcycles: ['bike', 'bikes', 'motorcycle', 'motorcycles', 'motorbike', 'motorbikes', 'scooter', 'scooters', 'scooty'],
+    motorcycle: ['bike', 'bikes', 'motorcycle', 'motorcycles', 'motorbike', 'motorbikes', 'scooter', 'scooters', 'scooty'],
+    scooter: ['scooter', 'scooters', 'bike', 'bikes', 'motorcycle', 'motorcycles', 'scooty'],
+    car: ['car', 'cars'],
+    cars: ['car', 'cars'],
+    vehicle: ['vehicle', 'vehicles', 'car', 'cars', 'bike', 'bikes'],
+    vehicles: ['vehicle', 'vehicles', 'car', 'cars', 'bike', 'bikes'],
+    mobile: ['mobile', 'mobiles', 'phone', 'phones', 'smartphone', 'smartphones'],
+    mobiles: ['mobile', 'mobiles', 'phone', 'phones', 'smartphone', 'smartphones'],
+    phone: ['phone', 'phones', 'mobile', 'mobiles', 'smartphone', 'smartphones'],
+    laptop: ['laptop', 'laptops', 'notebook', 'notebooks'],
+    laptops: ['laptop', 'laptops', 'notebook', 'notebooks'],
+    bicycle: ['bicycle', 'bicycles', 'cycle', 'cycles'],
+    bicycles: ['bicycle', 'bicycles', 'cycle', 'cycles'],
+    cycle: ['cycle', 'cycles', 'bicycle', 'bicycles'],
+  };
+
+  // Expand a search term into all its synonym variants (includes the term itself,
+  // singular and plural forms)
+  const expandSearchTerms = (term: string): string[] => {
+    const t = term.toLowerCase().trim();
+    if (!t) return [];
+    const terms = new Set<string>([t]);
+    if (SEARCH_SYNONYMS[t]) SEARCH_SYNONYMS[t].forEach(v => terms.add(v));
+    // Plural/singular variants
+    if (t.endsWith('s')) terms.add(t.slice(0, -1));
+    else terms.add(t + 's');
+    // Also expand the singular form if it's a synonym key (e.g. "bikes" → singular "bike" → motorcycle...)
+    const singular = t.endsWith('s') ? t.slice(0, -1) : t;
+    if (SEARCH_SYNONYMS[singular]) SEARCH_SYNONYMS[singular].forEach(v => terms.add(v));
+    return Array.from(terms);
+  };
+
   // Get final results - Regular search always works, AI search enhances results (memoized for performance)
   // 🛡️ PROTECTED: FINALIZED SEARCH PRIORITIZATION LOGIC - DO NOT MODIFY
   // This search system ensures: Title matches → Description matches → AI results
@@ -1083,6 +1141,10 @@ export default function EnquiryWall() {
     const regularResultIds = new Set<string>();
     const scoredResults: Array<{enquiry: Enquiry, score: number, matchType: 'title' | 'description' | 'ai', isInSelectedCategory: boolean}> = [];
     
+    // Expand the search term with synonyms and plural forms so "bike" also
+    // matches "motorcycle" / "scooter" / "bikes" etc.
+    const expandedTerms = expandSearchTerms(searchLower);
+    
     // Helper to check if enquiry is in selected category
     const isInSelectedCategory = (enquiry: Enquiry): boolean => {
       if (selectedCategory === "all") return false; // No category selected
@@ -1109,11 +1171,29 @@ export default function EnquiryWall() {
             titleMatch = true;
           }
         }
+        // Synonym-expanded title match: "bike" matches a title containing "motorcycle"
+        if (!titleMatch) {
+          const titleWords = titleLower.split(/\s+/);
+          if (expandedTerms.some(t => titleLower.includes(t) || titleWords.some(word => word.length > 2 && (word.includes(t) || t.includes(word))))) {
+            titleMatch = true;
+          }
+        }
+      }
+      
+      // A search term that names the enquiry's own category counts as a title
+      // match — so "bike" finds "Pulsar 150 needed" filed under Bike.
+      if (!titleMatch && enquiry.category) {
+        const catLabel = APP_CATEGORIES.find(c => c.value === enquiry.category)?.label || enquiry.category;
+        const catWords = [String(enquiry.category).toLowerCase(), catLabel.toLowerCase()];
+        if (expandedTerms.some(t => catWords.some(cw => cw === t))) {
+          titleMatch = true;
+        }
       }
       
       // Check description match (only if no title match)
       if (!titleMatch && enquiry.description) {
-        if (enquiry.description.toLowerCase().includes(searchLower)) {
+        const descLower = enquiry.description.toLowerCase();
+        if (expandedTerms.some(t => descLower.includes(t))) {
           descriptionMatch = true;
         }
       }
@@ -5587,7 +5667,7 @@ export default function EnquiryWall() {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
-                      handleSearchChange(searchTerm);
+                      submitSearch(searchTerm);
                     }
                   }}
                   onFocus={() => {
@@ -5653,7 +5733,7 @@ export default function EnquiryWall() {
                     {/* Search submit — thumb-reachable black pill inside the bar (mobile-first) */}
                     <button
                       type="button"
-                      onClick={() => handleSearchChange(searchTerm)}
+                      onClick={() => submitSearch(searchTerm)}
                       className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 z-50 h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center bg-black text-white rounded-lg sm:rounded-xl border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[calc(-50%+2px)] transition-all touch-manipulation"
                       aria-label="Search"
                     >
@@ -5799,13 +5879,7 @@ export default function EnquiryWall() {
               <button
                 className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none !relative !overflow-hidden group"
                 onClick={() => {
-                  preventSuggestionsRef.current = true;
-                  setShowSuggestions(false);
-                  setSearchSuggestions([]);
-                  if (searchTerm.trim()) {
-                    handleSearchChange(searchTerm);
-                  }
-                  setTimeout(() => { preventSuggestionsRef.current = false; }, 500);
+                  submitSearch(searchTerm);
                 }}
               >
                 <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />

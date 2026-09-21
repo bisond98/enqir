@@ -48,6 +48,9 @@ const MONO: Record<string, string> = {
   'mahindra': 'mahindra',
   'tata': 'tata',
   'ktm': 'ktm',
+  // Motorcycle brands (verified on Simple Icons)
+  'ducati': 'ducati',
+  'suzuki': 'suzuki',
 };
 
 /** Verified missing on both CDNs — resolve to null immediately. */
@@ -57,10 +60,10 @@ const BRAND_MISSING = new Set([
   'hindustan motors',
   'lexus',
   'mg',
+  // Motorcycle brands missing from both CDNs
   'ather',
   'bajaj',
   'benelli',
-  'ducati',
   'harley-davidson',
   'hero',
   'jawa',

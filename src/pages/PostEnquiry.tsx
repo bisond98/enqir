@@ -2503,9 +2503,10 @@ export default function PostEnquiry() {
                                   className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                                 >
                                   <option value="">Brand</option>
-                                  {(isBikeOnly ? BIKE_BRANDS : CAR_BRANDS).map((b) => (
+                                  {(isBikeOnly ? BIKE_BRANDS : CAR_BRANDS).filter(b => b !== 'Other').map((b) => (
                                     <option key={b} value={b}>{b}</option>
                                   ))}
+                                  <option value="Other">Other</option>
                                 </select>
                                 <div className="h-3">
                                   <ChevronDown className="absolute right-3 -top-8 h-4 w-4 text-gray-500 pointer-events-none" />

@@ -398,10 +398,28 @@ export class AISearchService {
       };
     }
     
-    // Filter enquiries by AI-determined category
+    // The AI rules map keywords to legacy buckets like 'automobile' / 'electronics-gadgets',
+    // but enquiries are actually filed under the app's categories ('bike', 'car', 'mobiles',
+    // 'electronics', ...). Expand the AI category into its family so e.g. searching "bike"
+    // also finds enquiries filed under 'bike', not just the legacy 'automobile'.
+    const CATEGORY_FAMILY: Record<string, string[]> = {
+      automobile: ['automobile', 'car', 'bike', 'vehicles', 'bicycles'],
+      vehicles: ['vehicles', 'car', 'bike', 'automobile', 'bicycles'],
+      'electronics-gadgets': ['electronics-gadgets', 'electronics', 'mobiles', 'laptops', 'technology'],
+      electronics: ['electronics', 'electronics-gadgets', 'mobiles', 'laptops', 'technology'],
+      'home-furniture': ['home-furniture', 'furniture', 'home', 'appliances'],
+      'fashion-apparel': ['fashion-apparel', 'fashion', 'sneakers'],
+      'books-publications': ['books-publications', 'books'],
+      'gaming-recreation': ['gaming-recreation', 'gaming'],
+      'childcare-family': ['childcare-family', 'baby-kids'],
+      thrift: ['thrift', 'fashion', 'fashion-apparel'],
+    };
+    const family = CATEGORY_FAMILY[aiAnalysis.category] ?? [aiAnalysis.category];
+    
+    // Filter enquiries by AI-determined category family
     const categoryResults = enquiries.filter(enquiry => 
-      enquiry.category === aiAnalysis.category || 
-      (enquiry.categories && enquiry.categories.includes(aiAnalysis.category))
+      family.includes(enquiry.category) || 
+      (enquiry.categories && enquiry.categories.some((c: string) => family.includes(c)))
     );
     
     if (categoryResults.length === 0) {

@@ -858,7 +858,7 @@ const EnquiryDetail = () => {
                         d.landArea && { label: 'Land / Plot', value: d.landArea, highlight: true },
                         d.builtUpArea && { label: 'Buildings', value: d.builtUpArea, highlight: true },
                         d.houseArea && { label: 'House / Flat', value: d.houseBhk ? `${d.houseArea} · ${d.houseBhk}` : d.houseArea, highlight: true },
-                        d.brand && { label: 'Brand', value: d.brand, icon: 'brand', logoUrl: getCarBrandLogoUrl(d.brand) },
+                        d.brand && { label: 'Brand', value: d.brand, icon: 'brand', logoUrl: getCarBrandLogoUrl(d.brand) || getMobileBrandLogoUrl(d.brand) },
                         d.year && { label: 'Year', value: d.year, icon: 'calendar' },
                         d.variant && { label: 'Variant', value: d.variant },
                         d.transmission && { label: 'Transmission', value: d.transmission, icon: 'gear' },
