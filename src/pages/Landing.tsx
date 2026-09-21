@@ -1366,6 +1366,14 @@ const Landing = () => {
                       const responseData = change.doc.data();
                       if (!responseData || !responseData.enquiryId) return;
                       
+                      // Only notify if this response is genuinely NEW (last 2 min).
+                      // Firestore's initial snapshot reports every existing doc as
+                      // 'added', which resurrected old notifications after every
+                      // reload/clear — the freshness check stops that.
+                      const createdMs = responseData.createdAt?.toMillis?.() 
+                        ?? (responseData.createdAt ? new Date(responseData.createdAt).getTime() : 0);
+                      if (createdMs && Date.now() - createdMs > 2 * 60 * 1000) return;
+                      
                       const enquiry = recentEnquiries.find(e => e?.id === responseData.enquiryId);
                       
                       if (enquiry && enquiry.id) {
@@ -1436,6 +1444,13 @@ const Landing = () => {
                   const lastMessage = chatData.lastMessage;
                   
                   if (lastMessage && lastMessage.senderId !== user.uid && chatData.enquiryId) {
+                    // Only notify if this message is genuinely NEW (last 2 min).
+                    // Prevents stale chat re-fires from resurrecting cleared
+                    // notifications.
+                    const msgTime = lastMessage.timestamp?.toMillis?.()
+                      ?? (lastMessage.timestamp ? new Date(lastMessage.timestamp).getTime() : 0);
+                    if (msgTime && Date.now() - msgTime > 2 * 60 * 1000) return;
+                    
                     // Create notification for new chat message
                     createNotification('new_chat', {
                       title: '💬 New Message',

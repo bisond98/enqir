@@ -79,6 +79,21 @@ const Marketplace = lazy(() => import("./modules/sell/pages/Marketplace"));
 const ListingDetail = lazy(() => import("./modules/sell/pages/ListingDetail"));
 const ListingChat = lazy(() => import("./modules/sell/pages/ListingChat"));
 const SellerDashboard = lazy(() => import("./modules/sell/pages/SellerDashboard"));
+
+// Warm the most-visited route chunks while the browser is idle, so the first
+// click on Dashboard / Enquiries / Post feels instant instead of spinner-then-load.
+if (typeof window !== 'undefined') {
+  const prefetchCommonRoutes = () => {
+    ["./pages/Dashboard", "./pages/EnquiryWall", "./pages/PostEnquiry", "./pages/EnquiryDetail"].forEach((p) => {
+      import(/* @vite-ignore */ p).catch(() => {});
+    });
+  };
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(prefetchCommonRoutes, { timeout: 15000 });
+  } else {
+    setTimeout(prefetchCommonRoutes, 6000);
+  }
+}
 // 🛡️ PROTECTED: ChatProvider - DO NOT REMOVE - Required for MyChats and AllChats
 import { ChatProvider } from "./contexts/ChatContext";
 
@@ -116,17 +131,26 @@ if (typeof window !== 'undefined') {
     }
   };
   
-  // Check periodically and on focus — use setInterval instead of requestAnimationFrame
-  // RAF fires ~60x/sec even when throttled; setInterval avoids waking the renderer
-  const scrollCheckInterval = setInterval(ensureScroll, 2000);
-  
+  // Run once on load, on window focus, and after each route change.
+  // (Previously a setInterval every 2s woke the main thread 24/7 —
+  // replaced with event-driven checks so the page stays smooth.)
   window.addEventListener('focus', ensureScroll);
   window.addEventListener('load', ensureScroll);
-  
-  // Cleanup on page unload
-  window.addEventListener('beforeunload', () => {
-    clearInterval(scrollCheckInterval);
-  });
+  ensureScroll();
+
+  // Re-check whenever the router navigates, without any timers.
+  const wrapHistory = (type: 'pushState' | 'replaceState') => {
+    const original = history[type] as History['pushState'];
+    history[type] = function (this: History, ...args: Parameters<History['pushState']>) {
+      const result = original.apply(this, args);
+      // Run after the new page has rendered its layout
+      requestAnimationFrame(ensureScroll);
+      return result;
+    };
+  };
+  wrapHistory('pushState');
+  wrapHistory('replaceState');
+  window.addEventListener('popstate', () => requestAnimationFrame(ensureScroll));
 }
 
 const App = () => {

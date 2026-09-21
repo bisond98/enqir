@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { NotificationContext } from '@/contexts/NotificationContext';
-import { Bell, X, Check } from 'lucide-react';
+import { Bell, X, Check, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -14,7 +14,7 @@ const SmartNotifications: React.FC<{ className?: string }> = ({ className = '' }
     return null;
   }
 
-  const { notifications = [], unreadCount = 0, markAsRead, markAllAsRead } = context;
+  const { notifications = [], unreadCount = 0, markAsRead, markAllAsRead, clearAllNotifications } = context;
 
   const handleNotificationClick = (notificationId: string, actionUrl?: string) => {
     if (!notificationId || !markAsRead) return;
@@ -46,6 +46,19 @@ const SmartNotifications: React.FC<{ className?: string }> = ({ className = '' }
       markAllAsRead();
     } catch (error) {
       console.error('Failed to mark all as read:', error);
+    }
+  };
+
+  // Clear ALL notifications (no history left) and close the dropdown.
+  const handleClearAll = async () => {
+    if (!clearAllNotifications) return;
+    try {
+      await clearAllNotifications();
+    } catch (error) {
+      console.error('Failed to clear notifications:', error);
+    } finally {
+      // Always close the dropdown after clearing
+      setIsOpen(false);
     }
   };
 
@@ -86,6 +99,16 @@ const SmartNotifications: React.FC<{ className?: string }> = ({ className = '' }
                     className="text-[10px] sm:text-xs bg-black hover:bg-gray-900 text-white font-medium px-2 py-1 rounded transition-colors"
                   >
                     Mark all read
+                  </button>
+                )}
+                {(notifications.length > 0 || unreadCount > 0) && clearAllNotifications && (
+                  <button
+                    onClick={handleClearAll}
+                    title="Clear all notifications"
+                    className="text-[10px] sm:text-xs bg-red-500 hover:bg-red-600 text-white font-medium px-2 py-1 rounded transition-colors flex items-center gap-1"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Clear all
                   </button>
                 )}
                 <button

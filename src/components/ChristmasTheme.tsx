@@ -6,17 +6,19 @@ export const ChristmasTheme = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Auto-activate between Dec 1 - Jan 7
-    const now = new Date();
-    const month = now.getMonth();
-    const day = now.getDate();
-    const shouldActivate = (month === 11 && day >= 1) || (month === 0 && day <= 7);
-    
+    const computeActive = () => {
+      const now = new Date();
+      const month = now.getMonth();
+      const day = now.getDate();
+      return (month === 11 && day >= 1) || (month === 0 && day <= 7);
+    };
+
     // Check localStorage for manual override
     const saved = localStorage.getItem('christmasTheme');
     if (saved !== null) {
       setIsActive(saved === 'true');
     } else {
-      setIsActive(shouldActivate);
+      setIsActive(computeActive());
     }
     
     // Check if we're on landing page using window.location
@@ -40,22 +42,6 @@ export const ChristmasTheme = ({ children }: { children: React.ReactNode }) => {
       window.removeEventListener('popstate', handlePopState);
       clearInterval(interval);
     };
-  }, []);
-
-  useEffect(() => {
-    // Auto-activate between Dec 1 - Jan 7
-    const now = new Date();
-    const month = now.getMonth();
-    const day = now.getDate();
-    const shouldActivate = (month === 11 && day >= 1) || (month === 0 && day <= 7);
-    
-    // Check localStorage for manual override
-    const saved = localStorage.getItem('christmasTheme');
-    if (saved !== null) {
-      setIsActive(saved === 'true');
-    } else {
-      setIsActive(shouldActivate);
-    }
   }, []);
 
   // Memoize snowflake data to ensure consistency across environments

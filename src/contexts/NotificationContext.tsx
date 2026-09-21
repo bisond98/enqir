@@ -77,6 +77,25 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     initialize();
   }, [user?.uid]);
 
+  // Realtime clear-sync: when notifications are cleared in this tab (custom
+  // event) or in another tab (localStorage 'storage' event), wipe local state
+  // immediately so every dropdown and page reflects the clear instantly.
+  useEffect(() => {
+    const wipe = () => {
+      setNotifications([]);
+      setUnreadCount(0);
+    };
+    window.addEventListener('notificationsCleared', wipe);
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'notifications_cleared_at') wipe();
+    };
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('notificationsCleared', wipe);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+
   // COMPLETELY CLEAR all old notifications from localStorage for ALL users
   const clearAllOldNotifications = async () => {
     try {
@@ -248,11 +267,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       // IMPORTANT: Always save notifications to database regardless of user's notification preference
       // The preference only controls DISPLAY (toasts, popups), not STORAGE
       // This ensures notifications are visible on the notification page even when popups are disabled
-      await smartNotificationService.createNotification(targetUserId, type, data);
+      const notification = await smartNotificationService.createNotification(targetUserId, type, data);
       
-      // If it's for current user, refresh (this is needed for notifications created from external sources)
-      if (targetUserId === user?.uid) {
-        await refreshNotifications();
+      // If it's for the current user, add it to state directly.
+      // (Previously this called refreshNotifications() which WIPED all
+      // notifications — including the one just created — so notifications
+      // disappeared instantly and clear behaved unpredictably.)
+      if (targetUserId === user?.uid && notification) {
+        setNotifications(prev => [notification, ...prev]);
+        setUnreadCount(prev => prev + 1);
       }
     } catch (error) {
       console.error('Failed to create notification for user:', error);
@@ -277,6 +300,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       // Force state update again to ensure UI reflects the change
       setNotifications([]);
       setUnreadCount(0);
+      
+      // Broadcast the clear so every open dropdown/tab syncs in realtime
+      // (other tabs hear this via the 'storage' event listener below)
+      try {
+        localStorage.setItem('notifications_cleared_at', Date.now().toString());
+        window.dispatchEvent(new CustomEvent('notificationsCleared'));
+      } catch {
+        // Ignore storage errors
+      }
       
       console.log('✅ All notifications cleared from state and storage');
     } catch (error) {

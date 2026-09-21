@@ -5,23 +5,12 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Smooth scroll to top when pathname changes
-    const scrollToTop = () => {
-      window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'smooth'
-      });
-    };
-    
-    // Use requestAnimationFrame for smoother scroll
-    requestAnimationFrame(() => {
-      scrollToTop();
-    });
+    // Jump to top instantly when pathname changes — no slow smooth-scroll
+    // animation, so page switches feel crisp and immediate.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
   }, [pathname]);
 
   return null;
 };
 
 export default ScrollToTop;
-

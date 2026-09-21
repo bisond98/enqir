@@ -26,8 +26,7 @@ export default defineConfig(({ mode }) => ({
       overlay: true,
     },
     watch: {
-      usePolling: true,
-      // Prevent file watching from reverting changes
+      // Native OS file watching (no polling) — much faster HMR, far less CPU.
       ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**'],
       // Don't clear screen on file changes (prevents confusion)
       clearScreen: false,
@@ -39,7 +38,8 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    force: true, // Force dependency pre-bundling
+    // No 'force: true' — forced re-bundling on every dev start made the dev
+    // server slow and caused full page reloads. Vite caches deps safely.
   },
   
   plugins: [

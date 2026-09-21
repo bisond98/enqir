@@ -558,10 +558,9 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     if (!user?.uid) return;
     
-    // Defer initial chat load by 3 seconds so page render isn't blocked
-    const initialDelay = setTimeout(() => {
-      loadActiveChats();
-    }, 3000);
+    // Load chats immediately — a 3s artificial delay here made My Chats show
+    // stale/empty data for seconds after arriving on the page.
+    loadActiveChats();
     
     // Set up real-time listeners for chat messages and seller submissions to refresh
     let timeoutId: NodeJS.Timeout;
@@ -574,9 +573,36 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }, 2000);
     };
     
-    // Listen to chat messages changes (includes admin messages)
-    const unsubscribeChatMessages = onSnapshot(
-      query(collection(db, "chatMessages"), where("participants", "array-contains", user.uid)),
+    // Listen to chat messages where the user is the SENDER and where they are
+    // the SELLER — these are the two fields regular chat messages are written
+    // with. (The previous listener filtered on a 'participants' field that
+    // normal messages never have, so new incoming replies never triggered a
+    // refresh until a full page reload.)
+    const unsubscribeChatMessagesSent = onSnapshot(
+      query(collection(db, "chatMessages"), where("senderId", "==", user.uid)),
+      () => {
+        refreshChats();
+      },
+      (error) => {
+        // Silently handle - will retry on next snapshot
+      }
+    );
+    
+    const unsubscribeChatMessagesReceived = onSnapshot(
+      query(collection(db, "chatMessages"), where("sellerId", "==", user.uid)),
+      () => {
+        refreshChats();
+      },
+      (error) => {
+        // Silently handle - will retry on next snapshot
+      }
+    );
+    
+    // Buyer side: messages written with buyerId = user.uid (added in
+    // EnquiryResponses.tsx sendMessage) so incoming seller replies trigger a
+    // refresh instantly, without a page reload.
+    const unsubscribeBuyerMessages = onSnapshot(
+      query(collection(db, "chatMessages"), where("buyerId", "==", user.uid)),
       () => {
         refreshChats();
       },
@@ -615,9 +641,10 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
 
     return () => {
-      clearTimeout(initialDelay);
       clearTimeout(timeoutId);
-      unsubscribeChatMessages();
+      unsubscribeChatMessagesSent();
+      unsubscribeChatMessagesReceived();
+      unsubscribeBuyerMessages();
       unsubscribeSellerSubmissions();
       unsubscribeAdminMessages();
     };

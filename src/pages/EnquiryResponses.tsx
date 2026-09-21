@@ -620,6 +620,9 @@ const EnquiryResponses = () => {
         senderId: user.uid,
         senderName: userProfiles[user.uid]?.fullName || 'User',
         senderType: isSeller ? 'seller' : 'buyer',
+        // Buyer id on every message so buyer-side real-time listeners can catch
+        // seller replies (the buyer uid otherwise appears nowhere in the doc)
+        buyerId: isSeller ? enquiry?.userId : user.uid,
         message: messageText,
         attachments: attachmentData,
         timestamp: serverTimestamp()
@@ -747,6 +750,7 @@ const EnquiryResponses = () => {
         senderId: user.uid,
         senderName: userProfiles[user.uid]?.fullName || 'User',
         senderType: 'seller',
+        buyerId: enquiry?.userId,
         message: messageText,
         attachments: attachmentData,
         timestamp: serverTimestamp()
@@ -2221,6 +2225,7 @@ const EnquiryResponses = () => {
         senderId: user.uid,
         senderName: userProfiles[user.uid]?.fullName || 'User',
         senderType: isSeller ? 'seller' : 'buyer',
+        buyerId: isSeller ? enquiry?.userId : user.uid,
         message: `🎤 Voice message (${Math.floor(recordingTime / 60)}:${(recordingTime % 60).toString().padStart(2, '0')})`,
         attachments: attachmentData,
         timestamp: serverTimestamp()

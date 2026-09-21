@@ -1140,16 +1140,23 @@ const Dashboard = () => {
                     
                     const lastMessage = chatData.lastMessage;
                     
-                    if (lastMessage && lastMessage.senderId !== user.uid && chatData.enquiryId) {
-                      // Create notification for new chat message
-                      createNotification('new_chat', {
-                        title: '💬 New Message',
-                        message: `${lastMessage.senderName || 'Someone'}: ${(lastMessage.text || '').substring(0, 50)}${(lastMessage.text || '').length > 50 ? '...' : ''}`,
-                        priority: 'medium',
-                        actionUrl: `/enquiry/${chatData.enquiryId}/responses`,
-                        actionText: 'Open Chat'
-                      });
-                    }
+                  if (lastMessage && lastMessage.senderId !== user.uid && chatData.enquiryId) {
+                    // Only notify if this message is genuinely NEW (last 2 min).
+                    // Stale snapshot re-fires were resurrecting cleared
+                    // notifications on every reload.
+                    const msgTime = lastMessage.timestamp?.toMillis?.()
+                      ?? (lastMessage.timestamp ? new Date(lastMessage.timestamp).getTime() : 0);
+                    if (msgTime && Date.now() - msgTime > 2 * 60 * 1000) return;
+                    
+                    // Create notification for new chat message
+                    createNotification('new_chat', {
+                      title: '💬 New Message',
+                      message: `${lastMessage.senderName || 'Someone'}: ${(lastMessage.text || '').substring(0, 50)}${(lastMessage.text || '').length > 50 ? '...' : ''}`,
+                      priority: 'medium',
+                      actionUrl: `/enquiry/${chatData.enquiryId}/responses`,
+                      actionText: 'Open Chat'
+                    });
+                  }
                   }
                 } catch (error) {
                   console.error('Error processing chat change:', error);
