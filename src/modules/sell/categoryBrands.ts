@@ -14,3 +14,9 @@ export const BIKE_BRANDS = [
   'Jawa', 'Kawasaki', 'KTM', 'Mahindra', 'Ola Electric', 'Other', 'Revolt',
   'Royal Enfield', 'Suzuki', 'TVS', 'UM', 'Yamaha', 'Yezdi',
 ];
+
+export const MOBILE_BRANDS = [
+  'Apple', 'Asus', 'Google', 'Honor', 'Infinix', 'iQOO', 'Itel', 'Jio',
+  'Karbonn', 'Lava', 'Lenovo', 'Micromax', 'Motorola', 'Nokia', 'Nothing',
+  'OnePlus', 'Oppo', 'Other', 'Realme', 'Redmi', 'Samsung', 'Tecno', 'Vivo', 'Xiaomi',
+];

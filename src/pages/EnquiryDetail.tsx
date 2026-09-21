@@ -33,6 +33,7 @@ import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, setDoc, ser
 import { toast } from '@/hooks/use-toast';
 import CountdownTimer from '@/components/CountdownTimer';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
+import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 import PaymentPlanSelector from '@/components/PaymentPlanSelector';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
@@ -71,7 +72,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string } | null;
 }
 
 interface UserProfile {
@@ -803,9 +804,31 @@ const EnquiryDetail = () => {
                       const deadlinePhrase = dl ? ` before ${dl}` : '';
                       const sentence = `Need ${parts.join(' ')}${deadlinePhrase}`;
                       return (
-                        <p className="mt-3 text-center inline-block mx-auto text-xs sm:text-sm font-bold text-white bg-red-600 border border-black rounded-xl px-4 py-2 shadow-[0_3px_0_0_rgba(0,0,0,0.85)]">
-                          {sentence}
-                        </p>
+                        <div className="flex justify-center">
+                          <p className="mt-3 text-xs sm:text-sm font-bold text-white bg-red-600 border border-black rounded-xl px-4 py-2 shadow-[0_3px_0_0_rgba(0,0,0,0.85)]">
+                            {sentence}
+                          </p>
+                        </div>
+                      );
+                    })()}
+                    {/* One-line summary from mobile chips — mobile category only, red background white text */}
+                    {(() => {
+                      const d = enquiry.details as any;
+                      if (!d || !d.mobileBrand) return null;
+                      const parts: string[] = [];
+                      if (enquiry.title) parts.push(enquiry.title);
+                      parts.push(d.mobileBrand);
+                      if (d.ram) parts.push(d.ram);
+                      if (d.memory) parts.push(d.memory);
+                      const dl = formatDeadlineReadable(enquiry.deadline);
+                      const deadlinePhrase = dl ? ` before ${dl}` : '';
+                      const sentence = `Need ${parts.join(' ')}${deadlinePhrase}`;
+                      return (
+                        <div className="flex justify-center">
+                          <p className="mt-3 text-xs sm:text-sm font-bold text-white bg-red-600 border border-black rounded-xl px-4 py-2 shadow-[0_3px_0_0_rgba(0,0,0,0.85)]">
+                            {sentence}
+                          </p>
+                        </div>
                       );
                     })()}
                     {/* Detail chips — brand/year/variant + job direction/skills */}
@@ -840,6 +863,9 @@ const EnquiryDetail = () => {
                         d.variant && { label: 'Variant', value: d.variant },
                         d.transmission && { label: 'Transmission', value: d.transmission, icon: 'gear' },
                         d.fuelType && { label: 'Fuel', value: d.fuelType, icon: 'fuel' },
+                        d.mobileBrand && { label: 'Brand', value: d.mobileBrand, icon: 'mobileBrand', logoUrl: getMobileBrandLogoUrl(d.mobileBrand), highlight: true },
+                        d.ram && { label: 'RAM', value: d.ram, highlight: true },
+                        d.memory && { label: 'Memory', value: d.memory, highlight: true },
                       ].filter(Boolean) as { label: string; value: string; highlight?: boolean }[];
                       if (chips.length === 0) return null;
                       // Hand-drawn H-pattern gear shifter (manual gearbox)
@@ -850,6 +876,8 @@ const EnquiryDetail = () => {
                       );
                       const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) =>
                         icon === 'brand' && logoUrl ? (
+                          <img src={logoUrl} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />
+                        ) : icon === 'mobileBrand' && logoUrl ? (
                           <img src={logoUrl} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />
                         ) : icon === 'gear' ? (
                           <GearShifterIcon className="h-3 w-3 text-black" />
@@ -869,12 +897,14 @@ const EnquiryDetail = () => {
                             ) : c.highlight ? (
                               <span key={c.label} className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
                                 <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>
+                                {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.value}
                               </span>
                             ) : (
                               <span key={c.label} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
-                                <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />
+                                {!(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>
+                                {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.value}
                               </span>
                             )

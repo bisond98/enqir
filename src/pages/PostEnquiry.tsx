@@ -34,7 +34,7 @@ import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { APP_CATEGORIES } from "@/constants/categories";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
-import { CAR_BRANDS, BIKE_BRANDS } from "@/modules/sell/categoryBrands";
+import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS } from "@/modules/sell/categoryBrands";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { useToast } from "@/components/ui/use-toast";
@@ -170,6 +170,8 @@ export default function PostEnquiry() {
   const [notes, setNotes] = useState("");
   // Vehicle details (brand/year/variant + transmission/fuel for cars) — filled when a vehicle category is selected
   const [vehicleDetails, setVehicleDetails] = useState<{ brand: string; year: string; variant: string; transmission: string; fuelType: string }>({ brand: '', year: '', variant: '', transmission: '', fuelType: '' });
+  // Mobile details (brand/RAM/memory) — filled when the mobiles category is selected
+  const [mobileDetails, setMobileDetails] = useState<{ brand: string; ram: string; memory: string }>({ brand: '', ram: '', memory: '' });
   // Job enquiry direction: employer hiring vs seeker looking for work (jobs category only)
   const [jobDirection, setJobDirection] = useState<'hiring' | 'seeking' | ''>('');
   // Job-specific extra fields
@@ -321,6 +323,7 @@ export default function PostEnquiry() {
         if (d.deadline) setDeadline(new Date(d.deadline));
         if (d.notes) setNotes(d.notes);
         if (d.vehicleDetails) setVehicleDetails(d.vehicleDetails);
+        if (d.mobileDetails) setMobileDetails(d.mobileDetails);
         if (d.estateDetails) setEstateDetails(d.estateDetails);
         if (d.estateType) setEstateType(d.estateType);
         if (d.estateDealType) setEstateDealType(d.estateDealType);
@@ -535,6 +538,9 @@ export default function PostEnquiry() {
               ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
               ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
+              ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+              ...(mobileDetails.ram && { ram: mobileDetails.ram }),
+              ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...(jobDirection && { jobDirection }),
               ...(jobSkills.trim() && { skills: jobSkills.trim() }),
               ...(jobDetails.experience && { experience: jobDetails.experience }),
@@ -694,6 +700,9 @@ export default function PostEnquiry() {
             ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
             ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
+            ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+            ...(mobileDetails.ram && { ram: mobileDetails.ram }),
+            ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
             ...(jobSkills.trim() && { skills: jobSkills.trim() }),
             ...(estateDealType && { listingType: estateDealType }),
@@ -846,6 +855,9 @@ export default function PostEnquiry() {
             ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
             ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
+            ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+            ...(mobileDetails.ram && { ram: mobileDetails.ram }),
+            ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
             ...(jobSkills.trim() && { skills: jobSkills.trim() }),
             ...(estateDealType && { listingType: estateDealType }),
@@ -1006,6 +1018,9 @@ export default function PostEnquiry() {
               ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
               ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
+              ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+              ...(mobileDetails.ram && { ram: mobileDetails.ram }),
+              ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...(estateDealType && { listingType: estateDealType }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
               ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -1689,6 +1704,9 @@ export default function PostEnquiry() {
           ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
           ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
           ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
+          ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+          ...(mobileDetails.ram && { ram: mobileDetails.ram }),
+          ...(mobileDetails.memory && { memory: mobileDetails.memory }),
           ...(jobDirection && { jobDirection }),
           ...(jobSkills.trim() && { skills: jobSkills.trim() }),
           ...(jobDetails.experience && { experience: jobDetails.experience }),
@@ -2579,6 +2597,65 @@ export default function PostEnquiry() {
                         );
                       })()}
 
+                      {/* Mobile details — brand/RAM/memory above the description when the mobiles category is selected */}
+                      {selectedCategories.includes('mobiles') && (() => {
+                        const RAM_OPTIONS = ['2 GB', '3 GB', '4 GB', '6 GB', '8 GB', '12 GB', '16 GB', '16+ GB'];
+                        const MEMORY_OPTIONS = ['16 GB', '32 GB', '64 GB', '128 GB', '256 GB', '512 GB', '1 TB', '1 TB+'];
+                        return (
+                          <div className="mb-6">
+                            <div className="flex items-start justify-between gap-3">
+                              {/* Brand */}
+                              <div className="flex-1 min-w-0 relative">
+                                <select
+                                  value={mobileDetails.brand}
+                                  onChange={(e) => setMobileDetails(v => ({ ...v, brand: e.target.value }))}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                >
+                                  <option value="">Brand</option>
+                                  {MOBILE_BRANDS.map((b) => (
+                                    <option key={b} value={b}>{b}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-4 sm:top-5 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                              {/* RAM */}
+                              <div className="flex-1 min-w-0 relative">
+                                <select
+                                  value={mobileDetails.ram}
+                                  onChange={(e) => setMobileDetails(v => ({ ...v, ram: e.target.value }))}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.ram ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                >
+                                  <option value="">RAM</option>
+                                  {RAM_OPTIONS.map((r) => (
+                                    <option key={r} value={r}>{r}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-4 sm:top-5 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                              {/* Memory (storage) */}
+                              <div className="flex-1 min-w-0 relative">
+                                <select
+                                  value={mobileDetails.memory}
+                                  onChange={(e) => setMobileDetails(v => ({ ...v, memory: e.target.value }))}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.memory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                >
+                                  <option value="">Memory</option>
+                                  {MEMORY_OPTIONS.map((m) => (
+                                    <option key={m} value={m}>{m}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-4 sm:top-5 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                            </div>
+                            <div className="h-3 flex items-start justify-between gap-3 mt-0.5">
+                              <p className="flex-1 text-[8px] font-bold text-black text-center tracking-wide">brand</p>
+                              <p className="flex-1 text-[8px] font-bold text-black text-center tracking-wide">ram</p>
+                              <p className="flex-1 text-[8px] font-bold text-black text-center tracking-wide">memory</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
                       {/* Real-estate — selection buttons + big capsules above the description */}
                       {selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && (() => {
                         const LAND_UNITS = ['Cents', 'Acre', 'Hectare'];
@@ -2950,7 +3027,7 @@ export default function PostEnquiry() {
                             type="button"
                             onClick={() => {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
-                                title, description, selectedCategories, budget, location, vehicleDetails, estateDetails, estateType, estateDealType,
+                                title, description, selectedCategories, budget, location, vehicleDetails, mobileDetails, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
                                 referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails
                               }));
