@@ -1405,7 +1405,7 @@ export default function CreateListing() {
                         {uploadProgresses.map((p, i) => (
                           <div key={i} className="w-full bg-gray-200 rounded-full h-1.5">
                             <div
-                              className="bg-black h-1.5 rounded-full transition-all duration-200"
+                              className="bg-green-500 h-1.5 rounded-full transition-all duration-200"
                               style={{ width: `${p}%` }}
                             />
                           </div>

@@ -21,6 +21,7 @@ import { suggestEnquiriesForListing } from '../services/aiMatching';
 import { processPayment } from '@/services/paymentService';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import { uploadToCloudinaryAuto } from '@/integrations/cloudinary';
+import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 
 
 function formatPrice(l: SellListing) {
@@ -621,8 +622,10 @@ export default function ListingDetail() {
                   const entries = Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key));
                   return entries.map(([key, val], i) => {
                     const label = key in detailLabels ? detailLabels[key] : '';
+                    const brandLogo = key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
                       <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
+                        {key === 'brand' && brandLogo && <img src={brandLogo} alt="" className="h-3.5 w-3.5 object-contain flex-shrink-0" loading="lazy" />}
                         {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
                         {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
                         {label && key !== 'transmission' && key !== 'fuel' && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
@@ -678,10 +681,10 @@ export default function ListingDetail() {
                     <button
                       type="button"
                       onClick={handleCallClick}
-                      className="relative w-full !h-14 !text-lg !font-black !bg-white hover:!bg-gray-50 !text-black !rounded-2xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 touch-manipulation select-none flex items-center justify-center"
+                      className="relative w-full !h-14 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 touch-manipulation select-none flex items-center justify-center"
                     >
-                      <span className="w-9 h-9 rounded-full border-[1.5px] border-black flex items-center justify-center mr-3 bg-white">
-                        <Phone className="h-4 w-4 text-black" />
+                      <span className="w-9 h-9 rounded-full border-[0.5px] border-white flex items-center justify-center mr-3 bg-white/10">
+                        <Phone className="h-4 w-4 text-white" />
                       </span>
                       <span>Call Seller</span>
                     </button>
@@ -731,10 +734,10 @@ export default function ListingDetail() {
                         type="button"
                         onClick={handleCallClick}
                         disabled={callingPayment}
-                        className="relative w-full !h-14 !text-lg !font-black !bg-white hover:!bg-gray-50 !text-black !rounded-2xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 touch-manipulation select-none flex items-center justify-center"
+                        className="relative w-full !h-14 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 touch-manipulation select-none flex items-center justify-center"
                       >
-                        <span className="w-9 h-9 rounded-full border-[1.5px] border-black flex items-center justify-center mr-3 bg-white">
-                          <Phone className="h-4 w-4 text-black" />
+                        <span className="w-9 h-9 rounded-full border-[0.5px] border-white flex items-center justify-center mr-3 bg-white/10">
+                          <Phone className="h-4 w-4 text-white" />
                         </span>
                         <span>{callingPayment ? 'Opening payment…' : 'Call Seller'}</span>
                       </button>
@@ -981,7 +984,7 @@ function MessageSellerInline({
         disabled={sending}
       >
         <Send className="h-4 w-4 mr-2 relative z-10" />
-        <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Connect') : 'Sign in to message'}</span>
+        <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Message') : 'Sign in to message'}</span>
       </Button>
     </div>
   );
