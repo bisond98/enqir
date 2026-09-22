@@ -1655,7 +1655,7 @@ export default function CreateListing() {
                   className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
                 />
               </div>
-              <p className="text-[9px] text-black font-semibold mt-1.5 text-right">
+              <p className="text-[8px] sm:text-[9px] text-slate-400 font-medium mt-1.5 text-right">
                 Connect with privacy
               </p>
             </div>
@@ -1686,7 +1686,7 @@ export default function CreateListing() {
                 >
                   <span className="relative z-10">{publishing ? 'Selling…' : 'Sell'}</span>
                 </Button>
-                <p className="text-[8px] sm:text-[10px] text-center text-black font-semibold mt-2">
+                <p className="text-[7px] sm:text-[9px] text-center text-slate-400 font-medium mt-2">
                   We do not offer anything for free to make you the product.
                 </p>
               </div>

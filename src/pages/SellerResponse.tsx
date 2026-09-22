@@ -1394,7 +1394,7 @@ const SellerResponse = () => {
 
           {/* Enhanced Response Form */}
           {!hasAlreadySubmitted && (
-            <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-2 border-black rounded-2xl">
+            <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border border-black rounded-2xl">
             <CardHeader className="bg-black p-3 sm:p-4">
               {/* Title and Category Row */}
               <div className="flex items-center justify-between mb-2.5 sm:mb-3">
@@ -1474,7 +1474,7 @@ const SellerResponse = () => {
                     }
                   }}
                   maxLength={500}
-                    className={`min-h-[140px] text-base !border-[1.5px] !border-black focus:!border-[2px] focus:border-black focus:ring-0 focus-visible:!border-[2px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 touch-manipulation ${errors.description ? '!border-red-500 focus:!border-red-500' : ''}`}
+                    className={`min-h-[140px] text-base !border-[0.5px] !border-black focus:!border-[1px] focus:border-black focus:ring-0 focus-visible:!border-[1px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 touch-manipulation ${errors.description ? '!border-red-500 focus:!border-red-500' : ''}`}
                     style={{ fontSize: '16px' }}
                 />
                   {/* AI golden-sparkle icon — tap to generate (empty) or grammar-correct (typed). No background. */}
@@ -1501,18 +1501,12 @@ const SellerResponse = () => {
                   </button>
                 </div>
                 <div className="flex justify-between items-center mt-1">
-                  <p className="text-xs text-gray-500">
-                    {description.length}/500 characters
-                  </p>
                   {errors.description && (
                     <span className="text-xs text-red-500 flex items-center">
                       <AlertTriangle className="h-3 w-3 mr-1" />
                       {errors.description}
                     </span>
                   )}
-                  <span className="text-xs text-black ml-auto">
-                    {description.length}/500
-                  </span>
                 </div>
               </div>
 
@@ -1559,7 +1553,7 @@ const SellerResponse = () => {
                       setPrice('₹' + e.target.value);
                     }
                   }}
-                    className={`h-12 sm:h-14 text-base !border-[1.5px] !border-black focus:!border-[2px] focus:border-black focus:ring-0 focus-visible:!border-[2px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 text-lg font-semibold touch-manipulation ${errors.price ? '!border-red-500 focus:!border-red-500' : ''}`}
+                    className={`h-12 sm:h-14 text-base !border-[0.5px] !border-black focus:!border-[1px] focus:border-black focus:ring-0 focus-visible:!border-[1px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 text-lg font-semibold touch-manipulation ${errors.price ? '!border-red-500 focus:!border-red-500' : ''}`}
                     style={{ fontSize: '16px' }}
                   required
                 />
@@ -1611,14 +1605,11 @@ const SellerResponse = () => {
                     <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
                       Product Images
                     </h3>
-                    <span className="text-xs sm:text-sm text-black font-medium">(optional)</span>
+                    <span className="text-[8px] sm:text-[9px] text-slate-400 font-medium">(optional)</span>
                   </div>
                   <p className="text-[8px] sm:text-[10px] text-black">
                     Show Them Who You Are And What You've Got.
                   </p>
-                  <div className="mt-6 sm:mt-8 text-[10px] sm:text-xs text-black font-medium">
-                    {images.length}/5 images uploaded
-                  </div>
                 </div>
 
                 {/* Image upload UI — identical to the sell form's Photos (up to 5) */}
@@ -1650,11 +1641,11 @@ const SellerResponse = () => {
                     />
                     <label
                       htmlFor="response-images"
-                      className="block w-full text-center !rounded-2xl !border-[1.5px] !border-black bg-white hover:bg-gray-50 text-black !transition-all !duration-150 py-3 text-sm font-black cursor-pointer !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] touch-manipulation select-none"
+                      className="block w-full text-center !rounded-2xl !border-[0.5px] !border-black bg-white hover:bg-gray-50 text-black !transition-all !duration-150 py-3 text-sm font-black cursor-pointer !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] touch-manipulation select-none"
                     >
                       {images.length === 0 ? 'Choose Image' : 'Add More Images'}
                     </label>
-                    <p className="text-[11px] text-slate-600 mt-2">{images.length}/5 images</p>
+                    <p className="text-[9px] text-slate-400 mt-2 text-right">{images.length}/5 images</p>
                     {uploading && uploadProgresses.length > 0 && (
                       <div className="mt-2 space-y-1">
                         {uploadProgresses.map((p, i) => (
@@ -1768,7 +1759,7 @@ const SellerResponse = () => {
                     aria-label="Country code"
                     value={countryCode}
                     onChange={(e) => setCountryCode(e.target.value)}
-                    className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-xs !font-black focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation appearance-none text-center"
+                    className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[0.5px] !border-black bg-white text-black !text-xs !font-black focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation appearance-none text-center"
                   >
                     {[
                       ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
@@ -1799,10 +1790,10 @@ const SellerResponse = () => {
                     }}
                     maxLength={countryCode === '+91' ? 11 : 14}
                     placeholder={countryCode === '+91' ? '98765 43210' : 'Mobile number'}
-                    className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
+                    className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[0.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
                   />
                 </div>
-                <p className="text-[9px] text-black font-semibold mt-1.5 text-right">
+                <p className="text-[8px] sm:text-[9px] text-slate-400 font-medium mt-1.5 text-right">
                   Connect with privacy
                 </p>
               </div>
@@ -1825,7 +1816,7 @@ const SellerResponse = () => {
                       });
                     }
                   }}
-                  className={`!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none ${
+                  className={`!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none ${
                     submitting ? 'opacity-70 cursor-not-allowed' : ''
                   }`}
                   disabled={!price || submitting}
@@ -1842,7 +1833,7 @@ const SellerResponse = () => {
                   )}
                 </Button>
                 
-                <p className="text-[8px] sm:text-[10px] text-center text-black font-semibold">
+                <p className="text-[7px] sm:text-[9px] text-center text-slate-400 font-medium">
                   We do not offer anything for free to make you the product.
                 </p>
               </div>
