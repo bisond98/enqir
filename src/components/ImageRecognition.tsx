@@ -19,6 +19,7 @@ import {
   type ImageAnalysis,
   type ImageRecognitionConfig
 } from '@/services/ai/imageRecognition';
+import { friendlyError } from '@/utils/friendlyError';
 
 interface ImageRecognitionProps {
   imageUrl: string;
@@ -77,7 +78,7 @@ const ImageRecognition: React.FC<ImageRecognitionProps> = ({
       
     } catch (err) {
       console.error('Image analysis failed:', err);
-      setError(err instanceof Error ? err.message : 'Analysis failed');
+      setError(friendlyError(err, 'Analysis failed. Please try again.'));
     } finally {
       setIsLoading(false);
     }

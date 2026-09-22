@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Lock, CheckCircle, ArrowLeft, AlertTriangle, Check } from "lucide-react";
+import { friendlyError } from "@/utils/friendlyError";
 
 const ForgotPassword = () => {
   const { sendPasswordResetEmail } = useAuth();
@@ -32,10 +33,10 @@ const ForgotPassword = () => {
         setIsEmailSent(true);
         setSuccess("Password reset email sent successfully! Check your inbox.");
       } else {
-        setError(result.error.message || "Failed to send reset email");
+        setError(friendlyError(result.error, "Failed to send reset email"));
       }
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+      setError(friendlyError(err, "An unexpected error occurred"));
     } finally {
       setLoading(false);
     }

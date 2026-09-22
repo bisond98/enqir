@@ -23,6 +23,7 @@ import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import { uploadToCloudinaryAuto } from '@/integrations/cloudinary';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
+import { friendlyError } from '@/utils/friendlyError';
 
 
 function formatPrice(l: SellListing) {
@@ -424,7 +425,7 @@ export default function ListingDetail() {
       navigate(`/sell/listing/${listing.id}/chat/${user.uid}`);
     } catch (err: any) {
       console.error('❌ Failed to send listing response:', err.code, err.message);
-      toast({ title: 'Failed', description: err.message || 'Could not send your message.', variant: 'destructive' });
+      toast({ title: 'Failed', description: friendlyError(err, 'Could not send your message. Please try again.'), variant: 'destructive' });
     } finally {
       setSending(false);
       setUploadingMedia(false);

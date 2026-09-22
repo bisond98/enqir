@@ -123,6 +123,7 @@ function GearShiftIcon({ className }: { className?: string }) {
 }
 import { cn } from '@/lib/utils';
 import type { LucideIcon } from 'lucide-react';
+import { friendlyError } from '@/utils/friendlyError';
 
 const CATEGORY_ICON: Record<string, LucideIcon> = {
   electronics: Cpu,
@@ -663,7 +664,7 @@ export default function CreateListing() {
       }, 2000);
     } catch (error) {
       console.error('❌ Error:', error);
-      toast({ title: 'Publish failed', description: error instanceof Error ? error.message : 'Could not publish listing.', variant: 'destructive' });
+      toast({ title: 'Publish failed', description: friendlyError(error, 'Could not publish listing. Please try again.'), variant: 'destructive' });
     } finally {
       setPublishing(false);
     }

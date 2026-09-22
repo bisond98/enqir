@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Shield, Lock, CheckCircle, AlertTriangle, Eye, EyeOff } from "lucide-react";
+import { friendlyError } from "@/utils/friendlyError";
 
 const ResetPassword = () => {
   const { confirmPasswordReset } = useAuth();
@@ -66,10 +67,10 @@ const ResetPassword = () => {
           navigate("/signin");
         }, 3000);
       } else {
-        setError(result.error.message || "Failed to reset password");
+        setError(friendlyError(result.error, "Failed to reset password"));
       }
     } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+      setError(friendlyError(err, "An unexpected error occurred"));
     } finally {
       setLoading(false);
     }

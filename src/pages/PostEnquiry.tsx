@@ -21,6 +21,7 @@ import { useUsage } from "@/contexts/UsageContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { matchesForEnquiry, notifyMatch, type MatchItem } from "@/modules/sell/services/matchEngine";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { friendlyError } from "@/utils/friendlyError";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
 import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
@@ -2015,7 +2016,7 @@ export default function PostEnquiry() {
       }
     } catch (err: any) {
       console.error('Error submitting enquiry:', err);
-      alert(`Failed to submit enquiry: ${err?.message || 'Unknown error occurred'}. Please try again.`);
+      alert(`${friendlyError(err, 'Failed to submit your enquiry. Please try again.')}`);
     } finally {
       setLoading(false);
       setIdUploadLoading(false);
@@ -3567,8 +3568,9 @@ export default function PostEnquiry() {
             </Card>
           )}
 
-          {/* Upgrade Prompt */}
-          {showUpgrade && (
+          {/* Upgrade Prompt — hidden for now (₹10 paid enquiries unlock everything).
+              Kept intact for future credit-based plans; flip `false` to re-enable. */}
+          {false && showUpgrade && (
             <UpgradePrompt
               type="enquiry"
               onUpgrade={() => {

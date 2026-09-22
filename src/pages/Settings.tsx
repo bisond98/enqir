@@ -14,6 +14,7 @@ import { useUsage } from "@/contexts/UsageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
 import SignOutDialog from "@/components/SignOutDialog";
+import { friendlyError } from "@/utils/friendlyError";
 
 const Settings = () => {
   const { user } = useUsage();
@@ -113,14 +114,14 @@ const Settings = () => {
                           } else {
                             toast({
                               title: "Error",
-                              description: result.error.message || "Failed to send password reset email. Please try again.",
+                              description: friendlyError(result.error, "Failed to send password reset email. Please try again."),
                               variant: "destructive",
                             });
                           }
                         } catch (error: any) {
                           toast({
                             title: "Error",
-                            description: error.message || "Failed to send password reset email. Please try again.",
+                            description: friendlyError(error, "Failed to send password reset email. Please try again."),
                             variant: "destructive",
                           });
                         } finally {

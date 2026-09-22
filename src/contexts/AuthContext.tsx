@@ -28,6 +28,7 @@ import {
 import { doc, setDoc, getDoc, onSnapshot, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { fetchSignInMethodsForEmail } from 'firebase/auth';
 import { db } from '@/firebase';
+import { friendlyError } from '@/utils/friendlyError';
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -501,7 +502,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('🔐 Sign-out error:', error);
       toast({
         title: 'Sign out failed',
-        description: error.message,
+        description: friendlyError(error),
         variant: 'destructive',
       });
     }
@@ -739,7 +740,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error: any) {
       toast({
         title: 'Password reset failed',
-        description: error.message,
+        description: friendlyError(error),
         variant: 'destructive',
       });
       return { error };
@@ -768,7 +769,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error: any) {
       toast({
         title: 'Failed to send OTP',
-        description: error.message,
+        description: friendlyError(error),
         variant: 'destructive',
       });
       return { error };
@@ -812,7 +813,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error: any) {
       toast({
         title: 'OTP verification failed',
-        description: error.message,
+        description: friendlyError(error),
         variant: 'destructive',
       });
       return { error };

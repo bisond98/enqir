@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { toast } from '@/hooks/use-toast';
 import { auth } from '@/firebase';
+import { friendlyError } from '@/utils/friendlyError';
 import { applyActionCode, checkActionCode, isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 
 const AuthCallback = () => {
@@ -108,7 +109,7 @@ const AuthCallback = () => {
             
             toast({ 
               title: 'Sign-in failed', 
-              description: err.message || 'Unable to sign in. Please try signing up again or use the sign-in page.', 
+              description: friendlyError(err, 'Unable to sign in. Please try signing up again or use the sign-in page.'), 
               variant: 'destructive' 
             });
             navigate('/signin');
@@ -146,7 +147,7 @@ const AuthCallback = () => {
             navigate(`/signin?email=${encodeURIComponent(email)}`);
             return;
           } catch (err: any) {
-            toast({ title: 'Verification failed', description: err.message, variant: 'destructive' });
+            toast({ title: 'Verification failed', description: friendlyError(err, 'Email verification failed. Please request a new link.'), variant: 'destructive' });
             navigate('/signin');
             return;
           }

@@ -5,6 +5,7 @@ import { auth } from "@/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { ArrowLeft, Phone } from "lucide-react";
+import { friendlyError } from "@/utils/friendlyError";
 
 // This page is locked to Indian numbers only
 const INDIA_CODE = "+91";
@@ -315,7 +316,7 @@ const SignInMobile = () => {
       try {
         const result = await sendPhoneOTP(`${INDIA_CODE}${digits}`);
         if (result?.error) {
-          setError(result.error.message || "Failed to send OTP. Please try again.");
+          setError(friendlyError(result.error, "Failed to send OTP. Please try again."));
           return false;
         } else if (result?.verificationId) {
           setVerificationId(result.verificationId);
@@ -353,7 +354,7 @@ const SignInMobile = () => {
     try {
       const result = await verifyPhoneOTP(code, verificationId);
       if (result?.error) {
-        setError(result.error.message || "OTP verification failed. Please try again.");
+        setError(friendlyError(result.error, "OTP verification failed. Please try again."));
       } else {
         const returnTo = sessionStorage.getItem('returnAfterSignIn');
         sessionStorage.removeItem('returnAfterSignIn');

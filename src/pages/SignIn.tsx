@@ -14,6 +14,7 @@ import { Mail, Lock, User, AlertTriangle, CheckCircle, ArrowLeft } from "lucide-
 import { auth } from "@/firebase";
 import { signInWithEmailLink, isSignInWithEmailLink, onAuthStateChanged, sendSignInLinkToEmail } from "firebase/auth";
 import { toast } from "@/hooks/use-toast";
+import { friendlyError } from "@/utils/friendlyError";
 
 const SignIn = () => {
   // Use Firebase authentication directly since it's working
@@ -269,7 +270,7 @@ const SignIn = () => {
       console.error('Resend email error:', error);
       toast({
         title: 'Failed to resend email',
-        description: error.message || 'Please try again later.',
+        description: friendlyError(error, 'Please try again later.'),
         variant: 'destructive',
       });
     } finally {
