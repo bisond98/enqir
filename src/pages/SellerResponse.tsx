@@ -80,11 +80,8 @@ const SellerResponse = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // AI description assistant — pen icon in the description box (same pattern as
-  // Post Enquiry / Create Listing): generates when empty, grammar-corrects when
-  // typed. Shows a suggestion tile with Use suggestion / Keep mine.
-  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
-  const [aiAdditions, setAiAdditions] = useState<string[]>([]);
+  // AI description assistant — pen icon in the description box: grammar-corrects
+  // typed text in place (or generates when empty). Applies directly, no tile.
   const [aiGenerating, setAiGenerating] = useState(false);
 
   const runDescriptionAI = () => {
@@ -92,31 +89,18 @@ const SellerResponse = () => {
     setTimeout(() => {
       try {
         if (description.trim()) {
-          const { suggestion, additions } = improveDescription(description, { title });
-          setAiSuggestion(suggestion);
-          setAiAdditions(additions);
+          // Grammar-correct in place — apply directly, no suggestion step
+          const { suggestion } = improveDescription(description, { title });
+          setDescription(suggestion.slice(0, 500));
         } else {
-          setAiSuggestion(generateDescription({ title }));
-          setAiAdditions([]);
+          setDescription(generateDescription({ title }).slice(0, 500));
         }
       } catch {
-        setAiSuggestion(null);
-        setAiAdditions([]);
+        // keep the user's text untouched on failure
       } finally {
         setAiGenerating(false);
       }
     }, 250);
-  };
-
-  const acceptAiSuggestion = () => {
-    if (aiSuggestion) setDescription(aiSuggestion.slice(0, 500));
-    setAiSuggestion(null);
-    setAiAdditions([]);
-  };
-
-  const dismissAiSuggestion = () => {
-    setAiSuggestion(null);
-    setAiAdditions([]);
   };
   const [price, setPrice] = useState("");
   const [notes, setNotes] = useState("");
@@ -1515,34 +1499,6 @@ const SellerResponse = () => {
                     )}
                   </button>
                 </div>
-                {/* AI suggestion preview — accept or keep yours, never overwrites silently */}
-                {aiSuggestion && (
-                  <div className="rounded-2xl border-2 border-black bg-black p-4 space-y-2 shadow-[0_5px_0_0_rgba(0,0,0,0.85)] mt-3">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-white flex items-center gap-1.5">
-                      <Sparkles className="h-3.5 w-3.5 text-blue-400" /> AI suggestion
-                    </p>
-                    <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">{aiSuggestion}</p>
-                    {aiAdditions.length > 0 && (
-                      <p className="text-[11px] text-blue-300">Added from your form: {aiAdditions.join(', ')}</p>
-                    )}
-                    <div className="flex gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={acceptAiSuggestion}
-                        className="flex-1 rounded-full bg-white text-black font-bold text-xs py-2.5 hover:bg-blue-50 transition-colors"
-                      >
-                        Use suggestion
-                      </button>
-                      <button
-                        type="button"
-                        onClick={dismissAiSuggestion}
-                        className="flex-1 rounded-full border-2 border-white text-white font-bold text-xs py-2.5 hover:bg-white/10 transition-colors"
-                      >
-                        Keep mine
-                      </button>
-                    </div>
-                  </div>
-                )}
                 <div className="flex justify-between items-center mt-1">
                   <p className="text-xs text-gray-500">
                     {description.length}/500 characters
