@@ -24,7 +24,6 @@ import { uploadToCloudinaryAuto } from '@/integrations/cloudinary';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 import { friendlyError } from '@/utils/friendlyError';
-import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 
 function formatPrice(l: SellListing) {

@@ -3,16 +3,12 @@ import { motion } from 'framer-motion';
 import SellShell from '../components/SellShell';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { listMyListings, listResponsesForSeller, softDeleteListing, updateListing } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail } from 'lucide-react';
-import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
-import type { ListingCondition, ListingPriceType } from '../types';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 export default function SellerDashboard({ minimal = false }: { minimal?: boolean } = {}) {
@@ -21,20 +17,9 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
   const [listings, setListings] = useState<SellListing[]>([]);
   const [responses, setResponses] = useState<SellListingResponse[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editTitle, setEditTitle] = useState('');
-  const [editDescription, setEditDescription] = useState('');
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'listings' | 'responses'>('listings');
-  const [editCategory, setEditCategory] = useState('');
-  const [editLocation, setEditLocation] = useState('');
-  const [editCondition, setEditCondition] = useState<ListingCondition>('used');
-  const [editPriceType, setEditPriceType] = useState<ListingPriceType>('fixed');
   const [editPrice, setEditPrice] = useState('');
-  const [editPriceMin, setEditPriceMin] = useState('');
-  const [editPriceMax, setEditPriceMax] = useState('');
-  const [editTags, setEditTags] = useState('');
-  const [locationSearch, setLocationSearch] = useState('');
-  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
   const [listingsPage, setListingsPage] = useState(1);
   const [responsesPage, setResponsesPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
@@ -57,35 +42,17 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
 
   const startEdit = (l: SellListing) => {
     setEditingId(l.id);
-    setEditTitle(l.title ?? '');
-    setEditDescription(l.description ?? '');
-    setEditCategory(l.category ?? 'other');
-    setEditLocation(l.location ?? '');
-    setEditCondition(l.condition ?? 'used');
-    setEditPriceType(l.priceType ?? 'fixed');
+    // Only the price is editable; everything else stays untouched.
     setEditPrice(l.price != null ? String(l.price) : '');
-    setEditPriceMin(l.priceMin != null ? String(l.priceMin) : '');
-    setEditPriceMax(l.priceMax != null ? String(l.priceMax) : '');
-    setEditTags(l.tags?.join(', ') ?? '');
-    setLocationSearch(l.location ?? '');
-    setLocationDropdownOpen(false);
   };
 
   const saveEdit = async () => {
     if (!editingId) return;
+    // Only the price is editable once a listing is live.
     setSaving(true);
     try {
       await updateListing(editingId, {
-        title: editTitle.trim(),
-        description: editDescription.trim(),
-        category: editCategory,
-        location: editLocation.trim(),
-        condition: editCondition,
-        priceType: editPriceType,
         price: editPrice ? Number(editPrice.replace(/[^0-9]/g, '')) : null,
-        priceMin: editPriceType === 'range' && editPriceMin ? Number(editPriceMin.replace(/[^0-9]/g, '')) : null,
-        priceMax: editPriceType === 'range' && editPriceMax ? Number(editPriceMax.replace(/[^0-9]/g, '')) : null,
-        tags: editTags.split(',').map(t => t.trim()).filter(Boolean).slice(0, 15),
       } as any);
       toast({ title: 'Saved', description: 'Listing updated.', variant: 'success' });
       setEditingId(null);
@@ -246,127 +213,20 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
             <div key={l.id} className="border border-black rounded-2xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.1)]">
               {editingId === l.id ? (
                 <div className="p-4 space-y-3" onClick={(e) => e.preventDefault()}>
-                  {/* Title */}
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Title</label>
-                    <Input
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      className="h-10 text-sm border-[3px] border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
-                    />
-                  </div>
-                  {/* Description */}
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Description</label>
-                    <Textarea
-                      value={editDescription}
-                      onChange={(e) => setEditDescription(e.target.value)}
-                      className="text-sm border-[3px] border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl min-h-[80px] bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
-                    />
-                  </div>
-                  {/* Category */}
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Category</label>
-                    <select
-                      value={editCategory}
-                      onChange={(e) => setEditCategory(e.target.value)}
-                      className="w-full h-10 text-sm border-[3px] border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-white px-3 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none transition-all duration-300"
-                    >
-                      {SELL_CATEGORIES.map((c) => (
-                        <option key={c.value} value={c.value}>{c.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  {/* Location */}
-                  <div className="relative">
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Location</label>
-                    <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
-                      <span className="flex items-center justify-center pl-3 text-black"><MapPin className="h-4 w-4" /></span>
-                      <input
-                        type="text"
-                        value={locationSearch}
-                        onChange={(e) => {
-                          setLocationSearch(e.target.value);
-                          setLocationDropdownOpen(true);
-                          setEditLocation(e.target.value);
-                        }}
-                        onFocus={() => setLocationDropdownOpen(true)}
-                        placeholder="Search location..."
-                        className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none placeholder:text-gray-400"
-                      />
-                    </div>
-                    {locationDropdownOpen && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border-[3px] border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.15)] max-h-48 overflow-y-auto">
-                        {SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).length > 0 ? (
-                          SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).map((loc) => (
-                            <button
-                              key={loc}
-                              onClick={() => {
-                                setEditLocation(loc);
-                                setLocationSearch(loc);
-                                setLocationDropdownOpen(false);
-                              }}
-                              className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-100 border-b border-gray-100 last:border-0 transition-colors"
-                            >
-                              {loc}
-                            </button>
-                          ))
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setEditLocation(locationSearch);
-                              setLocationDropdownOpen(false);
-                            }}
-                            className="w-full text-left px-4 py-2.5 text-sm hover:bg-gray-100 border-b border-gray-100 last:border-0 transition-colors text-gray-500 italic"
-                          >
-                            Use "{locationSearch}"
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {/* Condition */}
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Condition</label>
-                    <div className="flex gap-2">
-                      {(['new', 'used'] as ListingCondition[]).map((c) => (
-                        <button
-                          key={c}
-                          onClick={() => setEditCondition(c)}
-                          className={`flex-1 h-10 text-xs font-bold border-2 rounded-xl transition-all ${
-                            editCondition === c
-                              ? 'border-[4px] border-black bg-black text-white shadow-[0_3px_0_0_rgba(0,0,0,0.2)]'
-                              : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                          }`}
-                        >
-                          {c === 'new' ? 'New' : 'Used'}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
                   {/* Price */}
                   <div>
                     <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price</label>
-                    <div className="flex items-center border-[3px] border-black focus-within:border-[4px] rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] h-10 transition-all duration-300">
+                    <div className="flex items-center bg-gradient-to-br from-white to-slate-50/50 border-[1.5px] border-black !rounded-2xl h-10 sm:h-11 overflow-hidden !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] focus-within:!border-black transition-all !duration-200">
                       <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
                       <input
                         type="text"
                         inputMode="numeric"
-                        value={editPrice}
+                        value={editPrice ? Number(editPrice).toLocaleString('en-IN') : ''}
                         onChange={(e) => setEditPrice(e.target.value.replace(/[^0-9]/g, ''))}
                         placeholder="0"
-                        className="flex-1 h-full text-sm bg-transparent px-3 outline-none border-none"
+                        className="flex-1 h-full text-sm font-bold bg-transparent px-3 outline-none border-none placeholder:text-gray-400"
                       />
                     </div>
-                  </div>
-                  {/* Tags */}
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Tags (comma separated)</label>                        <Input
-                          value={editTags}
-                          onChange={(e) => setEditTags(e.target.value)}
-                          placeholder="e.g. urgent, wholesale, negotiable"
-                          className="h-10 text-sm border-[3px] border-black focus:border-[4px] focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] transition-all duration-300"
-                        />
                   </div>
                   {/* Action Buttons */}
                   <div className="flex gap-2 pt-1">

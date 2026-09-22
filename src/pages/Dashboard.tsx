@@ -2600,16 +2600,20 @@ const Dashboard = () => {
                                     Enquiry Expired
                                   </Badge>
                                 )}
-                              {/* Status Badge */}
-                                <Badge className={`text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 whitespace-nowrap backdrop-blur-sm shadow-sm ${
-                                submission.status === 'approved' 
-                                    ? 'bg-green-500/30 text-green-50 border-green-400/40' 
-                                  : submission.status === 'pending'
-                                    ? 'bg-amber-500/30 text-amber-50 border-amber-400/40'
-                                    : 'bg-red-500/30 text-red-50 border-red-400/40'
-                              }`}>
-                                {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
-                              </Badge>
+                              {/* Status indicator — approved shows a green live dot instead of a text badge */}
+                                {submission.status === 'approved' ? (
+                                  !isEnquiryDeleted && !isDealClosed && !isEnquiryExpired && (
+                                    <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-emerald-500 border border-black shadow-sm flex-shrink-0" title="Live" />
+                                  )
+                                ) : (
+                                  <Badge className={`text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 whitespace-nowrap backdrop-blur-sm shadow-sm ${
+                                    submission.status === 'pending'
+                                      ? 'bg-amber-500/30 text-amber-50 border-amber-400/40'
+                                      : 'bg-red-500/30 text-red-50 border-red-400/40'
+                                  }`}>
+                                    {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
+                                  </Badge>
+                                )}
                               </div>
                               </div>
                               {/* Submitted Date in Header */}
