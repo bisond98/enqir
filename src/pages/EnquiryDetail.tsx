@@ -24,7 +24,8 @@ import {
   Bookmark,
   ImageIcon,
   Flag,
-  Fuel
+  Fuel,
+  Search
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import ShareMenu from '@/components/ShareMenu';
@@ -791,9 +792,9 @@ const EnquiryDetail = () => {
               {/* Enquiry Details - Professional Design */}
               <Card className="border border-black shadow-lg rounded-2xl bg-white">
                 {/* Card Header - Black Background */}
-                <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-t-2xl">
-                  <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center justify-center gap-2.5 text-center">
-                    <Tag className="h-4 w-4 sm:h-4 sm:w-4" />
+                <div className="bg-black px-4 sm:px-4 py-2 sm:py-2.5 rounded-t-2xl">
+                  <h2 className="text-[10px] sm:text-[10px] md:text-xs font-medium text-white flex items-center justify-center gap-2 text-center">
+                    <Search className="h-3 w-3 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5" />
                     Looking for
                   </h2>
                 </div>
@@ -805,7 +806,7 @@ const EnquiryDetail = () => {
                     <div className="flex items-start justify-center gap-3 mb-6 sm:mb-7">
                       <div className="hidden sm:block w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
                       <div className="inline-flex items-center gap-2 sm:gap-3">
-                      <h2 className="text-lg sm:text-2xl font-bold leading-snug break-words !text-black !bg-white !border-0 rounded-xl px-4 py-3 text-center">{enquiry.title}</h2>
+                      <h2 className="text-lg sm:text-2xl font-black leading-snug break-words !text-black !bg-white !border-0 rounded-xl px-4 py-3 text-center">{enquiry.title}</h2>
                     </div>
                     </div>
                     {/* One-line summary from vehicle chips — car categories only, red background white text */}

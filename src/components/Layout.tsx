@@ -1051,8 +1051,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                                 </span>
                               )}
                             </div>
-                    </Button>
-                  </Link>                        <Link to="/settings">
+                    </Button>                                  </Link>                        <Link to="/settings" className="hidden sm:inline-flex">
                           <Button 
                             variant="ghost" 
                             size="sm" 

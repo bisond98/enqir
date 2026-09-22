@@ -1842,8 +1842,8 @@ const SellerResponse = () => {
                   )}
                 </Button>
                 
-                <p className="text-[8px] sm:text-[10px] text-center text-muted-foreground">
-                  We do not offer anything free to waste your time
+                <p className="text-[8px] sm:text-[10px] text-center text-black font-semibold">
+                  We do not offer anything for free to make you the product.
                 </p>
               </div>
             </form>

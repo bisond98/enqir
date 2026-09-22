@@ -364,8 +364,10 @@ const MyLikes = () => {
 
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                <Heart className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
-                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Likes.</span>
+                <Heart className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-red-500 fill-red-500" />
+                <span className="text-white">Likes</span>
+                <span className="text-white mx-2">/</span>
+                <span className="text-white">Notify</span>
               </h1>
             </div>
 
@@ -528,8 +530,8 @@ const MyLikes = () => {
               )}
             </div>
 
-            {/* Notification toggles — shown only once a category or keyword is selected */}
-            {(effective.length > 0 || effectiveKeywords.length > 0) && (
+            {/* Notification toggles — hidden per product decision */}
+            {false && (effective.length > 0 || effectiveKeywords.length > 0) && (
             <div className="mt-5 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.2)] overflow-hidden">
               {/* Black tile header */}
               <div className="bg-black px-4 sm:px-6 py-3.5">

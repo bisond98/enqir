@@ -1619,11 +1619,17 @@ export default function CreateListing() {
                 >
                   {[
                     ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
-                    ['+971', '🇦🇪 +971'], ['+966', '🇸🇦 +966'], ['+65', '🇸🇬 +65'], ['+60', '🇲🇾 +60'],
-                    ['+49', '🇩🇪 +49'], ['+33', '🇫🇷 +33'], ['+81', '🇯🇵 +81'], ['+82', '🇰🇷 +82'],
-                    ['+86', '🇨🇳 +86'], ['+55', '🇧🇷 +55'], ['+27', '🇿🇦 +27'], ['+94', '🇱🇰 +94'],
-                    ['+880', '🇧🇩 +880'], ['+92', '🇵🇰 +92'], ['+977', '🇳🇵 +977'], ['+20', '🇪🇬 +20'],
-                    ['+234', '🇳🇬 +234'], ['+7', '🇷🇺 +7'], ['+39', '🇮🇹 +39'], ['+34', '🇪🇸 +34'],
+                    ['+64', '🇳🇿 +64'], ['+971', '🇦🇪 +971'], ['+973', '🇧🇭 +973'], ['+974', '🇶🇦 +974'],
+                    ['+965', '🇰🇼 +965'], ['+968', '🇴🇲 +968'], ['+966', '🇸🇦 +966'], ['+65', '🇸🇬 +65'],
+                    ['+60', '🇲🇾 +60'], ['+66', '🇹🇭 +66'], ['+84', '🇻🇳 +84'], ['+63', '🇵🇭 +63'],
+                    ['+62', '🇮🇩 +62'], ['+49', '🇩🇪 +49'], ['+33', '🇫🇷 +33'], ['+31', '🇳🇱 +31'],
+                    ['+32', '🇧🇪 +32'], ['+41', '🇨🇭 +41'], ['+43', '🇦🇹 +43'], ['+353', '🇮🇪 +353'],
+                    ['+81', '🇯🇵 +81'], ['+82', '🇰🇷 +82'], ['+86', '🇨🇳 +86'], ['+852', '🇭🇰 +852'],
+                    ['+886', '🇹🇼 +886'], ['+55', '🇧🇷 +55'], ['+54', '🇦🇷 +54'], ['+52', '🇲🇽 +52'],
+                    ['+27', '🇿🇦 +27'], ['+254', '🇰🇪 +254'], ['+234', '🇳🇬 +234'], ['+94', '🇱🇰 +94'],
+                    ['+880', '🇧🇩 +880'], ['+92', '🇵🇰 +92'], ['+977', '🇳🇵 +977'], ['+975', '🇧🇹 +975'],
+                    ['+960', '🇲🇻 +960'], ['+20', '🇪🇬 +20'], ['+7', '🇷🇺 +7'], ['+39', '🇮🇹 +39'],
+                    ['+34', '🇪🇸 +34'], ['+351', '🇵🇹 +351'], ['+48', '🇵🇱 +48'],
                   ].map(([code, label]) => (
                     <option key={code} value={code}>{label}</option>
                   ))}
@@ -1671,14 +1677,19 @@ export default function CreateListing() {
                 <ChevronRight className="h-4 w-4 relative z-10" />
               </Button>
             ) : (
-              <Button
-                type="button"
-                onClick={publish}
-                disabled={!user || uploading || publishing}
-                className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
-              >
-                <span className="relative z-10">{publishing ? 'Selling…' : 'Sell'}</span>
-              </Button>
+              <div className="w-full">
+                <Button
+                  type="button"
+                  onClick={publish}
+                  disabled={!user || uploading || publishing}
+                  className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
+                >
+                  <span className="relative z-10">{publishing ? 'Selling…' : 'Sell'}</span>
+                </Button>
+                <p className="text-[8px] sm:text-[10px] text-center text-black font-semibold mt-2">
+                  We do not offer anything for free to make you the product.
+                </p>
+              </div>
             )}
           </div>
         </CardContent>
