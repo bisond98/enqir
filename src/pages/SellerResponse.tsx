@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, Star, FileText, X, ChevronRight, Verified, Eye, Check, File, Lock, ImageIcon, Phone, Pen, Sparkles, Loader2 } from "lucide-react";
-import { improveDescription } from "@/services/ai/descriptionAssistant";
+import { buildResponseDescription } from "@/services/ai/descriptionAssistant";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
@@ -80,20 +80,17 @@ const SellerResponse = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // AI description assistant — pen icon in the description box: grammar-corrects
-  // typed text in place (or generates when empty). Applies directly, no tile.
+  // AI description assistant — pen icon in the description box. Seller voice:
+  // empty/fragment text becomes "I have <enquiry item> available." + grammar-
+  // corrected typed text. Applied directly, no suggestion tile.
   const [aiGenerating, setAiGenerating] = useState(false);
 
   const runDescriptionAI = () => {
-    // Seller response: only grammar-correct typed text. Never generate a
-    // buyer-style "Looking for..." description — generateDescription() is
-    // enquiry-side and wrong for this form.
-    if (!description.trim()) return;
     setAiGenerating(true);
     setTimeout(() => {
       try {
-        const { suggestion } = improveDescription(description, { title });
-        setDescription(suggestion.slice(0, 500));
+        const result = buildResponseDescription(description, title);
+        if (result) setDescription(result.slice(0, 500));
       } catch {
         // keep the user's text untouched on failure
       } finally {
