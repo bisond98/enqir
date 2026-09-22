@@ -594,7 +594,7 @@ export function MapLocationPicker({
             onFocus={() => { if (placeResults.length > 0) setPlaceOpen(true); }}
             placeholder="Search for a place (e.g., MVP Colony, Visakhapatnam)…"
             autoComplete="off"
-            className="w-full h-12 sm:h-14 pl-10 pr-9 rounded-2xl border-2 border-black bg-white text-sm sm:text-base font-black text-black placeholder:text-[10px] sm:placeholder:text-xs placeholder:font-medium placeholder:text-gray-400 focus:outline-none focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !transition-all !duration-200 !transform focus:!scale-[0.98]"
+            className="w-full h-12 sm:h-14 pl-10 pr-9 rounded-2xl border-2 border-black bg-white text-base font-black text-black placeholder:text-[10px] sm:placeholder:text-xs placeholder:font-medium placeholder:text-gray-400 focus:outline-none focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !transition-all !duration-200 !transform focus:!scale-[0.98]"
           />
           {placeQuery && (
             <button
