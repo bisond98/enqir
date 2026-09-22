@@ -2788,8 +2788,9 @@ const EnquiryResponses = () => {
                             )}
                           </div>
                         <p className="text-white font-medium text-[8px] sm:text-[9px] lg:text-[10px] mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
-                        <div className="flex items-center justify-end text-xs sm:text-sm lg:text-base text-white font-medium">
-                          <span className="font-semibold text-white">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
+                        <div className="flex items-center justify-end gap-1.5 text-xs sm:text-sm lg:text-base text-white font-medium">
+                          <span className="text-[8px] sm:text-[9px] lg:text-[10px] font-semibold">Offer</span>
+                          <span className="font-semibold !bg-white text-black px-2 py-0.5 rounded-md border-[0.5px] border-black">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
                         </div>
                       </CardContent>
                       </div>
@@ -2877,7 +2878,7 @@ const EnquiryResponses = () => {
                                       <ChevronLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                                     </Button>
                                   )}
-                                  <span className="text-xs sm:text-sm text-white font-medium">#Response {responseNumber}</span>
+                                  <span className="text-xs sm:text-sm !bg-white text-black font-medium px-2 py-0.5 rounded-md border-[0.5px] border-black whitespace-nowrap">#Response {responseNumber}</span>
                                   {showNavigation && (
                                     <Button
                                       variant="ghost"
