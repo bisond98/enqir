@@ -38,7 +38,7 @@ import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS } from "@/module
 import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
-import { generateDescription, improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
+import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { useToast } from "@/components/ui/use-toast";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
@@ -62,24 +62,28 @@ const isJobEnquiry = (cats: string[], legacy?: string) =>
 
 const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
 
-// ✨ AI description assistant — pen icon inside the textarea's top-right corner.
-// Absolutely positioned over the textarea; wraps the icon in a padded hit area.
+// ✨ AI description assistant — golden sparkle icon (no background) inside the
+// textarea's bottom-right corner. Same style as the respond form's AI button.
 const AiDescriptionBar = ({ onRun, generating }: { onRun: () => void; generating: boolean }) => (
   <button
     type="button"
     onClick={onRun}
     disabled={generating}
     aria-label="AI description assistant"
-    className="absolute right-3 bottom-3 z-10 flex items-center justify-center h-9 w-9 rounded-full bg-black hover:bg-gray-900 shadow-sm transition-colors disabled:opacity-60 touch-manipulation"
-    style={{ width: 36, height: 36, minWidth: 36, minHeight: 36, padding: 0 }}
+    className="absolute right-3 bottom-3 z-10 flex items-center justify-center transition-opacity hover:opacity-80 disabled:opacity-60 touch-manipulation bg-transparent"
+    style={{ width: 22, height: 22, minWidth: 22, minHeight: 22, padding: 0 }}
   >
     {generating ? (
-      <Loader2 className="h-4 w-4 text-white animate-spin" />
+      <Loader2 className="h-3 w-3 text-amber-500 animate-spin" />
     ) : (
-      <span className="relative inline-flex items-center justify-center">
-        <Pen className="h-4 w-4 text-white" />
-        <Sparkles className="h-3 w-3 text-white absolute -top-1.5 -right-1.5 drop-shadow" />
-      </span>
+      <Sparkles
+        className="h-4 w-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+        style={{
+          color: '#F5B301',
+          fill: '#F5B301',
+          filter: 'drop-shadow(0 0 4px rgba(245,179,1,0.55))',
+        }}
+      />
     )}
   </button>
 );
@@ -261,7 +265,7 @@ export default function PostEnquiry() {
   const { toast } = useToast();
 
   // Build AI-assistant input from whatever the user has filled so far
-  const aiDescriptionInput = (): Parameters<typeof generateDescription>[0] => ({
+  const aiDescriptionInput = (): Parameters<typeof improveDescription>[0] => ({
     title,
     category,
     categories: selectedCategories,
@@ -273,38 +277,25 @@ export default function PostEnquiry() {
     mobileDetails,
   });
 
-  // ✨ Generate (empty field) or improve (typed text) — instant, local, no API
+  // ✨ Grammar-correct & polish typed text in place — instant, local, no API.
+  // Empty box: nothing to correct, no-op (the AI never writes the description
+  // for the buyer and never inserts enquiry details).
   const runDescriptionAI = () => {
+    if (!description.trim()) return;
     setAiGenerating(true);
     // Brief delay so the tap feels responsive but the state change renders
     setTimeout(() => {
       try {
-        if (description.trim()) {
-          const { suggestion, additions } = improveDescription(description, aiDescriptionInput());
-          setAiSuggestion(suggestion);
-          setAiAdditions(additions);
-        } else {
-          setAiSuggestion(generateDescription(aiDescriptionInput()));
-          setAiAdditions([]);
-        }
+        const { suggestion } = improveDescription(description, aiDescriptionInput());
+        if (suggestion) setDescription(suggestion.slice(0, 500));
       } catch {
-        toast({ title: 'AI assistant unavailable', description: 'Please write the description manually.' });
+        // keep the user's text untouched on failure
       } finally {
         setAiGenerating(false);
       }
     }, 250);
   };
 
-  const acceptAiSuggestion = () => {
-    if (aiSuggestion) setDescription(aiSuggestion.slice(0, 500));
-    setAiSuggestion(null);
-    setAiAdditions([]);
-  };
-
-  const dismissAiSuggestion = () => {
-    setAiSuggestion(null);
-    setAiAdditions([]);
-  };
   
   // Reference images (optional for buyers, up to 5)
   const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>([]);
@@ -319,9 +310,6 @@ export default function PostEnquiry() {
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
 
-  // AI description assistant — suggestion preview with accept/reject
-  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
-  const [aiAdditions, setAiAdditions] = useState<string[]>([]);
   const [aiGenerating, setAiGenerating] = useState(false);
 
   // Scroll to ID verification card when verification is successful
@@ -2960,34 +2948,6 @@ export default function PostEnquiry() {
                         </>
                       )}
 
-                      {/* AI suggestion preview — accept or keep yours, never overwrites silently */}
-                      {aiSuggestion && (
-                        <div className="max-w-xl mx-auto w-full rounded-2xl border-2 border-black bg-black p-4 space-y-2 shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
-                          <p className="text-[10px] font-black uppercase tracking-widest text-white flex items-center gap-1.5">
-                            <Sparkles className="h-3.5 w-3.5 text-blue-400" /> AI suggestion
-                          </p>
-                          <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">{aiSuggestion}</p>
-                          {aiAdditions.length > 0 && (
-                            <p className="text-[11px] text-blue-300">Added from your form: {aiAdditions.join(', ')}</p>
-                          )}
-                          <div className="flex gap-2 pt-1">
-                            <button
-                              type="button"
-                              onClick={acceptAiSuggestion}
-                              className="flex-1 rounded-full bg-white text-black font-bold text-xs py-2.5 hover:bg-blue-50 transition-colors"
-                            >
-                              Use suggestion
-                            </button>
-                            <button
-                              type="button"
-                              onClick={dismissAiSuggestion}
-                              className="flex-1 rounded-full border-2 border-white text-white font-bold text-xs py-2.5 hover:bg-white/10 transition-colors"
-                            >
-                              Keep mine
-                            </button>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
 

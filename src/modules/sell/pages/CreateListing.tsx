@@ -18,7 +18,7 @@ import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep } from '../categoryDetails';
-import { generateDescription, improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
+import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
 import { processPayment } from '@/services/paymentService';
@@ -270,64 +270,27 @@ export default function CreateListing() {
   // Country code for the mobile number (default: India +91)
   const [countryCode, setCountryCode] = useState('+91');
 
-  // AI description assistant — suggestion preview with accept/reject
-  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
-  const [aiAdditions, setAiAdditions] = useState<string[]>([]);
+  // AI description assistant — grammar-corrects & polishes typed text in place.
+  // The AI never writes the description and never inserts listing details.
   const [aiGenerating, setAiGenerating] = useState(false);
 
-  // Build AI-assistant input from whatever the seller has filled so far
-  const aiDescriptionInput = (): Parameters<typeof generateDescription>[0] => ({
-    title,
-    category,
-    categories: selectedCats,
-    budget: priceType === 'fixed' ? price : priceMax || priceMin,
-    location: mapLocation?.city || (location !== 'Other' ? location : ''),
-    vehicleDetails: {
-      brand: details.brand,
-      year: details.year,
-      variant: details.variant,
-      transmission: details.transmission,
-      fuelType: details.fuel,
-    },
-    conditionFields: {
-      condition,
-      kmsDriven: details.kmsDriven,
-      ownership: details.ownership,
-      accidentHistory: details.accidentHistory,
-      registrationState: details.registrationState,
-    },
-  });
-
-  // ✨ Generate (empty field) or improve (typed text) — instant, local, no API
   const runDescriptionAI = () => {
+    if (!description.trim()) return;
     setAiGenerating(true);
     setTimeout(() => {
       try {
-        if (description.trim()) {
-          const { suggestion, additions } = improveDescription(description, aiDescriptionInput());
-          setAiSuggestion(suggestion);
-          setAiAdditions(additions);
-        } else {
-          setAiSuggestion(generateDescription(aiDescriptionInput()));
-          setAiAdditions([]);
-        }
+        const { suggestion } = improveDescription(description, {
+          title,
+          category,
+          categories: selectedCats,
+        });
+        if (suggestion) setDescription(suggestion.slice(0, 250));
       } catch {
-        toast({ title: 'AI assistant unavailable', description: 'Please write the description manually.' });
+        // keep the user's text untouched on failure
       } finally {
         setAiGenerating(false);
       }
     }, 250);
-  };
-
-  const acceptAiSuggestion = () => {
-    if (aiSuggestion) setDescription(aiSuggestion.slice(0, 250));
-    setAiSuggestion(null);
-    setAiAdditions([]);
-  };
-
-  const dismissAiSuggestion = () => {
-    setAiSuggestion(null);
-    setAiAdditions([]);
   };
 
   const parsedTags = useMemo(() => {
@@ -1186,16 +1149,20 @@ export default function CreateListing() {
                         onClick={runDescriptionAI}
                         disabled={aiGenerating}
                         aria-label="AI description assistant"
-                        className="absolute right-3 bottom-3 z-10 flex items-center justify-center h-9 w-9 rounded-full bg-black hover:bg-gray-900 shadow-sm transition-colors disabled:opacity-60 touch-manipulation"
-                        style={{ width: 36, height: 36, minWidth: 36, minHeight: 36, padding: 0 }}
+                        className="absolute right-3 bottom-3 z-10 flex items-center justify-center transition-opacity hover:opacity-80 disabled:opacity-60 touch-manipulation bg-transparent"
+                        style={{ width: 22, height: 22, minWidth: 22, minHeight: 22, padding: 0 }}
                       >
                         {aiGenerating ? (
-                          <Loader2 className="h-4 w-4 text-white animate-spin" />
+                          <Loader2 className="h-3 w-3 text-amber-500 animate-spin" />
                         ) : (
-                          <span className="relative inline-flex items-center justify-center">
-                            <Pen className="h-4 w-4 text-white" />
-                            <Sparkles className="h-3 w-3 text-white absolute -top-1.5 -right-1.5 drop-shadow" />
-                          </span>
+                          <Sparkles
+                            className="h-4 w-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                            style={{
+                              color: '#F5B301',
+                              fill: '#F5B301',
+                              filter: 'drop-shadow(0 0 4px rgba(245,179,1,0.55))',
+                            }}
+                          />
                         )}
                       </button>
                       <Textarea
@@ -1208,34 +1175,6 @@ export default function CreateListing() {
                         autoFocus
                       />
                     </div>
-                    {/* AI suggestion preview — accept or keep yours, never overwrites silently */}
-                    {aiSuggestion && (
-                      <div className="rounded-2xl border-2 border-black bg-black p-4 space-y-2 shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-white flex items-center gap-1.5">
-                          <Sparkles className="h-3.5 w-3.5 text-blue-400" /> AI suggestion
-                        </p>
-                        <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">{aiSuggestion}</p>
-                        {aiAdditions.length > 0 && (
-                          <p className="text-[11px] text-blue-300">Added from your listing: {aiAdditions.join(', ')}</p>
-                        )}
-                        <div className="flex gap-2 pt-1">
-                          <button
-                            type="button"
-                            onClick={acceptAiSuggestion}
-                            className="flex-1 rounded-full bg-white text-black font-bold text-xs py-2.5 hover:bg-blue-50 transition-colors"
-                          >
-                            Use suggestion
-                          </button>
-                          <button
-                            type="button"
-                            onClick={dismissAiSuggestion}
-                            className="flex-1 rounded-full border-2 border-white text-white font-bold text-xs py-2.5 hover:bg-white/10 transition-colors"
-                          >
-                            Keep mine
-                          </button>
-                        </div>
-                      </div>
-                    )}
                   </>
                 )}
               </div>

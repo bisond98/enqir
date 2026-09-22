@@ -792,9 +792,9 @@ const EnquiryDetail = () => {
               <Card className="border border-black shadow-lg rounded-2xl bg-white">
                 {/* Card Header - Black Background */}
                 <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 rounded-t-2xl">
-                  <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
+                  <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center justify-center gap-2.5 text-center">
                     <Tag className="h-4 w-4 sm:h-4 sm:w-4" />
-                    Enquiry Details
+                    Looking for
                   </h2>
                 </div>
                 
@@ -805,8 +805,7 @@ const EnquiryDetail = () => {
                     <div className="flex items-start justify-center gap-3 mb-6 sm:mb-7">
                       <div className="hidden sm:block w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
                       <div className="inline-flex items-center gap-2 sm:gap-3">
-                      <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase text-red-600 flex-shrink-0">Looking for</span>
-                      <h2 style={{ fontFamily: "'Manrope', 'Inter', sans-serif", letterSpacing: '-0.02em', boxShadow: '0 1px 2px rgba(0,0,0,0.12), 0 4px 12px rgba(185,28,28,0.25)', WebkitFontSmoothing: 'antialiased' }} className="text-lg sm:text-2xl font-bold leading-snug break-words !text-white !bg-red-600 !border-0 rounded-xl px-4 py-3 text-center">{enquiry.title}</h2>
+                      <h2 className="text-lg sm:text-2xl font-bold leading-snug break-words !text-black !bg-white !border-0 rounded-xl px-4 py-3 text-center">{enquiry.title}</h2>
                     </div>
                     </div>
                     {/* One-line summary from vehicle chips — car categories only, red background white text */}
@@ -938,8 +937,10 @@ const EnquiryDetail = () => {
 
                     {/* Description — below the detail chips */}
                     <div className="mt-5 sm:mt-6">
-                      <h3 className="text-xs sm:text-xs font-black text-slate-700 mb-3 sm:mb-3 text-center uppercase tracking-wide">Description</h3>
-                      <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
+                                            <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                        <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>Description</h3>
+                        <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
+                      </div>
                     </div>
                   </div>
 
@@ -1017,47 +1018,45 @@ const EnquiryDetail = () => {
                   {/* Reference Images Section - now below the Budget/Location/Deadline/Posted chips */}
                   {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
                     <div className="mt-5 sm:mt-6">
-                      <h3 className="text-sm sm:text-sm font-black text-slate-800 mb-3 sm:mb-4 flex items-center justify-center gap-2.5">
-                        <ImageIcon className="h-4 w-4 sm:h-4 sm:w-4" />
-                        Reference Images ({enquiry.referenceImages.length})
-                      </h3>
-                      <p className="text-[10px] sm:text-xs text-slate-500 mb-4 leading-relaxed">
-                        Images provided by the buyer to help sellers understand their requirements
-                      </p>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-                        {enquiry.referenceImages.map((imageUrl, index) => (
-                          <div 
-                            key={index} 
-                            className="relative group cursor-pointer aspect-square rounded-2xl overflow-hidden shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                            onClick={() => window.open(imageUrl, '_blank')}
-                          >
-                            <img
-                              src={imageUrl}
-                              alt={`Reference image ${index + 1}`}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                              loading="lazy"
-                              decoding="async"
-                            />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
-                              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                <div className="bg-white rounded-full p-2 shadow-lg">
-                                  <Eye className="h-4 w-4 text-gray-700" />
+                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                        <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide flex items-center gap-1.5" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>
+                          <ImageIcon className="h-3 w-3 sm:h-3 sm:w-3" />
+                          Reference Images ({enquiry.referenceImages.length})
+                        </h3>
+                        <div className="flex flex-row gap-3 sm:gap-4 overflow-x-auto pb-1">
+                          {enquiry.referenceImages.map((imageUrl, index) => (
+                            <div 
+                              key={index} 
+                              className="relative group cursor-pointer w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl overflow-hidden border border-black/40 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                              onClick={() => window.open(imageUrl, '_blank')}
+                            >
+                              <img
+                                src={imageUrl}
+                                alt={`Reference image ${index + 1}`}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                loading="lazy"
+                                decoding="async"
+                              />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                  <div className="bg-white rounded-full p-2 shadow-lg">
+                                    <Eye className="h-4 w-4 text-gray-700" />
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
 
                   {enquiry.notes && (
-                    <div className="mt-12 sm:mt-14 mb-4">
-                      <p className="text-sm sm:text-sm font-black text-slate-800 mb-3 sm:mb-3 flex items-center justify-center gap-2.5">
-                        <MessageSquare className="h-4 w-4 sm:h-4 sm:w-4" />
-                        Additional Notes
-                      </p>
-                      <p className="text-xs sm:text-xs md:text-sm text-slate-700 leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
+                    <div className="mt-5 sm:mt-6 mb-4">
+                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                        <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>Additional Notes</h3>
+                        <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
+                      </div>
                     </div>
                   )}
 

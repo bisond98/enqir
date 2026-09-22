@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, Star, FileText, X, ChevronRight, Verified, Eye, Check, File, Lock, ImageIcon, Phone, Pen, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, Star, FileText, X, ChevronRight, Verified, Eye, Check, File, Lock, ImageIcon, Phone, Sparkles, Loader2 } from "lucide-react";
 import { buildResponseDescription } from "@/services/ai/descriptionAssistant";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
@@ -80,9 +80,10 @@ const SellerResponse = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  // AI description assistant — pen icon in the description box. Seller voice:
-  // empty/fragment text becomes "I have <enquiry item> available." + grammar-
-  // corrected typed text. Applied directly, no suggestion tile.
+  // AI description assistant — pen icon in the description box. Typed text is
+  // grammar-corrected in place; an empty box gets the seller-voice opener
+  // ("I have the '<enquiry title>' you're looking for. Let's close the deal.").
+  // Applied directly, no suggestion tile. Never buyer phrasing.
   const [aiGenerating, setAiGenerating] = useState(false);
 
   const runDescriptionAI = () => {
@@ -1476,22 +1477,26 @@ const SellerResponse = () => {
                     className={`min-h-[140px] text-base !border-[1.5px] !border-black focus:!border-[2px] focus:border-black focus:ring-0 focus-visible:!border-[2px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 touch-manipulation ${errors.description ? '!border-red-500 focus:!border-red-500' : ''}`}
                     style={{ fontSize: '16px' }}
                 />
-                  {/* AI pen icon — tap to generate (empty) or grammar-correct (typed) */}
+                  {/* AI golden-sparkle icon — tap to generate (empty) or grammar-correct (typed). No background. */}
                   <button
                     type="button"
                     onClick={runDescriptionAI}
                     disabled={aiGenerating}
                     aria-label="AI description assistant"
-                    className="absolute right-3 bottom-3 z-20 flex items-center justify-center rounded-full bg-black hover:bg-gray-900 shadow-sm transition-colors disabled:opacity-60 touch-manipulation"
-                    style={{ width: 36, height: 36, minWidth: 36, minHeight: 36, padding: 0 }}
+                    className="absolute right-3 bottom-3 z-20 flex items-center justify-center transition-opacity hover:opacity-80 disabled:opacity-60 touch-manipulation bg-transparent"
+                    style={{ width: 22, height: 22, minWidth: 22, minHeight: 22, padding: 0 }}
                   >
                     {aiGenerating ? (
-                      <Loader2 className="h-4 w-4 text-white animate-spin" />
+                      <Loader2 className="h-3 w-3 text-amber-500 animate-spin" />
                     ) : (
-                      <span className="relative inline-flex items-center justify-center">
-                        <Pen className="h-4 w-4 text-white" />
-                        <Sparkles className="h-3 w-3 text-white absolute -top-1.5 -right-1.5 drop-shadow" />
-                      </span>
+                      <Sparkles
+                        className="h-4 w-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
+                        style={{
+                          color: '#F5B301',
+                          fill: '#F5B301',
+                          filter: 'drop-shadow(0 0 4px rgba(245,179,1,0.55))',
+                        }}
+                      />
                     )}
                   </button>
                 </div>

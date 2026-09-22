@@ -288,6 +288,23 @@ export const cleanText = (raw: string): string => {
   if (words.length > 30 && !/[.!?]/.test(t.slice(1))) {
     t = t.replace(/,? (and then|then|so|but) /gi, (m, c) => `. ${c.charAt(0).toUpperCase()}${c.slice(1)} `);
   }
+  // Comma insertion: lists of 3+ items often lack commas ("red black and blue" -> "red, black and blue")
+  // and "and"/"but"/"so" joining two long independent clauses gets a comma before it.
+  t = t.replace(/\b(\w+)(\s+(?:and|but|or|so)\s+\w+(?:\s+\w+)?)(\s+(?:and|but|or|so)\s+)/gi, '$1,$2$3');
+  t = t.replace(/(\w{3,})\s+(and|but|or|so)\s+(\w{3,})/g, (m, a, c, b, off: number, full: string) => {
+    // Comma before conjunction only when each side has 4+ words (likely two clauses)
+    const before = full.slice(0, off).trim().split(/\s+/).length;
+    const after = full.slice(off + m.length).trim().split(/\s+/).length;
+    return before >= 4 && after >= 4 ? `${a}, ${c} ${b}` : m;
+  });
+  // Question detection: question words / "please confirm"-style requests that lack '?'
+  // get one at the end instead of a period.
+  const isQuestion = /^(is|are|am|was|were|do|does|did|can|could|would|will|shall|should|may|might|must|have|has|had)\b/i.test(t)
+    || /\b(what|where|when|why|who|whom|whose|which|how)\b/i.test(t)
+    || /\b(confirm|interested|available|tell me|let me know|can you|could you)\b/i.test(t);
+  if (isQuestion && !t.includes('?')) {
+    t = t.replace(/[.!]?$/, '?');
+  }
   // Ensure sentence-ending punctuation
   if (t && !/[.!?]$/.test(t)) t += '.';
   // Capitalize first letter of sentences
@@ -342,9 +359,15 @@ export const improveDescription = (raw: string, input: DescriptionInput): Improv
 };
 
 /**
- * Seller-side cleanup for response forms: grammar-corrects ONLY the text the
- * seller typed. The enquiry title is never inserted — no "Looking for…" and
- * no "I have <enquiry> available." — just the user's own words, cleaned.
+ * Seller-side assistant for response forms:
+ * - Typed text → grammar-correct ONLY the user's words. The enquiry title is
+ *   never merged in, and buyer phrasing ("Looking for…") is never produced.
+ * - Empty box → seller-voice opener built from the enquiry title:
+ *   "I have the '<title>' you're looking for. Let's close the deal."
  */
-export const buildResponseDescription = (typed: string, _responseTitle?: string): string =>
-  typed.trim() ? cleanText(typed) : '';
+export const buildResponseDescription = (typed: string, responseTitle?: string): string => {
+  if (typed.trim()) return cleanText(typed);
+  const wants = (responseTitle || '').trim().replace(/^(need|want|looking for)\s+/i, '');
+  if (!wants) return '';
+  return `I have the '${wants}' you're looking for. Let's close the deal.`;
+};
