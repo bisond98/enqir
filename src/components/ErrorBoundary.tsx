@@ -87,8 +87,55 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
     window.location.href = '/';
   };
 
+  handleRefreshNow = () => {
+    // Clear the auto-reload guard so the refresh is always allowed, then
+    // reload with a cache-buster so Safari fetches a fresh index.html.
+    try {
+      localStorage.removeItem(STALE_BUNDLE_KEY);
+    } catch {
+      /* ignore */
+    }
+    window.location.href = window.location.pathname + '?_r=' + Date.now();
+  };
+
   render() {
     if (this.state.hasError) {
+      // Stale-bundle case: the app was updated while the user was away.
+      // Show a friendly, jargon-free screen focused on one action: refresh.
+      if (isStaleBundleError(this.state.error)) {
+        return (
+          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+            <div className="max-w-md w-full bg-white rounded-xl shadow-lg border-2 border-slate-200 p-6 sm:p-8 text-center">
+              <div className="mb-6">
+                <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
+              </div>
+
+              <div className="space-y-3">
+                <Button
+                  onClick={this.handleRefreshNow}
+                  className="!w-full !h-16 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <RefreshCw className="h-5 w-5" />
+                    Refresh Now
+                  </span>
+                </Button>
+
+                <Button
+                  onClick={this.handleGoHome}
+                  className="!w-full !h-16 !text-lg !font-black !bg-white hover:!bg-slate-50 !text-slate-900 !rounded-2xl !border-[1.5px] !border-slate-300 !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <Home className="h-5 w-5" />
+                    Go to Home
+                  </span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
       return this.props.fallback ?? (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-6">
           <div className="max-w-md w-full bg-white rounded-xl shadow-lg border-2 border-slate-200 p-6 sm:p-8 text-center">
@@ -97,7 +144,8 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
             </div>
             <h2 className="text-xl font-bold text-slate-900 mb-2">Something went wrong</h2>
             <p className="text-slate-600 mb-6">
-              {this.state.error?.message || 'An unexpected error occurred. Please try one of the options below.'}
+              An unexpected error occurred. Trying again usually fixes it — if not, going home
+              and reopening the app will.
             </p>
             
             <div className="space-y-3">
