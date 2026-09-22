@@ -2498,7 +2498,7 @@ const Dashboard = () => {
                   {!responsesReady ? (
                     <div className="flex flex-col items-center justify-center py-8 sm:py-12 lg:py-8 xl:py-10 px-4 bg-gradient-to-br from-gray-50 to-white rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl border border-dashed border-black">
                       <div className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 lg:w-14 lg:h-14 xl:w-16 xl:h-16 bg-blue-100 rounded-full mb-3 sm:mb-4 lg:mb-3 xl:mb-4 shadow-md">
-                        <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 lg:h-7 lg:w-7 xl:h-8 xl:w-8 text-blue-600 animate-spin" />
+                        <RefreshCw className="h-6 w-6 sm:h-8 sm:w-8 lg:h-7 lg:w-7 xl:h-8 xl:w-8 text-black animate-spin" />
                       </div>
                       <p className="text-xs sm:text-sm lg:text-xs xl:text-sm text-gray-600 font-medium">Loading your submissions...</p>
                     </div>
@@ -2803,7 +2803,7 @@ const Dashboard = () => {
               <CardContent className="p-3 sm:p-6 lg:p-5 xl:p-6">
                 {matchesLoading ? (
                   <div className="flex flex-col items-center justify-center py-12 gap-3">
-                    <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
                     <p className="text-xs font-bold text-gray-500">Finding your matches…</p>
                   </div>
                 ) : matchesError ? (

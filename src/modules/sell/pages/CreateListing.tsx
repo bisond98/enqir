@@ -1154,7 +1154,7 @@ export default function CreateListing() {
                         style={{ width: 22, height: 22, minWidth: 22, minHeight: 22, padding: 0 }}
                       >
                         {aiGenerating ? (
-                          <Loader2 className="h-3 w-3 text-amber-500 animate-spin" />
+                          <Loader2 className="h-3 w-3 text-black animate-spin" />
                         ) : (
                           <Sparkles
                             className="h-4 w-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"

@@ -41,6 +41,7 @@ import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/serv
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { useToast } from "@/components/ui/use-toast";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
 import { BuyerCartoon } from "@/components/doodles";
@@ -75,7 +76,7 @@ const AiDescriptionBar = ({ onRun, generating }: { onRun: () => void; generating
     style={{ width: 22, height: 22, minWidth: 22, minHeight: 22, padding: 0 }}
   >
     {generating ? (
-      <Loader2 className="h-3 w-3 text-amber-500 animate-spin" />
+      <Loader2 className="h-3 w-3 text-black animate-spin" />
     ) : (
       <Sparkles
         className="h-4 w-4 drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
@@ -1339,8 +1340,7 @@ export default function PostEnquiry() {
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pal-blue mx-auto mb-4"></div>
-          <p className="text-[10px] sm:text-sm text-muted-foreground whitespace-nowrap">Redirecting to sign in...</p>
+          <LoadingAnimation message="Redirecting to sign in" showBackButton={false} />
         </div>
       </div>
     </Layout>

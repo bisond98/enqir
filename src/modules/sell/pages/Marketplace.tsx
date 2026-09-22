@@ -20,6 +20,7 @@ import { geocodeLocationText } from '@/lib/geocodeText';
 import { db } from '@/firebase';
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { useAuth } from '@/contexts/AuthContext';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 // Category icon mapping
 const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
@@ -894,8 +895,7 @@ export default function Marketplace() {
       <div className="space-y-3">
         {loading && (
           <div className="text-center py-10">
-            <div className="w-8 h-8 border-3 border-black border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-sm font-bold text-gray-500">Searching…</p>
+            <LoadingAnimation message="Searching" showBackButton={false} compact />
           </div>
         )}
 

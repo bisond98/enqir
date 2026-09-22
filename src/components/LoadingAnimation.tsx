@@ -8,6 +8,8 @@ interface LoadingAnimationProps {
   className?: string;
   showBackButton?: boolean;
   onBack?: () => void;
+  /** Smaller variant for embedding inside sections instead of full-page */
+  compact?: boolean;
   children?: React.ReactNode;
 }
 
@@ -16,6 +18,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
   className = "",
   showBackButton = true,
   onBack,
+  compact = false,
   children
 }) => {
   const navigate = useNavigate();
@@ -33,7 +36,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-      className={`min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 relative ${className}`}
+      className={compact ? `flex items-center justify-center px-4 py-6 ${className}` : `min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 relative ${className}`}
     >
       {/* Back Button - Top Left Corner */}
       {showBackButton && (
@@ -57,9 +60,11 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          className="bg-white p-8 sm:p-12 lg:p-14 xl:p-16 rounded-2xl sm:rounded-3xl lg:rounded-lg xl:rounded-lg shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto lg:max-w-4xl lg:min-h-[400px]"
+          className={compact
+            ? "bg-white p-4 rounded-2xl shadow-md flex flex-col items-center justify-center w-full mx-auto"
+            : "bg-white p-8 sm:p-12 lg:p-14 xl:p-16 rounded-2xl sm:rounded-3xl lg:rounded-lg xl:rounded-lg shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto lg:max-w-4xl lg:min-h-[400px]"}
         >
-          <svg viewBox="0 0 500 280" className="w-full h-[200px] sm:h-[250px] mx-auto mb-4 sm:mb-6" preserveAspectRatio="xMidYMid meet">
+          <svg viewBox="0 0 500 280" className={compact ? "w-full h-28 mx-auto mb-2" : "w-full h-[200px] sm:h-[250px] mx-auto mb-4 sm:mb-6"} preserveAspectRatio="xMidYMid meet">
             {/* Step 1: User Posting Enquiry */}
             <g id="step1" transform="translate(80, 80)">
               {/* User Character */}
@@ -212,7 +217,9 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-center"
+            className={compact
+              ? "text-lg sm:text-xl font-black tracking-tighter leading-none font-heading text-black text-center"
+              : "text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-center"}
           >
             {message}
             <motion.span 

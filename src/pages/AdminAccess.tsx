@@ -153,7 +153,7 @@ const AdminAccess = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <Card className="max-w-md w-full mx-4">
           <CardContent className="p-8 text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-gray-600 mx-auto mb-4" />
+            <Loader2 className="h-12 w-12 animate-spin text-black mx-auto mb-4" />
             <p className="text-gray-600 font-medium">Verifying access credentials...</p>
           </CardContent>
         </Card>
@@ -166,7 +166,7 @@ const AdminAccess = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <Card className="max-w-md w-full mx-4">
           <CardContent className="p-8 text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+            <Loader2 className="h-12 w-12 animate-spin text-black mx-auto mb-4" />
             <p className="text-gray-600 font-medium">Creating admin session...</p>
             <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
           </CardContent>
@@ -204,7 +204,7 @@ const AdminAccess = () => {
         </CardHeader>
         <CardContent className="text-center">
           <p className="text-sm text-slate-500 mb-4">Redirecting to admin panel...</p>
-          <Loader2 className="h-6 w-6 animate-spin text-gray-600 mx-auto" />
+          <Loader2 className="h-6 w-6 animate-spin text-black mx-auto" />
         </CardContent>
       </Card>
     </div>

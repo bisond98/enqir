@@ -124,7 +124,7 @@ const SmartMatchmaking: React.FC<SmartMatchmakingProps> = ({
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <div className="w-8 h-8 border-2 border-slate-300 border-t-pal-blue rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-slate-300 border-t-black rounded-full animate-spin" />
             <span className="ml-3 text-sm text-slate-500">Finding the best matches...</span>
           </div>
         </CardContent>

@@ -292,7 +292,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {paymentStep === 'processing' && (
             <div className="text-center py-8">
-              <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
+              <Loader2 className="h-12 w-12 animate-spin text-black mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-slate-900 mb-2">Processing Payment</h3>
               <p className="text-slate-600">Please wait while we process your payment...</p>
             </div>

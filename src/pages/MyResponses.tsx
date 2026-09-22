@@ -387,11 +387,8 @@ const MyResponses = () => {
   if (!user) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-300 border-t-gray-800 mx-auto"></div>
-            <p className="mt-4 text-slate-600 font-medium">Loading your account...</p>
-          </div>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 w-full">
+          <LoadingAnimation message="Loading your account" showBackButton={false} compact />
         </div>
       </Layout>
     );

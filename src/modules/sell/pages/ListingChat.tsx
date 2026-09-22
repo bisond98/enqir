@@ -21,6 +21,7 @@ import { collection, query, where, addDoc, serverTimestamp, onSnapshot, doc, get
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing } from '../services/sellDb';
 import type { SellListing } from '../types';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 interface ChatMessage {
   id: string;
@@ -519,8 +520,8 @@ export default function ListingChat() {
   if (loading) {
     return (
       <Layout showNavigation={false}>
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="w-8 h-8 border-3 border-black border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center justify-center min-h-[60vh] w-full">
+          <LoadingAnimation message="Loading chat" showBackButton={false} compact />
         </div>
       </Layout>
     );

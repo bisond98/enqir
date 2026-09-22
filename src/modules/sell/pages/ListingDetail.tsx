@@ -24,6 +24,7 @@ import { uploadToCloudinaryAuto } from '@/integrations/cloudinary';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 import { friendlyError } from '@/utils/friendlyError';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 
 function formatPrice(l: SellListing) {
@@ -453,9 +454,8 @@ export default function ListingDetail() {
   if (loading) {
     return (
       <SellShell title="Listing">
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <div className="w-8 h-8 border-3 border-black border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs text-gray-500">Loading listing…</p>
+        <div className="flex flex-col items-center justify-center py-20 gap-3 w-full">
+          <LoadingAnimation message="Loading listing" showBackButton={false} compact />
         </div>
       </SellShell>
     );

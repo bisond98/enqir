@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail } from 'lucide-react';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import type { ListingCondition, ListingPriceType } from '../types';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 export default function SellerDashboard({ minimal = false }: { minimal?: boolean } = {}) {
   const { user } = useAuth();
@@ -221,8 +222,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
         <div className="space-y-3">
           {loading && (
             <div className="text-center py-10">
-              <div className="w-8 h-8 border-3 border-black border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-              <p className="text-sm font-bold text-gray-500">Loading listings…</p>
+              <LoadingAnimation message="Loading listings" showBackButton={false} compact />
             </div>
           )}
 
@@ -472,8 +472,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
         <div className="space-y-3">
           {loading && (
             <div className="text-center py-10">
-              <div className="w-8 h-8 border-3 border-black border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-              <p className="text-sm font-bold text-gray-500">Loading responses…</p>
+              <LoadingAnimation message="Loading responses" showBackButton={false} compact />
             </div>
           )}
 

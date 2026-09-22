@@ -143,7 +143,7 @@ const ChatAnalytics: React.FC<ChatAnalyticsProps> = ({
         {/* Loading State */}
         {isLoading && (
           <div className="flex items-center justify-center py-4">
-            <div className="w-6 h-6 border-2 border-slate-300 border-t-pal-blue rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-slate-300 border-t-black rounded-full animate-spin" />
             <span className="ml-2 text-sm text-slate-500">Analyzing chat...</span>
           </div>
         )}

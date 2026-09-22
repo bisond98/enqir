@@ -924,7 +924,7 @@ const Profile = () => {
             {verificationStatus === 'pending' && (
               <div className="bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-xl p-4 sm:p-6 text-center">
                 <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-3 sm:mb-4">
-                  <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-[20px] border-yellow-500 border-t-transparent"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-[20px] border-black border-t-transparent"></div>
                 </div>
                 <h3 className="text-base sm:text-xl font-semibold text-yellow-800 mb-2">Verification Pending</h3>
                 <p className="text-yellow-700 text-xs sm:text-sm">
@@ -1256,7 +1256,7 @@ const Profile = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-blue-600">
-                      <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-[20px] border-blue-500 border-t-transparent"></div>
+                      <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-[20px] border-black border-t-transparent"></div>
                       <span className="font-bold">
                         {uploadProgress < 25 && "Preparing upload..."}
                         {uploadProgress >= 25 && uploadProgress < 75 && "Uploading ID..."}

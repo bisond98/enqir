@@ -5721,7 +5721,7 @@ export default function EnquiryWall() {
                 </div>
                 {isAISearching ? (
                   <div className="absolute right-[4.5rem] sm:right-[5.25rem] top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (
                   <>
