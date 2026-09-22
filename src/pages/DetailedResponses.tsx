@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useUsage } from "@/contexts/UsageContext";
 import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc } from "firebase/firestore";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -12,10 +11,7 @@ import { ArrowLeft, MessageSquare, Shield, ImageIcon, Crown, Lock, Eye, Star, Cl
 import Layout from "@/components/Layout";
 import { getPrivacyProtectedName, isUserVerified } from "@/utils/privacy";
 import VerificationBadge from "@/components/VerificationBadge";
-import PaymentPlanSelector from "@/components/PaymentPlanSelector";
-import { processPayment, savePaymentRecord, updateEnquiryPremiumStatus, updateUserPaymentPlan, getUserPaymentPlan, canViewAllResponses, getResponseViewLimit } from "@/services/paymentService";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
-import { PAYMENT_PLANS, getUpgradeOptions } from "@/config/paymentPlans";
 
 interface Enquiry {
   id: string;
@@ -50,48 +46,11 @@ const DetailedResponses = () => {
   const { enquiryId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { canViewResponse, canViewAllResponses, getResponseViewLimit } = useUsage();
   
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
   const [responses, setResponses] = useState<SellerSubmission[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentPlan, setCurrentPlan] = useState<string>('free');
-  const [showPaymentSelector, setShowPaymentSelector] = useState(false);
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
-
-  // Handle payment plan selection
-  const handlePlanSelect = async (planId: string, price: number) => {
-    if (!enquiry || !user) return;
-    
-    try {
-      const { updateDoc, serverTimestamp } = await import('firebase/firestore');
-      
-      // Payment was already processed via Razorpay in PaymentPlanSelector
-      // Just update the enquiry to reflect the new plan
-      const plan = PAYMENT_PLANS.find(p => p.id === planId);
-      if (!plan) throw new Error('Plan not found');
-      
-      // Update enquiry
-      const enquiryRef = doc(db, 'enquiries', enquiry.id);
-      await updateDoc(enquiryRef, {
-        selectedPlanId: planId,
-        selectedPlanPrice: price,
-        isPremium: price > 0,
-        updatedAt: serverTimestamp()
-      });
-      
-      // Update local state
-      setCurrentPlan(planId);
-      setEnquiry({ ...enquiry, selectedPlanId: planId, isPremium: price > 0 });
-      setShowPaymentSelector(false);
-      
-      // Reload the page to reflect the updated plan
-      window.location.reload();
-      
-    } catch (error) {
-      console.error('Error updating plan:', error);
-    }
-  };
 
   // Mark responses as viewed IMMEDIATELY when page loads
   useEffect(() => {
@@ -124,13 +83,7 @@ const DetailedResponses = () => {
           setEnquiry(enquiryData);
           // Set current plan from enquiry data
           setCurrentPlan(enquiryData.selectedPlanId || 'free');
-          console.log('📋 Enquiry loaded - Current plan:', enquiryData.selectedPlanId || 'free');
-          console.log('📋 Enquiry data:', {
-            id: enquiryData.id,
-            isPremium: enquiryData.isPremium,
-            selectedPlanId: enquiryData.selectedPlanId,
-            title: enquiryData.title
-          });
+          console.log('📋 Enquiry loaded - Plan:', enquiryData.selectedPlanId || 'free');
         }
       } catch (error) {
         console.error('Error fetching enquiry:', error);
@@ -199,40 +152,9 @@ const DetailedResponses = () => {
     });
     
     if (user.uid === enquiry.userId) {
-      // Get the selected plan for this enquiry
-      const selectedPlanId = enquiry.selectedPlanId || 'free';
-      
-      // Determine response limit based on plan
-      let responseLimit = 2; // Default free plan
-      
-      switch (selectedPlanId) {
-        case 'free':
-          responseLimit = 2;
-          break;
-        case 'basic':
-          responseLimit = 5;
-          break;
-        case 'standard':
-          responseLimit = 10;
-          break;
-        case 'premium':
-        case 'pro':
-          responseLimit = -1; // Unlimited
-          break;
-        default:
-          responseLimit = 2; // Default to free
-      }
-      
-      // If unlimited, return all responses
-      if (responseLimit === -1) {
-        console.log('DetailedResponses: Unlimited plan - returning all responses:', responses.length);
-        return responses;
-      }
-      
-      // Return limited responses based on plan
-      const limitedResponses = responses.slice(0, responseLimit);
-      console.log(`DetailedResponses: ${selectedPlanId} plan - returning ${limitedResponses.length} responses (limit: ${responseLimit})`);
-      return limitedResponses;
+      // All paid enquiries are premium with unlimited responses — show everything
+      console.log('DetailedResponses: Buyer view - returning all responses:', responses.length);
+      return responses;
     }
     
     console.log('DetailedResponses: Seller view - returning own responses');
@@ -368,60 +290,10 @@ const DetailedResponses = () => {
                       </div>
                     </div>
                   )}
-                  {!isEnquiryExpired && user && enquiry.userId === user.uid && (() => {
-                    const enquiryPlan = enquiry.selectedPlanId || 'free';
-                    // Don't show upgrade button for premium (top tier) or pro
-                    if (enquiryPlan === 'premium' || enquiryPlan === 'pro') return null;
-                    const upgradeOptions = getUpgradeOptions(
-                      enquiryPlan,
-                      'free',
-                      enquiry.createdAt,
-                      null
-                    );
-                    if (upgradeOptions.length === 0) return null;
-                    return (
-                    <div className="pt-2 sm:pt-3 border-t border-gray-200">
-                      <Button
-                        onClick={() => setShowPaymentSelector(true)}
-                        className="w-full sm:w-auto h-8 sm:h-9 text-[10px] sm:text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4"
-                        size="sm"
-                      >
-                        <Crown className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
-                        Upgrade Plan
-                      </Button>
-                    </div>
-                    );
-                  })()}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Payment Plan Selector - Only show for enquiry owner if not premium and not expired */}
-            {!isEnquiryExpired && user && enquiry && user.uid === enquiry.userId && !enquiry.isPremium && (
-              <Card className="border-2 border-blue-200 shadow-sm rounded-lg sm:rounded-xl mb-2 sm:mb-3">
-                <CardContent className="p-2 sm:p-3">
-                  <div className="text-center mb-2">
-                    <h3 className="text-[11px] sm:text-xs font-semibold text-gray-900 mb-0.5">
-                      Unlock More Responses
-                    </h3>
-                    <p className="text-[9px] sm:text-[10px] text-gray-600">
-                      You're seeing {visibleResponses.length} of {responses.length} responses. Upgrade to see all.
-                    </p>
-                  </div>
-                  
-                  <PaymentPlanSelector
-                    currentPlanId={currentPlan}
-                    enquiryId={enquiry.id}
-                    userId={user.uid}
-                    onPlanSelect={handlePlanSelect}
-                    isUpgrade={true}
-                    enquiryCreatedAt={enquiry.createdAt}
-                    className="max-w-4xl mx-auto"
-                    user={user}
-                  />
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Responses Section */}
@@ -546,36 +418,6 @@ const DetailedResponses = () => {
           )}
         </div>
       </div>
-
-      {/* Payment Plan Selector Modal */}
-      {showPaymentSelector && enquiry && (
-        <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-          <DialogContent className="max-w-6xl w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] md:w-full max-h-[98vh] sm:max-h-[95vh] md:max-h-[90vh] overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6 lg:p-8 mx-auto">
-            <DialogHeader className="mb-3 sm:mb-4 md:mb-6 lg:mb-8">
-              <DialogTitle className="text-base sm:text-lg md:text-xl font-extrabold text-center mb-2 sm:mb-2.5 md:mb-3 flex items-center justify-center gap-2 sm:gap-2.5 px-2">
-                <Crown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-yellow-400 flex-shrink-0" />
-                <span className="text-gray-900">Choose Your Plan</span>
-              </DialogTitle>
-              <DialogDescription className="text-center text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed font-medium px-2">
-                Select a plan to unlock premium responses
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="mt-1 sm:mt-2 md:mt-3 lg:mt-4">
-              <PaymentPlanSelector
-                currentPlanId={currentPlan}
-                enquiryId={enquiry.id}
-                userId={user.uid}
-                onPlanSelect={handlePlanSelect}
-                isUpgrade={true}
-                enquiryCreatedAt={enquiry.createdAt}
-                className="max-w-6xl mx-auto w-full"
-                user={user}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
     </Layout>
   );
 };

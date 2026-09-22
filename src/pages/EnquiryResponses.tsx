@@ -11,8 +11,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
-import { useUsage } from "@/contexts/UsageContext";
-import PremiumUpgradeModal from "@/components/PremiumUpgradeModal";
 import { db } from "@/firebase";
 import { collection, query, where, doc, getDoc, addDoc, orderBy, serverTimestamp, getDocs, limit, updateDoc, onSnapshot, deleteDoc, setDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
@@ -22,7 +20,6 @@ import { LoadingAnimation } from "@/components/LoadingAnimation";
 import MicrophonePermissionPrompt from "@/components/MicrophonePermissionPrompt";
 import { checkMicrophonePermission, MicrophonePermissionStatus } from "@/utils/permissions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import PaymentPlanSelector from "@/components/PaymentPlanSelector";
 import { PAYMENT_PLANS } from "@/config/paymentPlans";
 import {
   DropdownMenu,
@@ -104,7 +101,6 @@ const EnquiryResponses = () => {
   const createNotification = notificationContext?.createNotification || (async () => {
     console.warn('NotificationContext not available');
   });
-  const { canViewResponse, canViewAllResponses, getResponseViewLimit, purchasePremiumEnquiry, purchaseMonthlySubscription, usageStats } = useUsage();
   const navigate = useNavigate();
   const { enquiryId } = useParams();
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
@@ -136,10 +132,6 @@ const EnquiryResponses = () => {
   const [audioProgress, setAudioProgress] = useState<{[key: string]: number}>({});
   const [audioCurrentTime, setAudioCurrentTime] = useState<{[key: string]: number}>({});
   const [audioDurations, setAudioDurations] = useState<{[key: string]: number}>({});
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
-  const [showPaymentSelector, setShowPaymentSelector] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(false);
-  const [currentPlan, setCurrentPlan] = useState<string>('free');
   const [showEndChatConfirm, setShowEndChatConfirm] = useState(false);
   const [showBlockUserConfirm, setShowBlockUserConfirm] = useState(false);
   const [showCloseDealConfirm, setShowCloseDealConfirm] = useState(false);
@@ -203,8 +195,6 @@ const EnquiryResponses = () => {
         if (enquiryDoc.exists()) {
           const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
           setEnquiry(enquiryData);
-          // Set current plan for payment selector
-          setCurrentPlan(enquiryData.selectedPlanId || 'free');
           console.log('EnquiryResponses: Fetched enquiry:', enquiryData);
         } else {
           // Enquiry doesn't exist - set loading to false so error message can show
@@ -2345,37 +2335,8 @@ const EnquiryResponses = () => {
     
     // If user is the enquiry owner (buyer)
     if (user.uid === enquiry.userId) {
-      // Get the selected plan for this enquiry
-      const selectedPlanId = enquiry.selectedPlanId || 'free';
-      
-      // Determine response limit based on plan
-      let responseLimit = 2; // Default free plan
-      
-      switch (selectedPlanId) {
-        case 'free':
-          responseLimit = 2;
-          break;
-        case 'basic':
-          responseLimit = 5;
-          break;
-        case 'standard':
-          responseLimit = 10;
-          break;
-        case 'premium':
-        case 'pro':
-          responseLimit = -1; // Unlimited
-          break;
-        default:
-          responseLimit = 2; // Default to free
-      }
-      
-      // If unlimited, return all responses
-      if (responseLimit === -1) {
-        return sortedResponses;
-      }
-      
-      // Return limited responses based on plan
-      return sortedResponses.slice(0, responseLimit);
+      // All paid enquiries are premium with unlimited responses — show everything
+      return sortedResponses;
     }
     
     // If user is a seller, only show their own response
@@ -2461,62 +2422,6 @@ const EnquiryResponses = () => {
     if (currentIndex < visibleResponses.length - 1) {
       handleResponseClick(visibleResponses[currentIndex + 1]);
     }
-  };
-
-  const handlePremiumUpgrade = () => {
-    if (!enquiryId || !enquiry) return;
-    // Always use selectedPlanId if available, otherwise default to 'free'
-    setCurrentPlan(enquiry.selectedPlanId || 'free');
-    setShowPaymentSelector(true);
-  };
-
-
-  const handlePlanSelect = async (planId: string, price: number) => {
-    if (!enquiryId || !enquiry || !user) return;
-
-    try {
-      // Payment was already processed via Razorpay in PaymentPlanSelector
-      // Just update the enquiry to reflect the new plan
-      const plan = PAYMENT_PLANS.find(p => p.id === planId);
-      if (!plan) throw new Error('Plan not found');
-      
-      const enquiryRef = doc(db, 'enquiries', enquiryId);
-      await updateDoc(enquiryRef, {
-        selectedPlanId: planId,
-        selectedPlanPrice: price,
-        isPremium: price > 0
-      });
-
-      toast({
-        title: `${plan.name} Plan Activated! 🎉`,
-        description: `Your enquiry now has ${plan.responses === -1 ? 'unlimited' : plan.responses} responses!`,
-      });
-
-      setShowPaymentSelector(false);
-      
-      // Show loading and redirect to responses page after 500ms
-      setIsRedirecting(true);
-      setTimeout(() => {
-        navigate(`/enquiry/${enquiryId}/responses-page`);
-      }, 500);
-    } catch (error) {
-      console.error('Error updating plan:', error);
-      toast({
-        title: "Update Failed",
-        description: "Payment was successful but there was an error updating the enquiry. Please refresh the page.",
-        variant: "destructive"
-      });
-      setIsRedirecting(false);
-    }
-  };
-
-  const handleMonthlyUpgrade = () => {
-    purchaseMonthlySubscription();
-    setShowPremiumModal(false);
-    toast({
-      title: "Monthly Premium Activated! 👑",
-      description: "You now have premium privileges for 10 enquiries",
-    });
   };
 
   // Scroll to bottom when new messages arrive
@@ -4222,31 +4127,6 @@ const EnquiryResponses = () => {
           </div>
         </div>
       </div>
-      {user && enquiry && user.uid === enquiry.userId && (() => {
-        const selectedPlanId = enquiry.selectedPlanId || 'free';
-        const plan = PAYMENT_PLANS.find(p => p.id === selectedPlanId);
-        const responseLimit = plan?.responses || 2;
-        const hasMoreResponses = approvedResponses.length > responseLimit;
-        const isUnlimited = responseLimit === -1;
-        
-        return !isUnlimited && hasMoreResponses && (
-          <div className="my-4 text-center">
-            <p className="text-black text-[10px] sm:text-xs font-bold mb-2">Upgrade to Premium to view all responses.</p>
-            <Button 
-              variant="default" 
-              onClick={handlePremiumUpgrade} 
-              className="bg-blue-600 hover:bg-blue-700 text-white border-[0.5px] border-black rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/upgrade font-bold px-4 py-2"
-            >
-              {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-              {/* Shimmer effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/upgrade:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-              <span className="relative z-10">Upgrade to Premium</span>
-            </Button>
-          </div>
-        );
-      })()}
-
       {/* Additional Tile - Hidden */}
       {/* <div className="mt-6">
         <div className="bg-black rounded-lg p-4 text-white">
@@ -4561,50 +4441,6 @@ const EnquiryResponses = () => {
             </Card>
           </div>
         </>
-      )}
-
-      {/* Payment Plan Selector Modal */}
-      {showPaymentSelector && enquiry && (
-        <Dialog open={showPaymentSelector} onOpenChange={setShowPaymentSelector}>
-          <DialogContent className="!max-w-5xl !w-[calc(100vw-2rem)] sm:!w-full !max-h-[95vh] sm:!max-h-[90vh] !p-4 sm:!p-6 md:!p-8 !border-4 !border-black !bg-white !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !rounded-2xl sm:!rounded-3xl" style={{ backgroundColor: 'white', zIndex: 100 }}>
-            {/* Physical button depth effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
-            
-            <DialogHeader className="mb-4 sm:mb-6 md:mb-8 relative z-10 mt-8 sm:mt-10 md:mt-12">
-              <DialogTitle className="text-xs sm:text-sm md:text-base lg:text-lg font-black text-center mb-2 sm:mb-3 md:mb-4 flex flex-col items-center justify-center gap-4 sm:gap-5 md:gap-6 lg:gap-8 text-black">
-                <div className="flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full border-4 sm:border-6 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3)] flex-shrink-0">
-                  <Crown className="h-10 w-10 sm:h-14 sm:w-14 md:h-18 md:w-18 lg:h-20 lg:w-20 text-black flex-shrink-0" />
-                </div>
-                <span className="break-words mt-2 sm:mt-3 md:mt-4">Upgrade Plan for "{enquiry.title}"</span>
-              </DialogTitle>
-              <DialogDescription className="text-center text-[9px] sm:text-[10px] md:text-xs text-gray-700 leading-relaxed font-semibold mt-6 sm:mt-8 md:mt-10">
-                Upgrade to unlock more curated, verified sellers.
-              </DialogDescription>
-            </DialogHeader>
-            
-            <div className="mt-2 sm:mt-3 md:mt-4 relative z-10">
-              <PaymentPlanSelector
-                currentPlanId={currentPlan}
-                enquiryId={enquiryId || ''}
-                userId={user?.uid || ''}
-                onPlanSelect={handlePlanSelect}
-                isUpgrade={true}
-                enquiryCreatedAt={enquiry.createdAt}
-                className="max-w-4xl mx-auto w-full"
-                user={user}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Loading overlay during payment redirect */}
-      {isRedirecting && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center">
-          <div className="bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xl max-w-md w-[90%] mx-auto">
-            <LoadingAnimation message="Payment successful! Redirecting..." />
-          </div>
-        </div>
       )}
       {/* Call Number Popup - buyer sees seller's number, seller sees buyer's */}
       {showCallNumberPopup && otherPartyMobile && (
