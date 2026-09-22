@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriangle, Star, FileText, X, ChevronRight, Verified, Eye, Check, File, Lock, ImageIcon, Phone, Pen, Sparkles, Loader2 } from "lucide-react";
-import { generateDescription, improveDescription } from "@/services/ai/descriptionAssistant";
+import { improveDescription } from "@/services/ai/descriptionAssistant";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import LoadingAnimation from "@/components/LoadingAnimation";
@@ -85,16 +85,15 @@ const SellerResponse = () => {
   const [aiGenerating, setAiGenerating] = useState(false);
 
   const runDescriptionAI = () => {
+    // Seller response: only grammar-correct typed text. Never generate a
+    // buyer-style "Looking for..." description — generateDescription() is
+    // enquiry-side and wrong for this form.
+    if (!description.trim()) return;
     setAiGenerating(true);
     setTimeout(() => {
       try {
-        if (description.trim()) {
-          // Grammar-correct in place — apply directly, no suggestion step
-          const { suggestion } = improveDescription(description, { title });
-          setDescription(suggestion.slice(0, 500));
-        } else {
-          setDescription(generateDescription({ title }).slice(0, 500));
-        }
+        const { suggestion } = improveDescription(description, { title });
+        setDescription(suggestion.slice(0, 500));
       } catch {
         // keep the user's text untouched on failure
       } finally {
