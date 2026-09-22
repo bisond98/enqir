@@ -342,21 +342,9 @@ export const improveDescription = (raw: string, input: DescriptionInput): Improv
 };
 
 /**
- * Seller-side opener for response forms: turns the auto-filled response title
- * (the enquiry title, e.g. "2008 Hero Honda Splendor Plus") into a seller
- * voice opener — "I have a 2008 Hero Honda Splendor Plus available." — and
- * grammar-cleans any typed text the seller added. Used by the Respond form's
- * pen icon so empty/fragment text still reads like a seller, never a buyer.
+ * Seller-side cleanup for response forms: grammar-corrects ONLY the text the
+ * seller typed. The enquiry title is never inserted — no "Looking for…" and
+ * no "I have <enquiry> available." — just the user's own words, cleaned.
  */
-export const buildResponseDescription = (typed: string, responseTitle: string): string => {
-  const wants = (responseTitle || '').trim().replace(/^(need|want|looking for)\s+/i, '');
-  const article = /^[aeiou]/i.test(wants) ? 'an' : 'a';
-  const opener = wants ? `I have ${article} ${wants} available.` : '';
-  const cleanedTyped = typed.trim() ? cleanText(typed) : '';
-  if (!opener) return cleanedTyped;
-  if (!cleanedTyped) return opener;
-  // Avoid duplicating the opener if the seller already wrote essentially that
-  const lower = cleanedTyped.toLowerCase();
-  if (lower.includes('i have') || lower.includes(wants.toLowerCase())) return cleanedTyped;
-  return `${opener} ${cleanedTyped}`.replace(/\s{2,}/g, ' ').trim().slice(0, 500);
-};
+export const buildResponseDescription = (typed: string, _responseTitle?: string): string =>
+  typed.trim() ? cleanText(typed) : '';
