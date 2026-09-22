@@ -53,9 +53,28 @@ function MapFlyController({
   const map = useMap();
   useEffect(() => {
     if (!flyTarget) return;
-    map.flyTo([flyTarget.lat, flyTarget.lng], 16, { duration: 0.8 });
+    map.flyTo([flyTarget.lat, flyTarget.lng], 15, { duration: 0.8 });
     onFlyDone();
   }, [flyTarget, map, onFlyDone]);
+  return null;
+}
+
+/** Smoothly centers an existing map on a new position WITHOUT remounting it.
+ *  Used for geolocation fixes so the map glides to the pin instead of
+ *  being destroyed/recreated (which snapped the zoom and lost pan state). */
+function MapCenterController({
+  centerTarget,
+  onDone,
+}: {
+  centerTarget: { lat: number; lng: number; nonce: number } | null;
+  onDone: () => void;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (!centerTarget) return;
+    map.flyTo([centerTarget.lat, centerTarget.lng], 15, { duration: 0.9 });
+    onDone();
+  }, [centerTarget, map, onDone]);
   return null;
 }
 
@@ -120,6 +139,8 @@ export function MapLocationPicker({
   const openRef = useRef(open);
   useEffect(() => { openRef.current = open; }, [open]);
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lng: number; nonce: number } | null>(null);
+  // Geolocation fixes glide the existing map here instead of remounting it.
+  const [centerTarget, setCenterTarget] = useState<{ lat: number; lng: number; nonce: number } | null>(null);
   const searchSeqRef = useRef(0);
 
   // Reset place search whenever the picker opens/closes
@@ -177,8 +198,7 @@ export function MapLocationPicker({
     setPlaceError(null);
     setPlaceResults([]);
     // Keep the chosen place visible inside the search input
-    pickedLabelRef.current = r.label;
-    setPickedLabel(r.label);
+    pickedLabelRef.current = r.label;      setPickedLabel(r.label);
     setPlaceQuery(r.label);
     setFlyTarget({ lat: r.lat, lng: r.lng, nonce: Date.now() });
   }, []);
@@ -200,8 +220,8 @@ export function MapLocationPicker({
 
   const mapKey = useMemo(
     () =>
-      `${open ? "1" : "0"}-${mapInstanceKey}-${position[0].toFixed(5)}-${position[1].toFixed(5)}-${defaultLocation?.lat ?? ""}-${defaultLocation?.lng ?? ""}`,
-    [open, mapInstanceKey, position, defaultLocation?.lat, defaultLocation?.lng]
+      `${open ? "1" : "0"}`,
+    [open]
   );
 
   const onMapClick = useCallback((lat: number, lng: number) => {
@@ -321,7 +341,7 @@ export function MapLocationPicker({
       if (settled) return;
       settle();
       setPosition([lat, lng]);
-      setMapInstanceKey((k) => k + 1);
+      setCenterTarget({ lat, lng, nonce: Date.now() });
       setGeoLoading(false);
       await doConfirmRef.current([lat, lng]);
     };
@@ -345,7 +365,7 @@ export function MapLocationPicker({
       clearTimeout(t2);
       clearTimeout(tFail);
       setPosition([lat, lng]);
-      setMapInstanceKey((k) => k + 1);
+      setCenterTarget({ lat, lng, nonce: Date.now() });
       setGeoLoading(false);
       setGeoError("Approximate location placed — searching for your precise GPS position… The pin will jump to your exact spot automatically, or drag it / search to adjust.");
       startPrecisionWatch();
@@ -364,7 +384,7 @@ export function MapLocationPicker({
             stopWatch();
             if (!openRef.current) return; // user already closed the picker
             setPosition([c.latitude, c.longitude]);
-            setMapInstanceKey((k) => k + 1);
+            setCenterTarget({ lat: c.latitude, lng: c.longitude, nonce: Date.now() });
             setGeoError(null);
             setGeoLoading(false);
             doConfirmRef.current([c.latitude, c.longitude]);
@@ -542,11 +562,10 @@ export function MapLocationPicker({
           "flex-1 min-h-[120px] sm:min-h-0 sm:flex-none sm:h-[360px]"
         )}
       >
-        {open ? (
-          <MapContainer
-            key={mapKey}
-            center={position}
-            zoom={mapInstanceKey > 0 ? 16 : 13}
+        {open ? (            <MapContainer
+              key={mapKey}
+              center={position}
+              zoom={13}
             className="h-full w-full z-0"
             scrollWheelZoom
             preferCanvas
@@ -557,6 +576,7 @@ export function MapLocationPicker({
             />
             <MapClickHandler onPick={onMapClick} />
             <MapFlyController flyTarget={flyTarget} onFlyDone={() => setFlyTarget(null)} />
+            <MapCenterController centerTarget={centerTarget} onDone={() => setCenterTarget(null)} />
             <Marker position={position} draggable eventHandlers={{ dragend: onMarkerDragEnd }} />
           </MapContainer>
         ) : null}
