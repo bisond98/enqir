@@ -13,6 +13,27 @@ interface ErrorBoundaryState {
   errorInfo?: any;
 }
 
+// Stale-bundle detection: after a new deploy, a suspended/restored tab may
+// request JS chunks that no longer exist. The server (SPA rewrite) returns
+// index.html for them, so the browser throws "'text/html' is not a valid
+// JavaScript MIME type" (or a ChunkLoadError). Auto-reloading once fetches
+// the fresh index.html + bundles and the user never sees the error screen.
+const STALE_BUNDLE_KEY = 'errorboundary_stale_reload_at';
+const isStaleBundleError = (error?: Error): boolean => {
+  if (!error) return false;
+  const msg = `${error.message || ''} ${(error as any).stack || ''}`.toLowerCase();
+  return (
+    msg.includes('mime type') ||
+    msg.includes('mimeType') ||
+    msg.includes('dynamically imported module') ||
+    msg.includes('importing a module script failed') ||
+    msg.includes('failed to fetch dynamically') ||
+    msg.includes('chunkloaderror') ||
+    msg.includes('loading chunk') ||
+    msg.includes('error loading dynamically imported')
+  );
+};
+
 export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false };
 
@@ -23,6 +44,19 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   componentDidCatch(error: Error, errorInfo: any) {
     // eslint-disable-next-line no-console
     console.error("ErrorBoundary caught:", error, errorInfo);
+
+    // Auto-recover from stale-bundle errors (old JS chunk after a redeploy):
+    // reload ONCE per session — if it still fails right after, show the UI so
+    // the user isn't stuck in a reload loop.
+    if (isStaleBundleError(error)) {
+      const last = parseInt(localStorage.getItem(STALE_BUNDLE_KEY) || '0', 10);
+      const now = Date.now();
+      if (now - last > 10000) {
+        localStorage.setItem(STALE_BUNDLE_KEY, String(now));
+        window.location.reload();
+        return;
+      }
+    }
     
     // Log error details for debugging
     console.error("Error details:", {
