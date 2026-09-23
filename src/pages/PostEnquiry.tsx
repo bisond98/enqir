@@ -302,6 +302,82 @@ export default function PostEnquiry() {
   const [successfulPayment, setSuccessfulPayment] = useState<{ transactionId: string; planId: string } | null>(null);
   // When true, the post button creates the enquiry WITHOUT charging again (payment already verified)
   const [recoverablePayment, setRecoverablePayment] = useState(false);
+  
+  // Trust Badge Verification States (matching SellerResponse)
+  const [govIdType, setGovIdType] = useState("");
+  const [govIdNumber, setGovIdNumber] = useState("");
+  const [govIdUrl, setGovIdUrl] = useState("");
+  const [verifyingId, setVerifyingId] = useState(false);
+  const [verificationCountdown, setVerificationCountdown] = useState(60);
+  const [totalElapsedSeconds, setTotalElapsedSeconds] = useState(0);
+  const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
+  const [idErrors, setIdErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const idVerificationCardRef = useRef<HTMLDivElement>(null);
+  const inlineVerificationRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  // Build AI-assistant input from whatever the user has filled so far
+  const aiDescriptionInput = (): Parameters<typeof improveDescription>[0] => ({
+    title,
+    category,
+    categories: selectedCategories,
+    budget,
+    location: mapLocation?.city || location,
+    deadline,
+    notes,
+    vehicleDetails,
+    mobileDetails,
+  });
+
+  // ✨ Grammar-correct & polish typed text in place — instant, local, no API.
+  // Empty box: nothing to correct, no-op (the AI never writes the description
+  // for the buyer and never inserts enquiry details).
+  const runDescriptionAI = () => {
+    if (!description.trim()) return;
+    setAiGenerating(true);
+    // Brief delay so the tap feels responsive but the state change renders
+    setTimeout(() => {
+      try {
+        const { suggestion } = improveDescription(description, aiDescriptionInput());
+        if (suggestion) setDescription(suggestion.slice(0, 500));
+      } catch {
+        // keep the user's text untouched on failure
+      } finally {
+        setAiGenerating(false);
+      }
+    }, 250);
+  };
+
+  
+  // Reference images (optional for buyers, up to 5)
+  const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
+
+  // Contact mobile number (optional) — shown only to paid users via the call popup
+  // Prefilled from the signed-in user's OTP number (editable, draft-restore wins)
+  const [mobileNumber, setMobileNumber] = useState("");
+  // Country code for the mobile number (default: India +91)
+  const [countryCode, setCountryCode] = useState("+91");
+
+  // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
+  // number. Only fills an empty field, so restored drafts and user edits win.
+  useEffect(() => {
+    if (user?.phoneNumber && !mobileNumber) {
+      const split = splitE164Phone(user.phoneNumber);
+      if (split) {
+        setCountryCode(split.code);
+        setMobileNumber(formatNationalForInput(split.national, split.code));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.phoneNumber]);
+  
+  // AI Location suggestions
+  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+
+  const [aiGenerating, setAiGenerating] = useState(false);
 
   // ---------- 48h draft autosave ----------
   // Cleanup any expired drafts (both forms) once per mount.
@@ -384,82 +460,6 @@ export default function PostEnquiry() {
     setShowResumeBanner(false);
   };
   // ---------- end draft autosave ----------
-  
-  // Trust Badge Verification States (matching SellerResponse)
-  const [govIdType, setGovIdType] = useState("");
-  const [govIdNumber, setGovIdNumber] = useState("");
-  const [govIdUrl, setGovIdUrl] = useState("");
-  const [verifyingId, setVerifyingId] = useState(false);
-  const [verificationCountdown, setVerificationCountdown] = useState(60);
-  const [totalElapsedSeconds, setTotalElapsedSeconds] = useState(0);
-  const [idVerificationResult, setIdVerificationResult] = useState<{matches: boolean; error?: string; extractedNumber?: string} | null>(null);
-  const [idErrors, setIdErrors] = useState<{[key: string]: string}>({});
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const idVerificationCardRef = useRef<HTMLDivElement>(null);
-  const inlineVerificationRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
-
-  // Build AI-assistant input from whatever the user has filled so far
-  const aiDescriptionInput = (): Parameters<typeof improveDescription>[0] => ({
-    title,
-    category,
-    categories: selectedCategories,
-    budget,
-    location: mapLocation?.city || location,
-    deadline,
-    notes,
-    vehicleDetails,
-    mobileDetails,
-  });
-
-  // ✨ Grammar-correct & polish typed text in place — instant, local, no API.
-  // Empty box: nothing to correct, no-op (the AI never writes the description
-  // for the buyer and never inserts enquiry details).
-  const runDescriptionAI = () => {
-    if (!description.trim()) return;
-    setAiGenerating(true);
-    // Brief delay so the tap feels responsive but the state change renders
-    setTimeout(() => {
-      try {
-        const { suggestion } = improveDescription(description, aiDescriptionInput());
-        if (suggestion) setDescription(suggestion.slice(0, 500));
-      } catch {
-        // keep the user's text untouched on failure
-      } finally {
-        setAiGenerating(false);
-      }
-    }, 250);
-  };
-
-  
-  // Reference images (optional for buyers, up to 5)
-  const [referenceImageUrls, setReferenceImageUrls] = useState<string[]>([]);
-  const [uploadingImages, setUploadingImages] = useState(false);
-
-  // Contact mobile number (optional) — shown only to paid users via the call popup
-  // Prefilled from the signed-in user's OTP number (editable, draft-restore wins)
-  const [mobileNumber, setMobileNumber] = useState("");
-  // Country code for the mobile number (default: India +91)
-  const [countryCode, setCountryCode] = useState("+91");
-
-  // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
-  // number. Only fills an empty field, so restored drafts and user edits win.
-  useEffect(() => {
-    if (user?.phoneNumber && !mobileNumber) {
-      const split = splitE164Phone(user.phoneNumber);
-      if (split) {
-        setCountryCode(split.code);
-        setMobileNumber(formatNationalForInput(split.national, split.code));
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.phoneNumber]);
-  
-  // AI Location suggestions
-  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
-  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
-
-  const [aiGenerating, setAiGenerating] = useState(false);
 
   // Scroll to ID verification card when verification is successful
   useEffect(() => {

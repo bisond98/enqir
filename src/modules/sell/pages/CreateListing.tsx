@@ -219,70 +219,6 @@ export default function CreateListing() {
 
   const STORAGE_KEY = 'sell_listing_draft';
 
-  // 48h draft autosave: keeps the form's typed content so a browser/app close
-  // mid-form is recoverable. Images & payment live on the last steps and are
-  // never saved — the user re-attaches those after resuming.
-  const DRAFT_FORM_KEY = 'sell-listing';
-
-  // Snapshot of all restorable text/selection state (images & payment excluded).
-  const draftSnapshot = useMemo(() => ({
-    title, description, category, categories: selectedCats, location, mapLocation,
-    condition, priceType, price, priceMin, priceMax, tags, details, estateType,
-    mobileNumber, countryCode,
-  }), [title, description, category, selectedCats, location, mapLocation, condition, priceType, price, priceMin, priceMax, tags, details, estateType, mobileNumber, countryCode]);
-
-  const {
-    draft: savedDraft,
-    savedAtLabel: draftSavedAtLabel,
-    restore: restoreDraftStorage,
-    clearDraft: clearSavedDraft,
-    resolved: draftResolved,
-  } = useDraftAutosave<Record<string, any>>(draftSnapshot, {
-    formKey: DRAFT_FORM_KEY,
-    userId: user?.uid,
-    getDraft: () => draftSnapshot,
-    disabled: isPublished,
-  });
-  const [showResumeBanner, setShowResumeBanner] = useState(false);
-
-  const applyDraftToForm = (d: Record<string, any>) => {
-    if (!d) return;
-    if (d.title) setTitle(d.title);
-    if (d.description) setDescription(d.description);
-    if (d.category) setCategory(d.category);
-    if (Array.isArray(d.categories) && d.categories.length) setSelectedCats(d.categories.slice(0, 3));
-    if (d.location) setLocation(d.location);
-    if (d.mapLocation) setMapLocation(d.mapLocation);
-    if (d.condition) setCondition(d.condition);
-    if (d.priceType) setPriceType(d.priceType);
-    if (d.price) setPrice(d.price);
-    if (d.priceMin) setPriceMin(d.priceMin);
-    if (d.priceMax) setPriceMax(d.priceMax);
-    if (d.tags) setTags(d.tags);
-    if (d.details) setDetails(d.details);
-    if (d.estateType) setEstateType(d.estateType);
-    if (d.mobileNumber) setMobileNumber(d.mobileNumber);
-    if (d.countryCode) setCountryCode(d.countryCode);
-  };
-
-  const handleResumeDraft = () => {
-    if (savedDraft) applyDraftToForm(savedDraft);
-    restoreDraftStorage();
-    setShowResumeBanner(false);
-    // Jump to the last step (Confirmation) — everything before it is filled,
-    // the user only re-attaches photos / re-confirms payment there.
-    setAnimDir('up');
-    setStep(STEPS.length - 1);
-    setTimeout(() => {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }, 300);
-  };
-
-  const handleDiscardDraft = () => {
-    clearSavedDraft();
-    setShowResumeBanner(false);
-  };
-
   const [step, setStep] = useState(() => {
     // If returning from profile verification, jump to last step
     const draft = localStorage.getItem(STORAGE_KEY);
@@ -358,10 +294,74 @@ export default function CreateListing() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.phoneNumber]);
 
-  // AI description assistant — grammar-corrects & polishes typed text in place.
-  // The AI never writes the description and never inserts listing details.
   const [aiGenerating, setAiGenerating] = useState(false);
 
+  // 48h draft autosave: keeps the form's typed content so a browser/app close
+  // mid-form is recoverable. Images & payment live on the last steps and are
+  // never saved — the user re-attaches those after resuming.
+  const DRAFT_FORM_KEY = 'sell-listing';
+
+  // Snapshot of all restorable text/selection state (images & payment excluded).
+  const draftSnapshot = useMemo(() => ({
+    title, description, category, categories: selectedCats, location, mapLocation,
+    condition, priceType, price, priceMin, priceMax, tags, details, estateType,
+    mobileNumber, countryCode,
+  }), [title, description, category, selectedCats, location, mapLocation, condition, priceType, price, priceMin, priceMax, tags, details, estateType, mobileNumber, countryCode]);
+
+  const {
+    draft: savedDraft,
+    savedAtLabel: draftSavedAtLabel,
+    restore: restoreDraftStorage,
+    clearDraft: clearSavedDraft,
+    resolved: draftResolved,
+  } = useDraftAutosave<Record<string, any>>(draftSnapshot, {
+    formKey: DRAFT_FORM_KEY,
+    userId: user?.uid,
+    getDraft: () => draftSnapshot,
+    disabled: isPublished,
+  });
+  const [showResumeBanner, setShowResumeBanner] = useState(false);
+
+  const applyDraftToForm = (d: Record<string, any>) => {
+    if (!d) return;
+    if (d.title) setTitle(d.title);
+    if (d.description) setDescription(d.description);
+    if (d.category) setCategory(d.category);
+    if (Array.isArray(d.categories) && d.categories.length) setSelectedCats(d.categories.slice(0, 3));
+    if (d.location) setLocation(d.location);
+    if (d.mapLocation) setMapLocation(d.mapLocation);
+    if (d.condition) setCondition(d.condition);
+    if (d.priceType) setPriceType(d.priceType);
+    if (d.price) setPrice(d.price);
+    if (d.priceMin) setPriceMin(d.priceMin);
+    if (d.priceMax) setPriceMax(d.priceMax);
+    if (d.tags) setTags(d.tags);
+    if (d.details) setDetails(d.details);
+    if (d.estateType) setEstateType(d.estateType);
+    if (d.mobileNumber) setMobileNumber(d.mobileNumber);
+    if (d.countryCode) setCountryCode(d.countryCode);
+  };
+
+  const handleResumeDraft = () => {
+    if (savedDraft) applyDraftToForm(savedDraft);
+    restoreDraftStorage();
+    setShowResumeBanner(false);
+    // Jump to the last step (Confirmation) — everything before it is filled,
+    // the user only re-attaches photos / re-confirms payment there.
+    setAnimDir('up');
+    setStep(STEPS.length - 1);
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 300);
+  };
+
+  const handleDiscardDraft = () => {
+    clearSavedDraft();
+    setShowResumeBanner(false);
+  };
+
+  // AI description assistant — grammar-corrects & polishes typed text in place.
+  // The AI never writes the description and never inserts listing details.
   const runDescriptionAI = () => {
     if (!description.trim()) return;
     setAiGenerating(true);
