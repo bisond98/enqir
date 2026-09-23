@@ -948,7 +948,10 @@ export default function CreateListing() {
                   const BUILT_UNITS = ['Sqft'];
                   const HOUSE_UNITS = ['Sqft'];
                   const BHK_OPTIONS = ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
-                  const isEstate = ['real-estate', 'real-estate-services'].includes(category);
+                  // Estate capsules (Land/Buildings/House/Others + Sale/Rent/Lease)
+                  // apply ONLY to the 'real-estate' category — Real Estate Services
+                  // is a services listing and gets none of them.
+                  const isEstate = category === 'real-estate';
                   if (!isEstate) return null;
                   const TYPES: { key: string; label: string }[] = [
                     { key: 'land', label: 'Land / Plot' },
@@ -1144,7 +1147,7 @@ export default function CreateListing() {
                     })()}
                   </div>
                 )}
-                {(!['real-estate', 'real-estate-services'].includes(category) || estateType) && (
+                {(category !== 'real-estate' || estateType) && (
                   <>
                     <Label htmlFor="listing-desc" className="text-[10px] sm:text-xs font-bold">
                       Description
