@@ -128,6 +128,24 @@ export const ACCOMMODATION_GENDER_OPTIONS = [
   { value: 'mixed', label: 'Mixed' },
 ] as const;
 
+// Categories where a New/Used condition makes no sense — properties, stays,
+// pure services and perishables. The Sell form hides its condition selector
+// for these and stores condition as empty.
+export const NO_CONDITION_CATEGORIES = new Set([
+  'real-estate',
+  'service',
+  'services',
+  'pets',
+  'accommodations',
+  'food-beverage',
+  'travel-tourism',
+  'education-training',
+  'tutoring-lessons',
+  'wedding-events',
+  'childcare-family',
+  'health-beauty',
+]);
+
 // Legacy category values used by older posts in the database.
 // Kept here so display/matching code can recognise them even though
 // they no longer appear in the pickers.

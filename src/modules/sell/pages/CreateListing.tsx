@@ -11,7 +11,7 @@ import { uploadToCloudinaryUnsigned } from '@/integrations/cloudinary';
 import { toast } from '@/hooks/use-toast';
 import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
-import { filterCategoriesBySearch } from '@/constants/categories';
+import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES } from '@/constants/categories';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
@@ -255,9 +255,9 @@ export default function CreateListing() {
   const [mapPickerOpen, setMapPickerOpen] = useState(false);
   const [mapLocation, setMapLocation] = useState<MapLocationAddress | null>(null);
   const [condition, setCondition] = useState<ListingCondition>('used');
-  // Categories where New/Used condition makes no sense (properties, services &
-  // live animals) — hides the selector and condition chips
-  const hideCondition = ['real-estate', 'real-estate-services', 'service', 'services', 'pets'].includes(category) || /-services$/.test(category);
+  // Categories where New/Used condition makes no sense (properties, stays,
+  // services, perishables & live animals) — hides the selector and chips
+  const hideCondition = NO_CONDITION_CATEGORIES.has(category) || /-services$/.test(category);
   const [priceType, setPriceType] = useState<ListingPriceType>('fixed');
   const [price, setPrice] = useState<string>('');
   const [priceMin, setPriceMin] = useState<string>('');
