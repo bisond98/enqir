@@ -174,17 +174,17 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   'cleaning-services': ['maid', 'house cleaning', 'housekeeping', 'deep cleaning', 'sofa cleaning', 'pest control'],
   'construction-renovation': ['builder', 'contractor', 'renovation', 'interior work', 'painting', 'civil work'],
   'events-entertainment': ['birthday', 'party', 'event management', 'stage', 'decorator', 'anchor', 'band'],
-  'wedding-events': ['marriage', 'wedding hall', 'catering', 'wedding photographer', 'wedding car', 'bridal makeup', 'mehndi'],
+  'wedding-events': ['marriage', 'wedding hall', 'catering', 'wedding photographer', 'bridal makeup', 'mehndi'],
   'food-beverage': ['tiffin', 'catering', 'home food', 'bakery', 'cake', 'food delivery', 'breakfast', 'meals'],
   'transportation-logistics': ['movers', 'packers and movers', 'tempo', 'goods transport', 'shifting', 'logistics', 'delivery service', 'lorry', 'taxi', 'cab', 'cab service', 'taxi service'],
-  'travel-tourism': ['tour package', 'taxi', 'cab', 'tempo traveller', 'travel agency', 'car rental', 'trip'],
+  'travel-tourism': ['tour package', 'taxi', 'cab', 'tempo traveller', 'travel agency', 'rental', 'trip'],
   'agriculture-farming': ['tractor', 'farm equipment', 'farming', 'livestock', 'poultry', 'seeds', 'fertilizer', 'coconut', 'rubber', 'arecanut'],
   'tools-equipment': ['drill machine', 'welding', 'generator', 'power tools', 'grinder', 'cutting machine'],
   'medical-equipment': ['wheelchair', 'hospital bed', 'oxygen cylinder', 'nebulizer', 'walker', 'bp monitor', 'glucometer'],
   'office-supplies': ['printer', 'xerox machine', 'office chair', 'office table', 'stationery', 'photocopier'],
   'raw-materials-industrial': ['industrial materials', 'raw materials', 'scrap', 'steel', 'cement'],
   'legal-financial': ['lawyer', 'advocate', 'chartered accountant', 'loan', 'tax filing'],
-  'insurance-services': ['insurance', 'life insurance', 'vehicle insurance', 'health insurance', 'policy'],
+  'insurance-services': ['insurance', 'life insurance', 'term plan', 'policy'],
   'marketing-advertising': ['digital marketing', 'advertising', 'seo', 'social media marketing', 'branding'],
   'security-safety': ['cctv', 'security camera', 'security guard', 'alarm', 'door lock'],
   'renewable-energy': ['solar', 'solar panel', 'solar inverter', 'solar water heater'],
@@ -230,24 +230,51 @@ function boundedLevenshtein(a: string, b: string, max: number): number {
   return prev[b.length];
 }
 
+/** Match strength for a query against a category's label / value / synonyms.
+ * Lower is better: 0 = whole-word match on the label ("car" → Car),
+ * 1 = whole-word match on value or a synonym, 2 = query starts the word
+ * (only for 4+ letter queries, so "car" ≠ "care"), 3+ = fuzzy typo match.
+ * -1 = no match. Used to rank categories so exact hits always come first. */
+function matchStrength(c: AppCategory, q: string): number {
+  const labelWords = c.label.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  const otherWords = [
+    c.value,
+    ...(CATEGORY_SEARCH_SYNONYMS[c.value] ?? []),
+  ].flatMap(s => s.toLowerCase().split(/[^a-z0-9]+/)).filter(Boolean);
+
+  if (labelWords.includes(q)) return 0;
+  if (otherWords.includes(q)) return 1;
+
+  // Prefix matching only from 4 letters up — stops "car" matching "care"/
+  // "career"-type words while still letting "appl" find Appliances.
+  if (q.length >= 4) {
+    if (labelWords.some(w => w.startsWith(q))) return 2;
+    if (otherWords.some(w => w.startsWith(q))) return 3;
+  }
+  return -1;
+}
+
 /**
  * Filter categories by a search query, matching label, value, and synonyms.
  * Used by the category pickers so words like "shoes" find Sneakers.
  *
- * When there are fewer than `minResults` direct matches, near-matches fill the
- * list (fuzzy spelling distance on label words / synonyms), and finally the
- * three main categories (Service / Business / Personal) act as catch-alls so
- * users always have somewhere to post — e.g. "taxi" shows Travel,
- * Transportation AND Service.
+ * Results are ranked by match strength (exact label match → synonym match →
+ * prefix match), then padded with fuzzy near-matches and finally the three
+ * main categories (Service / Business / Personal) as catch-alls so users
+ * always have somewhere to post — e.g. "taxi" shows Travel, Transportation
+ * AND Service.
  */
 export function filterCategoriesBySearch<T extends AppCategory>(categories: T[], query: string, minResults = 3): T[] {
   const q = query.trim().toLowerCase();
   if (!q) return categories;
-  const direct = categories.filter(c =>
-    c.label.toLowerCase().includes(q) ||
-    c.value.includes(q) ||
-    (CATEGORY_SEARCH_SYNONYMS[c.value] ?? []).some(syn => syn.includes(q) || q.includes(syn))
-  );
+
+  const scored: Array<{ c: T; s: number }> = [];
+  for (const c of categories) {
+    const s = matchStrength(c, q);
+    if (s >= 0) scored.push({ c, s });
+  }
+  scored.sort((a, b) => a.s - b.s);
+  const direct = scored.map(x => x.c);
   if (direct.length >= minResults) return direct;
 
   const chosen = new Set(direct.map(c => c.value));
