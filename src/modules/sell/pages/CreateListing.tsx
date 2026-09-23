@@ -793,7 +793,18 @@ export default function CreateListing() {
   };
 
   return (
-    <SellShell title="Sell">
+    <SellShell
+      title="Sell"
+      onBack={() => {
+        // Inside the wizard: step back a tab (same as the bottom Back
+        // button). On the first tab: leave the form via normal history.
+        if (step > 0) {
+          goBack();
+          return;
+        }
+        navigate(-1);
+      }}
+    >
       <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
         <CardHeader className="space-y-2 border-b border-black/10 pb-4">
           <Progress value={progressPct} className="h-2 rounded-full bg-slate-200" />

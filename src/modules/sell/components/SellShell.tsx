@@ -8,12 +8,15 @@ export default function SellShell({
   children,
   filterOpen,
   onToggleFilter,
+  onBack,
 }: {
   title: string;
   children: React.ReactNode;
   /** Marketplace only: whether the filter panel is open + how to toggle it. */
   filterOpen?: boolean;
   onToggleFilter?: () => void;
+  /** Optional override for the header back button (e.g. wizard step-back). */
+  onBack?: () => void;
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -32,6 +35,12 @@ export default function SellShell({
                   variant="ghost"
                   size="sm"
                   onClick={() => {
+                    // Wizard pages can supply their own back behavior
+                    // (e.g. step-back through form tabs).
+                    if (onBack) {
+                      onBack();
+                      return;
+                    }
                     if (path.startsWith('/sell/listing/')) {
                       // Prefer the exact page the user navigated from (passed via router state)
                       const from = (location.state as any)?.from;

@@ -2248,7 +2248,15 @@ export default function PostEnquiry() {
                 <Button
                   variant="ghost"
                   type="button"
-                  onClick={() => window.history.back()}
+                  onClick={() => {
+                    // Inside the wizard: step back a tab (same as the bottom
+                    // Back button). On the first tab: leave the form.
+                    if (!isSubmitted && step > 0) {
+                      goBack();
+                      return;
+                    }
+                    window.history.back();
+                  }}
                   className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
                 >
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
