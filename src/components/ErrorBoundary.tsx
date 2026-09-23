@@ -19,6 +19,15 @@ interface ErrorBoundaryState {
 // JavaScript MIME type" (or a ChunkLoadError). Auto-reloading once fetches
 // the fresh index.html + bundles and the user never sees the error screen.
 const STALE_BUNDLE_KEY = 'errorboundary_stale_reload_at';
+
+// Form routes: restoring a tab mid-form can crash (half-initialized wizard
+// state). Reloading the URL gives a clean form, and the 48h draft autosave
+// brings the user's content back — so on these routes we auto-recover once
+// instead of showing the error screen.
+const FORM_ROUTES = ['/post-enquiry', '/sell/new', '/respond/'];
+const FORM_RECOVERY_KEY = 'errorboundary_form_recovery_at';
+const isFormRoute = (pathname: string): boolean =>
+  FORM_ROUTES.some((r) => pathname === r || pathname.startsWith(r));
 const isStaleBundleError = (error?: Error): boolean => {
   if (!error) return false;
   const msg = `${error.message || ''} ${(error as any).stack || ''}`.toLowerCase();
@@ -288,6 +297,21 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
         return;
       }
     }
+
+    // Form routes: crash-on-restore is the common case (half-initialized
+    // wizard state after the browser/app reopens). One silent reload gives a
+    // clean form; the 48h draft autosave restores the user's content. Guarded
+    // to ONCE per 10s so a genuinely broken form still surfaces the error UI
+    // instead of looping.
+    if (isFormRoute(window.location.pathname)) {
+      const lastFormRecovery = parseInt(localStorage.getItem(FORM_RECOVERY_KEY) || '0', 10);
+      const now2 = Date.now();
+      if (now2 - lastFormRecovery > 10000) {
+        localStorage.setItem(FORM_RECOVERY_KEY, String(now2));
+        window.location.reload();
+        return;
+      }
+    }
     
     // Log error details for debugging
     console.error("Error details:", {
@@ -311,10 +335,11 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   };
 
   handleRefreshNow = () => {
-    // Clear the auto-reload guard so the refresh is always allowed, then
+    // Clear the auto-reload guards so the refresh is always allowed, then
     // reload with a cache-buster so Safari fetches a fresh index.html.
     try {
       localStorage.removeItem(STALE_BUNDLE_KEY);
+      localStorage.removeItem(FORM_RECOVERY_KEY);
     } catch {
       /* ignore */
     }
