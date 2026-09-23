@@ -95,7 +95,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
       // one big Refresh button. No scary error card.
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-          <div className="max-w-2xl w-full bg-white rounded-3xl shadow-lg border-2 border-slate-200 p-10 sm:p-14 text-center">
+          <div className="max-w-3xl w-full bg-white rounded-3xl shadow-lg border-2 border-slate-200 p-12 sm:p-16 text-center">
             <div className="mb-10">
               <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
             </div>
