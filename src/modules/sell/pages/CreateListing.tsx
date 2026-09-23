@@ -255,8 +255,9 @@ export default function CreateListing() {
   const [mapPickerOpen, setMapPickerOpen] = useState(false);
   const [mapLocation, setMapLocation] = useState<MapLocationAddress | null>(null);
   const [condition, setCondition] = useState<ListingCondition>('used');
-  // Categories where New/Used condition makes no sense (properties & services) — hides the selector and chips
-  const hideCondition = ['real-estate', 'real-estate-services', 'service', 'services'].includes(category) || /-services$/.test(category);
+  // Categories where New/Used condition makes no sense (properties, services &
+  // live animals) — hides the selector and condition chips
+  const hideCondition = ['real-estate', 'real-estate-services', 'service', 'services', 'pets'].includes(category) || /-services$/.test(category);
   const [priceType, setPriceType] = useState<ListingPriceType>('fixed');
   const [price, setPrice] = useState<string>('');
   const [priceMin, setPriceMin] = useState<string>('');
