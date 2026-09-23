@@ -85,7 +85,7 @@ export const buildEnquiryShareText = (enquiry: ShareableEnquiry, url: string): s
   const deadline = formatDeadline(enquiry.deadline);
   if (deadline) parts.push(`⏰ Needed ${deadline}`);
 
-  parts.push('Can you supply this? Respond here 👇');
+  parts.push(isJobEnquiry(enquiry) ? 'Apply or refer someone 👇' : 'Can you supply this? Respond here 👇');
   parts.push(url);
 
   return parts.join('\n');
