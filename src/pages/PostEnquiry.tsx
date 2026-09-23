@@ -281,6 +281,31 @@ export default function PostEnquiry() {
   const inlineVerificationRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  // Session-drop dropdown notification: when the page is freshly opened
+  // (browser/app reopen, offline, etc.) and the saved session was lost, tell
+  // the user why instead of failing silently. Runs once per page open.
+  const sessionToastShown = useRef(false);
+  useEffect(() => {
+    if (authLoading) return;                 // wait for session restore to settle
+    if (sessionToastShown.current) return;   // once per page open
+    sessionToastShown.current = true;
+    if (!user) {
+      toast({
+        title: 'Session expired',
+        description: !navigator.onLine
+          ? 'You have no internet connection. Reconnect and sign in to continue.'
+          : 'Your session expired due to no internet connection or timeout. Please sign in again.',
+        variant: 'destructive',
+      });
+    } else if (!navigator.onLine) {
+      toast({
+        title: 'No internet connection',
+        description: 'You are offline. Reconnect to post your enquiry.',
+        variant: 'destructive',
+      });
+    }
+  }, [authLoading, user?.uid, toast]);
+
   // Build AI-assistant input from whatever the user has filled so far
   const aiDescriptionInput = (): Parameters<typeof improveDescription>[0] => ({
     title,
