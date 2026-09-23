@@ -272,8 +272,12 @@ const SellerResponse = () => {
     setFormProgress(progress);
   }, [description, price]);
 
-  // Fetch enquiry data and check if user owns it
+  // Fetch enquiry data and check if user owns it.
+  // Wait for authLoading first: on a fresh app open Firebase takes a moment to
+  // restore the persisted session — fetching before that would wrongly treat a
+  // signed-in user as signed-out (blank form state, wrong redirects).
   useEffect(() => {
+    if (authLoading) return;
     const fetchEnquiry = async () => {
       if (!enquiryId || !authUser) return;
 
@@ -296,14 +300,14 @@ const SellerResponse = () => {
         }
       } catch (error) {
         console.error('Error fetching enquiry:', error);
-        navigate('/enquiries');
-      } finally {
+        navigate('/enquiries');      } finally {
         setLoading(false);
       }
+
     };
 
     fetchEnquiry();
-  }, [enquiryId, authUser, navigate]);
+  }, [enquiryId, authUser, authLoading, navigate]);
 
   // Listen for admin status changes on the submission
   useEffect(() => {
@@ -1064,8 +1068,8 @@ const SellerResponse = () => {
     });
   };
 
-  // Loading state
-  if (loading) {
+  // Loading state — also covers the session-restore window on fresh app open
+  if (authLoading || loading) {
     return <LoadingAnimation message="Loading enquiry" />;
   }
 

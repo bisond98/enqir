@@ -98,8 +98,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     let profileUnsubscribe: (() => void) | null = null;
-    
+
+    // Track whether the very first auth event has arrived. Firebase's persisted
+    // session can take a moment to restore on app open; before that, events
+    // are NOT real sign-outs.
+    let firstAuthEventArrived = false;
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      // Ignore transient "no user" events before the persisted session has
+      // been restored — these are NOT sign-outs, just the restore in flight.
+      if (!firstAuthEventArrived && !currentUser && auth.currentUser === null) {
+        // Give the session restore one microtask cycle; if Firebase still has
+        // nothing stored, this really is a signed-out visitor.
+        Promise.resolve().then(() => {
+          if (auth.currentUser) return; // session restored — ignore this event
+          setUser(null);
+          setIsEmailVerified(false);
+          setLoading(false);
+        });
+        firstAuthEventArrived = true;
+        return;
+      }
+      firstAuthEventArrived = true;
+
       setUser(currentUser);
       setIsEmailVerified(currentUser?.emailVerified || false);
       
