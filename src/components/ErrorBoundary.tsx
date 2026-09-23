@@ -94,15 +94,15 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
       // redeploy, or anything else that slips through on a restored tab):
       // one big Refresh button. No scary error card.
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-          <div className="max-w-3xl w-full bg-white rounded-3xl shadow-lg border-2 border-slate-200 p-12 sm:p-16 text-center">
-            <div className="mb-10">
-              <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-6">
+          <div className="max-w-3xl w-full bg-white rounded-2xl sm:rounded-3xl shadow-lg border-2 border-slate-200 p-8 sm:p-16 text-center">
+            <div className="mb-10 sm:mb-14">
+              <span className="text-7xl sm:text-8xl md:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
             </div>
 
             <Button
               onClick={this.handleRefreshNow}
-              className="!w-full !h-16 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
+              className="!w-full sm:!w-auto sm:!min-w-[320px] sm:!mx-auto !h-16 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none !px-8"
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 <RefreshCw className="h-5 w-5" />
