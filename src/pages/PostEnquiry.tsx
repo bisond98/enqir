@@ -1210,10 +1210,14 @@ export default function PostEnquiry() {
     }
   };
 
-  // Redirect to sign in if not authenticated
+  // Redirect to sign in if not authenticated.
+  // IMPORTANT: wait for auth to finish restoring the session on page load —
+  // `user` is null for the first moment while Firebase reads IndexedDB, and
+  // redirecting then looked like a random sign-out after every reload.
   useEffect(() => {
-    if (!user) {
+    if (!authLoading && !user) {
       navigate('/signin', { 
+        replace: true,
         state: { 
           message: 'Please sign in to post an enquiry',
           redirectTo: '/post-enquiry'
@@ -1221,7 +1225,7 @@ export default function PostEnquiry() {
       });
       return;
     }
-  }, [user, navigate]);
+  }, [authLoading, user, navigate]);
 
 
   // Test database connection on component mount

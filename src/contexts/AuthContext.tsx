@@ -748,17 +748,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const sendPhoneOTP = async (phoneNumber: string) => {
+    // Firebase's invisible reCAPTCHA is SINGLE-USE: every signInWithPhoneNumber
+    // call needs a FRESH verifier. Reusing a cached one (the old behaviour)
+    // fails with captcha-check-failed after the first attempt and blocks all
+    // further OTP sends until a full page refresh.
+    const resetRecaptcha = () => {
+      try {
+        (window.recaptchaVerifier as any)?.clear?.();
+      } catch { /* already cleared */ }
+      window.recaptchaVerifier = undefined;
+    };
+    resetRecaptcha();
     try {
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+${phoneNumber}`;
-      
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          'size': 'invisible',
-        });
-      }
+      const verifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+      });
+      window.recaptchaVerifier = verifier;
 
-      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, window.recaptchaVerifier);
+      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, verifier);
       window.verificationId = confirmationResult.verificationId;
+      // Consumed — a fresh verifier will be created on the next send.
+      resetRecaptcha();
       
       toast({
         title: 'OTP sent',
@@ -767,9 +778,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return { error: null, verificationId: confirmationResult.verificationId };
     } catch (error: any) {
+      // Clear the broken/consumed verifier so the next attempt gets a fresh one.
+      resetRecaptcha();
+      const code = error?.code || '';
+      const isThrottled = code === 'auth/too-many-requests' || code === 'auth/sms-quota-exceeded';
       toast({
-        title: 'Failed to send OTP',
-        description: friendlyError(error),
+        title: isThrottled ? 'Too many attempts' : 'Failed to send OTP',
+        description: isThrottled
+          ? 'We\'ve sent too many codes to this number recently. Please wait a few minutes and try again.'
+          : friendlyError(error),
         variant: 'destructive',
       });
       return { error };
@@ -784,24 +801,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Link phone to existing account
         await linkWithCredential(auth.currentUser, credential);
         
-        // Store user data in Firestore
-        await setDoc(doc(db, 'users', auth.currentUser.phoneNumber || ''), {
+        // Store user data in Firestore (doc ID must be the UID to match security rules;
+        // phone-number IDs were always denied and made OTP sign-in report failure
+        // even though sign-in succeeded)
+        await setDoc(doc(db, 'users', auth.currentUser.uid), {
           uid: auth.currentUser.uid,
           phoneNumber: auth.currentUser.phoneNumber,
           displayName: auth.currentUser.displayName,
           createdAt: new Date(),
-        });
+        }, { merge: true });
       } else {
         // Sign in with phone
         const result = await signInWithCredential(auth, credential);
         
-        // Store user data in Firestore
-        await setDoc(doc(db, 'users', result.user.phoneNumber || ''), {
+        // Store user data in Firestore (doc ID must be the UID to match security rules)
+        await setDoc(doc(db, 'users', result.user.uid), {
           uid: result.user.uid,
           phoneNumber: result.user.phoneNumber,
           displayName: result.user.displayName,
           createdAt: new Date(),
-        });
+        }, { merge: true });
       }
       
       toast({
@@ -811,9 +830,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return { error: null };
     } catch (error: any) {
+      const code = error?.code || '';
+      const isThrottled = code === 'auth/too-many-requests';
+      const isWrongCode = code === 'auth/invalid-verification-code' || code === 'auth/code-expired';
       toast({
-        title: 'OTP verification failed',
-        description: friendlyError(error),
+        title: isThrottled ? 'Too many attempts' : 'OTP verification failed',
+        description: isThrottled
+          ? 'Too many verification attempts. Please wait a few minutes, then request a new OTP.'
+          : isWrongCode
+            ? 'That code isn\'t right or has expired. Please check the SMS and try again.'
+            : friendlyError(error),
         variant: 'destructive',
       });
       return { error };

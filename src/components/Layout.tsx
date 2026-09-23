@@ -27,7 +27,7 @@ import { usePerformanceOptimizations } from "@/hooks/use-performance";
 const MobileAIController = lazy(() => import("./MobileAIController"));
 
 export default function Layout({ children, showNavigation = true }: { children: React.ReactNode; showNavigation?: boolean }) {
-  const { user, signOut, isProfileVerified, profileVerificationStatus } = useAuth();
+  const { user, signOut, isProfileVerified, profileVerificationStatus, loading: authLoading } = useAuth();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -1142,7 +1142,10 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   handleSearchClick();
                   return;
                 }
-                if (isProtectedRoute && !user) {
+                if (isProtectedRoute && !user && !authLoading) {
+                  // Skip the guard while auth is still restoring the session on
+                  // page load — `user` is briefly null and this bounced users to
+                  // sign-in as if they'd been signed out.
                   e.preventDefault();
                   navigate("/signin");
                 } else if (isProtectedRoute && user) {
