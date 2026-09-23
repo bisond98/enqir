@@ -1476,16 +1476,19 @@ export default function PostEnquiry() {
   const remainingEnquiries = getRemainingEnquiries();
 
   // Handle multiple category selection (max 3)
+  // Accommodations and Real Estate are mutually exclusive — selecting one
+  // removes the other (they overlap in meaning and have conflicting detail fields).
   const handleCategoryToggle = (categoryValue: string) => {
     setSelectedCategories(prev => {
       if (prev.includes(categoryValue)) {
         return prev.filter(cat => cat !== categoryValue);
-      } else if (prev.length < 3) {
-        return [...prev, categoryValue];
-      } else {
-        // Already at max limit, don't add more
-        return prev;
       }
+      let next = prev.length < 3 ? [...prev, categoryValue] : prev;
+      if (next.includes(categoryValue)) {
+        if (categoryValue === 'accommodations') next = next.filter(cat => cat !== 'real-estate' && cat !== 'real-estate-services');
+        else if (categoryValue === 'real-estate' || categoryValue === 'real-estate-services') next = next.filter(cat => cat !== 'accommodations');
+      }
+      return next;
     });
   };
 

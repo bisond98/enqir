@@ -233,11 +233,16 @@ export default function CreateListing() {
 
   // Max 3 categories — primary (first selected) drives category details,
   // all selected are stored in `categories` for matching/search.
+  // Accommodations and Real Estate are mutually exclusive — selecting one
+  // removes the other (they overlap in meaning and have conflicting detail fields).
   const toggleCat = (v: string) => {
     setSelectedCats((prev) => {
       if (prev.includes(v)) return prev.filter((x) => x !== v);
       if (prev.length >= 3) return prev; // cap at 3
-      return [...prev, v];
+      let next = [...prev, v];
+      if (v === 'accommodations') next = next.filter((x) => x !== 'real-estate' && x !== 'real-estate-services');
+      else if (v === 'real-estate' || v === 'real-estate-services') next = next.filter((x) => x !== 'accommodations');
+      return next;
     });
   };
   useEffect(() => {
