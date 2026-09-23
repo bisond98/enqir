@@ -1,4 +1,16 @@
-import Tesseract from 'tesseract.js';
+// Tesseract is lazy-loaded on first use (dynamic import) — a static import
+// pulled the multi-megabyte OCR engine into every Post Enquiry / Profile /
+// Seller Response page chunk, slowing those pages down massively on mobile.
+// Functionality is unchanged: the OCR library loads on demand when an ID
+// image is actually submitted for verification.
+type TesseractModule = typeof import('tesseract.js');
+let tesseractPromise: Promise<TesseractModule> | null = null;
+const loadTesseract = (): Promise<TesseractModule> => {
+  if (!tesseractPromise) {
+    tesseractPromise = import('tesseract.js');
+  }
+  return tesseractPromise;
+};
 
 interface IdVerificationResult {
   matches: boolean;
@@ -13,6 +25,7 @@ export async function extractIdNumberFromImage(
 ): Promise<{ number: string | null; confidence: number; error?: string }> {
   try {
     // Optimize Tesseract for faster processing - use fastest settings
+    const Tesseract = await loadTesseract();
     const { data } = await Tesseract.recognize(imageUrl, 'eng', {
       logger: () => {}, // Disable logging for performance
       // Optimize for speed over accuracy (we validate format anyway)

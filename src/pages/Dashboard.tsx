@@ -251,14 +251,26 @@ const Dashboard = () => {
 
   // Red-dot indicator: lightweight scan on dashboard load so the Matches
   // toggle can show a dot/badge when matches are waiting (without opening it)
+  // ⚡ Smoothness: deferred until the dashboard's critical data has painted
+  // (previously it fired at mount, competing with the first fetch and delaying
+  // first paint). Results and cancellation behavior are unchanged.
   useEffect(() => {
     if (!user?.uid || userMatches) return;
     let cancelled = false;
-    scanMatches(user.uid)
-      .then((m) => { if (!cancelled) setMatchDotCount(m.forNeeds.length + m.forListings.length); })
-      .catch(() => { if (!cancelled) setMatchDotCount(0); });
-    return () => { cancelled = true; };
-  }, [user?.uid, userMatches]);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const runScan = () => {
+      scanMatches(user.uid!)
+        .then((m) => { if (!cancelled) setMatchDotCount(m.forNeeds.length + m.forListings.length); })
+        .catch(() => { if (!cancelled) setMatchDotCount(0); });
+    };
+    if (responsesReady) {
+      // Critical data is on screen — wait two idle frames so the page finishes
+      // painting, then run the scan without janking the UI.
+      timer = setTimeout(() => requestAnimationFrame(runScan), 50);
+    }
+    // If responses aren't ready yet, the effect re-runs when they are.
+    return () => { cancelled = true; if (timer) clearTimeout(timer); };
+  }, [user?.uid, userMatches, responsesReady]);
 
   // Seen it — clear the indicator once the Matches tab content has loaded
   useEffect(() => {

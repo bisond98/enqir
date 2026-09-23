@@ -54,10 +54,18 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         where("sellerId", "==", user.uid)
       );
       
-      // Execute both queries in parallel
-      const [sentMessagesSnapshot, receivedAsSellerSnapshot] = await Promise.all([
+      // Buyer enquiries query — fetched in parallel with the message queries
+      // below (was a separate awaited round-trip, adding latency to My Chats).
+      const buyerEnquiriesQuery = query(
+        collection(db, "enquiries"),
+        where("userId", "==", user.uid)
+      );
+      
+      // Execute all three queries in parallel
+      const [sentMessagesSnapshot, receivedAsSellerSnapshot, buyerEnquiriesSnapshot] = await Promise.all([
         getDocs(sentMessagesQuery),
-        getDocs(receivedAsSellerQuery)
+        getDocs(receivedAsSellerQuery),
+        getDocs(buyerEnquiriesQuery)
       ]);
       
       // Combine results and deduplicate
@@ -70,12 +78,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       
       // Also check for messages where user is the buyer (they posted the enquiry)
-      // We need to get enquiries first, then check messages for those enquiries
-      const buyerEnquiriesQuery = query(
-        collection(db, "enquiries"),
-        where("userId", "==", user.uid)
-      );
-      const buyerEnquiriesSnapshot = await getDocs(buyerEnquiriesQuery);
+      // (Snapshot already fetched in parallel above)
       const buyerEnquiryIds = buyerEnquiriesSnapshot.docs.map(doc => doc.id);
       
       // Query messages for buyer's enquiries

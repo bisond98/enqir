@@ -21,10 +21,14 @@
     <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg?v=3" />
     <link rel="apple-touch-icon" href="/favicon.svg?v=3" />
     
-    <!-- Google Fonts - load only used weights with font-display:swap for instant text -->
+    <!-- Google Fonts - load only used weights with font-display:swap for instant text.
+         ⚡ Performance: loaded asynchronously (media=print/onload swap) so font CSS
+         never blocks first paint — text renders immediately in system fonts and
+         swaps to Inter/Manrope when ready. Visual result identical. -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@700;800&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@700;800&display=swap"></noscript>
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />

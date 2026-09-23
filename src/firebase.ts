@@ -1,7 +1,7 @@
 // src/firebase.ts
 import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getFirestore, connectFirestoreEmulator, initializeFirestore } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
 // If you want analytics, you can also import this:
 // import { getAnalytics } from "firebase/analytics";
 
@@ -24,9 +24,16 @@ export const auth = getAuth(app);
 
 // Configure Firestore to avoid CORS/WebChannel issues in certain networks
 // Auto-detects when long polling is needed (e.g., some proxies, ad-blockers)
+//
+// ⚡ Performance: persistent offline cache — enquiries, chats, listings and
+// profiles are stored locally, so returning to Dashboard / My Chats /
+// Marketplace / Live Enquiries renders INSTANTLY from cache while Firestore
+// syncs in the background (onSnapshot listeners still deliver live updates,
+// so real-time behavior is unchanged). Multiple tabs are supported.
 export const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
   useFetchStreams: false,
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
 });
 
 // Add debugging for Firebase initialization

@@ -83,17 +83,23 @@ const ListingChat = lazy(() => import("./modules/sell/pages/ListingChat"));
 const SellerDashboard = lazy(() => import("./modules/sell/pages/SellerDashboard"));
 
 // Warm the most-visited route chunks while the browser is idle, so the first
-// click on Dashboard / Enquiries / Post feels instant instead of spinner-then-load.
+// click on Dashboard / Enquiries / Post / My Chats / Marketplace feels instant
+// instead of spinner-then-load. Static specifiers (not string variables) so
+// Vite can resolve these to the real lazy chunks.
 if (typeof window !== 'undefined') {
   const prefetchCommonRoutes = () => {
-    ["./pages/Dashboard", "./pages/EnquiryWall", "./pages/PostEnquiry", "./pages/EnquiryDetail"].forEach((p) => {
-      import(/* @vite-ignore */ p).catch(() => {});
-    });
+    import("./pages/Dashboard").catch(() => {});
+    import("./pages/EnquiryWall").catch(() => {});
+    import("./pages/PostEnquiry").catch(() => {});
+    import("./pages/EnquiryDetail").catch(() => {});
+    import("./pages/MyChats").catch(() => {});
+    import("./pages/Notifications").catch(() => {});
+    import("./modules/sell/pages/Marketplace").catch(() => {});
   };
   if ('requestIdleCallback' in window) {
-    (window as any).requestIdleCallback(prefetchCommonRoutes, { timeout: 15000 });
+    (window as any).requestIdleCallback(prefetchCommonRoutes, { timeout: 10000 });
   } else {
-    setTimeout(prefetchCommonRoutes, 6000);
+    setTimeout(prefetchCommonRoutes, 4000);
   }
 }
 // 🛡️ PROTECTED: ChatProvider - DO NOT REMOVE - Required for MyChats and AllChats
