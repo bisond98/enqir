@@ -1382,8 +1382,21 @@ export default function PostEnquiry() {
     };
   }, [submittedEnquiryId, navigate]); // Only depend on submittedEnquiryId and navigate
 
-  // Show loading or redirect if not authenticated
-  const notAuth = !user ? (
+  // Show loading or redirect if not authenticated.
+  // IMPORTANT: while Firebase is restoring the persisted session (first few
+  // hundred ms after an app/tab open), `user` is null but the user may well
+  // be signed in — show a neutral loading state, NOT a sign-in prompt, and
+  // never auto-redirect. Once loading settles and there's genuinely no user,
+  // redirect to sign-in.
+  const notAuth = !user && authLoading ? (
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <LoadingAnimation message="Loading" showBackButton={false} />
+        </div>
+      </div>
+    </Layout>
+  ) : !user ? (
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
