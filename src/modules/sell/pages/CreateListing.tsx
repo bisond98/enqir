@@ -122,6 +122,7 @@ function GearShiftIcon({ className }: { className?: string }) {
   );
 }
 import { cn } from '@/lib/utils';
+import { splitE164Phone, formatNationalForInput } from '@/lib/phonePrefill';
 import type { LucideIcon } from 'lucide-react';
 import { friendlyError } from '@/utils/friendlyError';
 
@@ -273,9 +274,23 @@ export default function CreateListing() {
   const [isPublished, setIsPublished] = useState(false);
 
   // Contact mobile number (optional) — shown only to paid users via the call popup
+  // Prefilled from the signed-in user's OTP number (editable, drafts win)
   const [mobileNumber, setMobileNumber] = useState('');
   // Country code for the mobile number (default: India +91)
   const [countryCode, setCountryCode] = useState('+91');
+
+  // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
+  // number. Only fills an empty field, so user edits always win.
+  useEffect(() => {
+    if (user?.phoneNumber && !mobileNumber) {
+      const split = splitE164Phone(user.phoneNumber);
+      if (split) {
+        setCountryCode(split.code);
+        setMobileNumber(formatNationalForInput(split.national, split.code));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.phoneNumber]);
 
   // AI description assistant — grammar-corrects & polishes typed text in place.
   // The AI never writes the description and never inserts listing details.

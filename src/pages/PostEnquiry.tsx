@@ -23,7 +23,7 @@ import { matchesForEnquiry, notifyMatch, type MatchItem } from "@/modules/sell/s
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { friendlyError } from "@/utils/friendlyError";
 import { useAuth } from "@/contexts/AuthContext";
-import { db } from "@/firebase";
+import { splitE164Phone, formatNationalForInput } from "@/lib/phonePrefill";import { db } from "@/firebase";
 import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
 import { uploadToCloudinary, uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
 import { Badge } from "@/components/ui/badge";
@@ -319,9 +319,23 @@ export default function PostEnquiry() {
   const [uploadingImages, setUploadingImages] = useState(false);
 
   // Contact mobile number (optional) — shown only to paid users via the call popup
+  // Prefilled from the signed-in user's OTP number (editable, draft-restore wins)
   const [mobileNumber, setMobileNumber] = useState("");
   // Country code for the mobile number (default: India +91)
   const [countryCode, setCountryCode] = useState("+91");
+
+  // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
+  // number. Only fills an empty field, so restored drafts and user edits win.
+  useEffect(() => {
+    if (user?.phoneNumber && !mobileNumber) {
+      const split = splitE164Phone(user.phoneNumber);
+      if (split) {
+        setCountryCode(split.code);
+        setMobileNumber(formatNationalForInput(split.national, split.code));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.phoneNumber]);
   
   // AI Location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
