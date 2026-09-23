@@ -48,6 +48,12 @@ const isPetEnquiry = (enquiry: ShareableEnquiry): boolean =>
     (c) => c && c.toLowerCase().includes('pet')
   );
 
+/** Accommodation enquiries are stays — rent-style wording fits best. */
+const isAccommodationEnquiry = (enquiry: ShareableEnquiry): boolean =>
+  [enquiry.category, ...(enquiry.categories || [])].some(
+    (c) => c && c.toLowerCase().includes('accommodation')
+  );
+
 /**
  * Category-aware money line:
  *   Jobs hiring   → 💰 Salary: ₹50,000
@@ -73,6 +79,7 @@ const moneyLine = (enquiry: ShareableEnquiry): string | null => {
     if (t === 'Lease') return `💰 Lease terms: ${budget}`;
     return `💰 Budget: ${budget}`; // Buy and unknown → budget
   }
+  if (isAccommodationEnquiry(enquiry)) return `💰 Rent: ${budget}/month`;
   if (isPetEnquiry(enquiry)) return `💰 Price range: ${budget}`;
   return `💰 Buyer's budget: ${budget}`;
 };
@@ -146,7 +153,16 @@ export const buildEnquiryShareText = (enquiry: ShareableEnquiry, url: string): s
   let cta = 'Can you supply this? Respond here 👇';
   if (job) cta = seeking ? 'Hiring for this role? Respond here 👇' : 'Apply or refer someone 👇';
   else if (isEstateEnquiry(enquiry) && enquiry.details?.listingType === 'Rent') cta = 'Have a property like this? Respond here 👇';
+  else if (isAccommodationEnquiry(enquiry)) cta = 'Have a place like this? Respond here 👇';
   parts.push(cta);
+
+  // Gender preference is important context for shared stays — mention it
+  if (isAccommodationEnquiry(enquiry)) {
+    const gp = enquiry.details?.genderPreference;
+    if (gp === 'male') parts.push('♂ Male only');
+    else if (gp === 'female') parts.push('♀ Female only');
+    else if (gp === 'mixed') parts.push('⚭ Mixed');
+  }
   parts.push(url);
 
   return parts.join('\n');

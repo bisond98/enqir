@@ -4,6 +4,7 @@
 // Values are stored as a flat `details` map on the listing document.
 
 import { CAR_BRANDS, BIKE_BRANDS } from './categoryBrands';
+import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES } from '@/constants/categories';
 
 export type CategoryDetailsStep = 'title' | 'description' | 'details' | 'price';
 
@@ -103,6 +104,11 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'workMode', label: 'Work mode', type: 'select', options: ['Work from office', 'Work from home', 'Hybrid'], placeholder: 'Select work mode', step: 'description' },
     { key: 'salaryPeriod', label: 'Salary period', type: 'select', options: ['Per month', 'Per year', 'Per hour', 'Per day'], placeholder: 'Select salary period', step: 'price' },
   ],
+  accommodations: [
+    { key: 'accommodationType', label: 'Stay type', type: 'select', options: ACCOMMODATION_SUBTYPES.map(s => s.label), placeholder: 'Select stay type', step: 'title' },
+    { key: 'genderPreference', label: 'Gender preference', type: 'select', options: ['Any', 'Male only', 'Female only', 'Mixed'], placeholder: 'Select gender preference', step: 'description' },
+    { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Unfurnished', 'Semi-furnished', 'Fully furnished'], placeholder: 'Select furnishing', step: 'details' },
+  ],
   'real-estate': [
     { key: 'landArea', label: 'Land / Plot', type: 'land-area', options: ['Cents', 'Acre', 'Hectare'], placeholder: 'e.g., 25', step: 'description' },
     { key: 'builtUpArea', label: 'Buildings / Commercial', type: 'land-area', options: ['Sqft'], placeholder: 'e.g., 1200', step: 'description' },
@@ -118,4 +124,17 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
 export function fieldsForCategoryStep(category: string | undefined, step: CategoryDetailsStep): CategoryDetailField[] {
   if (!category) return [];
   return (CATEGORY_DETAILS[category] ?? []).filter((f) => f.step === step);
+}
+
+/**
+ * Hide the gender-preference field unless the chosen accommodation subtype is
+ * a shared-living one (hostel, dormitory, PG, lodging, private room).
+ * Used by CreateListing when rendering the dynamic category fields.
+ */
+export function isFieldHiddenForDetails(field: CategoryDetailField, details: Record<string, string>): boolean {
+  if (field.key === 'genderPreference' && details['accommodationType']) {
+    const match = ACCOMMODATION_SUBTYPES.find(s => s.label === details['accommodationType']);
+    return !match || !GENDER_RELEVANT_ACCOMMODATION_TYPES.has(match.value);
+  }
+  return false;
 }

@@ -78,11 +78,56 @@ export const APP_CATEGORIES: AppCategory[] = [
   { value: 'tutoring-lessons', label: 'Tutoring & Lessons' },
   { value: 'vintage', label: 'Vintage' },
   { value: 'waste-management', label: 'Waste Management' },
+  { value: 'accommodations', label: 'Accommodations' },
   { value: 'wedding-events', label: 'Wedding' },
   { value: 'medical-equipment', label: 'Medical Equipment' },
   { value: 'appliances', label: 'Appliances' },
   { value: 'other', label: 'Other' },
 ];
+
+// Accommodation subtypes — shown as a dropdown when the Accommodations
+// category is selected in the Post Enquiry or Sell form.
+// Stored on the doc as details.accommodationType (the value string).
+export interface AccommodationSubtype {
+  value: string;
+  label: string;
+}
+
+export const ACCOMMODATION_SUBTYPES: AccommodationSubtype[] = [
+  { value: 'campsite', label: 'Campsite / Eco-stay' },
+  { value: 'cottage', label: 'Cottage' },
+  { value: 'dormitory', label: 'Dormitory' },
+  { value: 'flat-apartment', label: 'Flat / Apartment' },
+  { value: 'guest-house', label: 'Guest House' },
+  { value: 'homestay', label: 'Homestay' },
+  { value: 'hostel', label: 'Hostel' },
+  { value: 'hotel', label: 'Hotel' },
+  { value: 'house', label: 'House' },
+  { value: 'lodging', label: 'Lodging' },
+  { value: 'motel', label: 'Motel' },
+  { value: 'pg', label: 'PG (Paying Guest)' },
+  { value: 'private-room', label: 'Private Room' },
+  { value: 'resort', label: 'Resort' },
+  { value: 'service-apartment', label: 'Service Apartment' },
+  { value: 'villa', label: 'Villa' },
+];
+
+// Shared-living subtypes where a gender preference is relevant — these get
+// the gender selector (any / male / female / mixed) in the forms.
+export const GENDER_RELEVANT_ACCOMMODATION_TYPES = new Set([
+  'hostel',
+  'dormitory',
+  'pg',
+  'lodging',
+  'private-room',
+]);
+
+export const ACCOMMODATION_GENDER_OPTIONS = [
+  { value: 'any', label: 'Any' },
+  { value: 'male', label: 'Male only' },
+  { value: 'female', label: 'Female only' },
+  { value: 'mixed', label: 'Mixed' },
+] as const;
 
 // Legacy category values used by older posts in the database.
 // Kept here so display/matching code can recognise them even though
@@ -107,7 +152,8 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   car: ['vehicle', 'automobile'],
   bike: ['motorcycle', 'motorbike', 'scooter', 'two-wheeler'],
   furniture: ['sofa', 'bed', 'table', 'chair', 'wardrobe'],
-  'real-estate': ['flat', 'apartment', 'house', 'plot', 'land', 'property'],
+  'real-estate': ['flat', 'apartment', 'house', 'plot', 'land', 'property', 'stay', 'staying', 'lodge', 'hostel', 'motel', 'resort', 'homestay', 'guest house', 'pg', 'paying guest', 'room', 'accommodation'],
+  accommodations: ['stay', 'staying', 'lodge', 'lodging', 'hostel', 'motel', 'resort', 'homestay', 'villa', 'cottage', 'guest house', 'campsite', 'dormitory', 'pg', 'paying guest', 'service apartment', 'private room', 'room', 'hotel', 'accommodation', 'short stay'],
   appliances: ['fridge', 'refrigerator', 'washing machine', 'microwave', 'ac', 'air conditioner'],
   'sports-outdoor': ['gym', 'fitness', 'cricket', 'badminton'],
   'baby-kids': ['toys', 'stroller', 'pram'],

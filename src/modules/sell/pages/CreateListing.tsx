@@ -17,7 +17,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
-import { fieldsForCategoryStep } from '../categoryDetails';
+import { fieldsForCategoryStep, isFieldHiddenForDetails } from '../categoryDetails';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
@@ -1066,7 +1066,7 @@ export default function CreateListing() {
                   <div className="space-y-3 pt-2">
                     {/* Creative toggle-style fields (e.g., transmission) — shown above the description */}
                     {(() => {
-                      const descFields = fieldsForCategoryStep(category, 'description');
+                      const descFields = fieldsForCategoryStep(category, 'description').filter((f) => !isFieldHiddenForDetails(f, details));
                       const toggleFields = descFields.filter((f) => (f.options?.length ?? 0) === 2);
                       const selectFields = descFields.filter((f) => (f.options?.length ?? 0) !== 2);
                       return (
