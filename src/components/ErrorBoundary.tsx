@@ -25,6 +25,7 @@ const STALE_BUNDLE_KEY = 'errorboundary_stale_reload_at';
 // these routes show the "session expired" screen whose button redirects to
 // the homepage instead of reloading the form.
 const FORM_ROUTES = ['/post-enquiry', '/sell/new', '/respond/'];
+const FORM_RECOVERY_KEY = 'errorboundary_form_recovery_at';
 const isFormRoute = (pathname: string): boolean =>
   FORM_ROUTES.some((r) => pathname === r || pathname.startsWith(r));
 const isStaleBundleError = (error?: Error): boolean => {
@@ -297,6 +298,21 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
       }
     }
 
+    // Form routes: crash-on-restore is the common case (half-initialized
+    // wizard state after the browser/app reopens). ONE silent reload with a
+    // cache-buster gives a clean form and also pulls fresh HTML (defeats
+    // stale caches, like iOS Safari's). If it crashes again right after,
+    // show the session-expired screen instead of looping.
+    if (isFormRoute(window.location.pathname)) {
+      const lastFormRecovery = parseInt(localStorage.getItem(FORM_RECOVERY_KEY) || '0', 10);
+      const now2 = Date.now();
+      if (now2 - lastFormRecovery > 10000) {
+        localStorage.setItem(FORM_RECOVERY_KEY, String(now2));
+        window.location.href = window.location.pathname + '?_r=' + now2;
+        return;
+      }
+    }
+
     // Log error details for debugging
     console.error("Error details:", {
       name: error.name,
@@ -319,15 +335,16 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   };
 
   handleRefreshNow = () => {
-    // Clear the auto-reload guard so the refresh is always allowed, then
+    // Clear the auto-reload guards so the refresh is always allowed, then
     // reload with a cache-buster so Safari fetches a fresh index.html.
     try {
       localStorage.removeItem(STALE_BUNDLE_KEY);
+      localStorage.removeItem(FORM_RECOVERY_KEY);
     } catch {
       /* ignore */
     }
-    // On form routes, reloading the form URL usually restores the same broken
-    // half-initialized state — send the user to the homepage instead.
+    // On form routes, a second crash means the restore keeps breaking —
+    // send the user to the homepage (a form can't safely restore mid-fill).
     if (isFormRoute(window.location.pathname)) {
       window.location.href = 'https://www.enqir.in';
       return;

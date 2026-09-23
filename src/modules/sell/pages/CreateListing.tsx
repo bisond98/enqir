@@ -210,7 +210,7 @@ const STEPS = [
 ] as const;
 
 export default function CreateListing() {
-  const { user, isProfileVerified } = useAuth();
+  const { user, isProfileVerified, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
@@ -365,6 +365,24 @@ export default function CreateListing() {
   useEffect(() => {
     if (isPublished) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [isPublished]);
+
+  // IMPORTANT: wait for Firebase to restore the persisted session before
+  // deciding the user is signed out. On a fresh app open (or restored tab)
+  // `user` is null for the first few hundred ms while Firebase reads its
+  // saved session — rendering the sign-in prompt in that window made every
+  // restored tab flash "Sign in to Create a Listing" for signed-in users.
+  if (!user && authLoading) {
+    return (
+      <SellShell title="Sell">
+        <Card className="border-[0.5px] border-black rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_8px_0_0_rgba(0,0,0,0.25)] overflow-hidden">
+          <CardContent className="py-10 sm:py-14 flex flex-col items-center justify-center text-center gap-4">
+            <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-200 border-t-blue-600" />
+            <p className="text-xs sm:text-sm text-slate-600 font-medium">Loading…</p>
+          </CardContent>
+        </Card>
+      </SellShell>
+    );
+  }
 
   if (!user) {
     return (
