@@ -32,6 +32,15 @@ const formatDeadline = (deadline: any): string | null => {
 };
 
 /**
+ * Job enquiries talk about salary, not budget — mirrors PostEnquiry's
+ * "Salary Offered / Salary Expected" labels.
+ */
+const isJobEnquiry = (enquiry: ShareableEnquiry): boolean =>
+  [enquiry.category, ...(enquiry.categories || [])].some(
+    (c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job'))
+  );
+
+/**
  * Deal-type suffix for real-estate enquiries — makes rent/buy/lease explicit in shares.
  * Reads `details.listingType` ("Buy" | "Rent" | "Lease") saved by PostEnquiry.
  */
@@ -69,7 +78,7 @@ export const buildEnquiryShareText = (enquiry: ShareableEnquiry, url: string): s
 
   const facts: string[] = [];
   const budget = formatBudget(enquiry.budget);
-  if (budget) facts.push(`💰 Buyer's budget: ${budget}`);
+  if (budget) facts.push(isJobEnquiry(enquiry) ? `💰 Salary: ${budget}` : `💰 Buyer's budget: ${budget}`);
   if (enquiry.location) facts.push(`@ ${enquiry.location}`);
   if (facts.length) parts.push(facts.join(' | '));
 
