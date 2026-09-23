@@ -268,12 +268,10 @@ function matchStrength(c: AppCategory, q: string): number {
   if (q.includes(' ') && synStrings.some(s => s.toLowerCase().includes(q))) return 2;
   if (q.includes(' ') && labelLower.includes(q)) return 1;
 
-  // Prefix matching only from 4 letters up — stops "car" matching "care"/
-  // "career"-type words while still letting "appl" find Appliances.
-  if (q.length >= 4) {
-    if (labelWords.some(w => w.startsWith(q))) return 3;
-    if (otherWords.some(w => w.startsWith(q))) return 4;
-  }
+  // Prefix matching from 3 letters on labels (so "agr" finds Agriculture),
+  // but synonyms need 4+ letters (so "car" doesn't match "care"/"carpenter").
+  if (q.length >= 3 && labelWords.some(w => w.startsWith(q))) return 3;
+  if (q.length >= 4 && otherWords.some(w => w.startsWith(q))) return 4;
   return -1;
 }
 
