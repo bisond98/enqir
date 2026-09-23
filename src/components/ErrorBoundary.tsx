@@ -110,6 +110,123 @@ const DoodleStar = () => (
   </svg>
 );
 
+const DoodlePadlock = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="18" y="28" width="28" height="24" rx="6" />
+    <path d="M24 28v-6a8 8 0 0 1 16 0v6" />
+    <circle cx="32" cy="38" r="2.5" fill="currentColor" stroke="none" />
+    <path d="M32 40v5" />
+  </svg>
+);
+
+const DoodleCloudLock = () => (
+  <svg viewBox="0 0 64 64" className="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 40a10 10 0 0 1-2-19.8A14 14 0 0 1 43 15a11 11 0 0 1 5 21" />
+    <rect x="25" y="38" width="14" height="12" rx="3" />
+    <path d="M28 38v-3a4 4 0 0 1 8 0v3" />
+    <circle cx="32" cy="43.5" r="1.5" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const DoodleConnected = () => (
+  <svg viewBox="0 0 64 64" className="w-8 h-8 sm:w-10 sm:h-10" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="16" cy="16" r="6" />
+    <rect x="42" y="42" width="12" height="12" rx="3" />
+    <path d="M20 20l22 22" />
+    <path d="M38 12h8a6 6 0 0 1 6 6v8" strokeDasharray="3 4" />
+    <path d="M26 52h-8a6 6 0 0 1-6-6v-8" strokeDasharray="3 4" />
+  </svg>
+);
+
+const DoodleFingerprint = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 20a17 17 0 0 1 24 0" />
+    <path d="M16 28a21 21 0 0 1 32 0" />
+    <path d="M22 34a14 14 0 0 1 20 0" />
+    <path d="M27 40a8 8 0 0 1 10 0" />
+    <path d="M32 46v4" />
+  </svg>
+);
+
+const DoodleChip = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="20" y="20" width="24" height="24" rx="4" />
+    <rect x="27" y="27" width="10" height="10" rx="2" />
+    <path d="M26 20v-6M32 20v-6M38 20v-6M26 50v-6M32 50v-6M38 50v-6M20 26h-6M20 32h-6M20 38h-6M50 26h-6M50 32h-6M50 38h-6" />
+  </svg>
+);
+
+const DoodleWifi = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 26a30 30 0 0 1 44 0" />
+    <path d="M17 34a20 20 0 0 1 30 0" />
+    <path d="M24 42a11 11 0 0 1 16 0" />
+    <circle cx="32" cy="50" r="2.5" fill="currentColor" />
+  </svg>
+);
+
+const DoodlePhone = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="22" y="8" width="20" height="48" rx="5" />
+    <path d="M28 13h8" />
+    <circle cx="32" cy="49" r="2.5" fill="currentColor" />
+  </svg>
+);
+
+const DoodleLocation = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M32 56s16-14 16-27A16 16 0 0 0 16 29c0 13 16 27 16 27z" />
+    <circle cx="32" cy="28" r="6" />
+  </svg>
+);
+
+const DoodleCamera = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="10" y="20" width="44" height="30" rx="6" />
+    <circle cx="32" cy="35" r="9" />
+    <path d="M24 20l3-6h10l3 6" />
+    <circle cx="32" cy="35" r="3" fill="currentColor" />
+  </svg>
+);
+
+const DoodleStarBadge = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="32" cy="26" r="14" />
+    <path d="M32 19l2.5 5 5.5.8-4 4 1 5.5-5-2.7-5 2.7 1-5.5-4-4 5.5-.8z" />
+    <path d="M25 39l-4 17 11-6 11 6-4-17" />
+  </svg>
+);
+
+const DoodleEnvelope = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="12" y="18" width="40" height="28" rx="5" />
+    <path d="M12 22l20 14 20-14" />
+  </svg>
+);
+
+const DoodleClock = () => (
+  <svg viewBox="0 0 64 64" className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="32" cy="32" r="20" />
+    <path d="M32 20v12l8 6" />
+  </svg>
+);
+
+const DoodleHeart = () => (
+  <svg viewBox="0 0 64 64" className="w-6 h-6 sm:w-8 sm:h-8" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M32 52S12 40 12 26a10 10 0 0 1 20-3 10 10 0 0 1 20 3c0 14-20 26-20 26z" />
+    <path d="M22 26h6l3-4 4 8 3-4h6" />
+  </svg>
+);
+
+const DoodleGlobe = () => (
+  <svg viewBox="0 0 64 64" className="w-7 h-7 sm:w-9 sm:h-9" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="32" cy="32" r="20" />
+    <ellipse cx="32" cy="32" rx="9" ry="20" />
+    <path d="M12 32h40M15 22h34M15 42h34" />
+    <circle cx="46" cy="18" r="3" />
+  </svg>
+);
+
 const Doodles = () => (
   <div className="pointer-events-none absolute inset-0" aria-hidden="true">
     <div className="absolute top-[8%] right-[6%] rotate-6 text-gray-900/80 doodle-float"><DoodleChat /></div>
@@ -128,6 +245,23 @@ const Doodles = () => (
     <div className="absolute top-[10%] left-[16%] text-gray-900/45 -rotate-12"><DoodleRing className="w-2.5 h-2.5" /></div>
     <div className="absolute top-[66%] left-[8%] text-gray-900 rotate-45"><DoodleStar /></div>
     <div className="absolute top-[20%] right-[12%] text-gray-900/50 rotate-12"><DoodleStar /></div>
+    <div className="absolute top-[2%] left-[38%] -rotate-8 text-gray-900/60 doodle-float"><DoodleClock /></div>
+    <div className="absolute top-[13%] left-[3%] -rotate-10 text-gray-900/60 doodle-float-slow"><DoodlePhone /></div>
+    <div className="absolute top-[16%] left-[44%] rotate-6 text-gray-900/60 doodle-float"><DoodleLocation /></div>
+    <div className="absolute top-[4%] right-[30%] -rotate-6 text-gray-900/70 doodle-float hidden sm:block"><DoodleCloudLock /></div>
+    <div className="absolute top-[24%] right-[24%] -rotate-6 text-gray-900/75 doodle-float-slow hidden sm:block"><DoodlePadlock /></div>
+    <div className="absolute top-[46%] right-[3%] rotate-6 text-gray-900/70 doodle-float-slow hidden sm:block"><DoodleChip /></div>
+    <div className="absolute top-[38%] right-[2%] -rotate-8 text-gray-900/60 doodle-float-slow"><DoodleCamera /></div>
+    <div className="absolute top-[52%] left-[2%] rotate-6 text-gray-900/60 doodle-float"><DoodleStarBadge /></div>
+    <div className="absolute top-[24%] left-[2%] -rotate-10 text-gray-900/60 doodle-float-slow"><DoodleWifi /></div>
+    <div className="absolute bottom-[24%] right-[26%] -rotate-6 text-gray-900/60 doodle-float-slow"><DoodleFingerprint /></div>
+    <div className="absolute bottom-[6%] left-[6%] -rotate-6 text-gray-900/60 doodle-float-slow"><DoodleHeart /></div>
+    <div className="absolute bottom-[4%] right-[38%] rotate-6 text-gray-900/55 doodle-float"><DoodleEnvelope /></div>
+    <div className="absolute top-[74%] right-[4%] rotate-8 text-gray-900/60 doodle-float-slow"><DoodleGlobe /></div>
+    <div className="absolute bottom-[46%] left-[16%] rotate-[10deg] text-gray-900/70 doodle-float hidden sm:block"><DoodleConnected /></div>
+    <div className="absolute top-[68%] left-[22%] -rotate-12 text-gray-900/50 rotate-12"><DoodlePlus className="w-2.5 h-2.5" /></div>
+    <div className="absolute bottom-[8%] left-[46%] rotate-45 text-gray-900/45"><DoodleSparkle className="w-3 h-3" /></div>
+    <div className="absolute top-[80%] left-[34%] -rotate-6 text-gray-900/50"><DoodleRing className="w-2.5 h-2.5" /></div>
   </div>
 );
 
