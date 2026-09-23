@@ -1,6 +1,4 @@
 import { Component, ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { AlertCircle, RefreshCw, Home } from "lucide-react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -100,82 +98,38 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 
   render() {
     if (this.state.hasError) {
-      // Stale-bundle case: the app was updated while the user was away.
-      // Show a friendly, jargon-free screen focused on one action: refresh.
-      if (isStaleBundleError(this.state.error)) {
-        return (
-          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-            <div className="max-w-md w-full bg-white rounded-xl shadow-lg border-2 border-slate-200 p-6 sm:p-8 text-center">
-              <div className="mb-6">
-                <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
-              </div>
-
-              <div className="space-y-3">
-                <Button
-                  onClick={this.handleRefreshNow}
-                  className="!w-full !h-16 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
-                >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    <RefreshCw className="h-5 w-5" />
-                    Refresh Now
-                  </span>
-                </Button>
-
-                <Button
-                  onClick={this.handleGoHome}
-                  className="!w-full !h-16 !text-lg !font-black !bg-white hover:!bg-slate-50 !text-slate-900 !rounded-2xl !border-[1.5px] !border-slate-300 !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
-                >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    <Home className="h-5 w-5" />
-                    Go to Home
-                  </span>
-                </Button>
-              </div>
-            </div>
-          </div>
-        );
-      }
-
-      return this.props.fallback ?? (
+      // Single friendly recovery screen for ALL errors (stale bundles after a
+      // redeploy, or anything else that slips through on a restored tab):
+      // one big Refresh button, Home as backup. No scary error card.
+      return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-6">
           <div className="max-w-md w-full bg-white rounded-xl shadow-lg border-2 border-slate-200 p-6 sm:p-8 text-center">
-            <div className="flex justify-center mb-4">
-              <AlertCircle className="h-12 w-12 text-red-500" />
+            <div className="mb-6">
+              <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
             </div>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Something went wrong</h2>
-            <p className="text-slate-600 mb-6">
-              An unexpected error occurred. Trying again usually fixes it — if not, going home
-              and reopening the app will.
-            </p>
-            
+
             <div className="space-y-3">
               <Button
-                onClick={this.handleReset}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                onClick={this.handleRefreshNow}
+                className="!w-full !h-16 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
               >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Try Again
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <RefreshCw className="h-5 w-5" />
+                  Refresh Now
+                </span>
               </Button>
-              
-              <Button
-                onClick={this.handleReload}
-                variant="outline"
-                className="w-full border-slate-300 hover:bg-slate-50"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh Page
-              </Button>
-              
+
               <Button
                 onClick={this.handleGoHome}
-                variant="outline"
-                className="w-full border-slate-300 hover:bg-slate-50"
+                className="!w-full !h-16 !text-lg !font-black !bg-white hover:!bg-slate-50 !text-slate-900 !rounded-2xl !border-[1.5px] !border-slate-300 !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
               >
-                <Home className="h-4 w-4 mr-2" />
-                Go to Home
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  <Home className="h-5 w-5" />
+                  Go to Home
+                </span>
               </Button>
             </div>
-            
+
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="mt-6 text-left">
                 <summary className="text-sm text-slate-500 cursor-pointer hover:text-slate-700">
