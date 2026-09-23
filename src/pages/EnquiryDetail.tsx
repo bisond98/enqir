@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ACCOMMODATION_SUBTYPES } from '@/constants/categories';
 import { Separator } from '@/components/ui/separator';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { 
@@ -872,8 +873,14 @@ const EnquiryDetail = () => {
                         d.jobType && { label: 'Job type', value: d.jobType },
                         d.workMode && { label: 'Work mode', value: d.workMode },
                       ];
+                      // Human-readable label for the stored accommodation subtype slug
+                      const accommodationLabel = d.accommodationType
+                        ? (ACCOMMODATION_SUBTYPES.find(s => s.value === d.accommodationType)?.label ?? d.accommodationType)
+                        : null;
                       const chips = [
                         ...jobChips,
+                        accommodationLabel && { label: 'Stay type', value: accommodationLabel, highlight: true },
+                        d.genderPreference && d.genderPreference !== 'any' && { label: 'Gender', value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : 'Mixed', highlight: true },
                         d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType, highlight: true },
                         d.landArea && { label: 'Land / Plot', value: d.landArea, highlight: true },
                         d.builtUpArea && { label: 'Buildings', value: d.builtUpArea, highlight: true },
