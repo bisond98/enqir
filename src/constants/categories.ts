@@ -176,7 +176,7 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   'events-entertainment': ['birthday', 'party', 'event management', 'stage', 'decorator', 'anchor', 'band'],
   'wedding-events': ['marriage', 'wedding hall', 'catering', 'wedding photographer', 'wedding car', 'bridal makeup', 'mehndi'],
   'food-beverage': ['tiffin', 'catering', 'home food', 'bakery', 'cake', 'food delivery', 'breakfast', 'meals'],
-  'transportation-logistics': ['movers', 'packers and movers', 'tempo', 'goods transport', 'shifting', 'logistics', 'delivery service', 'lorry'],
+  'transportation-logistics': ['movers', 'packers and movers', 'tempo', 'goods transport', 'shifting', 'logistics', 'delivery service', 'lorry', 'taxi', 'cab', 'cab service', 'taxi service'],
   'travel-tourism': ['tour package', 'taxi', 'cab', 'tempo traveller', 'travel agency', 'car rental', 'trip'],
   'agriculture-farming': ['tractor', 'farm equipment', 'farming', 'livestock', 'poultry', 'seeds', 'fertilizer', 'coconut', 'rubber', 'arecanut'],
   'tools-equipment': ['drill machine', 'welding', 'generator', 'power tools', 'grinder', 'cutting machine'],
@@ -209,15 +209,86 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
 };
 
 /**
+ * Levenshtein edit distance, capped at `max` — returns `max + 1` once the
+ * distance provably exceeds max, so it stays fast for short strings.
+ */
+function boundedLevenshtein(a: string, b: string, max: number): number {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  const prev = new Array(b.length + 1).fill(0).map((_, i) => i);
+  const curr = new Array(b.length + 1).fill(0);
+  for (let i = 1; i <= a.length; i++) {
+    curr[0] = i;
+    let rowMin = curr[0];
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+      rowMin = Math.min(rowMin, curr[j]);
+    }
+    if (rowMin > max) return max + 1;
+    for (let j = 0; j <= b.length; j++) prev[j] = curr[j];
+  }
+  return prev[b.length];
+}
+
+/**
  * Filter categories by a search query, matching label, value, and synonyms.
  * Used by the category pickers so words like "shoes" find Sneakers.
+ *
+ * When there are fewer than `minResults` direct matches, near-matches fill the
+ * list (fuzzy spelling distance on label words / synonyms), and finally the
+ * three main categories (Service / Business / Personal) act as catch-alls so
+ * users always have somewhere to post — e.g. "taxi" shows Travel,
+ * Transportation AND Service.
  */
-export function filterCategoriesBySearch<T extends AppCategory>(categories: T[], query: string): T[] {
+export function filterCategoriesBySearch<T extends AppCategory>(categories: T[], query: string, minResults = 3): T[] {
   const q = query.trim().toLowerCase();
   if (!q) return categories;
-  return categories.filter(c =>
+  const direct = categories.filter(c =>
     c.label.toLowerCase().includes(q) ||
     c.value.includes(q) ||
     (CATEGORY_SEARCH_SYNONYMS[c.value] ?? []).some(syn => syn.includes(q) || q.includes(syn))
   );
+  if (direct.length >= minResults) return direct;
+
+  const chosen = new Set(direct.map(c => c.value));
+  const result = [...direct];
+
+  // Tier 2: fuzzy near-matches (typos / close spellings), only for queries of
+  // 4+ chars, and only against words of 5+ chars so short words like "tax"
+  // or "shop" don't fuzzy-match unrelated queries ("taxi", "shoe").
+  if (q.length >= 4) {
+    const threshold = Math.min(2, Math.floor(q.length / 4));
+    const wordsOf = (c: AppCategory): string[] => {
+      const words = c.label.toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length >= 5);
+      for (const syn of CATEGORY_SEARCH_SYNONYMS[c.value] ?? []) {
+        words.push(...syn.split(/[^a-z0-9]+/).filter(w => w.length >= 5));
+      }
+      return words;
+    };
+    const fuzzy = categories
+      .filter(c => !chosen.has(c.value))
+      .map(c => {
+        let best = Infinity;
+        for (const w of wordsOf(c)) best = Math.min(best, boundedLevenshtein(q, w, threshold));
+        return { c, best };
+      })
+      .filter(x => x.best <= threshold)
+      .sort((a, b) => a.best - b.best);
+    for (const f of fuzzy) {
+      if (result.length >= minResults) break;
+      chosen.add(f.c.value);
+      result.push(f.c);
+    }
+  }
+
+  // Tier 3: main categories as catch-alls so users always have a fallback.
+  for (const mainValue of ['service', 'business', 'personal']) {
+    if (result.length >= minResults) break;
+    const main = categories.find(c => c.value === mainValue);
+    if (main && !chosen.has(main.value)) {
+      chosen.add(main.value);
+      result.push(main);
+    }
+  }
+  return result;
 }
