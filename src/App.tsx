@@ -187,18 +187,18 @@ const App = () => {
                          <Route path="/enquiry/:enquiryId/detailed-responses" element={<ErrorBoundary><AuthGuard><DetailedResponses /></AuthGuard></ErrorBoundary>} />
                   <Route path="/enquiry/:id" element={<ErrorBoundary><EnquiryDetail /></ErrorBoundary>} />
                   <Route path="/data-clear" element={<DataClear />} />
-                  <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
-                  <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
-                  <Route path="/likes" element={<AuthGuard><MyLikes /></AuthGuard>} />
-                  <Route path="/notifications" element={<AuthGuard><Notifications /></AuthGuard>} />
-                  <Route path="/signin" element={<SignInOptions />} />
-                  <Route path="/signin/email" element={<SignIn />} />
-                  <Route path="/signin/mobile" element={<SignInMobile />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/admin/access/:secretToken" element={<AdminAccess />} />
-                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/profile" element={<ErrorBoundary><AuthGuard><Profile /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/settings" element={<ErrorBoundary><AuthGuard><Settings /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/likes" element={<ErrorBoundary><AuthGuard><MyLikes /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/notifications" element={<ErrorBoundary><AuthGuard><Notifications /></AuthGuard></ErrorBoundary>} />
+                  <Route path="/signin" element={<ErrorBoundary><SignInOptions /></ErrorBoundary>} />
+                  <Route path="/signin/email" element={<ErrorBoundary><SignIn /></ErrorBoundary>} />
+                  <Route path="/signin/mobile" element={<ErrorBoundary><SignInMobile /></ErrorBoundary>} />
+                  <Route path="/forgot-password" element={<ErrorBoundary><ForgotPassword /></ErrorBoundary>} />
+                  <Route path="/reset-password" element={<ErrorBoundary><ResetPassword /></ErrorBoundary>} />
+                  <Route path="/auth/callback" element={<ErrorBoundary><AuthCallback /></ErrorBoundary>} />
+                  <Route path="/admin/access/:secretToken" element={<ErrorBoundary><AdminAccess /></ErrorBoundary>} />
+                  <Route path="/admin" element={<ErrorBoundary><Admin /></ErrorBoundary>} />
                   <Route path="/test-premium" element={<PremiumTestDataGenerator />} />
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
