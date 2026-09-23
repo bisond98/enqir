@@ -791,13 +791,15 @@ export default function PostEnquiry() {
         const validImages = referenceImageUrls.filter(url => url.trim() !== "");
         if (validImages.length > 0) enquiryData.referenceImages = validImages;
         const docRef = await addDoc(collection(db, "enquiries"), enquiryData);
-        const paymentRecordId = await savePaymentRecord(
+        // Non-blocking bookkeeping (see main path comment)
+        await savePaymentRecord(
           docRef.id,
           user.uid,
           plan,
           successfulPayment.transactionId
-        );
-        await updateUserPaymentPlan(user.uid, plan.id, paymentRecordId, docRef.id);
+        )
+          .then((paymentRecordId) => updateUserPaymentPlan(user.uid, plan.id, paymentRecordId, docRef.id))
+          .catch((err) => console.error('⚠️ Payment bookkeeping failed (enquiry is still live):', err));
         setSubmittedEnquiryId(docRef.id);
         setEnquiryStatus('live');
         setIsEnquiryApproved(true);
@@ -956,16 +958,17 @@ export default function PostEnquiry() {
         const enquiryId = docRef.id;
         console.log('Premium enquiry saved successfully with ID:', enquiryId);
         
-        // Save payment record with actual enquiry ID
-        const paymentRecordId = await savePaymentRecord(
+        // Save payment record + update plan — non-blocking bookkeeping.
+        // The enquiry is LIVE and paid for; never let record-keeping
+        // failures (rules, network) make the user think posting failed.
+        await savePaymentRecord(
           enquiryId,
           user.uid,
           selectedPlan,
           paymentResult.transactionId || ''
-        );
-        
-        // Update user payment plan
-        await updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, enquiryId);
+        )
+          .then((paymentRecordId) => updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, enquiryId))
+          .catch((err) => console.error('⚠️ Payment bookkeeping failed (enquiry is still live):', err));
         
         setSubmittedEnquiryId(enquiryId);
         setEnquiryStatus('live');
@@ -991,13 +994,15 @@ export default function PostEnquiry() {
           const retryRef = await addDoc(collection(db, "enquiries"), enquiryData);
           const retryId = retryRef.id;
           console.log('✅ Retry succeeded — premium enquiry saved with ID:', retryId);
-          const paymentRecordId = await savePaymentRecord(
+          // Non-blocking bookkeeping (see main path comment)
+          await savePaymentRecord(
             retryId,
             user.uid,
             selectedPlan,
             paymentResult.transactionId || ''
-          );
-          await updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, retryId);
+          )
+            .then((paymentRecordId) => updateUserPaymentPlan(user.uid, selectedPlan.id, paymentRecordId, retryId))
+            .catch((err) => console.error('⚠️ Payment bookkeeping failed (enquiry is still live):', err));
           setSubmittedEnquiryId(retryId);
           setEnquiryStatus('live');
           setIsEnquiryApproved(true);
