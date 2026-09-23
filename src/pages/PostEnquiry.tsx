@@ -45,7 +45,6 @@ import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
 import { BuyerCartoon } from "@/components/doodles";
-import { useDraftAutosave, cleanupExpiredDrafts } from "@/hooks/useDraftAutosave";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -64,41 +63,6 @@ const isJobEnquiry = (cats: string[], legacy?: string) =>
   [...cats, legacy ?? ''].some((c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job')));
 
 const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
-
-// Draft autosave: keeps the form's typed content for 48h so a browser/app
-// close mid-form is recoverable. Photos & payment live on the last step and
-// are never saved — the user re-attaches those after resuming.
-const DRAFT_FORM_KEY = 'post-enquiry';
-
-// Shared resume banner used by both the profile-verification restore flow and
-// the 48h draft restore flow.
-const DraftResumeBanner = ({ savedAtLabel, onResume, onDiscard }: { savedAtLabel: string | null; onResume: () => void; onDiscard: () => void }) => (
-  <div className="mb-4 flex items-center gap-3 rounded-2xl border-[1.5px] border-black bg-blue-50 p-3 sm:p-4 shadow-[0_3px_0_0_rgba(0,0,0,0.2)]">
-    <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-      <FileText className="h-4 w-4 text-white" />
-    </div>
-    <div className="flex-1 min-w-0">
-      <p className="text-xs sm:text-sm font-bold text-black">You have an unfinished enquiry</p>
-      <p className="text-[10px] sm:text-[11px] text-slate-600">
-        Saved {savedAtLabel ?? 'recently'} — resumes below, photos re-attach on the last step
-      </p>
-    </div>
-    <button
-      type="button"
-      onClick={onDiscard}
-      className="text-[11px] sm:text-xs font-semibold text-slate-500 hover:text-red-600 px-2 py-1 rounded-lg touch-manipulation"
-    >
-      Discard
-    </button>
-    <button
-      type="button"
-      onClick={onResume}
-      className="text-[11px] sm:text-xs font-black text-white bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 py-2 rounded-xl border-[1.5px] border-black shadow-[0_2px_0_0_rgba(0,0,0,0.85)] active:translate-y-[2px] active:shadow-none touch-manipulation"
-    >
-      Resume
-    </button>
-  </div>
-);
 
 // ✨ AI description assistant — golden sparkle icon (no background) inside the
 // textarea's bottom-right corner. Same style as the respond form's AI button.
@@ -379,88 +343,6 @@ export default function PostEnquiry() {
 
   const [aiGenerating, setAiGenerating] = useState(false);
 
-  // ---------- 48h draft autosave ----------
-  // Cleanup any expired drafts (both forms) once per mount.
-  useEffect(() => {
-    cleanupExpiredDrafts(['post-enquiry', 'sell-listing'], user?.uid);
-  }, [user?.uid]);
-
-  // Snapshot of all restorable text/selection state. The last step (photos,
-  // verification, payment) is intentionally excluded — it must be redone.
-  const draftSnapshot = useMemo(() => ({
-    title, description, selectedCategories, category, budget, location,
-    mapLocation, deadline: deadline ? deadline.toISOString() : null, notes,
-    vehicleDetails, mobileDetails, sneakerBrand, estateDetails, estateType,
-    estateDealType, jobDirection, jobSkills, jobDetails, accommodationType,
-    accommodationGender, mobileNumber, countryCode, selectedPlanId: selectedPlan?.id ?? null,
-  }), [title, description, selectedCategories, category, budget, location, mapLocation, deadline, notes, vehicleDetails, mobileDetails, sneakerBrand, estateDetails, estateType, estateDealType, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender, mobileNumber, countryCode, selectedPlan]);
-
-  const {
-    draft: savedDraft,
-    savedAtLabel: draftSavedAtLabel,
-    restore: restoreDraftStorage,
-    clearDraft: clearSavedDraft,
-    resolved: draftResolved,
-  } = useDraftAutosave<Record<string, any>>(draftSnapshot, {
-    formKey: DRAFT_FORM_KEY,
-    userId: user?.uid,
-    getDraft: () => draftSnapshot,
-    disabled: isSubmitted,
-  });
-  const [showResumeBanner, setShowResumeBanner] = useState(false);
-
-  const applyDraftToForm = (d: Record<string, any>) => {
-    if (!d) return;
-    if (d.title) setTitle(d.title);
-    if (d.description) setDescription(d.description);
-    if (d.category) setCategory(d.category);
-    if (Array.isArray(d.selectedCategories) && d.selectedCategories.length) setSelectedCategories(d.selectedCategories);
-    if (d.budget) setBudget(d.budget);
-    if (d.location) setLocation(d.location);
-    if (d.mapLocation) setMapLocation(d.mapLocation);
-    if (d.deadline) {
-      const dt = new Date(d.deadline);
-      if (!isNaN(dt.getTime())) setDeadline(dt);
-    }
-    if (d.notes) setNotes(d.notes);
-    if (d.vehicleDetails) setVehicleDetails(d.vehicleDetails);
-    if (d.mobileDetails) setMobileDetails(d.mobileDetails);
-    if (d.sneakerBrand) setSneakerBrand(d.sneakerBrand);
-    if (d.estateDetails) setEstateDetails(d.estateDetails);
-    if (d.estateType) setEstateType(d.estateType);
-    if (d.estateDealType) setEstateDealType(d.estateDealType);
-    if (d.jobDirection) setJobDirection(d.jobDirection);
-    if (d.jobSkills) setJobSkills(d.jobSkills);
-    if (d.jobDetails) setJobDetails(d.jobDetails);
-    if (d.accommodationType) setAccommodationType(d.accommodationType);
-    if (d.accommodationGender) setAccommodationGender(d.accommodationGender);
-    if (d.mobileNumber) setMobileNumber(d.mobileNumber);
-    if (d.countryCode) setCountryCode(d.countryCode);
-    if (d.selectedPlanId) {
-      const plan = PAYMENT_PLANS.find(p => p.id === d.selectedPlanId);
-      if (plan) setSelectedPlan(plan);
-    }
-  };
-
-  const handleResumeDraft = () => {
-    if (savedDraft) applyDraftToForm(savedDraft);
-    restoreDraftStorage();
-    setShowResumeBanner(false);
-    // Jump to the last step (Photos & Verify) — everything before it is filled,
-    // the user only re-attaches photos / re-verifies there.
-    setAnimDir('up');
-    setStep(STEPS.length - 1);
-    setTimeout(() => {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }, 300);
-  };
-
-  const handleDiscardDraft = () => {
-    clearSavedDraft();
-    setShowResumeBanner(false);
-  };
-  // ---------- end draft autosave ----------
-
   // Scroll to ID verification card when verification is successful
   useEffect(() => {
     if (idVerificationResult?.matches && idVerificationCardRef.current) {
@@ -557,20 +439,11 @@ export default function PostEnquiry() {
         }
       } catch {}
       localStorage.removeItem(ENQUIRY_STORAGE_KEY);
-      // Consume the 48h autosave draft (if any) — the verification-return draft
-      // supersedes it and we don't want two competing offers.
-      clearSavedDraft();
       // Scroll down to publish button after restoring
       setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }, 300);
-    } else if (savedDraft && !draftResolved) {
-      // No verification-return draft, but a 48h autosave draft exists (browser
-      // or app was closed mid-form). Offer to resume via the banner.
-      setShowResumeBanner(true);
     }
-    // Runs once on mount; savedDraft/clearSavedDraft are captured intentionally.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Scroll to top on step change
@@ -850,7 +723,6 @@ export default function PostEnquiry() {
           // Mark as submitted
           incrementEnquiries();
           setIsSubmitted(true);
-          clearSavedDraft();
           setIsPaymentSuccessful(true);
           
         toast({
@@ -966,7 +838,6 @@ export default function PostEnquiry() {
         setIsEnquiryApproved(true);
         incrementEnquiries();
         setIsSubmitted(true);
-      clearSavedDraft();
         setIsPaymentSuccessful(true);
         setRecoverablePayment(false);
         setSuccessfulPayment(null);
@@ -1142,7 +1013,6 @@ export default function PostEnquiry() {
         // Mark as submitted
         incrementEnquiries();
         setIsSubmitted(true);
-      clearSavedDraft();
         setIsPaymentSuccessful(true);
         
         toast({
@@ -1174,7 +1044,6 @@ export default function PostEnquiry() {
           setIsEnquiryApproved(true);
           incrementEnquiries();
           setIsSubmitted(true);
-          clearSavedDraft();
           setIsPaymentSuccessful(true);
           setRecoverablePayment(false);
           toast({
@@ -1314,7 +1183,6 @@ export default function PostEnquiry() {
       // Mark as submitted
       incrementEnquiries();
       setIsSubmitted(true);
-      clearSavedDraft();
       setIsPaymentSuccessful(true);
       
         toast({
@@ -2056,7 +1924,6 @@ export default function PostEnquiry() {
         }).catch(() => {});
         // Mark as submitted immediately after successful creation to prevent duplicates
         setIsSubmitted(true);
-      clearSavedDraft();
         setSubmittedEnquiryId(docRef.id);
         setEnquiryStatus('pending');
         setIsEnquiryApproved(false);
@@ -2143,7 +2010,6 @@ export default function PostEnquiry() {
         
         incrementEnquiries();
         setIsSubmitted(true);
-      clearSavedDraft();
         
         // DISABLED: Create notification for enquiry submission to prevent flooding
         // try {
@@ -2437,17 +2303,6 @@ export default function PostEnquiry() {
           {/* Main Form - Multi-step wizard (matching sell listing) */}
           {!isSubmitted && (
             <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
-              {/* 48h draft resume offer — only when not already restoring from
-                  profile verification (that flow has its own restore below). */}
-              {showResumeBanner && savedDraft && !returnTo && (
-                <div className="px-3 sm:px-6 lg:px-8 pt-4">
-                  <DraftResumeBanner
-                    savedAtLabel={draftSavedAtLabel}
-                    onResume={handleResumeDraft}
-                    onDiscard={handleDiscardDraft}
-                  />
-                </div>
-              )}
               <div className="space-y-2 border-b border-black/10 pb-4 px-5 sm:px-6 lg:px-8 pt-4">
                 <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
                   <div

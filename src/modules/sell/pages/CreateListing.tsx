@@ -9,8 +9,6 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadToCloudinaryUnsigned } from '@/integrations/cloudinary';
 import { toast } from '@/hooks/use-toast';
-import { useDraftAutosave, cleanupExpiredDrafts } from '@/hooks/useDraftAutosave';
-import { FileText } from 'lucide-react';
 import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES } from '@/constants/categories';
@@ -296,70 +294,6 @@ export default function CreateListing() {
 
   const [aiGenerating, setAiGenerating] = useState(false);
 
-  // 48h draft autosave: keeps the form's typed content so a browser/app close
-  // mid-form is recoverable. Images & payment live on the last steps and are
-  // never saved — the user re-attaches those after resuming.
-  const DRAFT_FORM_KEY = 'sell-listing';
-
-  // Snapshot of all restorable text/selection state (images & payment excluded).
-  const draftSnapshot = useMemo(() => ({
-    title, description, category, categories: selectedCats, location, mapLocation,
-    condition, priceType, price, priceMin, priceMax, tags, details, estateType,
-    mobileNumber, countryCode,
-  }), [title, description, category, selectedCats, location, mapLocation, condition, priceType, price, priceMin, priceMax, tags, details, estateType, mobileNumber, countryCode]);
-
-  const {
-    draft: savedDraft,
-    savedAtLabel: draftSavedAtLabel,
-    restore: restoreDraftStorage,
-    clearDraft: clearSavedDraft,
-    resolved: draftResolved,
-  } = useDraftAutosave<Record<string, any>>(draftSnapshot, {
-    formKey: DRAFT_FORM_KEY,
-    userId: user?.uid,
-    getDraft: () => draftSnapshot,
-    disabled: isPublished,
-  });
-  const [showResumeBanner, setShowResumeBanner] = useState(false);
-
-  const applyDraftToForm = (d: Record<string, any>) => {
-    if (!d) return;
-    if (d.title) setTitle(d.title);
-    if (d.description) setDescription(d.description);
-    if (d.category) setCategory(d.category);
-    if (Array.isArray(d.categories) && d.categories.length) setSelectedCats(d.categories.slice(0, 3));
-    if (d.location) setLocation(d.location);
-    if (d.mapLocation) setMapLocation(d.mapLocation);
-    if (d.condition) setCondition(d.condition);
-    if (d.priceType) setPriceType(d.priceType);
-    if (d.price) setPrice(d.price);
-    if (d.priceMin) setPriceMin(d.priceMin);
-    if (d.priceMax) setPriceMax(d.priceMax);
-    if (d.tags) setTags(d.tags);
-    if (d.details) setDetails(d.details);
-    if (d.estateType) setEstateType(d.estateType);
-    if (d.mobileNumber) setMobileNumber(d.mobileNumber);
-    if (d.countryCode) setCountryCode(d.countryCode);
-  };
-
-  const handleResumeDraft = () => {
-    if (savedDraft) applyDraftToForm(savedDraft);
-    restoreDraftStorage();
-    setShowResumeBanner(false);
-    // Jump to the last step (Confirmation) — everything before it is filled,
-    // the user only re-attaches photos / re-confirms payment there.
-    setAnimDir('up');
-    setStep(STEPS.length - 1);
-    setTimeout(() => {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }, 300);
-  };
-
-  const handleDiscardDraft = () => {
-    clearSavedDraft();
-    setShowResumeBanner(false);
-  };
-
   // AI description assistant — grammar-corrects & polishes typed text in place.
   // The AI never writes the description and never inserts listing details.
   const runDescriptionAI = () => {
@@ -411,20 +345,11 @@ export default function CreateListing() {
         if (d.images?.length) setImages(d.images);
       } catch {}
       localStorage.removeItem(STORAGE_KEY);
-      // Consume the 48h autosave draft (if any) — the verification-return draft
-      // supersedes it and we don't want two competing offers.
-      clearSavedDraft();
       // Scroll down to publish listing button after restoring
       setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }, 300);
-    } else if (savedDraft && !draftResolved) {
-      // No verification-return draft, but a 48h autosave draft exists (browser
-      // or app was closed mid-form). Offer to resume via the banner.
-      setShowResumeBanner(true);
     }
-    // Runs once on mount; savedDraft/clearSavedDraft are captured intentionally.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isVerifiedOrPending = isProfileVerified;
@@ -434,7 +359,6 @@ export default function CreateListing() {
     if (sessionStorage.getItem('listing-published') === 'true') {
       sessionStorage.removeItem('listing-published');
       setIsPublished(true);
-      clearSavedDraft();
     }
   }, []);
 
@@ -697,7 +621,6 @@ export default function CreateListing() {
       // Payment succeeded — show success screen immediately so form fields don't flash
       sessionStorage.setItem('listing-published', 'true');
       setIsPublished(true);
-      clearSavedDraft();
 
       // Create the listing in the background
       const fixedPrice = priceType === 'fixed' ? Number(price.replace(/,/g, '')) : null;
@@ -817,37 +740,6 @@ export default function CreateListing() {
   return (
     <SellShell title="Sell">
       <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
-        {/* 48h draft resume offer — only when not already restoring from
-            profile verification (that flow has its own restore above). */}
-        {showResumeBanner && savedDraft && !returnTo && (
-          <div className="px-3 sm:px-6 pt-4">
-            <div className="mb-1 flex items-center gap-3 rounded-2xl border-[1.5px] border-black bg-blue-50 p-3 sm:p-4 shadow-[0_3px_0_0_rgba(0,0,0,0.2)]">
-              <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
-                <FileText className="h-4 w-4 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs sm:text-sm font-bold text-black">You have an unfinished listing</p>
-                <p className="text-[10px] sm:text-[11px] text-slate-600">
-                  Saved {draftSavedAtLabel ?? 'recently'} — resumes below, photos re-attach on the last step
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleDiscardDraft}
-                className="text-[11px] sm:text-xs font-semibold text-slate-500 hover:text-red-600 px-2 py-1 rounded-lg touch-manipulation"
-              >
-                Discard
-              </button>
-              <button
-                type="button"
-                onClick={handleResumeDraft}
-                className="text-[11px] sm:text-xs font-black text-white bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 py-2 rounded-xl border-[1.5px] border-black shadow-[0_2px_0_0_rgba(0,0,0,0.85)] active:translate-y-[2px] active:shadow-none touch-manipulation"
-              >
-                Resume
-              </button>
-            </div>
-          </div>
-        )}
         <CardHeader className="space-y-2 border-b border-black/10 pb-4">
           <Progress value={progressPct} className="h-2 rounded-full bg-slate-200" />
         </CardHeader>

@@ -21,11 +21,10 @@ interface ErrorBoundaryState {
 const STALE_BUNDLE_KEY = 'errorboundary_stale_reload_at';
 
 // Form routes: restoring a tab mid-form can crash (half-initialized wizard
-// state). Reloading the URL gives a clean form, and the 48h draft autosave
-// brings the user's content back — so on these routes we auto-recover once
-// instead of showing the error screen.
+// state). A plain reload usually lands back on the same broken restore, so
+// these routes show the "session expired" screen whose button redirects to
+// the homepage instead of reloading the form.
 const FORM_ROUTES = ['/post-enquiry', '/sell/new', '/respond/'];
-const FORM_RECOVERY_KEY = 'errorboundary_form_recovery_at';
 const isFormRoute = (pathname: string): boolean =>
   FORM_ROUTES.some((r) => pathname === r || pathname.startsWith(r));
 const isStaleBundleError = (error?: Error): boolean => {
@@ -298,21 +297,6 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
       }
     }
 
-    // Form routes: crash-on-restore is the common case (half-initialized
-    // wizard state after the browser/app reopens). One silent reload gives a
-    // clean form; the 48h draft autosave restores the user's content. Guarded
-    // to ONCE per 10s so a genuinely broken form still surfaces the error UI
-    // instead of looping.
-    if (isFormRoute(window.location.pathname)) {
-      const lastFormRecovery = parseInt(localStorage.getItem(FORM_RECOVERY_KEY) || '0', 10);
-      const now2 = Date.now();
-      if (now2 - lastFormRecovery > 10000) {
-        localStorage.setItem(FORM_RECOVERY_KEY, String(now2));
-        window.location.reload();
-        return;
-      }
-    }
-    
     // Log error details for debugging
     console.error("Error details:", {
       name: error.name,
@@ -335,22 +319,30 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
   };
 
   handleRefreshNow = () => {
-    // Clear the auto-reload guards so the refresh is always allowed, then
+    // Clear the auto-reload guard so the refresh is always allowed, then
     // reload with a cache-buster so Safari fetches a fresh index.html.
     try {
       localStorage.removeItem(STALE_BUNDLE_KEY);
-      localStorage.removeItem(FORM_RECOVERY_KEY);
     } catch {
       /* ignore */
+    }
+    // On form routes, reloading the form URL usually restores the same broken
+    // half-initialized state — send the user to the homepage instead.
+    if (isFormRoute(window.location.pathname)) {
+      window.location.href = 'https://www.enqir.in';
+      return;
     }
     window.location.href = window.location.pathname + '?_r=' + Date.now();
   };
 
   render() {
     if (this.state.hasError) {
+      const onForm = isFormRoute(window.location.pathname);
       // Single friendly recovery screen for ALL errors (stale bundles after a
       // redeploy, or anything else that slips through on a restored tab):
-      // one big Refresh button. No scary error card.
+      // one big button. On form routes it reads "session expired" and goes to
+      // the homepage (a form can't safely restore mid-fill); everywhere else
+      // it's "Refresh Now" and reloads the same page.
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-6">
           {/* Marketplace doodles on the page background, matching the OTP page */}
@@ -371,7 +363,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 <RefreshCw className="h-5 w-5" />
-                Refresh Now
+                {onForm ? 'Session Expired — Go to Home' : 'Refresh Now'}
               </span>
             </Button>
 
