@@ -108,6 +108,15 @@ export default function PostEnquiry() {
   const { user, isProfileVerified, profileVerificationStatus, loading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
+
+  // Phone-auth (OTP) users have NO email and often no displayName. Passing
+  // undefined into addDoc makes Firestore throw "Unsupported field value:
+  // undefined" BEFORE the write — which failed every paid enquiry posted
+  // from a phone account (payment taken, enquiry never saved).
+  const safeUserEmail = user?.email ?? null;
+  const safeUserName = user?.displayName
+    || (user?.email ? user.email.split('@')[0] : null)
+    || (user?.phoneNumber ? `Buyer ${user.phoneNumber.slice(-4)}` : 'Buyer');
   
   // Force component remount on version change
   useEffect(() => {
@@ -598,8 +607,8 @@ export default function PostEnquiry() {
             paymentStatus: "completed",
             createdAt: serverTimestamp(),
             userId: user?.uid,
-            userEmail: user?.email,
-            userName: user?.displayName || user?.email?.split('@')[0],
+            userEmail: safeUserEmail,
+            userName: safeUserName,
             notes: notes.trim() || null,
             mobileNumber: mobileNumber.trim() || null,
             details: {
@@ -761,8 +770,8 @@ export default function PostEnquiry() {
           paymentStatus: "completed",
           createdAt: serverTimestamp(),
           userId: user.uid,
-          userEmail: user.email,
-          userName: user.displayName || user.email?.split('@')[0],
+          userEmail: safeUserEmail,
+          userName: safeUserName,
           notes: notes.trim() || null,
           mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
           details: {
@@ -817,8 +826,9 @@ export default function PostEnquiry() {
         console.error('Recovery creation failed:', error);
         toast({
           title: "Still couldn't save",
-          description: "Please try again in a moment — you will not be charged again.",
+          description: friendlyError(error, "Please try again in a moment — you will not be charged again."),
           variant: "destructive",
+          duration: 12000,
         });
       } finally {
         setLoading(false);
@@ -919,8 +929,8 @@ export default function PostEnquiry() {
           paymentStatus: "completed",
           createdAt: serverTimestamp(),
           userId: user?.uid,
-          userEmail: user?.email,
-          userName: user?.displayName || user?.email?.split('@')[0],
+          userEmail: safeUserEmail,
+          userName: safeUserName,
           notes: notes.trim() || null,
           mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
           details: {
@@ -1022,7 +1032,7 @@ export default function PostEnquiry() {
           setRecoverablePayment(true);
           toast({
             title: "Payment received — enquiry not saved",
-            description: "Your payment went through but the enquiry couldn't be created. Tap the post button again — you will NOT be charged again.",
+            description: friendlyError(retryError, "Tap the post button again — you will NOT be charged again."),
             variant: "destructive",
             duration: 12000,
           });
@@ -1087,8 +1097,8 @@ export default function PostEnquiry() {
         paymentStatus: "completed",
         createdAt: serverTimestamp(),
         userId: user?.uid,
-        userEmail: user?.email,
-        userName: user?.displayName || user?.email?.split('@')[0],
+        userEmail: safeUserEmail,
+        userName: safeUserName,
         notes: notes.trim() || null,
         mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,            details: {
               ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
