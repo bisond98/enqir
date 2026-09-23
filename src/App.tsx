@@ -26,8 +26,9 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
+import StaleBundleRefresher from "./components/StaleBundleRefresher";
 import { LoadingAnimation } from "./components/LoadingAnimation";
 import { UsageProvider } from "./contexts/UsageContext";
 import { ConditionalAuthProvider } from "./contexts/ConditionalAuthProvider";
@@ -169,6 +170,7 @@ const App = () => {
                   <Sonner />
                   <BrowserRouter>
                   <ScrollToTop />
+                  <StaleBundleRefresher />
                   <Suspense fallback={<LoadingAnimation message="Loading" showBackButton={false} />}>
                   <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />

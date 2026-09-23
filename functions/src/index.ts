@@ -370,6 +370,69 @@ export const verifyRazorpayPayment = functions.https.onRequest(async (req, res):
       return;
     }
 
+    // ── HARDENING (log-only phase) ─────────────────────────────────────
+    // The signature above proves the payment is REAL, but not that it was
+    // for the RIGHT plan/amount or by the RIGHT user — the client sends
+    // those values and a modified client could lie. Until we've watched
+    // these logs for a few days, we only WARN. Flip ENFORCE_PAYMENT_CHECKS
+    // to true to make them rejections.
+    const ENFORCE_PAYMENT_CHECKS = false;
+
+    // Expected plan pricing (mirror of src/config/paymentPlans.ts)
+    const PLAN_PRICES_PASE: Record<string, number> = {
+      premium: 10 * 100, // ₹10 → 1000 paise
+    };
+
+    const authHeader = req.headers.authorization || "";
+    const idToken = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+    let callerUid: string | null = null;
+    if (idToken) {
+      try {
+        const decoded = await admin.auth().verifyIdToken(idToken);
+        callerUid = decoded.uid;
+      } catch {
+        callerUid = null;
+      }
+    }
+
+    const warnings: string[] = [];
+
+    if (callerUid && callerUid !== userId) {
+      warnings.push(`caller-uid-mismatch: token uid ${callerUid} != claimed userId ${userId}`);
+    }
+    if (!callerUid) {
+      warnings.push("no-auth-token: verification request carried no Firebase ID token");
+    }
+
+    const expectedPaise = PLAN_PRICES_PASE[planId];
+    if (expectedPaise && Number(amount) !== expectedPaise) {
+      warnings.push(`amount-mismatch: plan ${planId} should cost ${expectedPaise} paise but order was ${amount}`);
+    }
+    if (!expectedPaise) {
+      warnings.push(`unknown-plan: planId ${planId} has no server-side price`);
+    }
+
+    if (warnings.length > 0) {
+      console.warn("⚠️ PAYMENT CHECK WARNINGS (" + (ENFORCE_PAYMENT_CHECKS ? "ENFORCING" : "log-only") + "):", {
+        warnings,
+        orderId: razorpay_order_id,
+        paymentId: razorpay_payment_id,
+        enquiryId,
+        userId,
+        planId,
+        amount,
+        callerUid,
+      });
+      if (ENFORCE_PAYMENT_CHECKS) {
+        res.status(400).json({
+          success: false,
+          error: "Payment verification failed integrity checks",
+        });
+        return;
+      }
+    }
+    // ── END HARDENING ────────────────────────────────────────────────────
+
     // Payment verified successfully
     console.log("✅ Payment verified successfully:", {
       orderId: razorpay_order_id,
@@ -378,6 +441,8 @@ export const verifyRazorpayPayment = functions.https.onRequest(async (req, res):
       userId,
       planId,
       amount,
+      callerUid,
+      warnings: warnings.length > 0 ? warnings : undefined,
     });
 
     // Here you can add additional logic:

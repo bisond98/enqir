@@ -202,11 +202,27 @@ const verifyRazorpayPayment = async (
     const functionsUrl = 'https://us-central1-pal-519d0.cloudfunctions.net';
     const verifyUrl = `${functionsUrl}/verifyRazorpayPayment`;
     console.log('🔍 Verifying payment via Cloud Functions:', verifyUrl);
-    
+
+    // Attach the caller's Firebase ID token so the server can confirm the
+    // payment belongs to the signed-in user (server logs mismatches).
+    let authHeaders: Record<string, string> = {};
+    try {
+      const { auth } = await import('@/firebase');
+      const { getIdToken } = await import('firebase/auth');
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const token = await getIdToken(currentUser);
+        authHeaders = { Authorization: `Bearer ${token}` };
+      }
+    } catch {
+      // Token is optional during the log-only hardening phase
+    }
+
     const response = await fetch(verifyUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...authHeaders,
       },
       body: JSON.stringify({
         razorpay_order_id: razorpayOrderId,
