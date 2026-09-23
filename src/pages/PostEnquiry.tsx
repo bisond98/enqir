@@ -2624,10 +2624,10 @@ export default function PostEnquiry() {
                                   type="button"
                                   onClick={() => setAccommodationGender(value)}
                                   className={cn(
-                                    'px-4 py-2 rounded-full text-[10px] sm:text-xs font-bold border transition-all duration-150',
+                                    'px-4 py-2 rounded-full text-[10px] sm:text-xs font-bold border-2 transition-all duration-150',
                                     accommodationGender === value
-                                      ? 'bg-black text-white border-black shadow-[0_3px_0_0_rgba(0,0,0,0.25)]'
-                                      : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                                      ? 'bg-blue-600 text-white border-[3px] border-black'
+                                      : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
                                   )}
                                 >
                                   {label}
