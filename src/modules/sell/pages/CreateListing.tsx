@@ -249,7 +249,9 @@ export default function CreateListing() {
   useEffect(() => {
     setCategory(selectedCats[0] ?? 'other');
   }, [selectedCats]);
-  const [location, setLocation] = useState<string>('Other');
+  // Location is required to publish — starts empty so the user must pick one
+  // (the 'Other' fallback default is no longer applied automatically).
+  const [location, setLocation] = useState<string>('');
   const [locationSearch, setLocationSearch] = useState('');
   const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
   // Precise map location (lat/lng + structured address) picked from the map picker
@@ -569,6 +571,12 @@ export default function CreateListing() {
         }
         return true;
       case 3:
+        // Location is required — sellers must say where the item is so
+        // nearby buyers can find it.
+        if (!location.trim()) {
+          toast({ title: 'Add a location', description: 'Tell buyers where the item is located.', variant: 'destructive' });
+          return false;
+        }
         return true;
       case 4:
         return true;
@@ -615,6 +623,10 @@ export default function CreateListing() {
     if (!user) return;
     if (!title.trim() || !description.trim()) {
       toast({ title: 'Missing info', description: 'Title and description are required.', variant: 'destructive' });
+      return;
+    }
+    if (!location.trim()) {
+      toast({ title: 'Missing location', description: 'Location is required to publish your listing.', variant: 'destructive' });
       return;
     }
     if (!validatePriceFields()) return;
@@ -1264,7 +1276,7 @@ export default function CreateListing() {
                     }}
                     onFocus={() => setLocationDropdownOpen(true)}
                     onBlur={() => setTimeout(() => setLocationDropdownOpen(false), 200)}
-                    placeholder="Search location..."
+                    placeholder="Search location (required)..."
                     className="rounded-2xl h-12 sm:h-14 text-sm border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400"
                     style={{ fontSize: '14px' }}
                   />
