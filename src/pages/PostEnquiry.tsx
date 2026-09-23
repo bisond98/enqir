@@ -794,7 +794,7 @@ export default function PostEnquiry() {
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
             ...(jobSkills.trim() && { skills: jobSkills.trim() }),
-            ...(estateDealType && { listingType: estateDealType }),
+            ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
             ...(accommodationType && { accommodationType }),
             ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
             ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
@@ -955,7 +955,7 @@ export default function PostEnquiry() {
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
             ...(jobSkills.trim() && { skills: jobSkills.trim() }),
-            ...(estateDealType && { listingType: estateDealType }),
+            ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
@@ -1122,7 +1122,7 @@ export default function PostEnquiry() {
               ...(sneakerBrand && { sneakerBrand }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
-              ...(estateDealType && { listingType: estateDealType }),
+              ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
@@ -1824,7 +1824,7 @@ export default function PostEnquiry() {
           ...(jobDetails.workMode && { workMode: jobDetails.workMode }),
           ...(jobDetails.education && { education: jobDetails.education }),
           ...(jobDetails.stream.trim() && { stream: jobDetails.stream.trim() }),
-          ...(estateDealType && { listingType: estateDealType }),
+          ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
@@ -2854,8 +2854,8 @@ export default function PostEnquiry() {
                         );
                       })()}
 
-                      {/* Real-estate — selection buttons + big capsules above the description */}
-                      {selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && (() => {
+                      {/* Real-estate — selection buttons + big capsules above the description (real-estate only, not services) */}
+                      {selectedCategories.includes('real-estate') && (() => {
                         const LAND_UNITS = ['Cents', 'Acre', 'Hectare'];
                         const BUILT_UNITS = ['Sqft'];
                         const HOUSE_UNITS = ['Sqft'];
@@ -2984,7 +2984,7 @@ export default function PostEnquiry() {
                         );
                       })()}
 
-                      {selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && estateType && (
+                      {selectedCategories.includes('real-estate') && estateType && (
                         <>
                           <div className="relative">
                             <AiDescriptionBar onRun={runDescriptionAI} generating={aiGenerating} />
@@ -3006,7 +3006,7 @@ export default function PostEnquiry() {
                           <p className="text-[11px] text-slate-500 text-right">{description.length}/500</p>
                         </>
                       )}
-                      {!selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && (
+                      {!selectedCategories.includes('real-estate') && (
                         <>
                           <div className="relative">
                             <AiDescriptionBar onRun={runDescriptionAI} generating={aiGenerating} />
@@ -3267,8 +3267,8 @@ export default function PostEnquiry() {
 
                       {/* Enquiry Preview */}
                       <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 space-y-2.5">
-                        {/* Real-estate details first */}
-                        {selectedCategories.some(c => ['real-estate', 'real-estate-services'].includes(c)) && (
+                        {/* Real-estate details first (real-estate only, not services) */}
+                        {selectedCategories.includes('real-estate') && (
                           <div className="space-y-1.5">
                             {estateDealType && (
                               <div className="flex items-center justify-between">
