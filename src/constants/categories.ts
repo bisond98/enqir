@@ -24,7 +24,6 @@ export const APP_CATEGORIES: AppCategory[] = [
   { value: 'home', label: 'Home' },
   { value: 'fashion', label: 'Fashion' },
   { value: 'vehicles', label: 'Vehicles' },
-  { value: 'automobile', label: 'Automobile' },
   // Everything else
   { value: 'agriculture-farming', label: 'Agriculture' },
   { value: 'antiques', label: 'Antiques' },
@@ -137,6 +136,7 @@ export const LEGACY_CATEGORY_ALIASES: Record<string, string> = {
   'fashion-apparel': 'fashion',
   'home-furniture': 'home',
   'services': 'service',
+  'automobile': 'vehicles',
 };
 
 // Category search synonyms — common words people type into category search
@@ -149,9 +149,8 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   laptops: ['computer', 'notebook', 'macbook', 'laptop', 'desktop', 'pc', 'imac'],
   electronics: ['tv', 'headphones', 'earphones', 'speaker', 'gadget', 'airpods', 'earbuds', 'headphone', 'smartwatch', 'smart watch', 'led tv', 'home theatre', 'soundbar', 'printer', 'projector'],
   bicycles: ['cycle', 'cycles', 'bicycle', 'bicycles', 'mtb', 'gear cycle'],
-  car: ['vehicle', 'automobile', 'four wheeler', 'four-wheeler', '4 wheeler', '4-wheeler', 'car', 'cars', 'sedan', 'suv', 'hatchback'],
-  automobile: ['vehicle', 'car', 'cars', 'four wheeler', 'four-wheeler', '4 wheeler', '4-wheeler', 'automobiles'],
-  vehicles: ['vehicle', 'vehicles', 'car', 'cars', 'four wheeler', 'four-wheeler', '4 wheeler', '4-wheeler', 'bike', 'motorcycle', 'two wheeler', 'auto rickshaw', 'autorickshaw', 'rikshaw', 'tempo', 'van', 'truck', 'lorry', 'bus', 'jeep'],
+  car: ['vehicle', 'four wheeler', 'four-wheeler', '4 wheeler', '4-wheeler', 'car', 'cars', 'sedan', 'suv', 'hatchback'],
+  vehicles: ['vehicle', 'vehicles', 'car', 'cars', 'four wheeler', 'four-wheeler', '4 wheeler', '4-wheeler', 'bike', 'motorcycle', 'two wheeler', 'auto rickshaw', 'autorickshaw', 'rikshaw', 'tempo', 'van', 'truck', 'lorry', 'bus', 'jeep', 'automobile', 'automobiles'],
   bike: ['motorcycle', 'motorcycles', 'motorbike', 'motorbikes', 'bike', 'bikes', 'scooter', 'scooters', 'two-wheeler', 'two wheeler', '2 wheeler', 'scooty', 'royal enfield', 'bullet', 'activa'],
   furniture: ['sofa', 'bed', 'table', 'chair', 'wardrobe', 'sofa set', 'dining table', 'mattress', 'study table', 'office chair', 'cot'],
   home: ['home appliance', 'household', 'interior', 'home decor', 'curtain', 'fan', 'cooler', 'home items'],
@@ -236,20 +235,26 @@ function boundedLevenshtein(a: string, b: string, max: number): number {
  * (only for 4+ letter queries, so "car" ≠ "care"), 3+ = fuzzy typo match.
  * -1 = no match. Used to rank categories so exact hits always come first. */
 function matchStrength(c: AppCategory, q: string): number {
-  const labelWords = c.label.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-  const otherWords = [
+  const labelLower = c.label.toLowerCase();
+  const labelWords = labelLower.split(/[^a-z0-9]+/).filter(Boolean);
+  const synStrings = [
     c.value,
     ...(CATEGORY_SEARCH_SYNONYMS[c.value] ?? []),
-  ].flatMap(s => s.toLowerCase().split(/[^a-z0-9]+/)).filter(Boolean);
+  ];
+  const otherWords = synStrings.flatMap(s => s.toLowerCase().split(/[^a-z0-9]+/)).filter(Boolean);
 
   if (labelWords.includes(q)) return 0;
   if (otherWords.includes(q)) return 1;
+  // Multi-word synonyms/phrases: "four wheeler" should match the full phrase,
+  // not just its individual words.
+  if (q.includes(' ') && synStrings.some(s => s.toLowerCase().includes(q))) return 2;
+  if (q.includes(' ') && labelLower.includes(q)) return 1;
 
   // Prefix matching only from 4 letters up — stops "car" matching "care"/
   // "career"-type words while still letting "appl" find Appliances.
   if (q.length >= 4) {
-    if (labelWords.some(w => w.startsWith(q))) return 2;
-    if (otherWords.some(w => w.startsWith(q))) return 3;
+    if (labelWords.some(w => w.startsWith(q))) return 3;
+    if (otherWords.some(w => w.startsWith(q))) return 4;
   }
   return -1;
 }
