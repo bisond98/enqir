@@ -878,7 +878,7 @@ export default function CreateListing() {
                       value={catSearch}
                       onChange={(e) => { setCatSearch(e.target.value); setCatPage(0); }}
                       placeholder="Search categories..."
-                      className="w-full h-11 pl-10 pr-10 rounded-xl border-2 border-gray-400 bg-white text-sm font-medium text-black placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors"
+                      className="w-full h-11 pl-10 pr-10 rounded-xl border-2 border-black bg-white text-sm font-medium text-black placeholder:text-gray-400 placeholder:text-[10px] sm:placeholder:text-[11px] focus:outline-none focus:border-black transition-colors"
                     />
                     {catSearch && (
                       <button
@@ -893,8 +893,8 @@ export default function CreateListing() {
 
                   {/* Max-3 hint */}
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-[11px] sm:text-xs font-bold text-slate-600">Choose up to 3 categories to best match</p>
-                    <span className={`text-[11px] font-black px-2.5 py-1 rounded-full border ${selectedCats.length >= 3 ? 'bg-black text-white border-black' : 'bg-white text-black border-black/20'}`}>{selectedCats.length}/3</span>
+                    <p className="text-[9px] sm:text-[10px] font-semibold text-slate-600">Choose up to 3 categories to best match</p>
+                    <span className={`text-[9px] sm:text-[10px] font-semibold px-2.5 py-1 rounded-full border ${selectedCats.length >= 3 ? 'bg-black text-white border-black' : 'bg-white text-black border-black/20'}`}>{selectedCats.length}/3</span>
                   </div>
 
                   {/* Category grid */}
@@ -998,7 +998,7 @@ export default function CreateListing() {
               <div className="relative space-y-2 max-w-lg mx-auto w-full">
                 {/* Single quiet line-art doodle — seller offering */}
                 <SellerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
-                <Label htmlFor="listing-title" className="text-[10px] sm:text-xs font-bold">
+                <Label htmlFor="listing-title" className="text-[9px] sm:text-[10px] font-semibold text-slate-600">
                   Listing title
                 </Label>
                 <Input
@@ -1010,12 +1010,13 @@ export default function CreateListing() {
                   maxLength={30}
                   autoFocus
                 />
-                <p className="text-[9px] text-slate-500">Keep it specific.</p>
                 {fieldsForCategoryStep(category, 'title').length > 0 && (
-                  <div className="flex items-center justify-between gap-3 -mt-1 mb-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3 -mt-1 mb-5">
                     {fieldsForCategoryStep(category, 'title').map((f) => (
                       <div key={f.key} className="relative w-[48%]">
-                        <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
+                        {f.key !== 'brand' && f.key !== 'storage' && (
+                          <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
+                        )}
                         {f.typeable ? (
                           <Input
                             type="text"
@@ -1267,7 +1268,7 @@ export default function CreateListing() {
                 )}
                 {(category !== 'real-estate' || estateType) && (
                   <>
-                    <Label htmlFor="listing-desc" className="text-[10px] sm:text-xs font-bold">
+                    <Label htmlFor="listing-desc" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 ml-1">
                       Description
                     </Label>
                     <div className="relative">
@@ -1298,7 +1299,7 @@ export default function CreateListing() {
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Condition, accessories, warranty, reason for selling…"
                         maxLength={250}
-                        className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                        className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150 focus-visible:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !translate-y-0"
                         autoFocus
                       />
                     </div>
@@ -1324,11 +1325,11 @@ export default function CreateListing() {
                     onFocus={() => setLocationDropdownOpen(true)}
                     onBlur={() => setTimeout(() => setLocationDropdownOpen(false), 200)}
                     placeholder="Search location (required)..."
-                    className="rounded-2xl h-12 sm:h-14 text-sm border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400"
+                    className="rounded-2xl h-12 sm:h-14 text-sm border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400 placeholder:text-[10px] sm:placeholder:text-[11px]"
                     style={{ fontSize: '14px' }}
                   />
                   {locationDropdownOpen && locationSearch.length === 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-black rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto">
+                    <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
                       {SELL_LOCATIONS.filter(loc => loc !== 'Other').map((loc) => (
                         <button
                           key={loc}
@@ -1339,16 +1340,15 @@ export default function CreateListing() {
                             setLocationSearch(loc);
                             setLocationDropdownOpen(false);
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors text-left"
+                          className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150 border-b border-slate-100 last:border-b-0"
                         >
-                          <MapPin className="h-4 w-4 text-red-500 fill-red-500 shrink-0" />
-                          {loc}
+                          <span className="text-slate-800">{loc}</span>
                         </button>
                       ))}
                     </div>
                   )}
                   {locationDropdownOpen && locationSearch.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-black rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto">
+                    <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
                       {SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).length > 0 ? (
                         SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).map((loc) => (
                           <button
@@ -1360,10 +1360,9 @@ export default function CreateListing() {
                               setLocationSearch(loc);
                               setLocationDropdownOpen(false);
                             }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors text-left"
+                            className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150 border-b border-slate-100 last:border-b-0"
                           >
-                            <MapPin className="h-4 w-4 text-red-500 fill-red-500 shrink-0" />
-                            {loc}
+                            <span className="text-slate-800">{loc}</span>
                           </button>
                         ))
                       ) : (
@@ -1374,10 +1373,9 @@ export default function CreateListing() {
                             setLocation(locationSearch);
                             setLocationDropdownOpen(false);
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-black hover:bg-gray-100 transition-colors text-left"
+                          className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150"
                         >
-                          <MapPin className="h-4 w-4 text-red-500 fill-red-500 shrink-0" />
-                          {locationSearch}
+                          <span className="text-slate-800">{locationSearch}</span>
                         </button>
                       )}
                     </div>
@@ -1393,11 +1391,8 @@ export default function CreateListing() {
                   <div className="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                     <MapPin className="h-4 w-4 text-white" />
                   </div>
-                  <div className="text-left flex-1 min-w-0">
-                    <p className="text-sm font-bold text-black">Your Location</p>
-                    <p className="text-[11px] text-slate-500 truncate">
-                      {mapLocation?.formatted_address || mapLocation?.city || location || (mapLocation ? 'Location pinned on map' : 'Use the map to drop a pin')}
-                    </p>
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <p className="font-chip text-xs sm:text-[13px] font-semibold text-black tracking-tight">Where is it?</p>
                   </div>
                   {mapLocation && (
                     <Check className="h-5 w-5 text-green-800 flex-shrink-0" />
@@ -1407,7 +1402,7 @@ export default function CreateListing() {
                 <MapLocationPicker
                   open={mapPickerOpen}
                   onOpenChange={(o) => setMapPickerOpen(o)}
-                  title="Your Location"
+                  title="Where is it?"
                   defaultLocation={mapLocation ? { lat: mapLocation.latitude, lng: mapLocation.longitude } : undefined}
                   onSelect={(lat, lng, addr) => {
                     setMapLocation(addr);
@@ -1425,7 +1420,6 @@ export default function CreateListing() {
               <div className="max-w-lg mx-auto w-full space-y-6">
                 {category !== 'jobs' && !hideCondition && (
                 <div className="space-y-2">
-                  <Label className="text-xs font-bold">Condition</Label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
@@ -1495,7 +1489,7 @@ export default function CreateListing() {
             {step === 5 && (
               <div className="max-w-md mx-auto w-full space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price-fixed" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
+                  <Label htmlFor="price-fixed" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-2 ml-1">
                     <IndianRupee className="h-3.5 w-3.5" />
                     {category === 'jobs' ? 'Salary (INR)' : 'Your price (INR)'}
                   </Label>
@@ -1511,14 +1505,14 @@ export default function CreateListing() {
                       placeholder="25,000"
                       inputMode="decimal"
                       maxLength={13}
-                      className="rounded-2xl h-12 sm:h-14 text-base border-2 border-black focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
+                      className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150 focus-visible:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !translate-y-0"
                       autoFocus
                     />
                   </div>
                 </div>
                 {/* Open to discussion — alternative to entering a specific price */}
-                <div className="flex items-center justify-center gap-3">
-                  <Label htmlFor="price-option" className="text-[10px] sm:text-xs font-bold whitespace-nowrap">
+                <div className="flex items-center justify-end gap-3">
+                  <Label htmlFor="price-option" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 whitespace-nowrap">
                     Not fixed yet?
                   </Label>
                   <div className="relative">
@@ -1530,7 +1524,7 @@ export default function CreateListing() {
                         setPriceOption(v);
                         if (v === 'discussion') setPrice('');
                       }}
-                      className={`appearance-none rounded-2xl h-12 sm:h-14 w-fit max-w-full font-medium border-2 border-black focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${priceOption === 'discussion' ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
+                      className={`appearance-none rounded-2xl h-12 sm:h-14 w-fit max-w-full font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150 focus:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] ${priceOption === 'discussion' ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
                     >
                       <option value="">Click here</option>
                       <option value="discussion">Open to discussion</option>
@@ -1557,7 +1551,7 @@ export default function CreateListing() {
                   </div>
                 ))}
                 <div className="space-y-2 !mt-8">
-                  <Label className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
+                  <Label className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-2 ml-1">
                     <Upload className="h-3.5 w-3.5" />
                     Photos (up to 5)
                   </Label>
@@ -1641,15 +1635,20 @@ export default function CreateListing() {
                             )}
                           </div>
                         ) : (
-                          <div className="h-24 bg-slate-50 border-b-2 border-dashed border-black/15 flex flex-col items-center justify-center gap-1">
-                            <Upload className="h-5 w-5 text-gray-400" />
-                            <span className="text-[11px] text-gray-400 font-medium">No photos added yet</span>
+                          <div className="h-16 bg-slate-50 border-b-2 border-dashed border-black/15 flex flex-col items-center justify-center gap-0.5">
+                            <Upload className="h-3.5 w-3.5 text-gray-400" />
+                            <span className="text-[9px] text-gray-400 font-medium">No photos added yet</span>
                           </div>
                         )}
                         <div className="p-4">
                           <h3 className="font-black text-base sm:text-lg text-black leading-snug">{title || 'Untitled listing'}</h3>
-                          <div className="flex items-baseline gap-2 mt-1.5">
-                            <span className="text-lg sm:text-xl font-black text-black">{price ? `₹${price}` : priceOption === 'discussion' ? 'Open to discussion' : 'Price not set'}</span>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <p className="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Price</p>
+                            {priceOption === 'discussion' ? (
+                              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-green-800 border-[1.5px] border-black rounded-md px-2.5 py-1"><IndianRupee className="h-3 w-3" />Open to discussion</span>
+                            ) : (
+                              <span className="text-sm sm:text-base font-black text-black">{price ? `₹${price}` : 'Price not set'}</span>
+                            )}
                           </div>
                           <div className="flex flex-wrap items-center gap-1.5 mt-3">
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5">
@@ -1759,9 +1758,9 @@ export default function CreateListing() {
           {/* Contact Mobile Number (optional) — shown only to paid users via the call icon popup */}
           {step === totalSteps - 1 && (
             <div className="mt-6">
-              <Label htmlFor="listing-mobile" className="text-xs font-bold flex items-center gap-2">
-                <Phone className="h-3.5 w-3.5" />
-                Mobile Number <span className="text-[7px] text-slate-500 font-normal">(Optional)</span>
+              <Label htmlFor="listing-mobile" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-1.5">
+                <Phone className="h-3 w-3" />
+                Mobile Number <span className="text-slate-400 font-normal">(Optional)</span>
               </Label>
               <div className="flex gap-1.5 mt-1.5">
                 <select
@@ -1808,7 +1807,7 @@ export default function CreateListing() {
                   className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
                 />
               </div>
-              <p className="text-[6px] sm:text-[7px] text-slate-400 font-medium mt-1.5 text-right">
+              <p className="text-[8px] sm:text-[9px] text-slate-400 font-medium mt-1.5 text-right">
                 Connect with privacy
               </p>
             </div>
