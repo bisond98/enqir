@@ -1,30 +1,40 @@
 /**
- * Notification Context
- * Global state management for smart notifications
+ * Notification Context — realtime (Firestore-backed)
+ *
+ * Global state management for notifications. Backed by the `notifications`
+ * collection via onSnapshot so the bell badge and notifications page update
+ * in realtime across all devices/tabs.
+ *
+ * NOTE: chat-message notifications ('new_chat') are EXCLUDED from this
+ * context — unread chat messages are surfaced only on the header Chats
+ * icon badge, per product decision.
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { 
-  smartNotificationService, 
-  NotificationData, 
-  UserNotificationPreferences 
-} from '@/services/ai/notifications';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  subscribeToUserNotifications,
+  pushNotification,
+  setNotificationRead,
+  markAllUserNotificationsRead,
+  clearAllUserNotifications,
+  RealtimeNotification,
+} from '@/services/notificationService';
 
 interface NotificationContextType {
-  notifications: NotificationData[];
+  notifications: RealtimeNotification[];
   unreadCount: number;
   loading: boolean;
-  preferences: UserNotificationPreferences | null;
-  
+  preferences: null;
+
   // Actions
-  createNotification: (type: NotificationData['type'], data: any) => Promise<void>;
-  createNotificationForUser: (targetUserId: string, type: NotificationData['type'], data: any) => Promise<void>;
+  createNotification: (type: RealtimeNotification['type'], data: any) => Promise<void>;
+  createNotificationForUser: (targetUserId: string, type: RealtimeNotification['type'], data: any) => Promise<void>;
   markAsRead: (notificationId: string) => Promise<void>;
   markAsUnread: (notificationId: string) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   clearAllNotifications: () => Promise<void>;
-  updatePreferences: (preferences: Partial<UserNotificationPreferences>) => Promise<void>;
+  updatePreferences: (preferences: any) => Promise<void>;
   refreshNotifications: () => Promise<void>;
   requestNotificationPermission: () => Promise<void>;
 }
@@ -37,314 +47,131 @@ interface NotificationProviderProps {
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const [notifications, setNotifications] = useState<RealtimeNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [preferences, setPreferences] = useState<UserNotificationPreferences | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Initialize notifications when user changes
+  // Realtime subscription — fires on any change (new notification, read state,
+  // clear) from any device or tab. Auto-cleans up when the user signs out.
   useEffect(() => {
     if (!user?.uid) {
       setNotifications([]);
       setUnreadCount(0);
-      setIsInitialized(false);
       return;
     }
 
-    const initialize = async () => {
-      try {
-        // STEP 1: COMPLETELY CLEAR ALL OLD NOTIFICATION DATA FOR ALL USERS
-        await clearAllOldNotifications();
-        
-        // STEP 2: Initialize fresh notification system
-        await initializeNotifications();
-        
-        // STEP 3: Start with ZERO notifications (completely fresh start)
-        setNotifications([]);
-        setUnreadCount(0);
-        setIsInitialized(true);
-        
-        console.log('🚀 Notification system initialized - starting fresh (no old data)');
-      } catch (error) {
-        console.error('Failed to initialize notifications:', error);
-        setNotifications([]);
-        setUnreadCount(0);
-        setIsInitialized(true);
-      }
-    };
+    const unsubscribe = subscribeToUserNotifications(user.uid, (items, unread) => {
+      setNotifications(items);
+      setUnreadCount(unread);
+    });
 
-    initialize();
+    return unsubscribe;
   }, [user?.uid]);
 
-  // Realtime clear-sync: when notifications are cleared in this tab (custom
-  // event) or in another tab (localStorage 'storage' event), wipe local state
-  // immediately so every dropdown and page reflects the clear instantly.
-  useEffect(() => {
-    const wipe = () => {
-      setNotifications([]);
-      setUnreadCount(0);
-    };
-    window.addEventListener('notificationsCleared', wipe);
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === 'notifications_cleared_at') wipe();
-    };
-    window.addEventListener('storage', onStorage);
-    return () => {
-      window.removeEventListener('notificationsCleared', wipe);
-      window.removeEventListener('storage', onStorage);
-    };
-  }, []);
-
-  // COMPLETELY CLEAR all old notifications from localStorage for ALL users
-  const clearAllOldNotifications = async () => {
-    try {
-      // Get all localStorage keys
-      const keys = Object.keys(localStorage);
-      
-      // Remove ALL notification-related keys for ALL users
-      keys.forEach(key => {
-        if (
-          key.includes('notification') || 
-          key.includes('notif') ||
-          key.startsWith('notifications_') ||
-          key.startsWith('notification_prefs_')
-        ) {
-          localStorage.removeItem(key);
-        }
-      });
-      
-      console.log('✅ CLEARED ALL OLD NOTIFICATIONS FOR ALL USERS');
-    } catch (error) {
-      console.error('Failed to clear old notifications:', error);
-    }
-  };
-
-  const initializeNotifications = async () => {
+  const createNotification = async (type: RealtimeNotification['type'], data: any) => {
     if (!user?.uid) return;
-    await smartNotificationService.initializeUserNotifications(user.uid);
+    // Self-notifications are skipped for chat-type (never bell-visible anyway)
+    await pushNotification(user.uid, {
+      type,
+      title: data.title || '',
+      message: data.message || '',
+      priority: data.priority,
+      actionUrl: data.actionUrl,
+      actionText: data.actionText,
+    });
   };
 
-  const refreshNotifications = async () => {
-    if (!user?.uid) return;
-    
-    setLoading(true);
-    try {
-      // STEP 1: CLEAR ALL old notifications FIRST (every time we refresh)
-      await clearAllOldNotifications();
-      
-      // STEP 2: DON'T LOAD ANY OLD NOTIFICATIONS - Start completely fresh
-      // This disables the notification system from showing any past notifications
-      setNotifications([]);
-      setUnreadCount(0);
-      
-      console.log('📬 Notification system cleared - NO old notifications will be shown');
-      
-      // NOTE: Only NEW notifications created AFTER this point will appear
-      // This ensures a completely fresh start with zero notification backlog
-    } catch (error) {
-      console.error('Failed to refresh notifications:', error);
-      // Set empty array on error to prevent crashes
-      setNotifications([]);
-      setUnreadCount(0);
-    } finally {
-      setLoading(false);
-    }
+  const createNotificationForUser = async (targetUserId: string, type: RealtimeNotification['type'], data: any) => {
+    if (!targetUserId) return;
+    // Never notify the actor about their own action
+    if (targetUserId === user?.uid && type === 'new_chat') return;
+    await pushNotification(targetUserId, {
+      type,
+      title: data.title || '',
+      message: data.message || '',
+      priority: data.priority,
+      actionUrl: data.actionUrl,
+      actionText: data.actionText,
+    });
   };
 
-  // Refresh notifications when marked as read to update badge
   const markAsRead = async (notificationId: string) => {
     if (!user?.uid || !notificationId) return;
-    
+    // Optimistic local update, then persist (listener will reconcile)
+    setNotifications(prev =>
+      prev.map(n => (n.id === notificationId ? { ...n, read: true } : n))
+    );
+    setUnreadCount(prev => Math.max(0, unreadCount - 1));
     try {
-      // Check if notification is already read to prevent double-decrement
-      const currentNotification = notifications.find(n => n.id === notificationId);
-      if (currentNotification && currentNotification.read) {
-        // Already read, no need to update
-        return;
-      }
-      
-      await smartNotificationService.markAsRead(user.uid, notificationId);
-      
-      // Update local state immediately
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
-      );
-      
-      // Update unread count only if it was previously unread
-      if (currentNotification && !currentNotification.read) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      }
-      
-      // Don't refresh - local state is sufficient to prevent infinite loops
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
+      await setNotificationRead(notificationId, true);
+    } catch (err) {
+      console.error('Failed to mark notification as read:', err);
     }
   };
 
-  // Mark notification as unread
   const markAsUnread = async (notificationId: string) => {
     if (!user?.uid || !notificationId) return;
-    
+    setNotifications(prev =>
+      prev.map(n => (n.id === notificationId ? { ...n, read: false } : n))
+    );
+    setUnreadCount(prev => prev + 1);
     try {
-      // Check if notification is already unread to prevent double-increment
-      const currentNotification = notifications.find(n => n.id === notificationId);
-      if (currentNotification && !currentNotification.read) {
-        // Already unread, no need to update
-        return;
-      }
-      
-      await smartNotificationService.markAsUnread(user.uid, notificationId);
-      
-      // Update local state immediately
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, read: false } : n)
-      );
-      
-      // Update unread count only if it was previously read
-      if (currentNotification?.read) {
-        setUnreadCount(prev => prev + 1);
-      }
-      
-      // Don't refresh - local state is sufficient to prevent infinite loops
-    } catch (error) {
-      console.error('Failed to mark notification as unread:', error);
+      await setNotificationRead(notificationId, false);
+    } catch (err) {
+      console.error('Failed to mark notification as unread:', err);
     }
   };
 
   const markAllAsRead = async () => {
     if (!user?.uid) return;
-    
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setUnreadCount(0);
     try {
-      // Only process unread notifications to avoid unnecessary operations
-      const unreadNotifications = notifications.filter(n => n && !n.read);
-      
-      if (unreadNotifications.length === 0) {
-        // Already all read, no need to update
-        return;
-      }
-      
-      // Mark all unread notifications as read
-      for (const notification of unreadNotifications) {
-        if (notification.id) {
-          await smartNotificationService.markAsRead(user.uid, notification.id);
-        }
-      }
-      
-      // Update local state
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      setUnreadCount(0);
-      
-      // Don't refresh - local state is sufficient to prevent infinite loops
-    } catch (error) {
-      console.error('Failed to mark all as read:', error);
+      await markAllUserNotificationsRead(user.uid);
+    } catch (err) {
+      console.error('Failed to mark all as read:', err);
     }
   };
-
-  const createNotification = async (type: NotificationData['type'], data: any) => {
-    if (!user?.uid) return;
-    
-    try {
-      // IMPORTANT: Always save notifications to database regardless of user's notification preference
-      // The preference only controls DISPLAY (toasts, popups), not STORAGE
-      // This ensures notifications are visible on the notification page even when popups are disabled
-      const notification = await smartNotificationService.createNotification(user.uid, type, data);
-      
-      // Update local state
-      setNotifications(prev => [notification, ...prev]);
-      setUnreadCount(prev => prev + 1);
-      
-      // Don't refresh - local state is sufficient to prevent infinite loops
-    } catch (error) {
-      console.error('Failed to create notification:', error);
-    }
-  };
-
-  const createNotificationForUser = async (targetUserId: string, type: NotificationData['type'], data: any) => {
-    if (!targetUserId) return;
-    
-    try {
-      // IMPORTANT: Always save notifications to database regardless of user's notification preference
-      // The preference only controls DISPLAY (toasts, popups), not STORAGE
-      // This ensures notifications are visible on the notification page even when popups are disabled
-      const notification = await smartNotificationService.createNotification(targetUserId, type, data);
-      
-      // If it's for the current user, add it to state directly.
-      // (Previously this called refreshNotifications() which WIPED all
-      // notifications — including the one just created — so notifications
-      // disappeared instantly and clear behaved unpredictably.)
-      if (targetUserId === user?.uid && notification) {
-        setNotifications(prev => [notification, ...prev]);
-        setUnreadCount(prev => prev + 1);
-      }
-    } catch (error) {
-      console.error('Failed to create notification for user:', error);
-    }
-  };
-
 
   const clearAllNotifications = async () => {
     if (!user?.uid) return;
-    
+    setNotifications([]);
+    setUnreadCount(0);
     try {
-      // First, immediately clear state to give instant feedback
-      setNotifications([]);
-      setUnreadCount(0);
-      
-      // Then clear from storage
-      await smartNotificationService.clearAllNotifications(user.uid);
-      
-      // Also run the aggressive cleanup to ensure everything is cleared
-      await clearAllOldNotifications();
-      
-      // Force state update again to ensure UI reflects the change
-      setNotifications([]);
-      setUnreadCount(0);
-      
-      // Broadcast the clear so every open dropdown/tab syncs in realtime
-      // (other tabs hear this via the 'storage' event listener below)
+      await clearAllUserNotifications(user.uid);
+      // Broadcast so any legacy localStorage listeners stay in sync
       try {
         localStorage.setItem('notifications_cleared_at', Date.now().toString());
         window.dispatchEvent(new CustomEvent('notificationsCleared'));
       } catch {
         // Ignore storage errors
       }
-      
-      console.log('✅ All notifications cleared from state and storage');
-    } catch (error) {
-      console.error('Failed to clear notifications:', error);
-      // Even on error, ensure state is cleared
-      setNotifications([]);
-      setUnreadCount(0);
-      throw error; // Re-throw so UI can handle it
+    } catch (err) {
+      console.error('Failed to clear notifications:', err);
+      throw err;
     }
   };
 
-  const updatePreferences = async (newPreferences: Partial<UserNotificationPreferences>) => {
-    if (!user?.uid) return;
-    
-    try {
-      await smartNotificationService.saveUserPreferences(user.uid, newPreferences);
-      
-      // Update local state
-      setPreferences(prev => prev ? { ...prev, ...newPreferences } : null);
-    } catch (error) {
-      console.error('Failed to update preferences:', error);
-    }
+  const updatePreferences = async (_newPreferences: any) => {
+    // Preferences are not used by the realtime system yet; kept for API compat.
+    return;
   };
 
-  // COMPLETELY DISABLED: Request notification permission
+  const refreshNotifications = async () => {
+    // Data is realtime via onSnapshot — no manual refresh needed.
+    return;
+  };
+
+  // Disabled: no browser permission prompt in the realtime system yet.
   const requestNotificationPermission = async () => {
-    // DO NOTHING
-    return false;
+    return;
   };
 
-  // Expose permission request function
   const value: NotificationContextType = {
     notifications: Array.isArray(notifications) ? notifications : [],
     unreadCount: typeof unreadCount === 'number' ? unreadCount : 0,
-    loading: typeof loading === 'boolean' ? loading : false,
-    preferences,
+    loading,
+    preferences: null,
     createNotification,
     createNotificationForUser,
     markAsRead,
@@ -353,7 +180,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     clearAllNotifications,
     updatePreferences,
     refreshNotifications,
-    requestNotificationPermission
+    requestNotificationPermission,
   };
 
   return (
@@ -369,57 +196,4 @@ export const useNotifications = (): NotificationContextType => {
     throw new Error('useNotifications must be used within a NotificationProvider');
   }
   return context;
-};
-
-// Export notification helper functions
-export const createAdminApprovalNotification = (
-  createNotification: (type: NotificationData['type'], data: any) => Promise<void>,
-  approved: boolean,
-  itemType: string,
-  actionUrl?: string
-) => {
-  // COMPLETELY DISABLED
-  return Promise.resolve();
-};
-
-export const createNewResponseNotification = (
-  createNotification: (type: NotificationData['type'], data: any) => Promise<void>,
-  enquiryId: string,
-  enquiryTitle: string,
-  sellerId: string,
-  sellerName: string
-) => {
-  // COMPLETELY DISABLED
-  return Promise.resolve();
-};
-
-export const createNewChatNotification = (
-  createNotification: (type: NotificationData['type'], data: any) => Promise<void>,
-  enquiryId: string,
-  enquiryTitle: string,
-  senderId: string,
-  senderName: string
-) => {
-  // COMPLETELY DISABLED
-  return Promise.resolve();
-};
-
-export const createEnquiryUpdateNotification = (
-  createNotification: (type: NotificationData['type'], data: any) => Promise<void>,
-  enquiryId: string,
-  enquiryTitle: string,
-  updateType: string
-) => {
-  // COMPLETELY DISABLED
-  return Promise.resolve();
-};
-
-export const createAchievementNotification = (
-  createNotification: (type: NotificationData['type'], data: any) => Promise<void>,
-  message: string,
-  achievementType: string,
-  actionUrl?: string
-) => {
-  // COMPLETELY DISABLED
-  return Promise.resolve();
 };

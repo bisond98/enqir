@@ -24,6 +24,8 @@ import { uploadToCloudinaryAuto } from '@/integrations/cloudinary';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 import { friendlyError } from '@/utils/friendlyError';
+import { useContext } from 'react';
+import { NotificationContext } from '@/contexts/NotificationContext';
 
 
 function formatPrice(l: SellListing) {
@@ -58,6 +60,7 @@ export default function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const notificationCtx = useContext(NotificationContext);
   const [listing, setListing] = useState<SellListing | null>(null);
   const [loading, setLoading] = useState(true);
   const [responses, setResponses] = useState<SellListingResponse[]>([]);
@@ -186,6 +189,29 @@ export default function ListingDetail() {
       }
       setCallPaid(true);
       setShowCallPopup(true);
+
+      // Realtime notification to the seller: buyer paid & clicked the call button
+      if (listing.sellerId && listing.sellerId !== user.uid) {
+        try {
+          await notificationCtx?.createNotificationForUser(listing.sellerId, 'call', {
+            title: '📞 Buyer Wants to Call You!',
+            message: `${user.displayName || user.email?.split('@')[0] || 'A buyer'} paid to call about "${listing.title}" — they may call from your listed number.`,
+            priority: 'high',
+            actionUrl: `/sell/listing/${listing.id}`,
+            actionText: 'View Listing',
+          });
+        } catch {}
+      }
+      // Receipt notification to the buyer
+      try {
+        await notificationCtx?.createNotification(user.uid, 'payment', {
+          title: '✅ Call Unlocked',
+          message: `Payment successful. You can now call the seller about "${listing.title}".`,
+          priority: 'medium',
+          actionUrl: `/sell/listing/${listing.id}`,
+          actionText: 'View Listing',
+        });
+      } catch {}
     } catch (err: any) {
       console.error('Call payment failed:', err);
       toast({ title: 'Payment Failed', description: err?.message || 'Something went wrong.', variant: 'destructive' });
@@ -415,6 +441,29 @@ export default function ListingDetail() {
         attachments: attachments.length > 0 ? attachments : undefined,
       });
       console.log('✅ Listing response sent successfully');
+
+      // Realtime notification to the seller: new buyer response on the listing
+      if (listing.sellerId && listing.sellerId !== user.uid) {
+        try {
+          await notificationCtx?.createNotificationForUser(listing.sellerId, 'new_response', {
+            title: '🎯 New Buyer Response on Your Listing!',
+            message: `${user.displayName || user.email?.split('@')[0] || 'A buyer'} responded to "${listing.title}"${offeredPrice.trim() ? ` with an offer of ₹${Number(offeredPrice).toLocaleString('en-IN')}` : ''}`,
+            priority: 'high',
+            actionUrl: `/sell/listing/${listing.id}/chat/${user.uid}`,
+            actionText: 'Open Chat',
+          });
+        } catch {}
+      }
+      // Receipt notification to the buyer (payment success → response unlocked)
+      try {
+        await notificationCtx?.createNotification(user.uid, 'payment', {
+          title: '✅ Response Sent & Connect Unlocked',
+          message: `Your response to "${listing.title}" was sent successfully.`,
+          priority: 'medium',
+          actionUrl: `/sell/listing/${listing.id}`,
+          actionText: 'View Listing',
+        });
+      } catch {}
       toast({ title: 'Sent', description: 'Your message was sent to the seller.' });
       setMessage('Is it still available?');
       setOfferedPrice('');
