@@ -39,6 +39,46 @@ import { ChristmasTheme } from "./components/ChristmasTheme";
 import "./styles/christmas.css";
 import { lazy, Suspense } from "react";
 
+// Chunk-load auto-recovery: after a deploy, devices holding a stale cached
+// index.html reference JS chunks that no longer exist. Lazy-loaded pages
+// (Live Enquiries, Marketplace, etc.) then fail to render — blank page,
+// endless spinner, or a stuck "no listings" empty state. Detect those
+// failures and reload once so the fresh bundle is picked up.
+if (typeof window !== 'undefined') {
+  const RELOAD_FLAG = 'enqir_chunk_reload_at';
+  const reloadForStaleChunks = (label: string) => {
+    const last = parseInt(localStorage.getItem(RELOAD_FLAG) || '0', 10);
+    // Guard against reload loops: at most one recovery per 15 seconds.
+    if (Date.now() - last < 15_000) return;
+    localStorage.setItem(RELOAD_FLAG, String(Date.now()));
+    console.warn(`[chunk-recovery] ${label} failed — reloading to pick up the latest bundle`);
+    window.location.reload();
+  };
+
+  window.addEventListener('error', (e) => {
+    const target = e.target as HTMLElement | null;
+    // Failed <script>/<link> asset (e.g. dynamic import chunk)
+    if (target && (target.tagName === 'SCRIPT' || target.tagName === 'LINK')) {
+      reloadForStaleChunks('asset load');
+    }
+  }, true); // capture phase — resource errors don't bubble
+
+  window.addEventListener('unhandledrejection', (e) => {
+    const reason: any = e.reason;
+    const msg = typeof reason?.message === 'string' ? reason.message : '';
+    if (
+      /importing a module script failed/i.test(msg) ||
+      /error loading dynamically imported module/i.test(msg) ||
+      /failed to fetch dynamically imported module/i.test(msg) ||
+      /dynamically imported module/i.test(msg) ||
+      /Loading chunk \d+ failed/i.test(msg) ||
+      (reason instanceof TypeError && /failed to fetch/i.test(msg))
+    ) {
+      reloadForStaleChunks('dynamic import');
+    }
+  });
+}
+
 // Lazy-loaded pages — each gets its own chunk, loaded on demand
 const Landing = lazy(() => import("./pages/Landing"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
