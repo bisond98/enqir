@@ -5870,9 +5870,9 @@ export default function EnquiryWall() {
                     setBudgetMin('');
                     setBudgetMax('');
                   }}
-                  className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold text-white bg-[#7a1c1c] border border-black/60 rounded-full hover:bg-[#8f2323] transition-colors flex-shrink-0 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[2px]"
+                  className="flex items-center justify-center h-[50px] sm:h-[54px] px-4 sm:px-5 !bg-[#7a1c1c] hover:!bg-[#8f2323] !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none flex-shrink-0"
                 >
-                  <X className="h-3 w-3" />Clear filters
+                  <X className="h-4 w-4 mr-1.5" />Clear filters
                 </button>
               )}
               <div className="flex h-[50px] sm:h-[54px] border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] flex-shrink-0">
