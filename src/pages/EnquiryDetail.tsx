@@ -884,7 +884,7 @@ const EnquiryDetail = () => {
                         ...jobChips,
                         enquiry.budgetOpenToDiscussion && { label: 'Budget', value: 'Open to discussion', highlight: true },
                         accommodationLabel && { label: 'Stay type', value: accommodationLabel, highlight: true },
-                        d.genderPreference && ['male', 'female', 'other'].includes(String(d.genderPreference).toLowerCase()) && { label: 'Gender', value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : 'Other', highlight: true },
+                        d.genderPreference && ['male', 'female', 'other'].includes(String(d.genderPreference).toLowerCase()) && { label: null, value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : 'Other', highlight: true },
                         d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType, highlight: true },
                         d.landArea && { label: 'Land / Plot', value: d.landArea, highlight: true },
                         d.builtUpArea && { label: 'Buildings', value: d.builtUpArea, highlight: true },
@@ -924,20 +924,25 @@ const EnquiryDetail = () => {
                         <div className="flex flex-wrap justify-center gap-1.5 mt-3">
                           {chips.map((c) => (
                             c.highlight && (c.label === 'Looking to' || c.label === 'Land / Plot') ? (
-                              <span key={c.label} className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
-                                <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
+                                {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
                                 {c.value}
                               </span>
+                            ) : c.highlight && (c.label === 'Stay type' || c.label === null) ? (
+                              <span key={c.label || c.value} className="inline-flex items-baseline gap-2 text-sm sm:text-base font-black text-white bg-red-600 border border-black rounded-lg px-3 py-1.5 whitespace-nowrap">
+                                {c.label && <span className="text-[7px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
+                                <span className="whitespace-nowrap">{c.value}</span>
+                              </span>
                             ) : c.highlight ? (
-                              <span key={c.label} className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
-                                <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
+                                {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
                                 {!(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
-                                <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>
+                                {c.label && <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.value}
                               </span>
