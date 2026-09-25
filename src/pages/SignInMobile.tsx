@@ -4,7 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
-import { ArrowLeft, Phone } from "lucide-react";
+import { ArrowLeft, Phone, Loader2 } from "lucide-react";
 import { friendlyError } from "@/utils/friendlyError";
 
 // This page is locked to Indian numbers only
@@ -481,7 +481,14 @@ const SignInMobile = () => {
                 disabled={loading || phoneDigits.replace(/\D/g, "").length !== maxDigits}
                 className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-2 rounded-2xl border-2 border-black bg-blue-600 text-white font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
-                {loading ? 'Sending…' : 'Send OTP'}
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Sending…
+                  </>
+                ) : (
+                  'Send OTP'
+                )}
               </button>
 
               {/* Footer switch to email */}
