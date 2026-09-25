@@ -2390,8 +2390,8 @@ export default function PostEnquiry() {
 
                 {/* Step Title */}
                 <div id="step-title" className="text-center pt-8 mb-10">
-                  <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}</h2>
-                  <p className="text-[9px] sm:text-[10px] text-slate-500 mt-1">{STEPS[step].key === 'description' && isJobEnquiry(selectedCategories, category) ? 'Details' : STEPS[step].description}</p>
+                  <h2 className="font-chip text-xl sm:text-2xl font-extrabold text-black tracking-tight leading-snug">{STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}</h2>
+                  <p className="font-chip mt-2.5 inline-block rounded-full border border-black/[0.06] bg-slate-50 px-3 py-1 text-[10px] sm:text-[11px] font-medium text-slate-500">{STEPS[step].key === 'description' && isJobEnquiry(selectedCategories, category) ? 'Details' : STEPS[step].description}</p>
                 </div>
 
                 {/* Step Content */}
@@ -2441,7 +2441,7 @@ export default function PostEnquiry() {
                               value={catSearch}
                               onChange={(e) => { setCatSearch(e.target.value); setCatPage(0); }}
                               placeholder="Search categories..."
-                              className="w-full h-10 sm:h-11 text-sm border-2 border-gray-800 rounded-xl pr-10 placeholder:text-gray-400 transition-all"
+                              className="w-full h-10 sm:h-11 text-xs sm:text-sm border-2 border-gray-800 rounded-xl pr-10 placeholder:text-gray-400 placeholder:text-[10px] sm:placeholder:text-[11px] transition-all"
                               style={{ paddingLeft: '2.75rem', outline: 'none' }}
                               onFocus={(e) => { e.currentTarget.style.borderColor = 'black'; e.currentTarget.style.boxShadow = '0 0 0 2px black'; }}
                               onBlur={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.boxShadow = ''; }}
@@ -2529,7 +2529,7 @@ export default function PostEnquiry() {
 
                         {/* Swipe hint */}
                         {!isSearching && totalPages > 1 && (
-                          <p className="text-[10px] text-slate-400 text-center mt-3">
+                          <p className="text-[8px] text-slate-400 text-center mt-2">
                             Swipe or tap arrows for more categories
                           </p>
                         )}                         {/* Pagination - prev/next text buttons */}
@@ -3118,7 +3118,7 @@ export default function PostEnquiry() {
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
                           placeholder="Search location..."
-                          className="rounded-2xl h-12 sm:h-14 text-sm border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400"
+                          className="rounded-2xl h-12 sm:h-14 text-sm border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400 placeholder:text-[10px] sm:placeholder:text-[11px]"
                           style={{ fontSize: '14px' }}
                         />
                         {showLocationSuggestions && locationSuggestions.length > 0 && (
@@ -3141,16 +3141,13 @@ export default function PostEnquiry() {
                       <button
                         type="button"
                         onClick={() => setMapPickerOpen(true)}
-                        className="w-full flex items-center gap-3 !rounded-2xl !border-[1.5px] !border-black bg-white hover:!bg-gray-50 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
+                        className="relative w-full flex items-center gap-3 !rounded-2xl !border-[1.5px] !border-black bg-white hover:!bg-gray-50 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
                       >
                         <div className="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                           <MapPin className="h-4 w-4 text-white" />
                         </div>
-                        <div className="text-left flex-1 min-w-0">
-                          <p className="text-sm font-bold text-black">Where do you want it?</p>
-                          <p className="text-[11px] text-slate-500 truncate">
-                            {mapLocation?.formatted_address || mapLocation?.city || location || (mapLocation ? 'Location pinned on map' : 'Use the map to drop a pin')}
-                          </p>
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          <p className="font-chip text-xs sm:text-[13px] font-semibold text-black tracking-tight">Where do you want it?</p>
                         </div>
                         {mapLocation && (
                           <Check className="h-5 w-5 text-green-800 flex-shrink-0" />
@@ -3177,7 +3174,7 @@ export default function PostEnquiry() {
                   {step === 4 && (
                     <div className="max-w-md mx-auto w-full space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="enquiry-budget" className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
+                        <Label htmlFor="enquiry-budget" className="text-[10px] sm:text-[11px] font-semibold text-slate-600 flex items-center gap-1.5">
                           <IndianRupee className="h-3.5 w-3.5" />
                           {isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered (INR)' : 'Salary Expected (INR)') : 'Budget (INR)'}
                         </Label>
@@ -3204,7 +3201,7 @@ export default function PostEnquiry() {
                       </div>
                       {/* Open to discussion — alternative to entering a specific budget */}
                       <div className="flex items-center justify-end gap-3">
-                        <Label htmlFor="enquiry-budget-option" className="text-[10px] sm:text-xs font-bold whitespace-nowrap">
+                        <Label htmlFor="enquiry-budget-option" className="text-[10px] sm:text-[11px] font-semibold text-slate-600 whitespace-nowrap">
                           Not fixed yet?
                         </Label>
                         <div className="relative">
@@ -3237,8 +3234,8 @@ export default function PostEnquiry() {
                         <TimeLimitSelector value={deadline} onChange={setDeadline} className="w-full" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="enquiry-notes" className="text-[10px] sm:text-xs font-bold">
-                          Notes <span className="text-gray-600 font-normal">(Optional)</span>
+                        <Label htmlFor="enquiry-notes" className="text-[10px] sm:text-[11px] font-semibold text-slate-600">
+                          Notes <span className="text-slate-400 font-normal">(Optional)</span>
                         </Label>
                         <Textarea
                           id="enquiry-notes"
@@ -3248,7 +3245,7 @@ export default function PostEnquiry() {
                           }}
                           maxLength={50}
                           placeholder="Additional requirements or preferences... (max 50 characters)"
-                          className="rounded-2xl min-h-[120px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                          className="rounded-2xl min-h-[120px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150 focus-visible:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !translate-y-0"
                         />
                         <p className="text-[10px] text-gray-400 text-right">
                           {notes.length}/50

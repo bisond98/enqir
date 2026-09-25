@@ -449,8 +449,6 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
   return (
     <div className={`space-y-3 sm:space-y-4 ${className}`}>
       <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-        <Clock className="h-5 w-5 sm:h-5 sm:w-5 text-slate-600 flex-shrink-0" />
-        <Label className="text-[10px] sm:text-xs font-medium">Response Deadline</Label>
         {value && (
           <Badge className={`${urgency.color} text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-0.5`}>
             <span className="mr-1">{urgency.icon}</span>
@@ -462,9 +460,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       {isMobile ? (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
-              {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none z-0" />
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 !border-red-500 focus:!border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-2xl !bg-red-500 hover:!bg-red-600 !text-white relative overflow-hidden transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none">
               <Clock className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
               <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
             </Button>
@@ -482,9 +478,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       ) : (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-2xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative overflow-hidden">
-              {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl pointer-events-none z-0" />
+            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 !border-red-500 focus:!border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-2xl !bg-red-500 hover:!bg-red-600 !text-white relative overflow-hidden transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none">
               <Clock className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
               <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
             </Button>

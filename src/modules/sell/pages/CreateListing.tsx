@@ -852,8 +852,8 @@ export default function CreateListing() {
           </div>
 
           <div id="step-title" className="text-center mb-6">
-            <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
-            <p className="text-[9px] sm:text-[10px] text-slate-500 mt-1">{STEPS[step].description}</p>
+            <h2 className="font-chip text-xl sm:text-2xl font-extrabold text-black tracking-tight leading-snug">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
+            <p className="font-chip mt-2.5 inline-block rounded-full border border-black/[0.06] bg-slate-50 px-3 py-1 text-[10px] sm:text-[11px] font-medium text-slate-500">{STEPS[step].description}</p>
           </div>
 
           <div key={step} className="flex-1 space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
