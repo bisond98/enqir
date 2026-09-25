@@ -222,6 +222,8 @@ const SellerResponse = () => {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
+  // Job enquiries talk about salary, not budget/price
+  const isJobEnquiry = !!enquiry && (enquiry.category === 'jobs' || enquiry.category === 'job' || enquiry.category.toLowerCase().includes('job'));
   const [loading, setLoading] = useState(true);
   const [isOwnEnquiry, setIsOwnEnquiry] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -1520,7 +1522,7 @@ const SellerResponse = () => {
                 <Label htmlFor="price" className="text-sm sm:text-lg font-black text-black flex items-center">
                   <span className="text-lg sm:text-2xl mr-2 sm:mr-3 text-black">₹</span>
                   <span className="text-black">
-                    Your Price *
+                    {isJobEnquiry ? 'Salary Expectation *' : 'Your Price *'}
                   </span>
                 </Label>
                 
@@ -1528,7 +1530,7 @@ const SellerResponse = () => {
                 {enquiry && (
                   <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
                     <div className="flex flex-row items-center justify-between gap-2">
-                      <span className="text-[10px] sm:text-xs text-white font-semibold">Buyer's Budget:</span>
+                      <span className="text-[10px] sm:text-xs text-white font-semibold">{isJobEnquiry ? 'Salary Offered:' : "Buyer's Budget:"}</span>
                       <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
                     </div>
                     <p className="text-[9px] sm:text-[10px] text-white/90 mt-1 sm:mt-0.5">
