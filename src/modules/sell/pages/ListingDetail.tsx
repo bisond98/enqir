@@ -625,7 +625,7 @@ export default function ListingDetail() {
 
               {listing.priceType === 'discussion' ? (
                 <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-black bg-green-600 text-white border border-black px-3 py-1.5 sm:py-2 rounded-xl">
-                  <MessageCircle className="h-3.5 w-3.5 text-white" /> Open to discussion
+                  <IndianRupee className="h-3.5 w-3.5 text-white" /> Open to discussion
                 </span>
               ) : (
                 <span className="bg-white text-black border border-black font-black text-sm sm:text-base rounded-xl px-3.5 py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>

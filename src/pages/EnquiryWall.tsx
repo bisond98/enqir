@@ -54,6 +54,7 @@ interface Enquiry {
   category: string;
   categories?: string[];
   budget: string;
+  budgetOpenToDiscussion?: boolean;
   location: string;
   userId: string;
   status: string;
@@ -6346,9 +6347,17 @@ export default function EnquiryWall() {
                                     <span className="text-lg sm:text-xl text-white font-normal whitespace-nowrap">{formatIndianCurrency(enquiry.budget)}/-</span>
                                   </div>
                                 )}
+                                {!enquiry.budget && enquiry.budgetOpenToDiscussion && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 bg-red-600 text-white text-[8px] sm:text-[10px] font-bold rounded-md">Discuss price</span>
+                                )}
                               </div>
                               
                               {/* Mobile Budget - Bottom left of black section */}
+                                {!enquiry.budget && enquiry.budgetOpenToDiscussion && (
+                                <div className="block sm:hidden absolute bottom-2 left-2">
+                                  <span className="inline-flex items-center px-1.5 py-1 bg-red-600 text-white text-[9px] font-bold" style={{ borderRadius: '8px' }}>Discuss price</span>
+                                </div>
+                                )}
                                 {enquiry.budget && (
                                 <div className="block sm:hidden absolute bottom-2 left-2">
                                   <div 
@@ -6627,6 +6636,11 @@ export default function EnquiryWall() {
                                   <span className="font-bold text-gray-900 text-[7px] sm:text-[10px] tracking-wide" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>{enquiry.details?.jobDirection === 'seeking' ? 'Salary Expected -' : enquiry.details?.jobDirection === 'hiring' ? 'Salary -' : 'Budget -'}</span>
                                   <span className="font-extrabold text-black text-xs sm:text-base md:text-lg" style={{ fontFeatureSettings: '"tnum"' }}>₹</span>
                                   <span className="truncate font-extrabold text-gray-900 text-xs sm:text-base md:text-lg tracking-tight" style={{ fontFeatureSettings: '"tnum"' }}>{formatIndianCurrency(enquiry.budget)}</span>
+                                </div>
+                              )}
+                              {!enquiry.budget && enquiry.budgetOpenToDiscussion && (
+                                <div className="hidden sm:flex">
+                                  <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-600 text-white text-[8px] sm:text-[10px] font-bold rounded-md">Discuss price</span>
                                 </div>
                               )}
                             </div>

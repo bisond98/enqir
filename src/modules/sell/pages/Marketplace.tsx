@@ -960,10 +960,17 @@ export default function Marketplace() {
                       <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 flex-shrink-0"><CheckCircle className="h-2.5 w-2.5 text-white" /></span>
                     )}
                   </h3>
-                  {l.price != null && (
-                    <span className="relative text-base sm:text-lg font-black text-white bg-red-600 border border-black !rounded-2xl px-4 py-2 flex-shrink-0 -mt-1">
-                      {formatPrice(l)}
-                    </span>
+                  {(l.price != null || (l as any).priceType === 'discussion') && (
+                    (l as any).priceType === 'discussion' ? (
+                      <span className="relative text-[9px] sm:text-xs font-black text-white bg-red-600 border border-black !rounded-xl px-2 py-1 flex-shrink-0 -mt-1 max-w-[9rem] truncate inline-flex items-center gap-0.5">
+                        <IndianRupee className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
+                        Open to discussion
+                      </span>
+                    ) : (
+                      <span className="relative text-base sm:text-lg font-black text-white bg-red-600 border border-black !rounded-2xl px-4 py-2 flex-shrink-0 -mt-1">
+                        {formatPrice(l)}
+                      </span>
+                    )
                   )}
                 </div>
                 <p className="text-[11px] text-gray-500 mt-0.5">{l.description && l.description.length > 20 ? l.description.slice(0, 20) + '......' : l.description}</p>
@@ -1015,7 +1022,7 @@ export default function Marketplace() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {pagedListings.map((l) => (
               <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="relative block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer overflow-visible">
-                {formatPrice(l).length >= 9 ? (
+                {formatPrice(l).length >= 9 && (l as any).priceType !== 'discussion' ? (
                   /* Wide price chip would overlap a top-left save — stack save above share instead */
                   <div className="absolute bottom-1 right-1 z-10 flex flex-col items-center gap-1">
                     <button
@@ -1054,11 +1061,18 @@ export default function Marketplace() {
                   </div>
                 )}
                 </div>
-                {l.price != null && (
+                {(l.price != null || (l as any).priceType === 'discussion') && (
                   <div className="absolute top-2 right-2 z-10">
-                    <span className="text-base sm:text-lg font-black text-white bg-red-600 border border-black !rounded-2xl px-4 py-2">
-                      {formatPrice(l)}
-                    </span>
+                    {(l as any).priceType === 'discussion' ? (
+                      <span className="text-[9px] sm:text-xs font-black text-white bg-red-600 border border-black !rounded-xl px-2 py-1 max-w-[9rem] truncate inline-flex items-center gap-0.5">
+                        <IndianRupee className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
+                        Open to discussion
+                      </span>
+                    ) : (
+                      <span className="text-base sm:text-lg font-black text-white bg-red-600 border border-black !rounded-2xl px-4 py-2">
+                        {formatPrice(l)}
+                      </span>
+                    )}
                   </div>
                 )}
                 <div className="p-2.5">
