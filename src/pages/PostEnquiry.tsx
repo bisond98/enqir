@@ -3202,7 +3202,7 @@ export default function PostEnquiry() {
                         </div>
                       </div>
                       {/* Open to discussion — alternative to entering a specific budget */}
-                      <div className="flex items-center justify-center gap-3">
+                      <div className="flex items-center justify-end gap-3">
                         <Label htmlFor="enquiry-budget-option" className="text-[10px] sm:text-xs font-bold whitespace-nowrap">
                           Not fixed yet?
                         </Label>
