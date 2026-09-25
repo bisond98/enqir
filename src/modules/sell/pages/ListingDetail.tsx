@@ -591,13 +591,13 @@ export default function ListingDetail() {
               const capitalized = sentence.charAt(0).toUpperCase() + sentence.slice(1);
               return (
                 <div className="flex justify-center mt-2">
-                  <p className="text-sm sm:text-base font-bold text-white bg-red-600 border border-black rounded-xl px-4.5 py-2.5 shadow-[0_3px_0_0_rgba(0,0,0,0.85)] text-center">{capitalized}</p>
+                  <p className="text-base sm:text-lg font-bold text-white bg-red-600 border border-black rounded-xl px-5 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.85)] text-center">{capitalized}</p>
                 </div>
               );
             })()}
 
             {/* Amount + Info Chips on one row — amount right side next to location etc */}
-            <div className="flex flex-wrap items-center justify-center gap-3 mt-6 sm:mt-5 text-[13px]">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 mt-6 sm:mt-5 text-[12px]">
               {(() => {
                 const d = (listing.details || {}) as Record<string, string>;
                 const areaVal = d.builtUpArea || d.houseArea || '';
@@ -605,17 +605,17 @@ export default function ListingDetail() {
                 return (
                   <>
                     {showDealChip && (
-                      <span className="inline-flex items-center gap-1 text-[13px] font-black bg-green-600 text-white border border-black px-3.5 py-2 sm:py-2.5 rounded-xl uppercase">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-green-600 text-white border border-black px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                         For {detailsRec.listingFor}
                       </span>
                     )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[13px] font-black bg-white text-black border border-black px-3.5 py-2 sm:py-2.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[13px] font-black bg-white text-black border border-black px-3.5 py-2 sm:py-2.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {d.houseBhk}
                       </span>
                     )}
@@ -624,20 +624,20 @@ export default function ListingDetail() {
               })()}
 
               {listing.priceType === 'discussion' ? (
-                <span className="inline-flex items-center gap-1.5 text-[13px] font-black bg-green-600 text-white border border-black px-3.5 py-2 sm:py-2.5 rounded-xl">
-                  <IndianRupee className="h-4 w-4 text-white" /> Open to discussion
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-black bg-green-600 text-white border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                  <IndianRupee className="h-3.5 w-3.5 text-white" /> Open to discussion
                 </span>
               ) : (
-                <span className="bg-white text-black border border-black font-black text-base sm:text-lg rounded-xl px-4 py-2 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+                <span className="bg-white text-black border border-black font-black text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
               )}
 
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[13px] font-black bg-white text-black border border-black px-3.5 py-2 sm:py-2.5 rounded-xl uppercase">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                   {listing.condition}
                 </span>
               )}
-                <span className="inline-flex items-center gap-1 text-[13px] font-black bg-white text-black border border-black px-3.5 py-2 sm:py-2.5 rounded-xl">
-                  <MapPin className="h-5 w-5 text-red-500" />{listing.location}
+                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                  <MapPin className="h-4 w-4 text-red-500" />{listing.location}
                 </span>
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
                 (() => {
@@ -663,7 +663,7 @@ export default function ListingDetail() {
                     const label = key in detailLabels ? detailLabels[key] : '';
                     const brandLogo = key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
-                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[13px] font-black bg-white text-black border border-black px-3.5 py-2 sm:py-2.5 rounded-xl">
+                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
                         {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
@@ -679,14 +679,14 @@ export default function ListingDetail() {
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[13px] font-black bg-white text-black border border-black px-3.5 py-2 sm:py-2.5 rounded-xl">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
                     {tag}
                   </span>
                 ))
               )}
               {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[14px] sm:text-base font-black bg-white text-black border border-black px-4 py-2.5 rounded-xl">
-                  <Calendar className="h-4 w-4 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
+                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                  <Calendar className="h-3.5 w-3.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
             </div>
