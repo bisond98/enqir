@@ -1793,7 +1793,7 @@ const Dashboard = () => {
             {/* Enquiries Card - Buyer View Only */}
             {viewMode === 'buyer' && (
             <Card 
-              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full"
+              className="group cursor-pointer border-0 shadow-none hover:shadow-none transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-blue-100 rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate('/my-enquiries');
@@ -1831,8 +1831,8 @@ const Dashboard = () => {
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Professional Stats Grid - Circular Design */}
-                <div className="flex items-center justify-center gap-3 sm:gap-4 lg:gap-5 xl:gap-6 mb-4 sm:mb-6 lg:mb-4">
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
+                <div className="flex items-center justify-center gap-2 sm:gap-4 lg:gap-5 xl:gap-6 mb-4 sm:mb-6 lg:mb-4">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[28%] max-w-[128px] aspect-square sm:max-w-none sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
@@ -1841,7 +1841,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[28%] max-w-[128px] aspect-square sm:max-w-none sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
@@ -1850,7 +1850,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[28%] max-w-[128px] aspect-square sm:max-w-none sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
@@ -2372,7 +2372,7 @@ const Dashboard = () => {
             {/* Responses Card - Seller View Only */}
             {viewMode === 'seller' && (
             <Card 
-              className="group cursor-pointer border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full"
+              className="group cursor-pointer border-0 shadow-none hover:shadow-none transition-all duration-500 overflow-hidden bg-white hover:bg-gradient-to-br hover:from-gray-50 hover:to-gray-100 rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full"
               onClick={(e) => {
                 e.stopPropagation();
                 if (sellerView === 'responses') navigate('/my-responses');
@@ -2456,7 +2456,7 @@ const Dashboard = () => {
                 <>
                 {/* Professional Stats Grid - Circular Design */}
                 <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[20%] max-w-[112px] aspect-square sm:max-w-none sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
@@ -2467,7 +2467,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[20%] max-w-[112px] aspect-square sm:max-w-none sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
@@ -2478,7 +2478,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[20%] max-w-[112px] aspect-square sm:max-w-none sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
@@ -2489,7 +2489,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
+                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[20%] max-w-[112px] aspect-square sm:max-w-none sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
                     {/* Physical button depth effect */}
                     <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
                     <div className="relative z-10 flex flex-col items-center justify-center h-full">
@@ -2793,7 +2793,7 @@ const Dashboard = () => {
         {/* AI Matches View */}
         {viewMode === 'matches' && (
           <div className="max-w-6xl mx-auto px-1 sm:px-6 pt-2 sm:pt-4 pb-8 sm:pb-12">
-            <Card className="group border border-black shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full">
+            <Card className="group border-0 shadow-none hover:shadow-none transition-all duration-500 overflow-hidden bg-white rounded-2xl sm:rounded-3xl relative lg:w-full lg:max-w-full">
               <div className="absolute inset-0 bg-gradient-to-r from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
 
               {/* Header - matching other dashboard views */}
