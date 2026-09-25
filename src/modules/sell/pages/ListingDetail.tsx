@@ -916,7 +916,7 @@ function MessageSellerInline({
   sending, user, submitResponse, navigate, listingId, callButton, formatRecordingTime,
 }: any) {
   return (
-    <div className="border-t border-gray-100 pt-7 mt-10 space-y-4">
+    <div className="border-t-2 border-black pt-7 mt-10 space-y-4">
       <h3 className="text-sm font-black text-black flex items-center justify-center gap-1.5 mb-2">
         <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-600"><MessageSquare className="h-3.5 w-3.5 text-white" /></span>
         Connect Seller

@@ -794,7 +794,7 @@ const EnquiryDetail = () => {
         <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
           <div className="space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
-              <Card className="border border-black shadow-lg rounded-2xl bg-white">
+              <Card className="shadow-lg rounded-2xl bg-white">
                 {/* Card Header - Black Background */}
                 <div className="bg-black px-4 sm:px-4 py-2 sm:py-2.5 rounded-t-2xl">
                   <h2 className="text-[10px] sm:text-[10px] md:text-xs font-medium text-white flex items-center justify-center gap-2 text-center">
@@ -804,7 +804,7 @@ const EnquiryDetail = () => {
                 </div>
                 
                 {/* Card Content - Enhanced White Background */}
-                <CardContent className="p-4 sm:p-5 lg:p-6">
+                <CardContent className="p-5 sm:p-6 lg:p-7">
                   {/* Description — merged into the same card */}
                   <div className="mb-5 sm:mb-6">
                     <div className="flex items-start justify-center gap-3 mb-6 sm:mb-7">
@@ -884,7 +884,7 @@ const EnquiryDetail = () => {
                         ...jobChips,
                         enquiry.budgetOpenToDiscussion && { label: 'Budget', value: 'Open to discussion', highlight: true },
                         accommodationLabel && { label: 'Stay type', value: accommodationLabel, highlight: true },
-                        d.genderPreference && d.genderPreference !== 'any' && { label: 'Gender', value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : 'Mixed', highlight: true },
+                        d.genderPreference && ['male', 'female', 'other'].includes(String(d.genderPreference).toLowerCase()) && { label: 'Gender', value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : 'Other', highlight: true },
                         d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType, highlight: true },
                         d.landArea && { label: 'Land / Plot', value: d.landArea, highlight: true },
                         d.builtUpArea && { label: 'Buildings', value: d.builtUpArea, highlight: true },
@@ -948,10 +948,10 @@ const EnquiryDetail = () => {
                     })()}
 
                     {/* Description — below the detail chips */}
-                    <div className="mt-5 sm:mt-6">
-                                            <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
-                        <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>Description</h3>
-                        <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
+                    <div className="mt-6 sm:mt-7">
+                                            <div className="bg-gray-200 rounded-2xl p-4 sm:p-5 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                        <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-2 uppercase tracking-wide" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>Description</h3>
+                        <p className="text-xs sm:text-xs md:text-sm leading-relaxed" style={{ lineHeight: '1.7', color: '#000', WebkitTextStroke: '0.2px black', fontWeight: 800 }}>{enquiry.description}</p>
                       </div>
                     </div>
                   </div>
@@ -1080,22 +1080,22 @@ const EnquiryDetail = () => {
                     </div>
                   )}
 
-                  {/* Save & Share - icon-only, under the Posted tile */}
-                  <div className="flex justify-between items-center mt-10">
+                  {/* Save & Share - solid black circular buttons, matching the listing detail page */}
+                  <div className="flex justify-between items-center mt-8">
                     <button
                       onClick={handleSave}
+                      aria-label={savedEnquiries.includes(enquiry.id) ? 'Remove from saved' : 'Save enquiry'}
                       title={savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}
-                      className={`p-1.5 transition-all duration-200 hover:scale-110 active:scale-95 ${
-                        savedEnquiries.includes(enquiry.id) ? 'text-black' : 'text-slate-800 hover:text-black'
-                      }`}
+                      className="w-8 h-8 rounded-full border border-black bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-all active:scale-95"
                     >
-                      <Bookmark className={`h-4 w-4 ${savedEnquiries.includes(enquiry.id) ? 'fill-current' : ''}`} />
+                      <Bookmark className={`h-4 w-4 ${savedEnquiries.includes(enquiry.id) ? 'fill-white text-white' : 'text-white'}`} />
                     </button>
                     {user && enquiry.userId !== user.uid && (
                       <button
                         onClick={() => navigate(`/report-user/${enquiry.userId}?enquiryId=${enquiry.id}`)}
+                        aria-label="Report enquiry"
                         title="Report"
-                        className="p-1.5 text-slate-800 hover:text-red-600 transition-all duration-200 hover:scale-110 active:scale-95"
+                        className="w-8 h-8 rounded-full border border-black bg-black flex items-center justify-center text-white hover:bg-gray-800 transition-all active:scale-95"
                       >
                         <Flag className="h-4 w-4" />
                       </button>
@@ -1103,8 +1103,9 @@ const EnquiryDetail = () => {
                     <button
                       ref={shareBtnRef}
                       onClick={openShareMenu}
+                      aria-label="Share enquiry"
                       title="Share"
-                      className="p-1.5 text-slate-800 hover:text-black transition-all duration-200 hover:scale-110 active:scale-95"
+                      className="w-8 h-8 rounded-full border border-black bg-black flex items-center justify-center text-white hover:bg-gray-800 transition-all active:scale-95"
                     >
                       <Share2 className="h-4 w-4" />
                     </button>
@@ -1123,7 +1124,7 @@ const EnquiryDetail = () => {
                   )}
 
                   {/* Connect — inside the card, below save/share */}
-                  <div className="mt-4 pt-5 border-t-[0.5px] border-black">
+                  <div className="mt-5 pt-6 border-t-2 border-black">
                   <div className="space-y-4">
                     {user && enquiry.userId === user.uid ? (
                       <div className="space-y-3">
