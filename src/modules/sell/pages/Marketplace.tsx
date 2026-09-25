@@ -94,6 +94,15 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
   'other': Tag,
 };
 
+// Icon shown when a listing has no images — uses the listing's first
+// selected category (primary), falling back to its `category` field.
+function ListingCategoryIcon({ listing, className }: { listing: SellListing; className: string }) {
+  const cats = (listing as any).categories;
+  const first = (Array.isArray(cats) && cats[0]) || listing.category;
+  const Icon = (first && CATEGORY_ICONS[first]) || Tag;
+  return <Icon className={className} strokeWidth={1.75} />;
+}
+
 function formatPrice(l: SellListing) {
   const fmt = (n: number) => n.toLocaleString('en-IN');
   if ((l as any).priceType === 'discussion') return 'Open to discussion';
@@ -928,7 +937,7 @@ export default function Marketplace() {
                   <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl object-cover !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
                 ) : (
                   <div className="w-20 h-20 sm:w-24 sm:h-24 !rounded-2xl bg-gray-100 flex items-center justify-center !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
-                    <span className="text-[10px] font-bold text-gray-400">No Image</span>
+                    <ListingCategoryIcon listing={l} className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
                   </div>
                 )}
                 <div className="flex items-center gap-1">
@@ -952,7 +961,7 @@ export default function Marketplace() {
                     )}
                   </h3>
                   {l.price != null && (
-                    <span className="relative text-base sm:text-lg font-black text-white bg-black border border-black !rounded-2xl px-4 py-2 flex-shrink-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] -mt-1">
+                    <span className="relative text-base sm:text-lg font-black text-white bg-red-600 border border-black !rounded-2xl px-4 py-2 flex-shrink-0 -mt-1">
                       {formatPrice(l)}
                     </span>
                   )}
@@ -1041,13 +1050,13 @@ export default function Marketplace() {
                   <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-full aspect-square object-cover !rounded-2xl !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]" />
                 ) : (
                   <div className="w-full aspect-square !rounded-2xl bg-gray-100 flex items-center justify-center !border-[0.5px] !border-black/20 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)]">
-                    <span className="text-xs font-bold text-gray-400">No Image</span>
+                    <ListingCategoryIcon listing={l} className="h-12 w-12 sm:h-14 sm:w-14 text-gray-400" />
                   </div>
                 )}
                 </div>
                 {l.price != null && (
                   <div className="absolute top-2 right-2 z-10">
-                    <span className="text-base sm:text-lg font-black text-white bg-black border border-black !rounded-2xl px-4 py-2 !shadow-[0_6px_0_0_rgba(0,0,0,0.2)]">
+                    <span className="text-base sm:text-lg font-black text-white bg-red-600 border border-black !rounded-2xl px-4 py-2">
                       {formatPrice(l)}
                     </span>
                   </div>
