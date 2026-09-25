@@ -794,7 +794,7 @@ const EnquiryDetail = () => {
         <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
           <div className="space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
-              <Card className="shadow-lg rounded-2xl bg-white">
+              <Card className="shadow-lg rounded-2xl bg-white border border-black">
                 {/* Card Header - Black Background */}
                 <div className="bg-black px-4 sm:px-4 py-2 sm:py-2.5 rounded-t-2xl">
                   <h2 className="text-[10px] sm:text-[10px] md:text-xs font-medium text-white flex items-center justify-center gap-2 text-center">

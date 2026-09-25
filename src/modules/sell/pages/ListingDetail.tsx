@@ -505,8 +505,8 @@ export default function ListingDetail() {
         document.body
       )}
       <div className="space-y-4 pb-6">
-        {/* Unified Listing Card — image + details in one card (borderless) */}
-        <div className="relative rounded-2xl overflow-hidden">
+        {/* Unified Listing Card — image + details in one card, single border around the whole block */}
+        <div className="relative rounded-2xl overflow-hidden border border-black">
         {/* Image Gallery */}
         {listing.images && listing.images.length > 0 && (
           <div className="relative">
@@ -538,7 +538,7 @@ export default function ListingDetail() {
               )}
             </div>
             {(listing.images.length > 1) && (
-              <div className="flex gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide">
+              <div className="flex justify-center gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide">
                 {listing.images.map((url, idx) => (
                   <button
                     key={url}
