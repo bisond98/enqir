@@ -2,6 +2,7 @@ interface ShareableEnquiry {
   id?: string;
   title: string;
   budget?: number;
+  budgetOpenToDiscussion?: boolean;
   location?: string;
   deadline?: any;
   isUrgent?: boolean;
@@ -64,24 +65,50 @@ const isAccommodationEnquiry = (enquiry: ShareableEnquiry): boolean =>
  *   Pets          → 💰 Price range: ₹X
  *   Everything else → 💰 Buyer's budget: ₹X
  */
-const moneyLine = (enquiry: ShareableEnquiry): string | null => {
-  const budget = formatBudget(enquiry.budget);
-  if (!budget) return null;
-
+/**
+ * Category-aware money label (without the amount):
+ *   Jobs hiring   → Salary
+ *   Jobs seeking  → Expected salary
+ *   Estate rent   → Rent
+ *   Estate lease  → Lease terms
+ *   Estate buy    → Budget
+ *   Pets          → Price range
+ *   Accommodation → Rent
+ *   Everything else → Buyer's budget
+ */
+const moneyLabel = (enquiry: ShareableEnquiry): string => {
   if (isJobEnquiry(enquiry)) {
-    return enquiry.details?.jobDirection === 'seeking'
-      ? `💰 Expected salary: ${budget}`
-      : `💰 Salary: ${budget}`;
+    return enquiry.details?.jobDirection === 'seeking' ? 'Expected salary' : 'Salary';
   }
   if (isEstateEnquiry(enquiry)) {
     const t = enquiry.details?.listingType;
-    if (t === 'Rent') return `💰 Rent: ${budget}/month`;
-    if (t === 'Lease') return `💰 Lease terms: ${budget}`;
-    return `💰 Budget: ${budget}`; // Buy and unknown → budget
+    if (t === 'Rent') return 'Rent';
+    if (t === 'Lease') return 'Lease terms';
+    return 'Budget'; // Buy and unknown → budget
   }
-  if (isAccommodationEnquiry(enquiry)) return `💰 Rent: ${budget}/month`;
-  if (isPetEnquiry(enquiry)) return `💰 Price range: ${budget}`;
-  return `💰 Buyer's budget: ${budget}`;
+  if (isAccommodationEnquiry(enquiry)) return 'Rent';
+  if (isPetEnquiry(enquiry)) return 'Price range';
+  return "Buyer's budget";
+};
+
+/** Rent-style labels get a per-month suffix on the amount. */
+const moneyLabelIsMonthly = (enquiry: ShareableEnquiry): boolean => {
+  if (isEstateEnquiry(enquiry) && enquiry.details?.listingType === 'Rent') return true;
+  return isAccommodationEnquiry(enquiry);
+};
+
+const moneyLine = (enquiry: ShareableEnquiry): string | null => {
+  // Open-to-discussion budget → keep the label, swap the amount (₹ symbol included)
+  if (enquiry.budgetOpenToDiscussion) {
+    return `💰 ${moneyLabel(enquiry)}: ₹ Open to discussion`;
+  }
+
+  const budget = formatBudget(enquiry.budget);
+  if (!budget) return null;
+
+  const label = moneyLabel(enquiry);
+  const amount = moneyLabelIsMonthly(enquiry) ? `${budget}/month` : budget;
+  return `💰 ${label}: ${amount}`;
 };
 
 /**

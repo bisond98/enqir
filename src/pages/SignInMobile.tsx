@@ -535,7 +535,14 @@ const SignInMobile = () => {
                 disabled={loading || otp.replace(/\D/g, "").length < 6}
                 className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-2 -mt-[2.2cm] rounded-xl border-2 border-black bg-blue-600 text-white font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
-                {loading ? 'Verifying…' : 'Verify & Sign In'}
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Verifying…
+                  </>
+                ) : (
+                  'Verify & Sign In'
+                )}
               </button>
 
               {/* Resend OTP with countdown */}

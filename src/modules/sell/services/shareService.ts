@@ -21,9 +21,11 @@ const shareTemplates = [
 
 // Generate a catchy AI-style share message
 export function generateShareMessage(listing: SellListing): string {
-  const price = listing.price 
-    ? `₹${listing.price.toLocaleString('en-IN')}` 
-    : 'contact for price';
+  const price = (listing as any).priceType === 'discussion'
+    ? '₹ Open to discussion'
+    : listing.price
+      ? `₹${listing.price.toLocaleString('en-IN')}`
+      : 'contact for price';
   
   const location = listing.location || 'India';
   const templateIndex = Math.floor(Math.random() * shareTemplates.length);
