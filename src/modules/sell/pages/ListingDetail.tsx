@@ -505,8 +505,8 @@ export default function ListingDetail() {
         document.body
       )}
       <div className="space-y-4 pb-6">
-        {/* Unified Listing Card — image + details in one bordered card */}
-        <div className="relative border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
+        {/* Unified Listing Card — image + details in one card (borderless) */}
+        <div className="relative rounded-2xl overflow-hidden">
         {/* Image Gallery */}
         {listing.images && listing.images.length > 0 && (
           <div className="relative">
@@ -557,7 +557,7 @@ export default function ListingDetail() {
 
         {/* Listing Details — inside the same unified card */}
         <div className="relative">
-          <div className="p-4 sm:p-5">
+          <div className="p-6 sm:p-7">
             {/* Title */}
             <div className="w-full text-center">
               <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight inline-flex items-center justify-center gap-2 flex-wrap">
@@ -597,7 +597,7 @@ export default function ListingDetail() {
             })()}
 
             {/* Amount + Info Chips on one row — amount right side next to location etc */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-4 sm:mt-3 text-[11px]">
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-6 sm:mt-5 text-[11px]">
               {(() => {
                 const d = (listing.details || {}) as Record<string, string>;
                 const areaVal = d.builtUpArea || d.houseArea || '';
@@ -605,17 +605,17 @@ export default function ListingDetail() {
                 return (
                   <>
                     {showDealChip && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-green-600 text-white border border-black px-3 py-1.5 rounded-xl uppercase">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-green-600 text-white border border-black px-3 py-1.5 sm:py-2 rounded-xl uppercase">
                         For {detailsRec.listingFor}
                       </span>
                     )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 sm:py-2 rounded-xl">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 sm:py-2 rounded-xl">
                         {d.houseBhk}
                       </span>
                     )}
@@ -624,7 +624,7 @@ export default function ListingDetail() {
               })()}
 
               {listing.priceType === 'discussion' ? (
-                <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-black bg-green-600 text-white border border-black px-3 py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-black bg-green-600 text-white border border-black px-3 py-1.5 sm:py-2 rounded-xl">
                   <MessageCircle className="h-3.5 w-3.5 text-white" /> Open to discussion
                 </span>
               ) : (
@@ -632,11 +632,11 @@ export default function ListingDetail() {
               )}
 
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl uppercase">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 sm:py-2 rounded-xl uppercase">
                   {listing.condition}
                 </span>
               )}
-                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 sm:py-2 rounded-xl">
                   <MapPin className="h-5 w-5 text-red-500" />{listing.location}
                 </span>
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
@@ -663,7 +663,7 @@ export default function ListingDetail() {
                     const label = key in detailLabels ? detailLabels[key] : '';
                     const brandLogo = key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
-                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
+                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 sm:py-2 rounded-xl">
                         {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
                         {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
@@ -679,7 +679,7 @@ export default function ListingDetail() {
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 sm:py-2 rounded-xl">
                     {tag}
                   </span>
                 ))
@@ -693,8 +693,8 @@ export default function ListingDetail() {
 
             {/* Description */}
             {listing.description && (
-              <div className="border-t border-gray-100 pt-2.5 mb-3 mt-1.5">
-                <p className="text-[12px] text-black whitespace-pre-wrap leading-relaxed font-bold border border-black rounded-xl p-3">{listing.description}</p>
+              <div className="border-t border-gray-100 pt-5 mb-5 mt-3">
+                <p className="text-[12px] text-black whitespace-pre-wrap leading-relaxed font-bold border border-black rounded-xl p-5" style={{ color: '#000', WebkitTextStroke: '0.2px black', fontWeight: 800 }}>{listing.description}</p>
               </div>
             )}
 
@@ -916,15 +916,15 @@ function MessageSellerInline({
   sending, user, submitResponse, navigate, listingId, callButton, formatRecordingTime,
 }: any) {
   return (
-    <div className="border-t border-gray-100 pt-5 mt-8 space-y-3">
-      <h3 className="text-sm font-black text-black flex items-center justify-center gap-1.5">
-        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-600"><MessageSquare className="h-3 w-3 text-white" /></span>
+    <div className="border-t border-gray-100 pt-7 mt-10 space-y-4">
+      <h3 className="text-sm font-black text-black flex items-center justify-center gap-1.5 mb-2">
+        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-600"><MessageSquare className="h-3.5 w-3.5 text-white" /></span>
         Connect Seller
       </h3>
       {/* Call Seller — premium shortcut above Connect */}
       {callButton}
       <div>
-        <Label className="text-[8px] font-bold text-gray-700 uppercase mb-1 block">Your Price (optional)</Label>
+        <Label className="text-[7px] font-semibold text-gray-500 uppercase mb-1.5 block">Your Price (optional)</Label>
         <div className="relative">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-500 z-10">₹</span>
           <Input
@@ -938,7 +938,7 @@ function MessageSellerInline({
         </div>
       </div>
       <div>
-        <Label className="text-[8px] font-bold text-gray-700 uppercase mb-1 block">Chat with Seller</Label>
+        <Label className="text-[7px] font-semibold text-gray-500 uppercase mb-1.5 block">Chat with Seller</Label>
         <div className="relative">
           <Textarea
             value={message}
@@ -946,7 +946,7 @@ function MessageSellerInline({
             placeholder="Write your message to the seller…"
             maxLength={250}
             rows={3}
-            className="text-sm !border-[1.5px] !border-black rounded-2xl min-h-[90px] bg-white !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:!border-[2px] focus:border-black focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !transition-all !duration-150 placeholder:text-slate-400 placeholder:text-[10px] resize-none pr-20 touch-manipulation"
+            className="text-sm !border-[1.5px] !border-black rounded-2xl min-h-[110px] bg-white !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:!border-[2px] focus:border-black focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !transition-all !duration-150 placeholder:text-slate-400 placeholder:text-[10px] resize-none pr-20 touch-manipulation p-3"
           />
           {/* Voice & Attach icons — right side */}
           <div className="absolute right-2 bottom-2 flex items-center gap-1">

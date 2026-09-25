@@ -78,7 +78,7 @@ export default function SellShell({
             </div>
           </div>
         </div>
-        <div className="max-w-5xl mx-auto px-4 py-4 sm:py-6">
+        <div className="max-w-5xl mx-auto px-2.5 sm:px-4 py-4 sm:py-6">
           <div className="hidden sm:flex items-center justify-end gap-2 mb-4">
             <Link to="/sell/marketplace">
               <Button variant="outline" size="sm" className="border border-black">
