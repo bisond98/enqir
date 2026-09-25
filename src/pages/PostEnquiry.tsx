@@ -241,6 +241,10 @@ export default function PostEnquiry() {
   // const [hasProRemaining, setHasProRemaining] = useState(false);
   // const [proRemainingCount, setProRemainingCount] = useState(0);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  // Payment money captured (Razorpay checkout returned success) — the button
+  // switches to a "Posting…" spinner from this instant, while verification
+  // and enquiry creation are still running in the background.
+  const [paymentCaptured, setPaymentCaptured] = useState(false);
   const [paymentStep, setPaymentStep] = useState<'form' | 'processing' | 'success' | 'failed'>('form');
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: '',
@@ -434,6 +438,15 @@ export default function PostEnquiry() {
     const completed = requiredFields.filter(field => field).length;
     const progress = (completed / requiredFields.length) * 100;
     setFormProgress(progress);      }, [title, description, selectedCategories, category, budget, budgetOpenToDiscussion, location, deadline, jobDirection, jobSkills]);
+
+  // Listen for the moment Razorpay captures the payment money (fired from
+  // the checkout handler before backend verification completes) so the post
+  // button can show a "Posting…" spinner right away.
+  useEffect(() => {
+    const onCaptured = () => setPaymentCaptured(true);
+    window.addEventListener('enqir_payment_captured', onCaptured);
+    return () => window.removeEventListener('enqir_payment_captured', onCaptured);
+  }, []);
 
   // Restore form from localStorage if returning from profile verification
   useEffect(() => {
@@ -785,6 +798,7 @@ export default function PostEnquiry() {
   const resetPaymentModal = () => {
     setPaymentStep('form');
     setPaymentLoading(false);
+    setPaymentCaptured(false);
     setPaymentDetails({ cardNumber: '', expiryDate: '', cvv: '', name: '' });
     setShowPaymentModal(false);
   };
@@ -1095,6 +1109,7 @@ export default function PostEnquiry() {
       } finally {
         setLoading(false);
         setPaymentLoading(false);
+        setPaymentCaptured(false);
       }
       
     } catch (error) {
@@ -1105,6 +1120,7 @@ export default function PostEnquiry() {
         selectedPlan,
         userId: user?.uid
       });
+      setPaymentCaptured(false);
       const errorMsg = error instanceof Error ? error.message.toLowerCase() : '';
       const isCancelled = errorMsg.includes('cancel') || errorMsg.includes('user closed');
       
@@ -3573,7 +3589,18 @@ export default function PostEnquiry() {
                         disabled={loading || idUploadLoading || paymentLoading}
                         className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
                       >
-                        <span className="relative z-10">{paymentLoading ? 'Opening Razorpay…' : loading ? 'Posting…' : recoverablePayment ? 'Post My Enquiry (already paid)' : 'Post Enquiry'}</span>
+                        <span className="relative z-10 inline-flex items-center justify-center gap-2">
+                          {(loading || paymentCaptured) && (
+                            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                          )}
+                          {paymentLoading && !paymentCaptured
+                            ? 'Opening Razorpay…'
+                            : (loading || paymentCaptured)
+                            ? 'Posting…'
+                            : recoverablePayment
+                            ? 'Post My Enquiry (already paid)'
+                            : 'Post Enquiry'}
+                        </span>
                       </Button>
                       <p className="text-[7px] sm:text-[9px] text-center text-slate-400 font-medium mt-2">
                         We do not offer anything for free to make you the product.
