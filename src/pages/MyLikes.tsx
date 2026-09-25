@@ -607,9 +607,11 @@ const MyLikes = () => {
                                 <span className="min-w-0 flex-1">
                                   <span className="block text-sm font-semibold text-black truncate">{l.title}</span>
                                   <span className="block text-[10px] sm:text-xs text-muted-foreground truncate mt-0.5">
-                                    {l.priceType === 'range' && l.priceMin != null && l.priceMax != null
+                                    {(l as any).priceType === 'discussion'
+                                      ? 'Open to discussion'
+                                      : l.priceType === 'range' && l.priceMin != null && l.priceMax != null
                                       ? `₹${l.priceMin.toLocaleString('en-IN')} – ₹${l.priceMax.toLocaleString('en-IN')}`
-                                      : l.price != null ? `₹${Number(l.price).toLocaleString('en-IN')}` : 'Price on request'}
+                                      : (l as any).priceType === 'discussion' ? 'Open to discussion' : l.price != null ? `₹${Number(l.price).toLocaleString('en-IN')}` : 'Price on request'}
                                     {l.location ? ` · ${l.location.slice(0, 15)}${l.location.length > 15 ? '…' : ''}` : ''}
                                   </span>
                                 </span>

@@ -1,6 +1,6 @@
 export type ListingCondition = 'new' | 'used';
 
-export type ListingPriceType = 'fixed' | 'range';
+export type ListingPriceType = 'fixed' | 'range' | 'discussion';
 
 // Per-category structured attributes (brand, year, fuel, etc.) keyed by field name
 export type ListingDetails = Record<string, string>;

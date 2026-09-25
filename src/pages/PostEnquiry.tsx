@@ -203,6 +203,8 @@ export default function PostEnquiry() {
   const [categoriesPopoverOpen, setCategoriesPopoverOpen] = useState(false);
   const [categoriesSheetOpen, setCategoriesSheetOpen] = useState(false);
   const [budget, setBudget] = useState("");
+  // When true, the buyer selected "Open to discussion" instead of a specific budget
+  const [budgetOpenToDiscussion, setBudgetOpenToDiscussion] = useState(false);
   const [location, setLocation] = useState("");
   // Precise map location (lat/lng + structured address) picked from the map picker
   const [mapPickerOpen, setMapPickerOpen] = useState(false);
@@ -425,13 +427,13 @@ export default function PostEnquiry() {
       title.trim(),
       description.trim(),
       (selectedCategories.length > 0 || category.trim()),
-      budget.trim(),
+      budget.trim() || budgetOpenToDiscussion,
       location.trim(),
       deadline !== null
     ];
     const completed = requiredFields.filter(field => field).length;
     const progress = (completed / requiredFields.length) * 100;
-    setFormProgress(progress);      }, [title, description, selectedCategories, category, budget, location, deadline, jobDirection, jobSkills]);
+    setFormProgress(progress);      }, [title, description, selectedCategories, category, budget, budgetOpenToDiscussion, location, deadline, jobDirection, jobSkills]);
 
   // Restore form from localStorage if returning from profile verification
   useEffect(() => {
@@ -443,6 +445,7 @@ export default function PostEnquiry() {
         if (d.description) setDescription(d.description);
         if (d.selectedCategories) setSelectedCategories(d.selectedCategories);
         if (d.budget) setBudget(d.budget);
+        if (d.budgetOpenToDiscussion) setBudgetOpenToDiscussion(true);
         if (d.location) setLocation(d.location);
         if (d.deadline) setDeadline(new Date(d.deadline));
         if (d.notes) setNotes(d.notes);
@@ -512,9 +515,9 @@ export default function PostEnquiry() {
         }
         return true;
       case 4:
-        if (!budget.trim()) {
+        if (!budget.trim() && !budgetOpenToDiscussion) {
           const jLabel = jobDirection === 'hiring' ? 'salary offered' : 'expected salary';
-          toast({ title: isJobEnquiry(selectedCategories, category) ? `Add ${jLabel}` : 'Add a budget', description: isJobEnquiry(selectedCategories, category) ? `Set your ${jLabel} in INR.` : 'Set your budget in INR.', variant: 'destructive' as any });
+          toast({ title: isJobEnquiry(selectedCategories, category) ? `Add ${jLabel}` : 'Add a budget', description: isJobEnquiry(selectedCategories, category) ? `Set your ${jLabel} in INR.` : 'Set your budget in INR, or pick "Open to discussion".', variant: 'destructive' as any });
           return false;
         }
         return true;
@@ -637,8 +640,7 @@ export default function PostEnquiry() {
             category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
             categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
             budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
-            location: location.trim(),
-            latitude: mapLocation?.latitude ?? null,
+            budgetOpenToDiscussion: !budget && budgetOpenToDiscussion,
             longitude: mapLocation?.longitude ?? null,
             mapAddress: mapLocation ?? null,
             deadline: deadline,
@@ -803,6 +805,7 @@ export default function PostEnquiry() {
           category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
           categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
           budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
+          budgetOpenToDiscussion: !budget && budgetOpenToDiscussion,
           location: location.trim(),
           deadline: deadline,
           isUrgent: deadline ? (() => {
@@ -964,6 +967,7 @@ export default function PostEnquiry() {
           category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
           categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
           budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
+          budgetOpenToDiscussion: !budget && budgetOpenToDiscussion,
           location: location.trim(),
           deadline: deadline,
           isUrgent: deadline ? (() => {
@@ -1134,6 +1138,7 @@ export default function PostEnquiry() {
         category: selectedCategories.length > 0 ? selectedCategories[0] : 'other',
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'],
         budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
+        budgetOpenToDiscussion: !budget && budgetOpenToDiscussion,
         location: location.trim(),
         deadline: deadline,
         isUrgent: deadline ? (() => {
@@ -1697,7 +1702,7 @@ export default function PostEnquiry() {
     // Payment required for all enquiries (no free tier)
 
     // Validate required fields
-    if (!title.trim() || !description.trim() || (selectedCategories.length === 0 && !category) || !budget.trim() || !location.trim()) {
+    if (!title.trim() || !description.trim() || (selectedCategories.length === 0 && !category) || (!budget.trim() && !budgetOpenToDiscussion) || !location.trim()) {
       alert('Please fill in all required fields (title, description, categories, budget, location).');
       return;
     }
@@ -1838,6 +1843,7 @@ export default function PostEnquiry() {
         category: selectedCategories.length > 0 ? selectedCategories[0] : 'other', // Primary category (first selected)
         categories: selectedCategories.length > 0 ? selectedCategories : ['other'], // All selected categories
         budget: budget ? parseFloat(budget.replace(/[^\d]/g, '')) : null,
+        budgetOpenToDiscussion: !budget && budgetOpenToDiscussion,
         location: location.trim(),
         deadline: deadline,
         isUrgent: deadline ? (() => {
@@ -3179,6 +3185,7 @@ export default function PostEnquiry() {
                               if (numericValue === '' || /^\d+$/.test(numericValue)) {
                                 const formattedValue = numericValue === '' ? '' : parseInt(numericValue).toLocaleString('en-IN');
                                 setBudget(formattedValue);
+                                if (formattedValue) setBudgetOpenToDiscussion(false);
                               }
                             }}
                             placeholder="50,000"
@@ -3186,6 +3193,31 @@ export default function PostEnquiry() {
                             className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
                             autoFocus
                           />
+                        </div>
+                      </div>
+                      {/* Open to discussion — alternative to entering a specific budget */}
+                      <div className="flex items-center justify-center gap-3">
+                        <Label htmlFor="enquiry-budget-option" className="text-[10px] sm:text-xs font-bold whitespace-nowrap">
+                          Not fixed yet?
+                        </Label>
+                        <div className="relative">
+                          <select
+                            id="enquiry-budget-option"
+                            value={budgetOpenToDiscussion ? 'open-to-discussion' : ''}
+                            onChange={(e) => {
+                              if (e.target.value === 'open-to-discussion') {
+                                setBudgetOpenToDiscussion(true);
+                                setBudget("");
+                              } else {
+                                setBudgetOpenToDiscussion(false);
+                              }
+                            }}
+                            className={`appearance-none rounded-2xl h-12 sm:h-14 w-fit max-w-full font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${budgetOpenToDiscussion ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
+                          >
+                            <option value="">Click here</option>
+                            <option value="open-to-discussion">Open to discussion</option>
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                         </div>
                       </div>
                     </div>
@@ -3292,7 +3324,7 @@ export default function PostEnquiry() {
                             type="button"
                             onClick={() => {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
-                                title, description, selectedCategories, budget, location, vehicleDetails, mobileDetails, estateDetails, estateType, estateDealType,
+                                title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
                                 referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender
                               }));
@@ -3438,7 +3470,7 @@ export default function PostEnquiry() {
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[8px] text-gray-500 uppercase tracking-wide font-bold">{isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : 'Budget'}</span>
-                          <span className="text-sm sm:text-base font-black text-black text-center">{budget ? `₹${budget}` : '—'}</span>
+                          <span className="text-sm sm:text-base font-black text-black text-center">{budget ? `₹${budget}` : budgetOpenToDiscussion ? 'Open to discussion' : '—'}</span>
                         </div>
                         <div className="flex items-center justify-center gap-1">
                           <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-600 flex-shrink-0 self-start mt-0.5" />

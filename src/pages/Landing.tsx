@@ -2777,7 +2777,9 @@ const Landing = () => {
                           const zIndex = isHovered ? 50 : (3 - index) * 10;
                           const imageUrl = listing.images?.[0];
                           const priceText =
-                            listing.priceType === "range"
+                            listing.priceType === "discussion"
+                              ? "Open to discussion"
+                              : listing.priceType === "range"
                               ? `₹${Number(listing.priceMin ?? 0).toLocaleString('en-IN')} - ₹${Number(listing.priceMax ?? 0).toLocaleString('en-IN')}`
                               : listing.price
                                 ? `₹${Number(listing.price).toLocaleString('en-IN')}`
@@ -3363,8 +3365,8 @@ const Landing = () => {
                     const d = hit.data;
                     const isEnquiry = hit.type === 'enquiry';
                     const priceText = isEnquiry
-                      ? (d.budgetMax && d.budgetMin ? `₹${Number(d.budgetMin).toLocaleString('en-IN')} - ₹${Number(d.budgetMax).toLocaleString('en-IN')}` : d.budget ? `₹${Number(d.budget).toLocaleString('en-IN')}` : 'Budget —')
-                      : (d.priceType === 'range' ? `₹${Number(d.priceMin ?? 0).toLocaleString('en-IN')} - ₹${Number(d.priceMax ?? 0).toLocaleString('en-IN')}` : d.price ? `₹${Number(d.price).toLocaleString('en-IN')}` : '₹—');
+                      ? (d.budgetOpenToDiscussion ? 'Open to discussion' : d.budgetMax && d.budgetMin ? `₹${Number(d.budgetMin).toLocaleString('en-IN')} - ₹${Number(d.budgetMax).toLocaleString('en-IN')}` : d.budget ? `₹${Number(d.budget).toLocaleString('en-IN')}` : 'Budget —')
+                      : (d.priceType === 'discussion' ? 'Open to discussion' : d.priceType === 'range' ? `₹${Number(d.priceMin ?? 0).toLocaleString('en-IN')} - ₹${Number(d.priceMax ?? 0).toLocaleString('en-IN')}` : d.price ? `₹${Number(d.price).toLocaleString('en-IN')}` : '₹—');
                     return (
                       <button
                         key={`${hit.type}-${d.id}`}

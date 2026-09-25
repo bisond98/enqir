@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -28,6 +28,7 @@ import { friendlyError } from '@/utils/friendlyError';
 
 function formatPrice(l: SellListing) {
   const fmt = (n: number) => n.toLocaleString('en-IN');
+  if ((l as any).priceType === 'discussion') return 'Open to discussion';
   if (l.priceType === 'range') return `₹${fmt(l.priceMin ?? 0)} – ₹${fmt(l.priceMax ?? 0)}`;
   return l.price ? `₹${fmt(l.price)}` : '₹—';
 }
@@ -622,7 +623,13 @@ export default function ListingDetail() {
                 );
               })()}
 
-              <span className="bg-white text-black border border-black font-black text-sm sm:text-base rounded-xl px-3.5 py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+              {listing.priceType === 'discussion' ? (
+                <span className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-black bg-green-600 text-white border border-black px-3 py-1.5 rounded-xl">
+                  <MessageCircle className="h-3.5 w-3.5 text-white" /> Open to discussion
+                </span>
+              ) : (
+                <span className="bg-white text-black border border-black font-black text-sm sm:text-base rounded-xl px-3.5 py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+              )}
 
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
                 <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-3 py-1.5 rounded-xl uppercase">

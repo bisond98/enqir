@@ -96,6 +96,7 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
 
 function formatPrice(l: SellListing) {
   const fmt = (n: number) => n.toLocaleString('en-IN');
+  if ((l as any).priceType === 'discussion') return 'Open to discussion';
   if (l.priceType === 'range') return `₹${fmt(l.priceMax ?? l.priceMin ?? 0)}`;
   return l.price ? `₹${fmt(l.price)}` : '₹—';
 }

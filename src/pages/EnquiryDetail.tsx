@@ -26,7 +26,8 @@ import {
   ImageIcon,
   Flag,
   Fuel,
-  Search
+  Search,
+  MessageCircle
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import ShareMenu from '@/components/ShareMenu';
@@ -50,6 +51,8 @@ interface Enquiry {
   category: string;
   categories: string[];
   budget: number;
+  /** True when the buyer selected "Open to discussion" instead of a specific budget */
+  budgetOpenToDiscussion?: boolean;
   location: string;
   deadline: any;
   status: 'pending' | 'live' | 'rejected' | 'completed';
@@ -879,6 +882,7 @@ const EnquiryDetail = () => {
                         : null;
                       const chips = [
                         ...jobChips,
+                        enquiry.budgetOpenToDiscussion && { label: 'Budget', value: 'Open to discussion', highlight: true },
                         accommodationLabel && { label: 'Stay type', value: accommodationLabel, highlight: true },
                         d.genderPreference && d.genderPreference !== 'any' && { label: 'Gender', value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : 'Mixed', highlight: true },
                         d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType, highlight: true },
@@ -961,7 +965,15 @@ const EnquiryDetail = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Budget</p>
-                          <p className="text-base sm:text-base md:text-lg font-bold text-black break-words leading-tight">{formatBudget(enquiry.budget)}</p>
+                          <p className="text-base sm:text-base md:text-lg font-bold text-black break-words leading-tight">
+                            {enquiry.budgetOpenToDiscussion ? (
+                              <span className="inline-flex items-center gap-1.5">
+                                <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-black" /> Open to discussion
+                              </span>
+                            ) : (
+                              formatBudget(enquiry.budget)
+                            )}
+                          </p>
                         </div>
                       </div>
                     </div>

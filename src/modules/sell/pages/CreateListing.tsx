@@ -261,6 +261,11 @@ export default function CreateListing() {
   // Categories where New/Used condition makes no sense (properties, stays,
   // services, perishables & live animals) — hides the selector and chips
   const hideCondition = NO_CONDITION_CATEGORIES.has(category) || /-services$/.test(category);
+  // The Condition step (index 4) is skipped entirely when the primary category
+  // is 'service' — New/Used makes no sense for services and the step has no
+  // other fields for that category.
+  const skipDetailsStep = category === 'service';
+  const isSkippedStep = (s: number) => skipDetailsStep && s === 4;
   const [priceType, setPriceType] = useState<ListingPriceType>('fixed');
   const [price, setPrice] = useState<string>('');
   const [priceMin, setPriceMin] = useState<string>('');
@@ -364,6 +369,7 @@ export default function CreateListing() {
         if (d.condition) setCondition(d.condition);
         if (d.priceType) setPriceType(d.priceType);
         if (d.price) setPrice(d.price);
+        if (d.priceOption) setPriceOption(d.priceOption);
         if (d.priceMin) setPriceMin(d.priceMin);
         if (d.priceMax) setPriceMax(d.priceMax);
         if (d.tags) setTags(d.tags);
@@ -447,7 +453,9 @@ export default function CreateListing() {
   }
 
   const totalSteps = STEPS.length;
-  const progressPct = ((step + 1) / totalSteps) * 100;
+  // Visible steps exclude the Condition step when it's skipped (service category)
+  const visibleSteps = skipDetailsStep ? totalSteps - 1 : totalSteps;
+  const progressPct = ((step + 1) / visibleSteps) * 100;
 
   const onAddImages = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -512,6 +520,9 @@ export default function CreateListing() {
       return next;
     });
 
+  // "Open to discussion" — price dropdown alternative to typing a number
+  const [priceOption, setPriceOption] = useState<'' | 'discussion'>('');
+
   const formatPriceInput = (value: string): string => {
     const digits = value.replace(/[^\d]/g, '');
     if (!digits) return '';
@@ -519,6 +530,8 @@ export default function CreateListing() {
   };
 
   const validatePriceFields = (): boolean => {
+    if (priceOption === 'discussion') return true;
+    if (priceType === 'discussion') return true;
     if (priceType === 'fixed') {
       if (!price.trim()) {
         toast({ title: 'Missing price', description: 'Enter a price.', variant: 'destructive' });
@@ -609,13 +622,21 @@ export default function CreateListing() {
   const goNext = () => {
     if (!canAdvanceFromStep(step)) return;
     setAnimDir('up');
-    setStep((prev) => Math.min(prev + 1, totalSteps - 1));
+    setStep((prev) => {
+      let next = prev + 1;
+      while (next < totalSteps - 1 && isSkippedStep(next)) next += 1;
+      return Math.min(next, totalSteps - 1);
+    });
     scrollToInput();
   };
 
   const goBack = () => {
     setAnimDir('down');
-    setStep((prev) => Math.max(prev - 1, 0));
+    setStep((prev) => {
+      let next = prev - 1;
+      while (next > 0 && isSkippedStep(next)) next -= 1;
+      return Math.max(next, 0);
+    });
     scrollToInput();
   };
 
@@ -678,9 +699,11 @@ export default function CreateListing() {
       setIsPublished(true);
 
       // Create the listing in the background
-      const fixedPrice = priceType === 'fixed' ? Number(price.replace(/,/g, '')) : null;
-      const rangeMin = priceType === 'range' ? Number(priceMin) : null;
-      const rangeMax = priceType === 'range' ? Number(priceMax) : null;
+      const effectivePriceType: ListingPriceType = priceOption === 'discussion' ? 'discussion' : priceType;
+      const fixedPrice = effectivePriceType === 'fixed' ? Number(price.replace(/,/g, '')) : null;
+      const rangeMin = effectivePriceType === 'range' ? Number(priceMin) : null;
+      const rangeMax = effectivePriceType === 'range' ? Number(priceMax) : null;
+      // "Open to discussion": no numeric price is saved
 
       // Combine capsule number+unit parts into saved values (e.g., "25 Cents")
       const estateSaved: Record<string, string> = {};
@@ -700,7 +723,7 @@ export default function CreateListing() {
         longitude: mapLocation?.longitude ?? null,
         mapAddress: mapLocation ?? null,
         condition: hideCondition ? ('' as ListingCondition) : condition,
-        priceType,
+        priceType: effectivePriceType,
         price: fixedPrice,
         priceMin: rangeMin,
         priceMax: rangeMax,
@@ -711,7 +734,7 @@ export default function CreateListing() {
       toast({ title: 'Published', description: 'Your listing is live.' });
       // AI Match engine: how many buyers need this? Notify the seller (non-blocking)
       import('../services/matchEngine').then(({ matchesForListing, notifyMatch }) =>
-        matchesForListing({ id: newListingId, sellerId: user.uid, title: title.trim(), description: description.trim(), category, categories: selectedCats.length > 0 ? selectedCats : [category], location, condition, priceType, price: fixedPrice, priceMin: rangeMin, priceMax: rangeMax, tags: parsedTags, images, details: Object.keys(details).length > 0 ? details : null, status: 'live' })
+        matchesForListing({ id: newListingId, sellerId: user.uid, title: title.trim(), description: description.trim(), category, categories: selectedCats.length > 0 ? selectedCats : [category], location, condition, priceType: effectivePriceType, price: fixedPrice, priceMin: rangeMin, priceMax: rangeMax, tags: parsedTags, images, details: Object.keys(details).length > 0 ? details : null, status: 'live' })
           .then((matches) => {
             if (matches.length > 0) {
               notifyMatch({
@@ -1468,13 +1491,38 @@ export default function CreateListing() {
                     <Input
                       id="price-fixed"
                       value={price}
-                      onChange={(e) => setPrice(formatPriceInput(e.target.value))}
+                      onChange={(e) => {
+                        setPrice(formatPriceInput(e.target.value));
+                        if (formatPriceInput(e.target.value)) setPriceOption('');
+                      }}
                       placeholder="25,000"
                       inputMode="decimal"
                       maxLength={13}
-                      className="rounded-2xl h-12 sm:h-14 text-base border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
+                      className="rounded-2xl h-12 sm:h-14 text-base border-2 border-black focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
                       autoFocus
                     />
+                  </div>
+                </div>
+                {/* Open to discussion — alternative to entering a specific price */}
+                <div className="flex items-center justify-center gap-3">
+                  <Label htmlFor="price-option" className="text-[10px] sm:text-xs font-bold whitespace-nowrap">
+                    Not fixed yet?
+                  </Label>
+                  <div className="relative">
+                    <select
+                      id="price-option"
+                      value={priceOption}
+                      onChange={(e) => {
+                        const v = e.target.value as '' | 'discussion';
+                        setPriceOption(v);
+                        if (v === 'discussion') setPrice('');
+                      }}
+                      className={`appearance-none rounded-2xl h-12 sm:h-14 w-fit max-w-full font-medium border-2 border-black focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${priceOption === 'discussion' ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
+                    >
+                      <option value="">Click here</option>
+                      <option value="discussion">Open to discussion</option>
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                   </div>
                 </div>
                 {fieldsForCategoryStep(category, 'price').map((f) => (
@@ -1495,7 +1543,7 @@ export default function CreateListing() {
                     </div>
                   </div>
                 ))}
-                <div className="space-y-2">
+                <div className="space-y-2 !mt-8">
                   <Label className="text-[10px] sm:text-xs font-bold flex items-center gap-2">
                     <Upload className="h-3.5 w-3.5" />
                     Photos (up to 5)
@@ -1587,7 +1635,7 @@ export default function CreateListing() {
                         <div className="p-4">
                           <h3 className="font-black text-base sm:text-lg text-black leading-snug">{title || 'Untitled listing'}</h3>
                           <div className="flex items-baseline gap-2 mt-1.5">
-                            <span className="text-lg sm:text-xl font-black text-black">{price ? `₹${price}` : 'Price not set'}</span>
+                            <span className="text-lg sm:text-xl font-black text-black">{price ? `₹${price}` : priceOption === 'discussion' ? 'Open to discussion' : 'Price not set'}</span>
                           </div>
                           <div className="flex flex-wrap items-center gap-1.5 mt-3">
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5">
@@ -1662,7 +1710,7 @@ export default function CreateListing() {
                 onClick={() => {
                   localStorage.setItem(STORAGE_KEY, JSON.stringify({
                     title, description, category, categories: selectedCats, location, condition,
-                    priceType, price, priceMin, priceMax, tags, images, details, estateType
+                    priceType, priceOption, price, priceMin, priceMax, tags, images, details, estateType
                   }));
                   navigate('/profile?returnTo=/sell/new');
                 }}
@@ -1672,7 +1720,7 @@ export default function CreateListing() {
                   <ShieldCheck className="h-5 w-5 text-white" />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-xs sm:text-sm font-bold text-white">Verify Your Profile <span className="text-blue-200 font-normal">(Optional)</span></p>
+                  <p className="text-xs sm:text-sm font-bold text-white">Verify Your Profile <span className="text-[8px] sm:text-[9px] text-blue-200 font-normal">(Optional)</span></p>
                   <p className="text-[10px] sm:text-[11px] text-blue-100">Get a trust badge</p>
                 </div>
                 <ChevronRight className="h-4 w-4 text-white/70 flex-shrink-0" />
@@ -1699,7 +1747,7 @@ export default function CreateListing() {
             <div className="mt-6">
               <Label htmlFor="listing-mobile" className="text-xs font-bold flex items-center gap-2">
                 <Phone className="h-3.5 w-3.5" />
-                Mobile Number <span className="text-[9px] text-slate-500 font-normal">(Optional)</span>
+                Mobile Number <span className="text-[7px] text-slate-500 font-normal">(Optional)</span>
               </Label>
               <div className="flex gap-1.5 mt-1.5">
                 <select
@@ -1746,7 +1794,7 @@ export default function CreateListing() {
                   className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
                 />
               </div>
-              <p className="text-[8px] sm:text-[9px] text-slate-400 font-medium mt-1.5 text-right">
+              <p className="text-[6px] sm:text-[7px] text-slate-400 font-medium mt-1.5 text-right">
                 Connect with privacy
               </p>
             </div>
@@ -1777,7 +1825,7 @@ export default function CreateListing() {
                 >
                   <span className="relative z-10">{publishing ? 'Selling…' : 'Sell'}</span>
                 </Button>
-                <p className="text-[7px] sm:text-[9px] text-center text-slate-400 font-medium mt-2">
+                <p className="text-[6px] sm:text-[7px] text-center text-slate-400 font-medium mt-2">
                   We do not offer anything for free to make you the product.
                 </p>
               </div>

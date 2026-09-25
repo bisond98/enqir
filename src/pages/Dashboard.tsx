@@ -2257,7 +2257,7 @@ const Dashboard = () => {
                             <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 overflow-visible min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
                               <div className="text-center mt-8 sm:mt-10 lg:mt-8 xl:mt-10 mb-2 sm:mb-2.5">
                                 <p className="text-base sm:text-lg font-black text-gray-900 leading-snug tracking-tight">
-                                  {listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
+                                  {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
                                 </p>
                                 {listing.location && (
                                   <p className="text-[10px] sm:text-xs font-bold text-gray-600 flex items-center justify-center gap-1 mt-1.5">
@@ -2313,7 +2313,7 @@ const Dashboard = () => {
                                 <span className="flex-shrink-0 inline-flex items-center text-[9px] font-black text-white bg-red-600 border-[0.5px] border-black rounded-md px-1.5 py-0.5 uppercase tracking-wide">For Sale</span>
                               </div>
                               <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                <span className="text-[10px] font-black text-gray-900 bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">{listing.price ? `₹${listing.price.toLocaleString('en-IN')}` : 'Price on request'}</span>
+                                <span className="text-[10px] font-black text-gray-900 bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">{(listing as any).priceType === 'discussion' ? 'Open to discussion' : listing.price ? `₹${listing.price.toLocaleString('en-IN')}` : 'Price on request'}</span>
                                 {listing.location && <span className="text-[10px] font-bold text-black bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">• {listing.location}</span>}
                               </div>
                               <Button
