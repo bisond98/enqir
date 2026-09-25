@@ -264,6 +264,10 @@ export default function Marketplace() {
   useEffect(() => {
     setPage(0);
     load();
+    // ⏱️ Watchdog: if the query hangs (stuck long-poll / corrupted offline
+    // cache), stop the spinner after 12s instead of showing “Searching…” forever.
+    const watchdog = setTimeout(() => setLoading(false), 12000);
+    return () => clearTimeout(watchdog);
   }, [search, category, location]);
 
   // Live natural-language search: parse while typing and AUTO-APPLY (debounced) —

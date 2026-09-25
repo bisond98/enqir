@@ -667,8 +667,16 @@ export default function EnquiryWall() {
     // 🚀 FIX: Start with query without orderBy to get ALL documents (no 100 limit)
     tryWithoutOrder();
 
+    // ⏱️ Watchdog: if no snapshot arrives within 12s (stuck long-poll, blocked
+    // network, or corrupted IndexedDB cache), stop the spinner instead of
+    // spinning forever. A live onSnapshot still swaps results in when it lands.
+    const watchdog = setTimeout(() => {
+      setLoading((prev) => (prev ? false : prev));
+    }, 12000);
+
     // Cleanup subscription on unmount
     return () => {
+      clearTimeout(watchdog);
       if (unsubscribe) unsubscribe();
     };
   }, []);
@@ -5289,8 +5297,7 @@ export default function EnquiryWall() {
         className="flex flex-col flex-grow bg-white"
         style={{
           touchAction: 'pan-y pinch-zoom', // Allow vertical scroll but prevent double-tap zoom
-          WebkitTextSizeAdjust: '100%', // Prevent text size adjustment that triggers zoom
-          msTextSizeAdjust: '100%'
+          WebkitTextSizeAdjust: '100%' // Prevent text size adjustment that triggers zoom
         }}
       >
         {/* Header - Matching Seller Form Background - Full Width - Dark High Depth Black */}
