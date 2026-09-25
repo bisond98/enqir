@@ -2066,7 +2066,19 @@ const EnquiryResponses = () => {
     const files = event.target.files;
     if (files) {
       const newFiles = Array.from(files);
-      setAttachments(prev => [...prev, ...newFiles]);
+      // Enforce a 5-image cap for chat attachments
+      const isImageBatch = newFiles.length > 0 && newFiles.every(f => f.type.startsWith('image/'));
+      if (isImageBatch) {
+        const existingImages = attachments.filter(f => f.type.startsWith('image/')).length;
+        const remaining = 5 - existingImages;
+        const allowed = newFiles.slice(0, Math.max(0, remaining));
+        if (newFiles.length > allowed.length) {
+          toast({ title: 'Only 5 images allowed', description: `Only ${Math.max(0, remaining)} more image${remaining === 1 ? '' : 's'} could be added — extra selected images were skipped.`, variant: 'destructive' });
+        }
+        setAttachments(prev => [...prev, ...allowed]);
+      } else {
+        setAttachments(prev => [...prev, ...newFiles]);
+      }
     }
   };
 
@@ -3960,7 +3972,7 @@ const EnquiryResponses = () => {
                                   <input
                                     type="file"
                                     accept="image/*"
-                                    multiple
+                                    multiple={attachments.filter(f => f.type.startsWith('image/')).length < 4}
                                     onChange={handleFileUpload}
                                     className="hidden"
                                   />

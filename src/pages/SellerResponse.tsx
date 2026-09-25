@@ -228,6 +228,7 @@ const SellerResponse = () => {
   // Synchronous re-entry lock: prevents double-tap / double-fired payment callback
   // from creating two submission documents (state updates are async, refs are not)
   const submitLockRef = useRef(false);
+  const responseImageInputRef = useRef<HTMLInputElement>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [formProgress, setFormProgress] = useState(0);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -626,7 +627,7 @@ const SellerResponse = () => {
         urls.push(url);
       }
       if (files.length > selectedFiles.length) {
-        toast({ title: 'Only 5 images allowed', description: 'Extra selected images were skipped.' });
+        toast({ title: 'Only 5 images allowed', description: `Only ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'} could be added — extra selected images were skipped.` });
       }
       setImages((prev) => [...prev, ...urls].slice(0, 5));
       // Clear progress after a short delay
@@ -1636,10 +1637,11 @@ const SellerResponse = () => {
                   <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
                     <input
                       id="response-images"
+                      ref={responseImageInputRef}
                       type="file"
-                      multiple
+                      multiple={images.length < 4}
                       accept="image/*"
-                      onChange={(e) => onAddImages(e.target.files)}
+                      onChange={(e) => { onAddImages(e.target.files); if (responseImageInputRef.current) responseImageInputRef.current.value = ''; }}
                       disabled={uploading || images.length >= 5}
                       className="hidden"
                     />

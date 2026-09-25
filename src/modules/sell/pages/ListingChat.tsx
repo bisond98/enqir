@@ -894,7 +894,7 @@ export default function ListingChat() {
                               </div>
                             </div>
                           )}
-                          <input ref={imageInputRef} type="file" accept="image/*" multiple onChange={(e) => { setAttachments(prev => [...prev, ...Array.from(e.target.files || [])]); setShowAttachmentOptions(false); if (imageInputRef.current) imageInputRef.current.value = ''; }} className="hidden" />
+                          <input ref={imageInputRef} type="file" accept="image/*" multiple={attachments.filter(f => f.type.startsWith('image/')).length < 4} onChange={(e) => { const incoming = Array.from(e.target.files || []); const existingImages = attachments.filter(f => f.type.startsWith('image/')).length; const remaining = 5 - existingImages; const allowedImages = incoming.filter(f => f.type.startsWith('image/')).slice(0, Math.max(0, remaining)); if (existingImages + incoming.filter(f => f.type.startsWith('image/')).length > 5) { toast({ title: 'Only 5 images allowed', description: `Only ${Math.max(0, remaining)} more image${remaining === 1 ? '' : 's'} could be added — extra selected images were skipped.`, variant: 'destructive' }); } setAttachments(prev => [...prev, ...allowedImages]); setShowAttachmentOptions(false); if (imageInputRef.current) imageInputRef.current.value = ''; }} className="hidden" />
                           <input ref={fileInputRef} type="file" multiple onChange={(e) => { setAttachments(prev => [...prev, ...Array.from(e.target.files || [])]); setShowAttachmentOptions(false); if (fileInputRef.current) fileInputRef.current.value = ''; }} className="hidden" />
                         </div>
                         <div className="flex-1 relative">

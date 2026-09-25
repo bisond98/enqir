@@ -538,7 +538,7 @@ export default function ListingDetail() {
               )}
             </div>
             {(listing.images.length > 1) && (
-              <div className="flex justify-center gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide">
+              <div className="flex justify-end gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide">
                 {listing.images.map((url, idx) => (
                   <button
                     key={url}
@@ -591,7 +591,7 @@ export default function ListingDetail() {
               const capitalized = sentence.charAt(0).toUpperCase() + sentence.slice(1);
               return (
                 <div className="flex justify-center mt-2">
-                  <p className="text-base sm:text-lg font-bold text-white bg-red-600 border border-black rounded-xl px-5 py-3 shadow-[0_3px_0_0_rgba(0,0,0,0.85)] text-center">{capitalized}</p>
+                  <p className="text-xs sm:text-sm font-bold text-white bg-red-600 border border-black rounded-lg px-3 py-1.5 text-center">{capitalized}</p>
                 </div>
               );
             })()}
@@ -605,17 +605,17 @@ export default function ListingDetail() {
                 return (
                   <>
                     {showDealChip && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-green-600 text-white border border-black px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-green-600 text-white border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                         For {detailsRec.listingFor}
                       </span>
                     )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {d.houseBhk}
                       </span>
                     )}
@@ -624,19 +624,19 @@ export default function ListingDetail() {
               })()}
 
               {listing.priceType === 'discussion' ? (
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-black bg-green-600 text-white border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-600 text-white border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <IndianRupee className="h-3.5 w-3.5 text-white" /> Open to discussion
                 </span>
               ) : (
-                <span className="bg-white text-black border border-black font-black text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+                <span className="bg-white text-black border-[0.5px] border-black/40 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
               )}
 
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                   {listing.condition}
                 </span>
               )}
-                <span className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <MapPin className="h-4 w-4 text-red-500" />{listing.location}
                 </span>
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
@@ -663,7 +663,7 @@ export default function ListingDetail() {
                     const label = key in detailLabels ? detailLabels[key] : '';
                     const brandLogo = key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
-                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
                         {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
@@ -679,13 +679,13 @@ export default function ListingDetail() {
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                     {tag}
                   </span>
                 ))
               )}
               {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black bg-white text-black border border-black px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <Calendar className="h-3.5 w-3.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
@@ -694,11 +694,11 @@ export default function ListingDetail() {
             {/* Description */}
             {listing.description && (
               <div className="border-t border-gray-100 pt-5 mb-5 mt-3">
-                <p className="text-[12px] text-black whitespace-pre-wrap leading-relaxed font-bold border border-black rounded-xl p-5" style={{ color: '#000', WebkitTextStroke: '0.2px black', fontWeight: 800 }}>{listing.description}</p>
+                <p className="text-[12px] text-black whitespace-pre-wrap leading-relaxed font-bold" style={{ color: '#000', WebkitTextStroke: '0.2px black', fontWeight: 800 }}>{listing.description}</p>
               </div>
             )}
 
-              <div className="w-full flex items-center justify-between mt-4 mb-0.5 gap-2">
+              <div className="w-full flex items-center justify-between mt-8 mb-0.5 gap-2">
                 <button
                   onClick={toggleSave}
                   aria-label={saved ? 'Remove from saved' : 'Save listing'}
@@ -733,9 +733,7 @@ export default function ListingDetail() {
                       onClick={handleCallClick}
                       className="relative w-full !h-14 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 touch-manipulation select-none flex items-center justify-center"
                     >
-                      <span className="w-9 h-9 rounded-full border-[0.5px] border-white flex items-center justify-center mr-3 bg-white/10">
-                        <Phone className="h-4 w-4 text-white" />
-                      </span>
+                      <Phone className="h-4 w-4 text-white mr-2" />
                       <span>Call Seller</span>
                     </button>
                   )}
@@ -786,9 +784,7 @@ export default function ListingDetail() {
                         disabled={callingPayment}
                         className="relative w-full !h-14 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 touch-manipulation select-none flex items-center justify-center"
                       >
-                        <span className="w-9 h-9 rounded-full border-[0.5px] border-white flex items-center justify-center mr-3 bg-white/10">
-                          <Phone className="h-4 w-4 text-white" />
-                        </span>
+                        <Phone className="h-4 w-4 text-white mr-2" />
                         <span>{callingPayment ? 'Opening payment…' : 'Call Seller'}</span>
                       </button>
                     ) : null}
@@ -805,11 +801,11 @@ export default function ListingDetail() {
           const totalPages = Math.ceil(responses.length / RESPONSES_PER_PAGE);
           const pagedResponses = responses.slice(responsePage * RESPONSES_PER_PAGE, (responsePage + 1) * RESPONSES_PER_PAGE);
           return (
-          <div className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] overflow-hidden">
+          <div className="border-[0.5px] border-black/40 rounded-2xl overflow-hidden">
             <div className="bg-black p-3">
               <div className="flex items-center gap-2">
                 <UserCircle className="h-4 w-4 text-white" />
-                <h3 className="text-sm font-bold text-white">Buyer Responses ({responses.length})</h3>
+                <h3 className="text-sm font-bold font-chip text-white">Buyer Responses ({responses.length})</h3>
               </div>
             </div>
             <div className="p-4 space-y-2">
@@ -821,14 +817,14 @@ export default function ListingDetail() {
                   key={r.id}
                   to={`/sell/listing/${listing?.id}/chat/${r.buyerId}`}
                   id={`response-${r.buyerId}`}
-                  className={`block border rounded-xl p-3 hover:bg-gray-50 transition-all shadow-[0_2px_0_0_rgba(0,0,0,0.05)] ${r.buyerId === targetBuyerId ? 'border-black border-2 bg-yellow-50' : 'border-black/10'}`}
+                  className={`block rounded-2xl p-3 !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 hover:bg-gray-50 touch-manipulation select-none ${r.buyerId === targetBuyerId ? 'bg-yellow-50' : 'bg-white'}`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase">{r.buyerName || 'Buyer'}</p>
-                      <p className="text-xs text-gray-700 line-clamp-2 mt-0.5">{r.message}</p>
+                      <p className="text-[10px] font-bold font-chip text-gray-400 uppercase">{r.buyerName || 'Buyer'}</p>
+                      <p className="text-xs font-chip text-gray-700 line-clamp-2 mt-0.5">{r.message}</p>
                       {r.offeredPrice != null && (
-                        <span className="inline-flex items-center gap-0.5 text-sm font-black text-black mt-1.5">
+                        <span className="inline-flex items-center gap-0.5 text-sm font-bold font-chip text-black mt-1.5">
                           <IndianRupee className="h-3.5 w-3.5" />{r.offeredPrice.toLocaleString('en-IN')}
                         </span>
                       )}
@@ -921,8 +917,6 @@ function MessageSellerInline({
         <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-600"><MessageSquare className="h-3.5 w-3.5 text-white" /></span>
         Connect Seller
       </h3>
-      {/* Call Seller — premium shortcut above Connect */}
-      {callButton}
       <div>
         <Label className="text-[7px] font-semibold text-gray-500 uppercase mb-1.5 block">Your Price (optional)</Label>
         <div className="relative">
@@ -971,7 +965,7 @@ function MessageSellerInline({
           <input
             ref={fileInputRef}
             type="file"
-            multiple
+            multiple={attachedFiles.length < 4}
             accept="image/*,application/pdf,.doc,.docx"
             className="hidden"
             onChange={handleFileAttach}
@@ -1036,6 +1030,8 @@ function MessageSellerInline({
         <Send className="h-4 w-4 mr-2 relative z-10" />
         <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Message') : 'Sign in to message'}</span>
       </Button>
+      {/* Call Seller — below the message button */}
+      {callButton}
     </div>
   );
 }

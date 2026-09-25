@@ -309,10 +309,10 @@ const DetailedResponses = () => {
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
                 {visibleResponses.map((response, index) => (
-                  <Card key={response.id} className={`border-2 shadow-sm transition-all duration-200 rounded-xl sm:rounded-2xl overflow-hidden ${
+                  <Card key={response.id} className={`border-[0.5px] border-black/40 rounded-xl sm:rounded-2xl overflow-hidden transition-all duration-200 ${
                     isEnquiryExpired 
-                      ? 'border-orange-300 opacity-75 pointer-events-none' 
-                      : 'border-blue-200 hover:shadow-md'
+                      ? 'border-orange-300/60 opacity-75 pointer-events-none' 
+                      : 'hover:border-black/60'
                   }`}>
                     {/* Header - Gray Background */}
                     <div className="bg-black px-2 sm:px-3 py-2 sm:py-2.5">
@@ -335,8 +335,8 @@ const DetailedResponses = () => {
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0">
-                          <div className="text-base sm:text-lg font-bold text-emerald-400">₹{response.price}</div>
-                          <div className="text-[9px] sm:text-[10px] text-gray-400">Starting price</div>
+                          <div className="text-base sm:text-lg font-bold font-chip text-emerald-400">₹{response.price}</div>
+                          <div className="text-[9px] sm:text-[10px] font-chip text-gray-400">Starting price</div>
                         </div>
                       </div>
                     </div>
@@ -358,7 +358,7 @@ const DetailedResponses = () => {
                             {response.imageUrls.map((imageUrl, imgIndex) => (
                               <div
                                 key={imgIndex}
-                                className="aspect-square bg-slate-100 rounded-md sm:rounded-lg overflow-hidden border-4 border-black cursor-pointer hover:opacity-90 transition-opacity"
+                                className="aspect-square bg-slate-100 rounded-md sm:rounded-lg overflow-hidden border-[0.5px] border-black/40 cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => handleImageClick(imageUrl)}
                               >
                                 <img

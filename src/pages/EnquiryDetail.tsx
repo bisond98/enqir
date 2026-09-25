@@ -924,23 +924,23 @@ const EnquiryDetail = () => {
                         <div className="flex flex-wrap justify-center gap-1.5 mt-3">
                           {chips.map((c) => (
                             c.highlight && (c.label === 'Looking to' || c.label === 'Land / Plot') ? (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
                                 {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
                                 {c.value}
                               </span>
                             ) : c.highlight && (c.label === 'Stay type' || c.label === null) ? (
-                              <span key={c.label || c.value} className="inline-flex items-baseline gap-2 text-sm sm:text-base font-black text-white bg-red-600 border border-black rounded-lg px-3 py-1.5 whitespace-nowrap">
+                              <span key={c.label || c.value} className="inline-flex items-baseline gap-2 text-sm sm:text-base font-black font-chip text-white bg-red-600 border border-black rounded-lg px-3 py-1.5 whitespace-nowrap">
                                 {c.label && <span className="text-[7px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
                                 <span className="whitespace-nowrap">{c.value}</span>
                               </span>
                             ) : c.highlight ? (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
                                 {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black bg-white border border-black/15 rounded-lg px-2 py-1">
                                 {!(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.label && <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
@@ -954,7 +954,7 @@ const EnquiryDetail = () => {
 
                     {/* Description — below the detail chips */}
                     <div className="mt-6 sm:mt-7">
-                                            <div className="bg-gray-200 rounded-2xl p-4 sm:p-5 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                                            <div className="bg-gray-200 rounded-2xl p-4 sm:p-5 !border-[0.5px] !border-black/40 relative overflow-hidden">
                         <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-2 uppercase tracking-wide" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>Description</h3>
                         <p className="text-xs sm:text-xs md:text-sm leading-relaxed" style={{ lineHeight: '1.7', color: '#000', WebkitTextStroke: '0.2px black', fontWeight: 800 }}>{enquiry.description}</p>
                       </div>
@@ -962,7 +962,7 @@ const EnquiryDetail = () => {
                   </div>
 
                   <div className="flex flex-wrap items-stretch gap-3 sm:gap-4">
-                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -983,7 +983,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -996,7 +996,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -1024,7 +1024,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -1043,7 +1043,7 @@ const EnquiryDetail = () => {
                   {/* Reference Images Section - now below the Budget/Location/Deadline/Posted chips */}
                   {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
                     <div className="mt-5 sm:mt-6">
-                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
                         <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide flex items-center gap-1.5" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>
                           <ImageIcon className="h-3 w-3 sm:h-3 sm:w-3" />
                           Reference Images ({enquiry.referenceImages.length})
@@ -1078,7 +1078,7 @@ const EnquiryDetail = () => {
 
                   {enquiry.notes && (
                     <div className="mt-5 sm:mt-6 mb-4">
-                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[1.5px] !border-black relative overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
                         <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>Additional Notes</h3>
                         <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
                       </div>

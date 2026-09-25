@@ -289,6 +289,7 @@ export default function PostEnquiry() {
 
   // Session-drop handling: no toast — the sign-in prompt below speaks for itself.
   const sessionToastShown = useRef(false);
+  const enquiryImageInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (authLoading) return;                 // wait for session restore to settle
     if (sessionToastShown.current) return;   // once per page open
@@ -1635,7 +1636,7 @@ export default function PostEnquiry() {
         urls.push(url);
       }
       if (files.length > selectedFiles.length) {
-        toast({ title: 'Only 5 images allowed', description: 'Extra selected images were skipped.' });
+        toast({ title: 'Only 5 images allowed', description: `Only ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'} could be added — extra selected images were skipped.` });
       }
       setReferenceImageUrls(prev => [...prev, ...urls].slice(0, 5));
       // Clear progress after a short delay
@@ -3287,10 +3288,11 @@ export default function PostEnquiry() {
                           <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
                             <input
                               id="enquiry-ref-images"
+                              ref={enquiryImageInputRef}
                               type="file"
-                              multiple
+                              multiple={referenceImageUrls.length < 4}
                               accept="image/*"
-                              onChange={(e) => onAddReferenceImages(e.target.files)}
+                              onChange={(e) => { onAddReferenceImages(e.target.files); if (enquiryImageInputRef.current) enquiryImageInputRef.current.value = ''; }}
                               disabled={uploadingImages || referenceImageUrls.length >= 5}
                               className="hidden"
                             />

@@ -249,6 +249,28 @@ export default function CreateListing() {
   useEffect(() => {
     setCategory(selectedCats[0] ?? 'other');
   }, [selectedCats]);
+  // When the primary category changes, drop detail fields that belong to a
+  // different category (e.g. 'Hostel' left over from a accommodations draft
+  // must not ship with an electronics listing).
+  useEffect(() => {
+    setDetails((prev) => {
+      const validKeys = new Set([
+        ...fieldsForCategoryStep(category, 'title').map(f => f.key),
+        ...fieldsForCategoryStep(category, 'description').map(f => f.key),
+        ...fieldsForCategoryStep(category, 'details').map(f => f.key),
+        ...fieldsForCategoryStep(category, 'price').map(f => f.key),
+        'listingFor', // real-estate deal type, managed separately
+      ]);
+      const stale = Object.keys(prev).filter(k => !validKeys.has(k) && k !== 'landAreaNum' && k !== 'landAreaUnit' && k !== 'builtUpAreaNum' && k !== 'builtUpAreaUnit' && k !== 'houseAreaNum' && k !== 'houseAreaUnit');
+      // Estate area fields belong to real-estate only
+      const estateStale = category !== 'real-estate' ? ['landAreaNum','landAreaUnit','builtUpAreaNum','builtUpAreaUnit','houseAreaNum','houseAreaUnit','houseBhk'].filter(k => prev[k]) : [];
+      const toRemove = [...new Set([...stale.filter(k => !['landAreaNum','landAreaUnit','builtUpAreaNum','builtUpAreaUnit','houseAreaNum','houseAreaUnit'].includes(k)), ...estateStale])];
+      if (toRemove.length === 0) return prev;
+      const next = { ...prev };
+      toRemove.forEach(k => delete next[k]);
+      return next;
+    });
+  }, [category]);
   // Location is required to publish — starts empty so the user must pick one
   // (the 'Other' fallback default is no longer applied automatically).
   const [location, setLocation] = useState<string>('');
@@ -303,6 +325,7 @@ export default function CreateListing() {
 
   // Session-drop handling: no toast — the sign-in prompt below speaks for itself.
   const sessionToastShown = useRef(false);
+  const listingImageInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (authLoading) return;                 // wait for session restore to settle
     if (sessionToastShown.current) return;   // once per page open
@@ -485,7 +508,7 @@ export default function CreateListing() {
         urls.push(url);
       }
       if (files.length > selectedFiles.length) {
-        toast({ title: 'Only 5 images allowed', description: 'Extra selected images were skipped.' });
+        toast({ title: 'Only 5 images allowed', description: `Only ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'} could be added — extra selected images were skipped.` });
       }
       setImages((prev) => [...prev, ...urls].slice(0, 5));
       // Clear progress after a short delay
@@ -1556,10 +1579,11 @@ export default function CreateListing() {
                   <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
                     <input
                       id="listing-images"
+                      ref={listingImageInputRef}
                       type="file"
-                      multiple
+                      multiple={images.length < 4}
                       accept="image/*"
-                      onChange={(e) => onAddImages(e.target.files)}
+                      onChange={(e) => { onAddImages(e.target.files); if (listingImageInputRef.current) listingImageInputRef.current.value = ''; }}
                       disabled={uploading || images.length >= 5}
                       className="hidden"
                     />
