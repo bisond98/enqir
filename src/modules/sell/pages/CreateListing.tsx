@@ -200,7 +200,7 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
 };
 
 const STEPS = [
-  { key: 'category', label: 'Category', description: 'Pick what fits best' },
+  { key: 'category', label: 'Category', description: 'What are you selling?' },
   { key: 'title', label: 'Title', description: 'Name your listing' },
   { key: 'description', label: 'Description', description: 'Tell buyers more' },
   { key: 'location', label: 'Location', description: 'Where is the item?' },
@@ -840,7 +840,7 @@ export default function CreateListing() {
 
           <div id="step-title" className="text-center mb-6">
             <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">{STEPS[step].description}</p>
+            <p className="text-[9px] sm:text-[10px] text-slate-500 mt-1">{STEPS[step].description}</p>
           </div>
 
           <div key={step} className="flex-1 space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>

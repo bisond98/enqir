@@ -1997,7 +1997,7 @@ const Landing = () => {
             </div>
             {/* Sell Row - Mobile Only */}
             <div className="flex items-center justify-center gap-3 sm:hidden">
-              <Link to="/sell" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
+              <Link to="/sell/new" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
               <button className="w-40 h-40 border border-black bg-black text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative" style={{ overflow: 'visible' }}>
                 {/* Physical button depth effect */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />

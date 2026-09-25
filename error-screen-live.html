@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Enqir — Live Session-Expired Screen (exact replica)</title>
+<style>
+  /* Inline equivalents of the Tailwind classes found in the LIVE bundle at
+     enqir.in (index-C-FTrU-z.js) — this is exactly what production renders. */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;                      /* p-4 sm:p-6 */
+  }
+  .card {
+    width: 100%;
+    max-width: 24rem;                   /* max-w-sm */
+    background: #fff;
+    border-radius: 16px;                /* rounded-2xl sm:rounded-3xl */
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+    border: 2px solid #e2e8f0;
+    padding: 32px 20px;                 /* px-5 py-8 */
+    text-align: center;
+  }
+  @media (min-width: 640px) { .card { border-radius: 24px; padding: 56px 48px; } }
+  .logo {
+    color: #2563eb;                     /* text-blue-600 */
+    font-weight: 800;                   /* font-extrabold */
+    letter-spacing: -0.025em;           /* tracking-tight */
+    font-size: 36px;                    /* text-4xl sm:text-5xl */
+    margin-bottom: 8px;                 /* mb-2 */
+    line-height: 1;
+  }
+  @media (min-width: 640px) { .logo { font-size: 48px; } }
+  .expired {
+    font-size: 15px;                    /* text-[15px] sm:text-[17px] */
+    color: #334155;                     /* text-slate-700 */
+    margin-bottom: 40px;                /* mb-10 sm:mb-14 */
+  }
+  @media (min-width: 640px) { .expired { font-size: 17px; margin-bottom: 56px; } }
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: fit-content;                 /* !w-fit */
+    max-width: 100%;                    /* !max-w-full */
+    margin: 0 auto;                     /* !mx-auto */
+    height: 48px;                       /* !h-12 sm:!h-[52px] */
+    font-size: 15px;                    /* !text-[15px] sm:!text-base */
+    font-weight: 800;                   /* !font-extrabold */
+    border-radius: 12px;                /* !rounded-xl */
+    background: #2563eb;
+    color: #fff;
+    border: 1.5px solid #000;
+    box-shadow: 0 4px 0 0 rgba(0,0,0,.85);
+    padding: 0 28px;                    /* !px-7 sm:!px-8 */
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    font-family: inherit;
+  }
+  @media (min-width: 640px) { .btn { height: 52px; font-size: 16px; padding: 0 32px; } }
+  .btn:active { box-shadow: 0 1px 0 0 rgba(0,0,0,.85); transform: translateY(3px); }
+  .btn svg { width: 16px; height: 16px; }
+  .label {
+    position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    color: #64748b; background: #fff; border: 1.5px solid #cbd5e1;
+    border-radius: 999px; padding: 5px 12px; z-index: 10;
+  }
+</style>
+</head>
+<body>
+  <div class="label">Exact replica of the LIVE screen (verified in production bundle)</div>
+  <div class="card">
+    <div class="logo">Enqir</div>
+    <div class="expired">Your session expired</div>
+    <button class="btn" onclick="alert('On the live site this redirects to https://www.enqir.in')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+      Refresh Page
+    </button>
+  </div>
+  <script>
+    document.title = 'Enqir — LIVE session-expired screen';
+  </script>
+</body>
+</html>

@@ -26,7 +26,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import StaleBundleRefresher from "./components/StaleBundleRefresher";
 import { LoadingAnimation } from "./components/LoadingAnimation";
@@ -75,7 +75,6 @@ const AllChats = lazy(() => import("./pages/AllChats"));
 const HelpGuide = lazy(() => import("./pages/HelpGuide"));
 const MyChats = lazy(() => import("./pages/MyChats"));
 const ReportUser = lazy(() => import("./pages/ReportUser"));
-const SellHome = lazy(() => import("./modules/sell/pages/SellHome"));
 const CreateListing = lazy(() => import("./modules/sell/pages/CreateListing"));
 const Marketplace = lazy(() => import("./modules/sell/pages/Marketplace"));
 const ListingDetail = lazy(() => import("./modules/sell/pages/ListingDetail"));
@@ -214,7 +213,8 @@ const App = () => {
                   <Route path="/contact-us" element={<ContactUs />} />
                   <Route path="/help-guide" element={<ErrorBoundary><HelpGuide /></ErrorBoundary>} />
                   {/* Sell Listing Engine (isolated module) */}
-                  <Route path="/sell" element={<ErrorBoundary><SellHome /></ErrorBoundary>} />
+                  {/* /sell goes straight into the create-listing form (category step) — no intermediate home page */}
+                  <Route path="/sell" element={<Navigate to="/sell/new" replace />} />
                   <Route path="/sell/marketplace" element={<ErrorBoundary><Marketplace /></ErrorBoundary>} />
                   <Route path="/sell/listing/:id" element={<ErrorBoundary><ListingDetail /></ErrorBoundary>} />
                   <Route path="/sell/listing/:id/chat/:buyerId" element={<ErrorBoundary><AuthGuard><ListingChat /></AuthGuard></ErrorBoundary>} />

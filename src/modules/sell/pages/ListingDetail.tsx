@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -715,6 +715,12 @@ export default function ListingDetail() {
                   >
                     <Flag className="h-4 w-4" />
                   </button>
+                )}
+                {isOwner && (
+                  <span className="inline-flex items-center gap-1 text-[9px] font-black text-white bg-blue-600 border border-black rounded-full px-3 py-1">
+                    <BadgeCheck className="h-3 w-3 text-white" />
+                    Your Listing
+                  </span>
                 )}
                 <ShareButton listing={listing} className="[&>svg]:!text-white !w-8 !h-8 !rounded-full !border !border-black !bg-black flex items-center justify-center !p-0 hover:!bg-gray-800" />
               </div>
