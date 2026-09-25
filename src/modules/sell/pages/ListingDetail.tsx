@@ -61,7 +61,7 @@ export default function ListingDetail() {
   const [listing, setListing] = useState<SellListing | null>(null);
   const [loading, setLoading] = useState(true);
   const [responses, setResponses] = useState<SellListingResponse[]>([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState('Is it still available?');
   const [offeredPrice, setOfferedPrice] = useState('');
   const [sending, setSending] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -416,7 +416,7 @@ export default function ListingDetail() {
       });
       console.log('✅ Listing response sent successfully');
       toast({ title: 'Sent', description: 'Your message was sent to the seller.' });
-      setMessage('');
+      setMessage('Is it still available?');
       setOfferedPrice('');
       clearVoice();
       setAttachedFiles([]);
