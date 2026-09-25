@@ -512,18 +512,14 @@ const EnquiryResponsesPage = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex-1 sm:flex-none border-[0.5px] border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/amount"
+                  className="flex-1 sm:flex-none !border-[1.5px] !border-black rounded-lg sm:rounded-xl px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 h-auto !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/amount min-touch"
                 >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/amount:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                   <div className="flex items-center justify-between w-full gap-2 relative z-10">
                     <div className="flex items-center gap-2">
-                      <ArrowUpDown className="h-4 w-4 text-black" />
-                      <span className="font-black text-xs sm:text-sm text-black">Amount</span>
+                      <ArrowUpDown className="h-4 w-4 text-white" />
+                      <span className="font-black text-xs sm:text-sm text-white">Amount</span>
                     </div>
-                    <ChevronDown className="h-3.5 w-3.5 text-black" />
+                    <ChevronDown className="h-3.5 w-3.5 text-white" />
                   </div>
                 </Button>
               </DropdownMenuTrigger>
@@ -568,18 +564,14 @@ const EnquiryResponsesPage = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex-1 sm:flex-none border-[0.5px] border-black rounded-lg sm:rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 h-auto bg-gradient-to-b from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-black font-black transition-all duration-200 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group/date"
+                  className="flex-1 sm:flex-none !border-[1.5px] !border-black rounded-lg sm:rounded-xl px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 h-auto !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/date min-touch"
                 >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/date:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
                   <div className="flex items-center justify-between w-full gap-2 relative z-10">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-black" />
-                      <span className="font-black text-xs sm:text-sm text-black">Date</span>
+                      <Clock className="h-4 w-4 text-white" />
+                      <span className="font-black text-xs sm:text-sm text-white">Date</span>
                     </div>
-                    <ChevronDown className="h-3.5 w-3.5 text-black" />
+                    <ChevronDown className="h-3.5 w-3.5 text-white" />
                   </div>
                 </Button>
               </DropdownMenuTrigger>
@@ -842,18 +834,19 @@ const EnquiryResponsesPage = () => {
                           <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
                         </div>
                       )}
-                      <Badge 
-                        variant={response.status === 'approved' ? 'default' : response.status === 'rejected' ? 'destructive' : 'secondary'}
-                        className={`text-[9px] sm:text-[10px] lg:text-sm px-2 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2 font-bold flex-shrink-0 shadow-md ${
-                          response.status === 'approved' 
-                            ? 'bg-green-600 hover:bg-green-700 text-white border border-green-500 sm:border-2' 
-                            : response.status === 'rejected'
-                            ? 'bg-red-600 hover:bg-red-700 text-white border border-red-500 sm:border-2'
-                            : 'bg-yellow-500 hover:bg-yellow-600 text-white border border-yellow-400 sm:border-2'
-                        }`}
-                      >
-                        {response.status || 'pending'}
-                      </Badge>
+                      {/* Status badge hidden for approved — approval is implied on this page */}
+                      {response.status !== 'approved' && (
+                        <Badge 
+                          variant={response.status === 'rejected' ? 'destructive' : 'secondary'}
+                          className={`text-[9px] sm:text-[10px] lg:text-sm px-2 sm:px-4 lg:px-5 py-1 sm:py-1.5 lg:py-2 font-bold flex-shrink-0 shadow-md ${
+                            response.status === 'rejected'
+                              ? 'bg-red-600 hover:bg-red-700 text-white border border-red-500 sm:border-2'
+                              : 'bg-yellow-500 hover:bg-yellow-600 text-white border border-yellow-400 sm:border-2'
+                          }`}
+                        >
+                          {response.status || 'pending'}
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1012,7 +1005,7 @@ const EnquiryResponsesPage = () => {
                 {/* Footer Section - Mobile optimized */}
                 <div className="flex flex-col gap-2 sm:gap-3 pt-1 sm:pt-2 lg:pt-3">
                   {/* Security message */}
-                  <p className="text-[8px] sm:text-[10px] lg:text-xs text-gray-600 text-center font-normal mb-2 sm:mb-3">
+                  <p className="text-[7px] sm:text-[8px] lg:text-[9px] text-gray-600 text-center font-normal mb-2 sm:mb-3">
                     Finalize deals securely, with optional contact exchange through encrypted chat.
                   </p>
                   
