@@ -22,8 +22,8 @@ export const MOBILE_BRANDS = [
 ];
 
 export const SNEAKER_BRANDS = [
-  'Adidas', 'Asics', 'Balenciaga', 'Bata', 'Campus', 'Converse', 'Fila',
-  'Hoka', 'Jordan', 'Li-Ning', 'New Balance', 'Nike', 'On Running',
-  'Puma', 'Reebok', 'Salomon', 'Skechers', 'Sparx', 'Under Armour', 'Vans', 'Yonex',
-  'Other',
+  'Adidas', 'Anta', 'Asics', 'Balenciaga', 'Bata', 'Brooks', 'Campus', 'Converse', 'Crocs', 'Fila',
+  'Hoka', 'Jordan', 'K-Swiss', 'Lacoste', 'Li-Ning', 'Merrell', 'Mizuno', 'New Balance', 'Nike', 'On Running',
+  'Puma', 'Reebok', 'Salomon', 'Saucony', 'Skechers', 'Sparx', 'Under Armour', 'Vans', 'Veja', 'Woodland', 'Yonex',
+  'Yeezy', 'Other',
 ];

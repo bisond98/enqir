@@ -23,6 +23,7 @@ import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import { uploadToCloudinaryAuto } from '@/integrations/cloudinary';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
+import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import { friendlyError } from '@/utils/friendlyError';
 import { useContext } from 'react';
 import { NotificationContext } from '@/contexts/NotificationContext';
@@ -706,11 +707,14 @@ export default function ListingDetail() {
                     warranty: 'Warranty',
                     facing: 'Facing',
                     furnishing: 'Furnishing',
+                    sneakerBrand: 'Brand',
+                    sneakerAudience: '',
+                    sneakerSize: 'Size',
                   };
                   const entries = Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key));
                   return entries.map(([key, val], i) => {
                     const label = key in detailLabels ? detailLabels[key] : '';
-                    const brandLogo = key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
+                    const brandLogo = key === 'sneakerBrand' ? getSneakerBrandLogoUrl(String(val)) : key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
                       <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}

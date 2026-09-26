@@ -12,6 +12,9 @@ import { toast } from '@/hooks/use-toast';
 import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
+import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
+import { SNEAKER_BRANDS } from '../categoryBrands';
+import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
@@ -741,7 +744,9 @@ export default function CreateListing() {
         priceMax: rangeMax,
         tags: parsedTags,
         images,
-        details: Object.keys(estateSaved).length > 0 ? { ...details, ...estateSaved } : (Object.keys(details).length > 0 ? details : null),
+        details: Object.keys(estateSaved).length > 0
+          ? { ...(category === 'sneakers' && !details['sneakerAudience'] ? { sneakerAudience: 'Adults' } : {}), ...details, ...estateSaved }
+          : (Object.keys(details).length > 0 ? { ...(category === 'sneakers' && !details['sneakerAudience'] ? { sneakerAudience: 'Adults' } : {}), ...details } : null),
       });
       toast({ title: 'Published', description: 'Your listing is live.' });
       // AI Match engine: how many buyers need this? Notify the seller (non-blocking)
@@ -1021,7 +1026,8 @@ export default function CreateListing() {
                 />
                 {fieldsForCategoryStep(category, 'title').length > 0 && (
                   <div className="flex flex-wrap items-center justify-end gap-3 -mt-1 mb-5">
-                    {fieldsForCategoryStep(category, 'title').map((f) => (
+                    {fieldsForCategoryStep(category, 'title').map((f) => {
+                      return (
                       <div key={f.key} className="relative w-[48%]" style={f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
                         {f.key !== 'brand' && f.key !== 'storage' && f.key !== 'repairType' && (
                           <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
@@ -1073,7 +1079,8 @@ export default function CreateListing() {
                           </>
                         )}
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
                 <div className="h-4" />
@@ -1082,6 +1089,77 @@ export default function CreateListing() {
 
             {step === 2 && (
               <div className="space-y-2 max-w-lg mx-auto w-full">
+                {/* Sneaker details — brand + audience + size, styled like the Post Enquiry form */}
+                {category === 'sneakers' && (() => {
+                  const sneakerAudience = details['sneakerAudience'] ?? 'Adults';
+                  const sneakerSize = details['sneakerSize'] ?? '';
+                  const sneakerBrandVal = details['sneakerBrand'] ?? '';
+                  const sizeList = sneakerAudience === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
+                  const sneakerLogo = sneakerBrandVal ? getSneakerBrandLogoUrl(sneakerBrandVal) : null;
+                  return (
+                    <div className="mb-6">
+                      <div className="flex items-start justify-between gap-3">
+                        {/* Brand — wider than size so the logo + name fit comfortably */}
+                        <div className="flex-[2] min-w-0 relative">
+                          <select
+                            value={sneakerBrandVal}
+                            onChange={(e) => setDetail('sneakerBrand', e.target.value)}
+                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrandVal ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
+                          >
+                            <option value="">Brand</option>
+                            {SNEAKER_BRANDS.map((b) => (
+                              <option key={b} value={b}>{b}</option>
+                            ))}
+                          </select>
+                          {sneakerLogo && (
+                            <img
+                              src={sneakerLogo}
+                              alt=""
+                              className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 object-contain pointer-events-none"
+                              loading="lazy"
+                            />
+                          )}
+                          <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
+                        </div>
+                        {/* Size — options depend on the audience (Adults default) */}
+                        <div className="flex-1 min-w-0 relative">
+                          <select
+                            value={sneakerSize}
+                            onChange={(e) => setDetail('sneakerSize', e.target.value)}
+                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
+                          >
+                            <option value="">Size</option>
+                            {sizeList.map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
+                        </div>
+                      </div>
+                      {/* Adults / Kids — under brand+size row; switching resets the size */}
+                      <div className="flex items-center justify-center gap-1.5 mt-2">
+                        {(['Adults', 'Kids'] as const).map((aud) => (
+                          <button
+                            key={aud}
+                            type="button"
+                            onClick={() => {
+                              setDetail('sneakerAudience', aud);
+                              if (sneakerAudience !== aud) setDetail('sneakerSize', '');
+                            }}
+                            className={cn(
+                              'px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-bold border-2 transition-all duration-150',
+                              sneakerAudience === aud
+                                ? 'bg-blue-600 text-white border-[3px] border-black'
+                                : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                            )}
+                          >
+                            {aud}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
                 {/* Real-estate — selection buttons + big capsules above the description */}
                 {(() => {
                   const LAND_UNITS = ['Cents', 'Acre', 'Hectare'];
@@ -1214,7 +1292,11 @@ export default function CreateListing() {
                   <div className="space-y-3 pt-2">
                     {/* Creative toggle-style fields (e.g., transmission) — shown above the description */}
                     {(() => {
-                      const descFields = fieldsForCategoryStep(category, 'description').filter((f) => !isFieldHiddenForDetails(f, details));
+                      // Sneaker brand/audience/size are rendered by the custom
+                      // Post-Enquiry-style block above, not by the generic fields.
+                      const descFields = fieldsForCategoryStep(category, 'description')
+                        .filter((f) => !isFieldHiddenForDetails(f, details))
+                        .filter((f) => !['sneakerBrand', 'sneakerAudience', 'sneakerSize'].includes(f.key));
                       const toggleFields = descFields.filter((f) => (f.options?.length ?? 0) === 2);
                       const selectFields = descFields.filter((f) => (f.options?.length ?? 0) !== 2);
                       return (

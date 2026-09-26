@@ -3,8 +3,27 @@
 // so inputs never overcrowd — they slot into the existing flow.
 // Values are stored as a flat `details` map on the listing document.
 
-import { CAR_BRANDS, BIKE_BRANDS } from './categoryBrands';
+import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS } from './categoryBrands';
 import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
+
+// Sneaker sizes — US and UK scales. Adults get the full run; Kids get the
+// children's range. 'Other' always last so users can enter odd sizes.
+export const SNEAKER_SIZES_ADULTS = [
+  'US 4', 'US 4.5', 'US 5', 'US 5.5', 'US 6', 'US 6.5', 'US 7', 'US 7.5',
+  'US 8', 'US 8.5', 'US 9', 'US 9.5', 'US 10', 'US 10.5', 'US 11', 'US 11.5',
+  'US 12', 'US 13', 'US 14',
+  'UK 3', 'UK 3.5', 'UK 4', 'UK 4.5', 'UK 5', 'UK 5.5', 'UK 6', 'UK 6.5',
+  'UK 7', 'UK 7.5', 'UK 8', 'UK 8.5', 'UK 9', 'UK 9.5', 'UK 10', 'UK 11',
+  'UK 12', 'UK 13',
+  'Other',
+];
+export const SNEAKER_SIZES_KIDS = [
+  'US 10.5K', 'US 11K', 'US 11.5K', 'US 12K', 'US 12.5K', 'US 13K',
+  'US 13.5K', 'US 1Y', 'US 1.5Y', 'US 2Y', 'US 2.5Y', 'US 3Y',
+  'UK 2', 'UK 2.5', 'UK 3', 'UK 3.5', 'UK 4', 'UK 4.5', 'UK 5', 'UK 5.5',
+  'UK 6',
+  'Other',
+];
 
 export type CategoryDetailsStep = 'title' | 'description' | 'details' | 'price';
 
@@ -124,11 +143,24 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'serviceMode', label: 'Service mode', type: 'select', options: ['At my location', 'Pick up & fix', 'Anywhere'], placeholder: 'Select service mode', step: 'description' },
     { key: 'experience', label: 'Experience', type: 'select', options: ['Fresher', '1-3 years', '3-5 years', '5-10 years', '10+ years'], placeholder: 'Select experience', step: 'details' },
   ],
+  sneakers: [
+    { key: 'sneakerBrand', label: 'Brand', type: 'select', options: SNEAKER_BRANDS, placeholder: 'Select brand', step: 'description' },
+    { key: 'sneakerAudience', label: 'Audience', type: 'select', options: ['Adults', 'Kids'], placeholder: 'Select audience', step: 'description' },
+    { key: 'sneakerSize', label: 'Size', type: 'select', options: [], placeholder: 'Select size', step: 'description' },
+  ],
 };
 
 export function fieldsForCategoryStep(category: string | undefined, step: CategoryDetailsStep): CategoryDetailField[] {
   if (!category) return [];
   return (CATEGORY_DETAILS[category] ?? []).filter((f) => f.step === step);
+}
+
+/**
+ * Sneaker size options depend on the chosen audience (Adults / Kids).
+ * Returns the size list for the current audience selection.
+ */
+export function sneakerSizeOptions(details: Record<string, string>): string[] {
+  return details['sneakerAudience'] === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
 }
 
 /**

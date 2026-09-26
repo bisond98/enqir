@@ -9,10 +9,12 @@
 /** Verified monochrome brand marks on Simple Icons. */
 const MONO: Record<string, string> = {
   'adidas': 'adidas',
+  'anta': 'anta',
   'asics': 'asics',
   'converse': 'converse',
   'fila': 'fila',
   'jordan': 'jordan',
+  'li-ning': 'lining',
   'new balance': 'newbalance',
   'nike': 'nike',
   'puma': 'puma',
@@ -25,13 +27,22 @@ const MONO: Record<string, string> = {
 const SNEAKER_MISSING = new Set([
   'balenciaga',
   'bata',
+  'brooks',
   'campus',
+  'crocs',
   'hoka',
-  'li-ning',
+  'k-swiss',
+  'lacoste',
+  'merrell',
+  'mizuno',
   'on running',
   'salomon',
+  'saucony',
   'skechers',
   'sparx',
+  'veja',
+  'woodland',
+  'yeezy',
   'yonex',
 ]);
 

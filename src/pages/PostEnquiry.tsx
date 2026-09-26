@@ -37,6 +37,7 @@ import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDE
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS } from "@/modules/sell/categoryBrands";
 import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
+import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from "@/modules/sell/categoryDetails";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
@@ -218,6 +219,9 @@ export default function PostEnquiry() {
   const [mobileDetails, setMobileDetails] = useState<{ brand: string; ram: string; memory: string }>({ brand: '', ram: '', memory: '' });
   // Sneaker details (brand) — filled when the sneakers category is selected
   const [sneakerBrand, setSneakerBrand] = useState('');
+  // Sneaker audience + size (Adults is the default; Kids swaps the size scale)
+  const [sneakerAudience, setSneakerAudience] = useState<'Adults' | 'Kids'>('Adults');
+  const [sneakerSize, setSneakerSize] = useState('');
   // Job enquiry direction: employer hiring vs seeker looking for work (jobs category only)
   const [jobDirection, setJobDirection] = useState<'hiring' | 'seeking' | ''>('');
   // Job-specific extra fields
@@ -466,6 +470,8 @@ export default function PostEnquiry() {
         if (d.accommodationType) setAccommodationType(d.accommodationType);
         if (d.accommodationGender) setAccommodationGender(d.accommodationGender);
         if (d.repairType) setRepairType(d.repairType);
+        if (d.sneakerAudience) setSneakerAudience(d.sneakerAudience);
+        if (d.sneakerSize) setSneakerSize(d.sneakerSize);
         if (d.referenceImageUrls) setReferenceImageUrls(d.referenceImageUrls);
         if (d.mobileNumber) setMobileNumber(d.mobileNumber);
         if (d.selectedPlanId) {
@@ -681,6 +687,7 @@ export default function PostEnquiry() {
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
               ...(sneakerBrand && { sneakerBrand }),
+              ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...(jobDirection && { jobDirection }),
@@ -846,6 +853,7 @@ export default function PostEnquiry() {
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
             ...(sneakerBrand && { sneakerBrand }),
+            ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
@@ -1009,6 +1017,7 @@ export default function PostEnquiry() {
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
             ...(sneakerBrand && { sneakerBrand }),
+            ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
@@ -1182,6 +1191,7 @@ export default function PostEnquiry() {
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
               ...(sneakerBrand && { sneakerBrand }),
+              ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
@@ -1891,6 +1901,7 @@ export default function PostEnquiry() {
           ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
           ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
           ...(sneakerBrand && { sneakerBrand }),
+          ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
           ...(mobileDetails.ram && { ram: mobileDetails.ram }),
           ...(mobileDetails.memory && { memory: mobileDetails.memory }),
           ...(jobDirection && { jobDirection }),
@@ -2921,13 +2932,14 @@ export default function PostEnquiry() {
                         );
                       })()}
 
-                      {/* Sneaker details — brand above the description when the sneakers category is selected */}
+                      {/* Sneaker details — brand + audience + size above the description when the sneakers category is selected */}
                       {selectedCategories.includes('sneakers') && (() => {
+                        const sizeList = sneakerAudience === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
                         return (
                           <div className="mb-6">
                             <div className="flex items-start justify-between gap-3">
-                              {/* Brand */}
-                              <div className="flex-1 min-w-0 relative">
+                              {/* Brand — wider than size so the logo + name fit comfortably */}
+                              <div className="flex-[2] min-w-0 relative">
                                 {(() => {
                                   const sneakerLogo = sneakerBrand ? getSneakerBrandLogoUrl(sneakerBrand) : null;
                                   return (
@@ -2946,7 +2958,7 @@ export default function PostEnquiry() {
                                         <img
                                           src={sneakerLogo}
                                           alt=""
-                                          className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 object-contain pointer-events-none"
+                                          className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 object-contain pointer-events-none"
                                           loading="lazy"
                                         />
                                       )}
@@ -2955,6 +2967,41 @@ export default function PostEnquiry() {
                                 })()}
                                 <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
+                              {/* Size — options depend on the audience (Adults default) */}
+                              <div className="flex-1 min-w-0 relative">
+                                <select
+                                  value={sneakerSize}
+                                  onChange={(e) => setSneakerSize(e.target.value)}
+                                  className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
+                                >
+                                  <option value="">Size</option>
+                                  {sizeList.map((s) => (
+                                    <option key={s} value={s}>{s}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                            </div>
+                            {/* Adults / Kids — under brand+size row; switching resets the size */}
+                            <div className="flex items-center justify-center gap-1.5 mt-2">
+                              {(['Adults', 'Kids'] as const).map((aud) => (
+                                <button
+                                  key={aud}
+                                  type="button"
+                                  onClick={() => {
+                                    setSneakerAudience(aud);
+                                    if (sneakerAudience !== aud) setSneakerSize('');
+                                  }}
+                                  className={cn(
+                                    'px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-bold border-2 transition-all duration-150',
+                                    sneakerAudience === aud
+                                      ? 'bg-blue-600 text-white border-[3px] border-black'
+                                      : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
+                                  )}
+                                >
+                                  {aud}
+                                </button>
+                              ))}
                             </div>
                           </div>
                         );
@@ -3364,7 +3411,7 @@ export default function PostEnquiry() {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
                                 title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
-                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender
+                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender, sneakerBrand, sneakerAudience, sneakerSize
                               }));
                               navigate('/profile?returnTo=/post-enquiry');
                             }}

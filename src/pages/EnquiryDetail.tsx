@@ -898,6 +898,8 @@ const EnquiryDetail = () => {
                         d.ram && { label: 'RAM', value: d.ram, highlight: true },
                         d.memory && { label: 'Memory', value: d.memory, highlight: true },
                         d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },
+                        d.sneakerAudience && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
+                        d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
                         d.repairType && { label: 'Service type', value: d.repairType, highlight: true },
                       ].filter(Boolean) as { label: string; value: string; highlight?: boolean; icon?: string; logoUrl?: string | null }[];
                       if (chips.length === 0) return null;
