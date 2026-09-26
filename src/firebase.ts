@@ -22,8 +22,12 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 
-// Configure Firestore to avoid CORS/WebChannel issues in certain networks
-// Auto-detects when long polling is needed (e.g., some proxies, ad-blockers)
+// Configure Firestore: fast WebChannel streams by default, with automatic
+// fallback to long polling only when the stream channel fails (some proxies,
+// ad-blockers, strict networks). This keeps normal connections fast — long
+// polling was previously forced for every request, which made auth-adjacent
+// Firestore reads (blocked-email/user checks, profile listeners) noticeably
+// slower, especially on localhost.
 //
 // ⚡ Performance: persistent offline cache — enquiries, chats, listings and
 // profiles are stored locally, so returning to Dashboard / My Chats /
@@ -31,7 +35,7 @@ export const auth = getAuth(app);
 // syncs in the background (onSnapshot listeners still deliver live updates,
 // so real-time behavior is unchanged). Multiple tabs are supported.
 export const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true,
+  experimentalAutoDetectLongPolling: {},
   useFetchStreams: false,
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
 });

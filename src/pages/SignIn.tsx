@@ -198,7 +198,10 @@ const SignIn = () => {
         const savedReturn = sessionStorage.getItem('returnAfterSignIn');
         if (savedReturn) {
           sessionStorage.removeItem('returnAfterSignIn');
-          window.location.href = savedReturn;
+          // SPA navigation instead of a hard reload — a full page reload here
+          // re-downloads the dev bundle, re-initializes Firebase, and waits for
+          // the persisted auth session to restore before anything renders.
+          navigate(savedReturn, { replace: true });
           return;
         }
       } else {
