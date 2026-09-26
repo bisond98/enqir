@@ -77,6 +77,8 @@ const EnquiryResponsesPage = () => {
   
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
   const [responses, setResponses] = useState<Response[]>([]);
+  // Jobs & services talk about salary, not offer
+  const useSalaryWording = !!enquiry && ['jobs', 'job', 'service', 'services'].some(k => enquiry.category.toLowerCase().includes(k));
   const [loading, setLoading] = useState(true);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   // Call Seller — popup shows the seller's number directly (buyer already paid to view responses)
@@ -851,24 +853,20 @@ const EnquiryResponsesPage = () => {
                   </div>
                 </div>
                 
-                {/* Card Content - Mobile optimized spacing */}
-                <div className="p-3 sm:p-5 lg:p-8 xl:p-10 space-y-3 sm:space-y-4 lg:space-y-7 relative z-10 bg-white">
+                {/* Card Content - Mobile optimized spacing (extra bottom padding clears the fixed nav bar on mobile) */}
+                <div className="p-3 sm:p-5 lg:p-8 xl:p-10 pb-16 sm:pb-5 lg:pb-8 xl:pb-10 space-y-3 sm:space-y-4 lg:space-y-7 relative z-10 bg-white">
                 
                 {/* Seller Info & Price Group - Mobile optimized */}
                 <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6 relative">
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 lg:gap-6 relative z-10">
-                    {/* Seller Info - Mobile optimized */}
-                    <div className="flex items-center flex-1 min-w-0 w-full lg:w-auto">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
-                          <h4 className="font-black text-[10px] sm:text-xs lg:text-sm text-black truncate border border-black rounded px-2 py-1">{getSellerCode(response.sellerId)}</h4>
-                          <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-black">Seller {index + 1}/{visibleResponses.length}</span>
-                        </div>
-                      </div>
+                    {/* Seller Info - chips row: user code chip left, Seller 1/1 chip right */}
+                    <div className="flex items-center justify-between gap-2 w-full">
+                      <h4 className="font-black text-[10px] sm:text-xs lg:text-sm text-black truncate border border-black rounded-full px-2.5 py-1">{getSellerCode(response.sellerId)}</h4>
+                      <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-black border border-black/30 bg-gray-50 rounded-full px-2.5 py-1 whitespace-nowrap">Seller {index + 1}/{visibleResponses.length}</span>
                     </div>
                     
-                    {/* Seller's Quote - Mobile optimized */}
-                    <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-9 flex-shrink-0 w-full lg:w-auto mt-6 sm:mt-8 lg:mt-10 transform-gpu transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2 hover:rotate-[0.5deg] group/quote z-20"
+                    {/* Seller's Quote (top) — jobs/services only; other categories show the offer card at the bottom instead */}
+                    {useSalaryWording && <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-9 flex-shrink-0 w-full lg:w-auto mt-6 sm:mt-8 lg:mt-10 transform-gpu transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2 hover:rotate-[0.5deg] group/quote z-20"
                       style={{
                         boxShadow: '0 20px 40px rgba(0,0,0,0.15), 0 10px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.1)',
                         transformStyle: 'preserve-3d',
@@ -903,7 +901,7 @@ const EnquiryResponsesPage = () => {
                               transform: 'translateZ(10px)',
                               textShadow: '0 2px 4px rgba(0,0,0,0.1)'
                             }}
-                          >Seller {index + 1} offer</span>
+                          >Seller {index + 1} {useSalaryWording ? 'salary' : 'offer'}</span>
                           <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-gray-600 mx-2 sm:mx-3 lg:mx-4 flex-shrink-0" style={{ transform: 'translateZ(10px)' }} />
                           <div className="flex items-center space-x-1 sm:space-x-1.5">
                             <div className="relative w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg sm:rounded-xl flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.9)] ring-2 ring-gray-300/50 transform group-hover/quote:scale-110 transition-transform duration-300"
@@ -927,53 +925,13 @@ const EnquiryResponsesPage = () => {
                       
                       {/* Hover glow effect */}
                       <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/0 via-gray-100/0 to-gray-200/0 group-hover/quote:from-white/20 group-hover/quote:via-gray-100/10 group-hover/quote:to-gray-200/10 transition-all duration-500 pointer-events-none" />
-                    </div>
-                  </div>
+                    </div>}</div>
                   
                 </div>
 
-                {/* Message & Notes Group - Mobile optimized */}
-                <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
-                  {/* Message Section - Mobile optimized */}
-                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200 border border-gray-300">
-                    <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
-                        <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-                      </div>
-                      <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Message from the seller</span>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
-                      <p className="text-xs sm:text-sm lg:text-lg text-black font-medium leading-relaxed">{response.message || 'No message provided'}</p>
-                    </div>
-                  </div>
-                  
-                  {/* Additional Notes - Mobile optimized */}
-                  {response.notes && (
-                    <div className="bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200">
-                      <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
-                          <div className="w-5 h-5 sm:w-6 sm:w-6 bg-yellow-600 rounded-lg flex items-center justify-center">
-                            <span className="text-white text-xs sm:text-sm font-black">📝</span>
-                          </div>
-                        </div>
-                        <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Additional Notes</span>
-                      </div>
-                      <div className="bg-yellow-50 border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
-                        <p className="text-[10px] sm:text-xs lg:text-base text-black leading-relaxed font-medium">{response.notes}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
                 {/* Images Section - Mobile optimized grid */}
                 {response.imageUrls && response.imageUrls.length > 0 && (
                   <div className="pb-3 sm:pb-5 lg:pb-6">
-                    <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
-                        <ImageIcon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-                      </div>
-                      <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Images ({response.imageUrls.length})</span>
-                    </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
                       {response.imageUrls.map((imageUrl, imgIndex) => (
                         <div 
@@ -1002,10 +960,106 @@ const EnquiryResponsesPage = () => {
                   </div>
                 )}
                 
+                {/* Message & Notes Group - Mobile optimized */}
+                <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
+                  {/* Message Section - Mobile optimized */}
+                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200 border border-gray-300">
+                    <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
+                        <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
+                      </div>
+                      <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Message from the seller</span>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
+                      <p className="text-xs sm:text-sm lg:text-lg text-black font-medium leading-relaxed">{response.message || 'No message provided'}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Additional Notes - Mobile optimized */}
+                  {response.notes && (
+                    <div className="bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200">
+                      <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
+                          <div className="w-5 h-5 sm:w-6 sm:w-6 bg-yellow-600 rounded-lg flex items-center justify-center">
+                            <span className="text-white text-xs sm:text-sm font-black">📝</span>
+                          </div>
+                        </div>
+                        <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Additional Notes</span>
+                      </div>
+                      <div className="bg-yellow-50 border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
+                        <p className="text-[10px] sm:text-xs lg:text-base text-black leading-relaxed font-medium">{response.notes}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                
+                {/* Seller Offer + Amount — same 3D card style as the top quote card,
+                    for non-jobs/services categories (jobs/services use salary wording above) */}
+                {!useSalaryWording && (
+                  <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-9 w-full transform-gpu transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2 hover:rotate-[0.5deg] group/offer z-20"
+                    style={{
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.15), 0 10px 20px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.1)',
+                      transformStyle: 'preserve-3d',
+                      perspective: '1000px'
+                    }}
+                  >
+                    {/* 3D Border Effect */}
+                    <div className="absolute inset-0 rounded-2xl sm:rounded-3xl border-2 border-gray-300/50" 
+                      style={{
+                        boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.15)'
+                      }}
+                    />
+                    
+                    {/* Top highlight for 3D effect */}
+                    <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-2xl sm:rounded-t-3xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
+                    
+                    {/* Side highlights for depth */}
+                    <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-2xl sm:rounded-l-3xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
+                    <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-2xl sm:rounded-r-3xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
+                    
+                    {/* Bottom shadow for depth */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-2xl sm:rounded-b-3xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
+                    
+                    {/* Inner depth shadow */}
+                    <div className="absolute inset-2 rounded-xl sm:rounded-2xl bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
+                    
+                    {/* Content */}
+                    <div className="relative z-10 flex items-center justify-between w-full py-1">
+                      <span className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 tracking-tight drop-shadow-sm"
+                        style={{
+                          transform: 'translateZ(10px)',
+                          textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}
+                      >Seller offer</span>
+                      <div className="flex items-center space-x-1 sm:space-x-1.5">
+                        <div className="relative w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg sm:rounded-xl flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.9)] ring-2 ring-gray-300/50 transform group-hover/offer:scale-110 transition-transform duration-300"
+                          style={{
+                            transform: 'translateZ(10px)'
+                          }}
+                        >
+                          <span className="text-gray-800 text-xs sm:text-sm font-black drop-shadow-sm">₹</span>
+                        </div>
+                        <p className="font-black text-2xl sm:text-4xl lg:text-5xl text-black leading-none transform group-hover/offer:scale-105 transition-transform duration-300"
+                          style={{
+                            transform: 'translateZ(15px)',
+                            textShadow: '0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.15)'
+                          }}
+                        >
+                          {response.price?.includes('₹') ? response.price.replace('₹', '') : response.price || 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Hover glow effect */}
+                    <div className="absolute inset-0 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/0 via-gray-100/0 to-gray-200/0 group-hover/offer:from-white/20 group-hover/offer:via-gray-100/10 group-hover/offer:to-gray-200/10 transition-all duration-500 pointer-events-none" />
+                  </div>
+                )}
+                
                 {/* Footer Section - Mobile optimized */}
                 <div className="flex flex-col gap-2 sm:gap-3 pt-1 sm:pt-2 lg:pt-3">
                   {/* Security message */}
-                  <p className="text-[7px] sm:text-[8px] lg:text-[9px] text-gray-600 text-center font-normal mb-2 sm:mb-3">
+                  <p className="text-[6px] sm:text-[7px] lg:text-[8px] text-gray-500 text-center font-normal mb-2 sm:mb-3">
                     Finalize deals securely, with optional contact exchange through encrypted chat.
                   </p>
                   

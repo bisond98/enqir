@@ -979,7 +979,6 @@ export default function EnquiryWall() {
       { value: 'kitchen-dining', label: 'Kitchen & Dining' },
       { value: 'garden-outdoor', label: 'Garden & Outdoor' },
       { value: 'office-supplies', label: 'Office Supplies' },
-      { value: 'repair-services', label: 'Repair Services' },
       { value: 'cleaning-services', label: 'Cleaning Services' },
       { value: 'musical-services', label: 'Musical Services' },
       { value: 'tutoring-lessons', label: 'Tutoring & Lessons' },

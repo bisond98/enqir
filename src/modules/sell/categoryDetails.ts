@@ -4,7 +4,7 @@
 // Values are stored as a flat `details` map on the listing document.
 
 import { CAR_BRANDS, BIKE_BRANDS } from './categoryBrands';
-import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES } from '@/constants/categories';
+import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
 
 export type CategoryDetailsStep = 'title' | 'description' | 'details' | 'price';
 
@@ -118,6 +118,11 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Unfurnished', 'Semi-furnished', 'Fully furnished'], placeholder: 'Select furnishing', step: 'details' },
     { key: 'facing', label: 'Facing', type: 'select', options: ['East', 'West', 'North', 'South', 'North-East', 'North-West', 'South-East', 'South-West'], placeholder: 'Select facing', step: 'details' },
     { key: 'listingFor', label: 'Listed for', type: 'select', options: ['Sale', 'Rent', 'Lease'], placeholder: 'Select listing type', step: 'price' },
+  ],
+  service: [
+    { key: 'repairType', label: 'Service type', type: 'select', options: [...REPAIR_SERVICE_TYPES], placeholder: 'Select service type', step: 'title' },
+    { key: 'serviceMode', label: 'Service mode', type: 'select', options: ['At my location', 'Pick up & fix', 'Anywhere'], placeholder: 'Select service mode', step: 'description' },
+    { key: 'experience', label: 'Experience', type: 'select', options: ['Fresher', '1-3 years', '3-5 years', '5-10 years', '10+ years'], placeholder: 'Select experience', step: 'details' },
   ],
 };
 

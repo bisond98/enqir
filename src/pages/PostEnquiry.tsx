@@ -33,7 +33,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
-import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS } from "@/constants/categories";
+import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES } from "@/constants/categories";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS } from "@/modules/sell/categoryBrands";
 import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
@@ -232,6 +232,8 @@ export default function PostEnquiry() {
   // Accommodations: subtype + gender preference (shared-living subtypes only)
   const [accommodationType, setAccommodationType] = useState('');
   const [accommodationGender, setAccommodationGender] = useState<'any' | 'male' | 'female' | 'mixed'>('any');
+  // Repair services: what kind of repair/fix is needed (service category)
+  const [repairType, setRepairType] = useState('');
   const isAccommodationEnquiry = (cats: string[], legacy?: string) =>
     [...cats, legacy ?? ''].some((c) => c && c.toLowerCase().includes('accommodation'));
   const isAccom = isAccommodationEnquiry(selectedCategories, category);
@@ -463,6 +465,7 @@ export default function PostEnquiry() {
         if (d.jobDetails) setJobDetails(d.jobDetails);
         if (d.accommodationType) setAccommodationType(d.accommodationType);
         if (d.accommodationGender) setAccommodationGender(d.accommodationGender);
+        if (d.repairType) setRepairType(d.repairType);
         if (d.referenceImageUrls) setReferenceImageUrls(d.referenceImageUrls);
         if (d.mobileNumber) setMobileNumber(d.mobileNumber);
         if (d.selectedPlanId) {
@@ -850,6 +853,7 @@ export default function PostEnquiry() {
             ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
             ...(accommodationType && { accommodationType }),
             ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
+            ...(repairType && { repairType }),
             ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
             ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
             ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
@@ -1012,6 +1016,7 @@ export default function PostEnquiry() {
             ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
+          ...(repairType && { repairType }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
             ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
             ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
@@ -1182,6 +1187,7 @@ export default function PostEnquiry() {
               ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
+          ...(repairType && { repairType }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
               ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
               ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
@@ -1518,7 +1524,6 @@ export default function PostEnquiry() {
     "kitchen-dining": UtensilsCrossed,
     "garden-outdoor": TreePine,
     "office-supplies": FileText,
-    "repair-services": Wrench,
     "cleaning-services": Sparkles,
     "musical-services": Mic,
     "tutoring-lessons": GraduationCap,
@@ -1898,6 +1903,7 @@ export default function PostEnquiry() {
           ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
+          ...(repairType && { repairType }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
           ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
           ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
@@ -2719,6 +2725,27 @@ export default function PostEnquiry() {
                           )}
                         </div>
                       )}
+                      {/* Repair services — service-type dropdown above the description (repair-services / service category) */}
+                      {(selectedCategories.includes('service') || category === 'service') && (() => {
+                        const REPAIR_TYPES = REPAIR_SERVICE_TYPES;
+                        return (
+                          <div className="mb-4">
+                            <select
+                              value={repairType}
+                              onChange={(e) => setRepairType(e.target.value)}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!repairType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                            >
+                              <option value="">What needs fixing?</option>
+                              {REPAIR_TYPES.map((t) => (
+                                <option key={t} value={t}>{t}</option>
+                              ))}
+                            </select>
+                            <div className="h-3">
+                              <p className="text-[8px] font-bold text-black text-center tracking-wide">service type</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
                       {/* Vehicle details — brand/year/variant above the description when a vehicle category is selected */}
                       {(() => {
                         const isCarLike = selectedCategories.some(c => ['car', 'automobile', 'vehicles'].includes(c));

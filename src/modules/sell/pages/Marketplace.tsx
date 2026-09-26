@@ -74,7 +74,6 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
   'real-estate': Building2,
   'real-estate-services': Building2,
   'renewable-energy': Zap,
-  'repair-services': Wrench,
   'cleaning-services': Sparkles,
   'security-safety': Shield,
   'sneakers': Footprints,

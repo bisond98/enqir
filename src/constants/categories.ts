@@ -63,7 +63,6 @@ export const APP_CATEGORIES: AppCategory[] = [
   { value: 'real-estate', label: 'Real Estate' },
   { value: 'real-estate-services', label: 'Real Estate Services' },
   { value: 'renewable-energy', label: 'Renewable Energy' },
-  { value: 'repair-services', label: 'Repair Services' },
   { value: 'cleaning-services', label: 'Cleaning Services' },
   { value: 'security-safety', label: 'Security' },
   { value: 'sneakers', label: 'Sneakers' },
@@ -128,6 +127,53 @@ export const ACCOMMODATION_GENDER_OPTIONS = [
   { value: 'mixed', label: 'Mixed' },
 ] as const;
 
+// Repair / home-service types — shared by the Post Enquiry dropdown and the
+// Sell form's repair-services detail fields so both stay in sync.
+export const REPAIR_SERVICE_TYPES = [
+  'AC repair & service',
+  'Bike / scooter service',
+  'Borewell drilling & repair',
+  'Car detailing & wash',
+  'Carpenter',
+  'CCTV installation',
+  'Chimney / hob repair',
+  'Denting & painting (vehicle)',
+  'Electrician',
+  'EV charger installation',
+  'False ceiling & gypsum work',
+  'Fridge / Refrigerator repair',
+  'Furniture assembly',
+  'Geyser / water heater repair',
+  'Home salon (beauty at home)',
+  'Interior design & modular kitchen',
+  'Inverter / battery service',
+  'Laptop / Computer repair',
+  'Laundry & ironing',
+  'Locksmith',
+  'Mechanic (vehicle)',
+  'Mehndi artist',
+  'Microwave / oven repair',
+  'Mobile repair',
+  'Movers & packers (local shifting)',
+  'Painting',
+  'Pest control',
+  'Photography / videography',
+  'Plastering & masonry',
+  'Plumber',
+  'Septic / sewage tank cleaning',
+  'Solar panel installation & service',
+  'Tailoring & stitching',
+  'Tile & marble work',
+  'TV repair',
+  'Tyre repair & replacement',
+  'Washing machine repair',
+  'Water purifier (RO) service',
+  'Water tank / well cleaning',
+  'Welding & fabrication',
+  'Woodwork / furniture making',
+  'Other',
+] as const;
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
@@ -154,6 +200,7 @@ export const LEGACY_CATEGORY_ALIASES: Record<string, string> = {
   'fashion-apparel': 'fashion',
   'home-furniture': 'home',
   'services': 'service',
+  'repair-services': 'service',
   'automobile': 'vehicles',
 };
 
@@ -161,6 +208,11 @@ export const LEGACY_CATEGORY_ALIASES: Record<string, string> = {
 // that don't appear in the label ("shoes" → Sneakers, "phone" → Mobiles, ...).
 // Shared by the Post Enquiry and Sell category pickers.
 export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
+  // Every repair/home-service type is a search keyword for Service, so typing
+  // "plumber" or "ac repair" in the category search surfaces Service. Direct
+  // category matches (e.g. "mobile" → Mobiles) still outrank it because label
+  // matches score better than synonym matches in matchStrength().
+  service: REPAIR_SERVICE_TYPES.filter(t => t !== 'Other').map(t => t.toLowerCase()),
   sneakers: ['shoe', 'shoes', 'footwear', 'trainers', 'sports shoes', 'running shoes'],
   fashion: ['clothes', 'clothing', 'apparel', 'dress', 'saree', 'sari', 'kurti', 'shirt', 'tshirt', 't-shirt', 'jeans', 'churidar', 'lehenga'],
   mobiles: ['phone', 'phones', 'smartphone', 'mobile phone', 'iphone', 'android', 'redmi', 'samsung phone', 'vivo', 'oppo', 'realme', 'oneplus'],
@@ -187,7 +239,6 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   'fitness-gym-equipment': ['dumbbell', 'dumbbells', 'treadmill', 'gym setup', 'weights', 'barbell', 'exercise cycle', 'gym equipment'],
   'education-training': ['tuition', 'tuitions', 'tutor', 'classes', 'coaching', 'coaching centre', 'spoken english', 'training institute', 'study abroad'],
   'tutoring-lessons': ['tuition', 'tutor', 'classes', 'coaching', 'home tuition', 'online classes', 'spoken english', 'music teacher'],
-  'repair-services': ['plumber', 'electrician', 'ac repair', 'carpenter', 'mobile repair', 'fridge repair', 'washing machine repair', 'mechanic', 'fix'],
   'cleaning-services': ['maid', 'house cleaning', 'housekeeping', 'deep cleaning', 'sofa cleaning', 'pest control'],
   'construction-renovation': ['builder', 'contractor', 'renovation', 'interior work', 'painting', 'civil work'],
   'events-entertainment': ['birthday', 'party', 'event management', 'stage', 'decorator', 'anchor', 'band'],
@@ -262,15 +313,20 @@ function matchStrength(c: AppCategory, q: string): number {
   const otherWords = synStrings.flatMap(s => s.toLowerCase().split(/[^a-z0-9]+/)).filter(Boolean);
 
   if (labelWords.includes(q)) return 0;
-  if (otherWords.includes(q)) return 1;
+  // Exact whole-word label hit ranks best, then a label word starting with
+  // the query, then exact synonym hits (includes service-type keywords like
+  // "plumber"), then phrase/prefix matches. Keeping direct category matches
+  // ahead of service-keyword matches means "mobile" shows Mobiles first and
+  // Service (via "Mobile repair") second.
+  if (q.length >= 3 && labelWords.some(w => w.startsWith(q))) return 1;
+  if (otherWords.includes(q)) return 2;
   // Multi-word synonyms/phrases: "four wheeler" should match the full phrase,
   // not just its individual words.
-  if (q.includes(' ') && synStrings.some(s => s.toLowerCase().includes(q))) return 2;
+  if (q.includes(' ') && synStrings.some(s => s.toLowerCase().includes(q))) return 3;
   if (q.includes(' ') && labelLower.includes(q)) return 1;
 
   // Prefix matching from 3 letters on labels (so "agr" finds Agriculture),
   // but synonyms need 4+ letters (so "car" doesn't match "care"/"carpenter").
-  if (q.length >= 3 && labelWords.some(w => w.startsWith(q))) return 3;
   if (q.length >= 4 && otherWords.some(w => w.startsWith(q))) return 4;
   return -1;
 }

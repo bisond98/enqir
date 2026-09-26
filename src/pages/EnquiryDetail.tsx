@@ -898,6 +898,7 @@ const EnquiryDetail = () => {
                         d.ram && { label: 'RAM', value: d.ram, highlight: true },
                         d.memory && { label: 'Memory', value: d.memory, highlight: true },
                         d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },
+                        d.repairType && { label: 'Service type', value: d.repairType, highlight: true },
                       ].filter(Boolean) as { label: string; value: string; highlight?: boolean; icon?: string; logoUrl?: string | null }[];
                       if (chips.length === 0) return null;
                       // Hand-drawn H-pattern gear shifter (manual gearbox)

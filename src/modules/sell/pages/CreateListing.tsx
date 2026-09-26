@@ -11,7 +11,7 @@ import { uploadToCloudinaryUnsigned } from '@/integrations/cloudinary';
 import { toast } from '@/hooks/use-toast';
 import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
-import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES } from '@/constants/categories';
+import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapLocationPicker } from '@/components/MapLocationPicker';
@@ -179,7 +179,6 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
   'real-estate': Home,
   'real-estate-services': Home,
   'renewable-energy': Zap,
-  'repair-services': Wrench,
   'cleaning-services': Sparkles,
   'security-safety': Lock,
   sneakers: Footprints,
@@ -1004,17 +1003,27 @@ export default function CreateListing() {
                 <Input
                   id="listing-title"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    // If the user types a title that exactly equals another
+                    // service name, switch the Service-type dropdown to it.
+                    // Any other title edit leaves the dropdown untouched.
+                    if (category === 'service') {
+                      const typed = e.target.value.trim();
+                      const match = REPAIR_SERVICE_TYPES.find(t => t.toLowerCase() === typed.toLowerCase());
+                      setDetail('repairType', match ?? details['repairType'] ?? '');
+                    }
+                  }}
                   placeholder={(category === 'car' || category === 'vehicles') ? 'e.g., Innova, Scorpio' : 'e.g., iPhone 13 Pro 128GB — excellent condition'}
                   className="rounded-2xl h-12 sm:h-14 text-base border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
                   maxLength={30}
                   autoFocus
                 />
                 {fieldsForCategoryStep(category, 'title').length > 0 && (
-                  <div className="flex flex-wrap items-center justify-between gap-3 -mt-1 mb-5">
+                  <div className="flex flex-wrap items-center justify-end gap-3 -mt-1 mb-5">
                     {fieldsForCategoryStep(category, 'title').map((f) => (
-                      <div key={f.key} className="relative w-[48%]">
-                        {f.key !== 'brand' && f.key !== 'storage' && (
+                      <div key={f.key} className="relative w-[48%]" style={f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
+                        {f.key !== 'brand' && f.key !== 'storage' && f.key !== 'repairType' && (
                           <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
                         )}
                         {f.typeable ? (
@@ -1040,7 +1049,19 @@ export default function CreateListing() {
                           <>
                             <select
                               value={details[f.key] ?? ''}
-                              onChange={(e) => setDetail(f.key, e.target.value)}
+                              onChange={(e) => {
+                                setDetail(f.key, e.target.value);
+                                // Picking a service prefills the title (editable).
+                                // Only overwrite when the title is empty or still
+                                // exactly equals the previous auto-filled service.
+                                if (f.key === 'repairType' && category === 'service') {
+                                  const v = e.target.value;
+                                  const prev = details['repairType'] ?? '';
+                                  if (v && (title.trim() === '' || title.trim().toLowerCase() === prev.toLowerCase())) {
+                                    setTitle(v);
+                                  }
+                                }
+                              }}
                               className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                             >
                               <option value="">{f.placeholder ?? 'Select'}</option>
@@ -1553,7 +1574,7 @@ export default function CreateListing() {
                 <div className="space-y-2 !mt-8">
                   <Label className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-2 ml-1">
                     <Upload className="h-3.5 w-3.5" />
-                    Photos (up to 5)
+                    Photos (up to 5){category === 'service' && <span className="font-normal text-slate-400">— optional</span>}
                   </Label>
                   {images.length > 0 && (
                     <div className="grid grid-cols-3 gap-2 mb-3">
@@ -1587,9 +1608,14 @@ export default function CreateListing() {
                     >
                       {images.length === 0 ? 'Choose Image' : 'Add More Images'}
                     </label>
-                    <p className="text-[11px] text-slate-600 mt-2 text-right">
-                      {images.length}/5
-                    </p>
+                    <div className="flex items-center justify-between mt-2">
+                      <p className="text-[8px] font-bold text-black tracking-wide">
+                        {category === 'service' ? 'Your work, sites etc.' : ''}
+                      </p>
+                      <p className="text-[11px] text-slate-600">
+                        {images.length}/5
+                      </p>
+                    </div>
                     {category === 'jobs' && (
                       <div className="flex items-center justify-between mt-3 pt-2 border-t border-black/10">
                         <span className="text-[8px] font-bold text-black tracking-wide">workspace</span>

@@ -104,6 +104,8 @@ const EnquiryResponses = () => {
   const navigate = useNavigate();
   const { enquiryId } = useParams();
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
+  // Jobs & services talk about salary, not offer
+  const useSalaryWording = !!enquiry && ['jobs', 'job', 'service', 'services'].some(k => enquiry.category.toLowerCase().includes(k));
   const [approvedResponses, setApprovedResponses] = useState<SellerSubmission[]>([]);
   const [selectedResponse, setSelectedResponse] = useState<SellerSubmission | null>(null);
   
@@ -2801,7 +2803,7 @@ const EnquiryResponses = () => {
                           </div>
                         <p className="text-white font-medium text-[8px] sm:text-[9px] lg:text-[10px] mb-2.5 sm:mb-3 lg:mb-3.5 line-clamp-2">{response.message}</p>
                         <div className="flex items-center justify-end gap-1.5 text-xs sm:text-sm lg:text-base text-white font-medium">
-                          <span className="text-[8px] sm:text-[9px] lg:text-[10px] font-semibold">Offer</span>
+                          <span className="text-[8px] sm:text-[9px] lg:text-[10px] font-semibold">{useSalaryWording ? 'Salary' : 'Offer'}</span>
                           <span className="font-semibold !bg-white text-black px-2 py-0.5 rounded-md border-[0.5px] border-black">{response.price?.toString().startsWith('₹') ? response.price : `₹${response.price || 'N/A'}`}</span>
                         </div>
                       </CardContent>
@@ -3130,8 +3132,8 @@ const EnquiryResponses = () => {
                           <div className="text-center flex-shrink-0">
                             <div className="text-[10px] sm:text-xs lg:text-sm font-semibold text-white">
                               {user && user.uid === enquiry?.userId 
-                                ? `Offer - ${selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}`
-                                : `Your offer - ${selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}`
+                                ? `${useSalaryWording ? 'Salary' : 'Offer'} - ${selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}`
+                                : `${useSalaryWording ? 'Your salary' : 'Your offer'} - ${selectedResponse.price?.toString().startsWith('₹') ? selectedResponse.price : `₹${selectedResponse.price || 'N/A'}`}`
                               }
                             </div>
                           </div>
