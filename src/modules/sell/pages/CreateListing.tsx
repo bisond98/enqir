@@ -1543,7 +1543,11 @@ export default function CreateListing() {
                       onChange={(e) => {
                         const v = e.target.value as '' | 'discussion';
                         setPriceOption(v);
-                        if (v === 'discussion') setPrice('');
+                        if (v === 'discussion') {
+                          setPrice('');
+                          setPriceMin('');
+                          setPriceMax('');
+                        }
                       }}
                       className={`appearance-none rounded-2xl h-12 sm:h-14 w-fit max-w-full font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150 focus:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] ${priceOption === 'discussion' ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
                     >
@@ -1553,6 +1557,120 @@ export default function CreateListing() {
                     <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                   </div>
                 </div>
+                {/* Price range — dual slider + Min/Max inputs (writes to the existing
+                    priceMin/priceMax range logic; using it marks the listing as a range,
+                    typing a fixed price above keeps it fixed) */}
+                {(() => {
+                  const RANGE_MAX = 1000000;
+                  const toSlider = (v: string) => {
+                    const n = parseFloat(v.replace(/[^0-9.]/g, ''));
+                    return isNaN(n) ? 0 : Math.min(RANGE_MAX, n);
+                  };
+                  const minVal = toSlider(priceMin);
+                  const maxVal = (() => {
+                    const n = parseFloat(priceMax.replace(/[^0-9.]/g, ''));
+                    return isNaN(n) ? RANGE_MAX : Math.max(minVal, Math.min(RANGE_MAX, n));
+                  })();
+                  const isRangeActive = !!(priceMin || priceMax);
+                  const fmt = (n: number) => '₹' + n.toLocaleString('en-IN');
+                  const pct = (n: number) => (n / RANGE_MAX) * 100;
+                  return (
+                    <div className="space-y-2 pt-1">
+                      <Label className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-2 ml-1">
+                        Price range {isRangeActive && <span className="font-normal text-slate-400">— active</span>}
+                      </Label>
+                      {/* Value pills above the track */}
+                      <div className="relative h-6 mb-1">
+                        <span
+                          className="absolute -translate-x-1/2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] sm:text-[10px] font-black whitespace-nowrap"
+                          style={{ left: `${pct(minVal)}%` }}
+                        >{fmt(minVal)}</span>
+                        <span
+                          className="absolute -translate-x-1/2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] sm:text-[10px] font-black whitespace-nowrap"
+                          style={{ left: `${pct(maxVal)}%` }}
+                        >{maxVal >= RANGE_MAX ? 'Any' : fmt(maxVal)}</span>
+                      </div>
+                      {/* Track with filled range */}
+                      <div className="relative h-6 flex items-center">
+                        <div className="absolute inset-x-0 h-1.5 bg-gray-200 rounded-full" />
+                        <div
+                          className="absolute h-1.5 bg-blue-600 rounded-full"
+                          style={{ left: `${pct(minVal)}%`, width: `${pct(maxVal) - pct(minVal)}%` }}
+                        />
+                        <input
+                          type="range"
+                          min={0}
+                          max={RANGE_MAX}
+                          step={500}
+                          value={minVal}
+                          onChange={(e) => {
+                            const n = Number(e.target.value);
+                            setPriceMin(n === 0 ? '' : String(n));
+                            setPriceType('range');
+                            setPrice('');
+                          }}
+                          aria-label="Minimum price"
+                          className="absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-webkit-slider-thumb]:cursor-grab active:[&::-webkit-slider-thumb]:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-blue-600 [&::-moz-range-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-moz-range-thumb]:cursor-grab"
+                        />
+                        <input
+                          type="range"
+                          min={0}
+                          max={RANGE_MAX}
+                          step={500}
+                          value={maxVal}
+                          onChange={(e) => {
+                            const n = Number(e.target.value);
+                            setPriceMax(n >= RANGE_MAX ? '' : String(n));
+                            setPriceType('range');
+                            setPrice('');
+                          }}
+                          aria-label="Maximum price"
+                          className="absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-webkit-slider-thumb]:cursor-grab active:[&::-webkit-slider-thumb]:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-blue-600 [&::-moz-range-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-moz-range-thumb]:cursor-grab"
+                        />
+                      </div>
+                      <div className="flex justify-between text-[8px] sm:text-[9px] text-gray-400 font-semibold">
+                        <span>₹0</span>
+                        <span>₹5L</span>
+                        <span>₹10L</span>
+                      </div>
+                      {/* Min / Max inputs — same visual language as the fixed price field */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold text-gray-500 z-10">₹</span>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={priceMin}
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/[^0-9]/g, '');
+                              setPriceMin(digits === '' ? '' : parseInt(digits).toLocaleString('en-IN'));
+                              setPriceType('range');
+                              setPrice('');
+                            }}
+                            placeholder="Min"
+                            className="w-full rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
+                          />
+                        </div>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold text-gray-500 z-10">₹</span>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={priceMax}
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/[^0-9]/g, '');
+                              setPriceMax(digits === '' ? '' : parseInt(digits).toLocaleString('en-IN'));
+                              setPriceType('range');
+                              setPrice('');
+                            }}
+                            placeholder="Max"
+                            className="w-full rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
                 {fieldsForCategoryStep(category, 'price').map((f) => (
                   <div key={f.key} className="space-y-2">
                     <Label className="text-[10px] sm:text-xs font-bold">{f.label}</Label>

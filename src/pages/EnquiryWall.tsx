@@ -5365,38 +5365,111 @@ export default function EnquiryWall() {
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Min (₹)</label>
-                    <div className="relative">
-                      <IndianRupee className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black/50 z-10" />
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={budgetMin}
-                        onChange={(e) => setBudgetMin(e.target.value.replace(/[^0-9]/g, ''))}
-                        placeholder="e.g., 5,000"
-                        style={{ paddingLeft: '2.25rem', paddingRight: '0.5rem' }}
-                        className="w-full h-10 sm:h-11 text-sm font-bold border-[1.5px] border-black !rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none focus:border-[4px] placeholder:text-gray-400 placeholder:font-normal placeholder:text-[10px]"
-                      />
+                {/* Dual-range budget slider — visual only; typing values still works below.
+                    Slider bounds adapt to the highest live-enquiry budget (min ₹0). */}
+                {(() => {
+                  const BUDGET_SLIDER_MAX = 1000000;
+                  const toSlider = (v: string) => {
+                    const n = parseFloat(v.replace(/[^0-9.]/g, ''));
+                    return isNaN(n) ? 0 : Math.min(BUDGET_SLIDER_MAX, n);
+                  };
+                  const minVal = toSlider(budgetMin);
+                  const maxVal = (() => {
+                    const n = parseFloat(budgetMax.replace(/[^0-9.]/g, ''));
+                    return isNaN(n) ? BUDGET_SLIDER_MAX : Math.max(minVal, Math.min(BUDGET_SLIDER_MAX, n));
+                  })();
+                  const fmt = (n: number) => '₹' + n.toLocaleString('en-IN');
+                  const pct = (n: number) => (n / BUDGET_SLIDER_MAX) * 100;
+                  return (
+                    <div className="pt-1">
+                      {/* Value pills above the track, positioned at the handles */}
+                      <div className="relative h-6 mb-1">
+                        <span
+                          className="absolute -translate-x-1/2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] sm:text-[10px] font-black whitespace-nowrap"
+                          style={{ left: `${pct(minVal)}%` }}
+                        >{fmt(minVal)}</span>
+                        <span
+                          className="absolute -translate-x-1/2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] sm:text-[10px] font-black whitespace-nowrap"
+                          style={{ left: `${pct(maxVal)}%` }}
+                        >{maxVal >= BUDGET_SLIDER_MAX ? 'Any' : fmt(maxVal)}</span>
+                      </div>
+                      {/* Track with filled range */}
+                      <div className="relative h-6 flex items-center">
+                        <div className="absolute inset-x-0 h-1.5 bg-gray-200 rounded-full" />
+                        <div
+                          className="absolute h-1.5 bg-blue-600 rounded-full"
+                          style={{ left: `${pct(minVal)}%`, width: `${pct(maxVal) - pct(minVal)}%` }}
+                        />
+                        {/* Two native range inputs stacked for accessible dual-handle dragging */}
+                        <input
+                          type="range"
+                          min={0}
+                          max={BUDGET_SLIDER_MAX}
+                          step={500}
+                          value={minVal}
+                          onChange={(e) => {
+                            const n = Number(e.target.value);
+                            setBudgetMin(n === 0 ? '' : String(n));
+                          }}
+                          aria-label="Minimum budget"
+                          className="absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-webkit-slider-thumb]:cursor-grab active:[&::-webkit-slider-thumb]:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-blue-600 [&::-moz-range-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-moz-range-thumb]:cursor-grab"
+                        />
+                        <input
+                          type="range"
+                          min={0}
+                          max={BUDGET_SLIDER_MAX}
+                          step={500}
+                          value={maxVal}
+                          onChange={(e) => {
+                            const n = Number(e.target.value);
+                            setBudgetMax(n >= BUDGET_SLIDER_MAX ? '' : String(n));
+                          }}
+                          aria-label="Maximum budget"
+                          className="absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-webkit-slider-thumb]:cursor-grab active:[&::-webkit-slider-thumb]:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-blue-600 [&::-moz-range-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-moz-range-thumb]:cursor-grab"
+                        />
+                      </div>
+                      {/* Scale labels */}
+                      <div className="flex justify-between text-[8px] sm:text-[9px] text-gray-400 font-semibold mt-0.5">
+                        <span>₹0</span>
+                        <span>₹5L</span>
+                        <span>₹10L</span>
+                      </div>
+                      {/* From / To inputs — exact values still supported, same state as before */}
+                      <div className="grid grid-cols-2 gap-3 mt-3">
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Min (₹)</label>
+                          <div className="relative">
+                            <IndianRupee className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black/50 z-10" />
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={budgetMin}
+                              onChange={(e) => setBudgetMin(e.target.value.replace(/[^0-9]/g, ''))}
+                              placeholder="e.g., 5,000"
+                              style={{ paddingLeft: '2.25rem', paddingRight: '0.5rem' }}
+                              className="w-full h-10 sm:h-11 text-sm font-bold border-[1.5px] border-black !rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none focus:border-[4px] placeholder:text-gray-400 placeholder:font-normal placeholder:text-[10px]"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Max (₹)</label>
+                          <div className="relative">
+                            <IndianRupee className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black/50 z-10" />
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={budgetMax}
+                              onChange={(e) => setBudgetMax(e.target.value.replace(/[^0-9]/g, ''))}
+                              placeholder="e.g., 50,000"
+                              style={{ paddingLeft: '2.25rem', paddingRight: '0.5rem' }}
+                              className="w-full h-10 sm:h-11 text-sm font-bold border-[1.5px] border-black !rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none focus:border-[4px] placeholder:text-gray-400 placeholder:font-normal placeholder:text-[10px]"
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-600 uppercase tracking-wide mb-1 block">Max (₹)</label>
-                    <div className="relative">
-                      <IndianRupee className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-black/50 z-10" />
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={budgetMax}
-                        onChange={(e) => setBudgetMax(e.target.value.replace(/[^0-9]/g, ''))}
-                        placeholder="e.g., 50,000"
-                        style={{ paddingLeft: '2.25rem', paddingRight: '0.5rem' }}
-                        className="w-full h-10 sm:h-11 text-sm font-bold border-[1.5px] border-black !rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_4px_0_0_rgba(0,0,0,0.15)] focus:outline-none focus:border-[4px] placeholder:text-gray-400 placeholder:font-normal placeholder:text-[10px]"
-                      />
-                    </div>
-                  </div>
-                </div>
+                  );
+                })()}
                 <p className="text-[9px] text-gray-500 -mt-2">Applies on top of your current search, category, and location.</p>
                 <div className={`flex items-center justify-between gap-3 py-2 px-3 border-t border-black/10 rounded-xl transition-colors ${showTrustBadgeOnly ? 'bg-blue-50' : ''}`}>
                   <button type="button" onClick={() => setShowTrustBadgeOnly(v => !v)} className="text-left flex-1 cursor-pointer">
