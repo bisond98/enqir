@@ -525,6 +525,12 @@ export default function PostEnquiry() {
           return false;
         }
         return true;
+      case 5:
+        if (!deadline) {
+          toast({ title: 'Set a deadline', description: 'Every enquiry needs a deadline.', variant: 'destructive' as any });
+          return false;
+        }
+        return true;
       default:
         return true;
     }
@@ -3363,7 +3369,7 @@ export default function PostEnquiry() {
                       )}
 
                       {/* Enquiry Preview */}
-                      <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 space-y-2.5">
+                      <div className="rounded-xl border-2 border-black bg-white p-4 sm:p-6 space-y-3 sm:space-y-3.5">
                         {/* Real-estate details first (real-estate only, not services) */}
                         {selectedCategories.includes('real-estate') && (
                           <div className="space-y-1.5">
@@ -3469,28 +3475,64 @@ export default function PostEnquiry() {
                             <div className="border-t border-gray-200" />
                           </div>
                         )}
-                        <div className="flex flex-col">
-                          <span className="text-[8px] text-gray-500 uppercase tracking-wide font-bold">Title</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-center truncate max-w-full">{title || '—'}</span>
+                        {/* Title */}
+                        <div>
+                          <p className="text-[15px] sm:text-base font-black text-black leading-snug break-words text-center">{title || 'Your enquiry title'}</p>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="text-[8px] text-gray-500 uppercase tracking-wide font-bold">{isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : 'Budget'}</span>
-                          <span className="text-sm sm:text-base font-black text-black text-center">{budget ? `₹${budget}` : budgetOpenToDiscussion ? 'Open to discussion' : '—'}</span>
+                        {/* Budget — centered under the title */}
+                        <div className="flex justify-center">
+                          {budget ? (
+                            <p className="text-sm sm:text-base font-black text-black">₹{budget}</p>
+                          ) : budgetOpenToDiscussion ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-green-800 rounded-full px-2 py-0.5"><IndianRupee className="h-2.5 w-2.5" />Open to discussion</span>
+                          ) : (
+                            <p className="text-sm font-black text-black">—</p>
+                          )}
                         </div>
-                        <div className="flex items-center justify-center gap-1">
-                          <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-red-600 flex-shrink-0 self-start mt-0.5" />
-                          <span className="text-xs sm:text-sm font-bold text-black text-center max-w-full">{location || '—'}</span>
+                        {/* Location row — pin icon in the left label column */}
+                        <div className="flex items-start gap-2">
+                          <div className="w-16 flex-shrink-0 flex">
+                            <MapPin className="h-3.5 w-3.5 text-red-600" />
+                          </div>
+                          <p className="text-[10px] sm:text-[11px] font-medium text-gray-500 leading-relaxed break-words">{location || '—'}</p>
                         </div>
-                        {/* Full description + job details filled on the description step */}
+                        {/* Description row — value starts at the same left edge as the location above (matching 64px + gap label column) */}
                         {description.trim() && (
-                          <div className="flex flex-col">
-                            <span className="text-[8px] text-gray-500 uppercase tracking-wide font-bold">Description</span>
-                            <p className="text-xs text-black mt-1 whitespace-pre-wrap break-words text-center">{description}</p>
+                          <div className="flex items-start gap-2">
+                            <div className="w-16 flex-shrink-0">
+                              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">Notes</span>
+                            </div>
+                            <p className="text-[10px] sm:text-[11px] text-gray-500 leading-relaxed whitespace-pre-wrap break-words">{description}</p>
                           </div>
                         )}
-                        <div className="flex flex-col">
-                          <span className="text-[8px] text-gray-500 uppercase tracking-wide font-bold">Category</span>
-                          <span className="text-xs sm:text-sm font-bold text-black text-center max-w-full">{selectedCategories.map(c => categories.find(cat => cat.value === c)?.label).join(', ') || '—'}</span>
+                        {/* Stay type row — accommodation subtypes, e.g. "Female only Hostel" */}
+                        {isAccom && accommodationType && (
+                          <div className="flex items-start gap-2">
+                            <div className="w-16 flex-shrink-0">
+                              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">Stay</span>
+                            </div>
+                            <p className="text-xs font-bold text-black leading-relaxed">
+                              {(() => {
+                                const subtypeLabel = ACCOMMODATION_SUBTYPES.find(s => s.value === accommodationType)?.label ?? accommodationType;
+                                const genderPrefix = accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType)
+                                  ? ACCOMMODATION_GENDER_OPTIONS.find(g => g.value === accommodationGender)?.label
+                                  : undefined;
+                                return genderPrefix && genderPrefix !== 'Any' ? `${genderPrefix} ${subtypeLabel}` : subtypeLabel;
+                              })()}
+                            </p>
+                          </div>
+                        )}
+                        {/* Category row */}
+                        <div className="flex items-start gap-2">
+                          <span className="text-[10px] font-bold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5 flex-shrink-0">Category</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {selectedCategories.map(c => {
+                              const cat = categories.find(cat => cat.value === c);
+                              return cat ? (
+                                <span key={c} className="inline-flex items-center text-[10px] font-bold text-gray-700 bg-gray-100 rounded-full px-2 py-0.5">{cat.label}</span>
+                              ) : null;
+                            })}
+                          </div>
                         </div>
                       </div>
                     </div>

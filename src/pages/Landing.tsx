@@ -2727,13 +2727,13 @@ const Landing = () => {
             )}
 
             {/* Show All Enquiries Button */}
-            <div className="text-center mt-8">
+            <div className="flex justify-end mt-3">
               <Link to="/enquiries" className="group inline-block" aria-label="Show All Enquiries">
                 <Button 
                   variant="outline" 
-                  className="h-14 w-14 sm:h-16 sm:w-16 p-0 !rounded-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center justify-center"
+                  className="h-11 sm:h-12 px-4 !rounded-2xl !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center justify-center"
                 >
-                  <Eye className="h-5 w-5 sm:h-6 sm:w-6 relative z-10" />
+                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 relative z-10" />
                 </Button>
               </Link>
             </div>
@@ -2913,10 +2913,18 @@ const Landing = () => {
                         })}
                       </AnimatePresence>
                     </div>
-                    <div className="mt-8 flex justify-center">
+                    <div
+                      className="mt-3 flex justify-end"
+                      style={{
+                        width: windowWidth >= 1024 ? '320px' : (windowWidth >= 640 ? '280px' : '180px'),
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                        transform: 'translateX(55%)',
+                      }}
+                    >
                       <Link to="/sell/marketplace" className="group inline-block" aria-label="Show All Products">
-                        <button className="h-14 w-14 sm:h-16 sm:w-16 p-0 !rounded-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center justify-center">
-                          <Eye className="h-5 w-5 sm:h-6 sm:w-6 relative z-10" />
+                        <button className="h-11 sm:h-12 px-4 !rounded-2xl !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center justify-center">
+                          <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 relative z-10" />
                         </button>
                       </Link>
                     </div>
