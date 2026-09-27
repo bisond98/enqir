@@ -354,13 +354,10 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 
   render() {
     if (this.state.hasError) {
-      const onForm = isFormRoute(window.location.pathname);
       // Single friendly recovery screen for ALL errors (stale bundles after a
       // redeploy, or anything else that slips through on a restored tab):
-      // one compact button. On form routes it says "Your session expired" and
-      // the button goes to the homepage (a form can't safely restore
-      // mid-fill); everywhere else it's "Something went wrong" + "Refresh
-      // Now" reloading the same page.
+      // identical design to the index.html pre-React fallback card — one
+      // "Refresh Now" button, no session-expired variant.
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4 sm:p-6">
           {/* Marketplace doodles on the page background, matching the OTP page */}
@@ -370,21 +367,18 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
 
           <Doodles />
 
-          <div className="w-full max-w-sm bg-white rounded-2xl sm:rounded-3xl shadow-lg border-2 border-slate-200 px-5 py-8 sm:px-12 sm:py-14 text-center">
-            <div className="mb-2">
-              <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-blue-600">Enqir</span>
+          <div className="w-full max-w-[20rem] bg-white rounded-[20px] shadow-[0_10px_30px_rgba(15,23,42,0.12)] border-2 border-slate-200 px-5 py-7 text-center">
+            <div className="mb-6">
+              <span className="text-[52px] font-extrabold tracking-tight text-blue-600 leading-none">Enqir</span>
             </div>
-            <p className="text-[15px] sm:text-[17px] text-slate-700 mb-10 sm:mb-14">
-              {onForm ? 'Your session expired' : 'Something went wrong'}
-            </p>
 
             <Button
               onClick={this.handleRefreshNow}
-              className="!w-fit !max-w-full !mx-auto !h-12 sm:!h-[52px] !text-[15px] sm:!text-base !font-extrabold !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-xl !border-[1.5px] !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none !px-7 sm:!px-8 flex !items-center !justify-center gap-2"
+              className="!w-full !max-w-full !h-[52px] !text-base !font-extrabold !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-[14px] !border-[1.5px] !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative touch-manipulation select-none flex !items-center !justify-center gap-2"
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 <RefreshCw className="h-4 w-4" />
-                {onForm ? 'Refresh Page' : 'Refresh Now'}
+                Refresh Now
               </span>
             </Button>
 
