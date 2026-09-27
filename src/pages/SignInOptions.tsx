@@ -253,8 +253,8 @@ const SignInOptions = () => {
           </button>
         </div>
 
-        {/* Footer */}
-        <p className="relative z-10 mt-5 sm:mt-8 text-[10px] text-gray-500 font-medium text-center max-w-xs -translate-y-[4.75rem]">
+        {/* Footer — horizontally centered regardless of max-width */}
+        <p className="relative z-10 mt-5 sm:mt-8 text-[8px] text-gray-500 font-medium text-center w-full max-w-xs mx-auto -translate-y-[4.75rem]">
           By continuing you agree to our{' '}
           <Link to="/terms-and-conditions" className="underline text-blue-600/90 hover:text-blue-700">Terms</Link>
           {' '}and{' '}

@@ -511,22 +511,21 @@ const SignInMobile = () => {
           </svg>
         </div>
 
+        {/* Back — pinned to the top of the page, just below the app header */}
+        <button
+          onClick={() => navigate('/signin')}
+          aria-label="Back to sign-in options"
+          className="absolute top-3 left-4 inline-flex items-center justify-center h-9 w-9 rounded-full text-gray-900 hover:bg-gray-200 transition-colors cursor-pointer z-10"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+
         <div className="relative w-full max-w-sm">
-          {/* Back */}
-          <button
-            onClick={() => navigate('/signin')}
-            aria-label="Back to sign-in options"
-            className="mb-6 inline-flex items-center justify-center h-9 w-9 rounded-full text-gray-900 hover:bg-gray-200 transition-colors cursor-pointer self-start"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
 
           {/* Heading */}
           <div className="text-center mb-8">
-            <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center">
-              <Phone className="h-6 w-6" />
-            </div>
-            <h1 className="font-chip text-xl sm:text-2xl font-extrabold text-black tracking-tight leading-snug">
+            <h1 className="font-chip text-xl sm:text-2xl font-extrabold text-black tracking-tight leading-snug inline-flex items-center justify-center gap-2">
+              <Phone className="h-5 w-5 sm:h-6 sm:w-6 fill-black" />
               {stage === 'phone' ? 'Enter your phone number' : 'Enter the OTP'}
             </h1>
             {stage !== 'phone' && (
@@ -587,18 +586,6 @@ const SignInMobile = () => {
                   'Send OTP'
                 )}
               </button>
-
-              {/* Footer switch to email */}
-              <p className="text-center text-[9px] text-gray-400">
-                Prefer email?{' '}
-                <Link
-                  to="/signin/email"
-                  state={(location.state as any) || undefined}
-                  className="font-semibold text-blue-600 underline hover:text-blue-800"
-                >
-                  Continue with Email
-                </Link>
-              </p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -620,7 +607,7 @@ const SignInMobile = () => {
                       if (e.key === 'ArrowRight' && i < 5) otpRefs.current[i + 1]?.focus();
                       if (e.key === 'Enter') handleVerifyOtp();
                     }}
-                    className="w-11 h-14 sm:w-12 sm:h-16 rounded-xl border-2 border-black bg-white text-center text-2xl font-bold text-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] focus:outline-none"
+                    className="w-11 h-14 sm:w-12 sm:h-16 rounded-xl border-[0.5px] border-black bg-white text-center text-2xl font-bold text-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] focus:outline-none"
                     style={{ fontSize: '24px' }}
                   />
                 ))}
@@ -646,7 +633,7 @@ const SignInMobile = () => {
               <button
                 onClick={handleResend}
                 disabled={loading || resendSeconds > 0}
-                className="w-full text-center text-sm font-semibold text-gray-500 hover:text-gray-800 underline cursor-pointer disabled:opacity-50 disabled:pointer-events-none disabled:no-underline"
+                className="w-full text-center text-[10px] font-semibold text-gray-500 hover:text-gray-800 underline cursor-pointer disabled:opacity-50 disabled:pointer-events-none disabled:no-underline"
               >
                 {resendSeconds > 0 ? `Resend OTP in ${resendSeconds}s` : 'Resend OTP'}
               </button>
