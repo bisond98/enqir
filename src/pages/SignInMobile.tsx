@@ -254,6 +254,28 @@ const SignInMobile = () => {
   const [resendSeconds, setResendSeconds] = useState(RESEND_SECONDS);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  // Mobile keypad scroll fix: while the keyboard is open the browser scrolls
+  // the window to reveal the input; when it dismisses, some browsers leave the
+  // window scrolled. Since this page is designed to fit the viewport, any
+  // scroll offset is wrong — snap back to the top whenever the viewport
+  // resizes back to full height (keyboard closed).
+  useEffect(() => {
+    const check = () => {
+      const vv = window.visualViewport;
+      const keyboardOpen = vv ? vv.height < window.innerHeight * 0.85 : false;
+      if (!keyboardOpen && window.scrollY !== 0) {
+        window.scrollTo(0, 0);
+      }
+    };
+    window.visualViewport?.addEventListener('resize', check);
+    window.addEventListener('resize', check);
+    check();
+    return () => {
+      window.visualViewport?.removeEventListener('resize', check);
+      window.removeEventListener('resize', check);
+    };
+  }, []);
+
   // Already signed in and verified? Go straight through.
   useEffect(() => {
     const returnTo = sessionStorage.getItem('returnAfterSignIn') || '/dashboard';
