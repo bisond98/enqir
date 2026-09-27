@@ -537,7 +537,7 @@ const SignInMobile = () => {
           </div>
 
           {error && (
-            <div className="mb-4 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <div className="mb-4 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white text-center">
               {error}
             </div>
           )}
@@ -548,7 +548,7 @@ const SignInMobile = () => {
               <div className="flex gap-2">
                 {/* Country code — locked to India for this page */}
                 <div
-                  className="h-12 sm:h-14 shrink-0 rounded-2xl border-2 border-black bg-white text-gray-900 flex items-center px-3 text-sm font-bold select-none"
+                  className="h-12 sm:h-14 shrink-0 rounded-2xl border-[0.5px] border-black bg-white text-gray-900 flex items-center px-3 text-sm font-bold select-none"
                   aria-label="Country code (India only)"
                 >
                   🇮🇳 +91
@@ -566,7 +566,7 @@ const SignInMobile = () => {
                     setPhoneDigits(formatDigits(digits));
                   }}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSendOtp(); }}
-                  className="flex-1 min-w-0 h-12 sm:h-14 rounded-2xl border-2 border-black bg-white px-4 text-base font-semibold text-gray-900 placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px] focus:outline-none"
+                  className="flex-1 min-w-0 h-12 sm:h-14 rounded-2xl border-[0.5px] border-black bg-white px-4 text-base font-semibold text-gray-900 placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px] focus:outline-none"
                   style={{ fontSize: '16px' }}
                   autoFocus
                 />
