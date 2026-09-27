@@ -520,7 +520,7 @@ const SignInMobile = () => {
           <ArrowLeft className="h-5 w-5" />
         </button>
 
-        <div className="relative w-full max-w-sm">
+        <div className="relative w-full max-w-sm mt-44 sm:mt-36 md:mt-0">
 
           {/* Heading */}
           <div className="text-center mb-8">
