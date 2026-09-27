@@ -370,48 +370,123 @@ const SignInMobile = () => {
       {/* Required invisible reCAPTCHA anchor for Firebase phone auth */}
       <div id="recaptcha-container" />
 
-      <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-10 bg-gradient-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
+      <div className="relative min-h-[100dvh] flex flex-col items-center justify-center px-4 py-10 bg-gradient-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
         {/* Decorative 2D doodles — Enqir theme */}
         <style>{`@keyframes doodleFloat { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
           .doodle-float { animation: doodleFloat 5s ease-in-out infinite; }
           .doodle-float-slow { animation: doodleFloat 7s ease-in-out 1.2s infinite; }`}</style>
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div className="absolute top-[60%] right-[4%] rotate-6 text-gray-900/80 doodle-float"><DoodleAI /></div>
-          <div className="absolute top-[8%] right-[6%] rotate-6 text-gray-900/80 doodle-float-slow"><DoodleChat /></div>
-          <div className="absolute top-[38%] left-[4%] rotate-[-10deg] text-gray-900/70 doodle-float-slow"><DoodleWrench /></div>
-          <div className="absolute top-[36%] right-[5%] rotate-[8deg] text-gray-900/70 doodle-float"><DoodleRupee /></div>
-          <div className="absolute bottom-[10%] left-[8%] rotate-6 text-gray-900/70 doodle-float-slow"><DoodleShield /></div>
-          <div className="absolute bottom-[12%] right-[8%] -rotate-6 text-gray-900/80 doodle-float"><DoodleEnquiry /></div>
-          <div className="absolute top-[3%] left-[6%] text-gray-900 rotate-12"><DoodleSparkle className="w-4 h-4" /></div>
-          <div className="absolute bottom-[40%] left-[6%] text-gray-900 -rotate-12"><DoodleSparkle className="w-3 h-3" /></div>
-          <div className="absolute top-[55%] left-[13%] text-gray-900/50 rotate-45"><DoodleSparkle className="w-2.5 h-2.5" /></div>
-          <div className="absolute top-[60%] right-[14%] text-gray-900/50 -rotate-12"><DoodleSparkle className="w-2.5 h-2.5" /></div>
-          <div className="absolute top-[13%] right-[28%] -rotate-6 text-gray-900/70 doodle-float hidden sm:block"><DoodleCloudLock /></div>
-          <div className="absolute bottom-[30%] right-[4%] rotate-[10deg] text-gray-900/70 doodle-float hidden sm:block"><DoodleConnected /></div>
-          <div className="absolute bottom-[28%] left-[3%] -rotate-8 text-gray-900/70 doodle-float-slow"><DoodleHandshake /></div>
-          <div className="absolute bottom-[6%] right-[28%] -rotate-6 text-gray-900/60 doodle-float-slow"><DoodleFingerprint /></div>
-          <div className="absolute top-[42%] left-[14%] rotate-12 text-gray-900/65 doodle-float"><DoodleKey /></div>
-          <div className="absolute top-[30%] right-[24%] -rotate-6 text-gray-900/75 doodle-float-slow hidden sm:block"><DoodlePadlock /></div>
-          <div className="absolute top-[47%] right-[4%] rotate-6 text-gray-900/70 doodle-float-slow hidden sm:block"><DoodleChip /></div>
-          <div className="absolute bottom-[24%] left-[4%] -rotate-8 text-gray-900/65 doodle-float"><DoodleWifi /></div>
-          <div className="absolute top-[2%] right-[30%] rotate-6 text-gray-900/60 doodle-float-slow"><DoodleEyeScan /></div>
-          <div className="absolute bottom-[16%] left-[28%] rotate-12 text-gray-900 doodle-float"><DoodleBolt /></div>
-          <div className="absolute top-[72%] right-[22%] -rotate-8 text-gray-900/60 doodle-float-slow"><DoodleGlobe /></div>
-          <div className="absolute top-[24%] left-[2%] -rotate-10 text-gray-900/60 doodle-float-slow"><DoodlePhone /></div>
-          <div className="absolute top-[16%] left-[42%] rotate-6 text-gray-900/60 doodle-float"><DoodleLocation /></div>
-          <div className="absolute top-[38%] right-[2%] -rotate-8 text-gray-900/60 doodle-float-slow"><DoodleCamera /></div>
-          <div className="absolute top-[58%] left-[2%] rotate-6 text-gray-900/60 doodle-float"><DoodleStarBadge /></div>
-          <div className="absolute top-[76%] right-[38%] rotate-8 text-gray-900/55 doodle-float-slow"><DoodleEnvelope /></div>
-          <div className="absolute top-[4%] right-[46%] -rotate-8 text-gray-900/60 doodle-float"><DoodleClock /></div>
-          <div className="absolute bottom-[4%] left-[36%] rotate-6 text-gray-900/60 doodle-float-slow"><DoodleHeart /></div>
-          <div className="absolute top-[30%] left-[10%] text-gray-900 rotate-12"><DoodlePlus className="w-3.5 h-3.5" /></div>
-          <div className="absolute bottom-[44%] right-[8%] text-gray-900 -rotate-6"><DoodlePlus className="w-3 h-3" /></div>
-          <div className="absolute top-[48%] right-[16%] text-gray-900/50 rotate-45"><DoodlePlus className="w-2.5 h-2.5" /></div>
-          <div className="absolute bottom-[18%] right-[16%] text-gray-900 rotate-12"><DoodleRing className="w-3 h-3" /></div>
-          <div className="absolute top-[10%] left-[16%] text-gray-900/45 -rotate-12"><DoodleRing className="w-2.5 h-2.5" /></div>
-          <div className="absolute top-[66%] left-[8%] text-gray-900 rotate-45"><DoodleStar /></div>
-          <div className="absolute top-[20%] right-[12%] text-gray-900/50 rotate-12"><DoodleStar /></div>
-          <div className="absolute bottom-[8%] right-[46%] text-gray-900/45 -rotate-12"><DoodlePlus className="w-2.5 h-2.5" /></div>
+          {/* Business-model story sketch — faithful restyle of the landing hero's
+              connected diagram: User → AI Engine → Match → Success, with
+              Secure / Fast / Chat / Quality satellites. The phone icon on the
+              form sits at the center hub. */}
+          <svg className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-full w-[min(58vw,440px)] max-w-none aspect-square" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            {/* Central hub rings (the phone icon sits visually at its center) */}
+            <g transform="translate(200, 200)" opacity="0.5">
+              <circle cx="0" cy="0" r="34" fill="none" stroke="#6B7280" strokeWidth="1.5" />
+              <circle cx="0" cy="0" r="27" fill="none" stroke="#6B7280" strokeWidth="1.2" opacity="0.7" />
+              <circle cx="0" cy="0" r="20" fill="none" stroke="#6B7280" strokeWidth="1" opacity="0.5" />
+            </g>
+
+            {/* Top - User with Smartphone (hero-style face + phone) */}
+            <g transform="translate(200, 80)" opacity="0.65">
+              <circle cx="0" cy="0" r="12" fill="none" stroke="#6B7280" strokeWidth="1.5" />
+              <circle cx="-3" cy="-2" r="1.5" fill="#6B7280" />
+              <circle cx="3" cy="-2" r="1.5" fill="#6B7280" />
+              <path d="M-2 3 Q0 4 2 3" stroke="#6B7280" strokeWidth="1.2" fill="none" />
+              <rect x="-8" y="8" width="16" height="20" fill="none" stroke="#6B7280" strokeWidth="1" rx="2" />
+              <rect x="-6" y="12" width="12" height="8" fill="#6B7280" opacity="0.3" />
+              <text x="0" y="42" textAnchor="middle" fontSize="9" fill="#4B5563" fontWeight="500">User</text>
+            </g>
+
+            {/* Left - AI Processing Center (box + chip dots + crossing lines) */}
+            <g transform="translate(100, 200)" opacity="0.65">
+              <rect x="-15" y="-12" width="30" height="24" fill="none" stroke="#6B7280" strokeWidth="1.5" rx="3" />
+              <circle cx="-6" cy="0" r="2" fill="#6B7280" />
+              <circle cx="0" cy="0" r="2" fill="#6B7280" />
+              <circle cx="6" cy="0" r="2" fill="#6B7280" />
+              <path d="M-4 -6 L4 6 M4 -6 L-4 6" stroke="#6B7280" strokeWidth="1" opacity="0.6" />
+              <text x="0" y="-18" textAnchor="middle" fontSize="9" fill="#4B5563" fontWeight="500">AI Engine</text>
+              {/* Processing lines */}
+              <path d="M-20 -5 L-15 -5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+              <path d="M-20 0 L-15 0" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+              <path d="M-20 5 L-15 5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+              <path d="M15 -5 L20 -5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+              <path d="M15 0 L20 0" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+              <path d="M15 5 L20 5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+            </g>
+
+            {/* Right - Matching Network (concentric rings + satellite nodes) */}
+            <g transform="translate(300, 200)" opacity="0.65">
+              <circle cx="0" cy="0" r="15" fill="none" stroke="#6B7280" strokeWidth="1.5" />
+              <circle cx="0" cy="0" r="10" fill="none" stroke="#6B7280" strokeWidth="1.2" opacity="0.7" />
+              <circle cx="0" cy="0" r="5" fill="none" stroke="#6B7280" strokeWidth="1" opacity="0.5" />
+              <circle cx="0" cy="0" r="2" fill="#6B7280" />
+              <text x="0" y="-20" textAnchor="middle" fontSize="9" fill="#4B5563" fontWeight="500">Match</text>
+              {/* Network nodes */}
+              <circle cx="-12" cy="-8" r="2" fill="#6B7280" opacity="0.6" />
+              <circle cx="12" cy="-8" r="2" fill="#6B7280" opacity="0.6" />
+              <circle cx="-12" cy="8" r="2" fill="#6B7280" opacity="0.6" />
+              <circle cx="12" cy="8" r="2" fill="#6B7280" opacity="0.6" />
+              <path d="M-12 -8 L-5 -3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
+              <path d="M12 -8 L5 -3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
+              <path d="M-12 8 L-5 3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
+              <path d="M12 8 L5 3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
+            </g>
+
+            {/* Bottom - Success Celebration (check circle + sparks) */}
+            <g transform="translate(200, 320)" opacity="0.65">
+              <circle cx="0" cy="0" r="16" fill="none" stroke="#6B7280" strokeWidth="1.5" />
+              <path d="M-6 0 L-2 4 L6 -2" stroke="#6B7280" strokeWidth="2.5" fill="none" />
+              <text x="0" y="-22" textAnchor="middle" fontSize="9" fill="#4B5563" fontWeight="500">Success!</text>
+              {/* Celebration elements */}
+              <path d="M-20 -8 L-18 -6 L-16 -8 L-18 -10 Z" fill="#6B7280" opacity="0.6" />
+              <path d="M20 -8 L22 -6 L24 -8 L22 -10 Z" fill="#6B7280" opacity="0.6" />
+              <path d="M-20 8 L-18 10 L-16 8 L-18 6 Z" fill="#6B7280" opacity="0.6" />
+              <path d="M20 8 L22 10 L24 8 L22 6 Z" fill="#6B7280" opacity="0.6" />
+            </g>
+
+            {/* Animated flow lines with arrowheads (hero-style dash animation) */}
+            <path d="M200 112 L200 166" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.55" markerEnd="url(#signin-arrowhead)">
+              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" />
+            </path>
+            <path d="M130 200 L166 200" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.55" markerEnd="url(#signin-arrowhead)">
+              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="0.5s" />
+            </path>
+            <path d="M234 200 L270 200" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.55" markerEnd="url(#signin-arrowhead)">
+              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="1s" />
+            </path>
+            <path d="M200 234 L200 288" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.55" markerEnd="url(#signin-arrowhead)">
+              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="1.5s" />
+            </path>
+            <path d="M118 218 L172 262" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.45" markerEnd="url(#signin-arrowhead)">
+              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="2s" />
+            </path>
+            <path d="M282 218 L228 262" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.45" markerEnd="url(#signin-arrowhead)">
+              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="2.5s" />
+            </path>
+
+            {/* Feature satellites: Secure / Fast / Chat / Quality */}
+            {[
+              { x: 150, y: 120, emoji: "🔒", label: "Secure" },
+              { x: 250, y: 120, emoji: "⚡", label: "Fast" },
+              { x: 150, y: 280, emoji: "💬", label: "Chat" },
+              { x: 250, y: 280, emoji: "⭐", label: "Quality" },
+            ].map((s) => (
+              <g key={s.label} transform={`translate(${s.x}, ${s.y})`} opacity="0.5">
+                <circle cx="0" cy="0" r="8" fill="#6B7280" />
+                <text x="0" y="2" textAnchor="middle" fontSize="7" fill="white">{s.emoji}</text>
+                <text x="0" y="17" textAnchor="middle" fontSize="6" fill="#4B5563">{s.label}</text>
+              </g>
+            ))}
+
+            {/* Arrowhead marker */}
+            <defs>
+              <marker id="signin-arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="#6B7280" />
+              </marker>
+            </defs>
+          </svg>
         </div>
 
         <div className="relative w-full max-w-sm">
@@ -419,17 +494,17 @@ const SignInMobile = () => {
           <button
             onClick={() => navigate('/signin')}
             aria-label="Back to sign-in options"
-            className="mb-6 inline-flex items-center justify-center h-9 w-9 rounded-full text-gray-900 hover:bg-gray-200 transition-colors cursor-pointer -translate-y-[12rem]"
+            className="mb-6 inline-flex items-center justify-center h-9 w-9 rounded-full text-gray-900 hover:bg-gray-200 transition-colors cursor-pointer self-start"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
 
           {/* Heading */}
-          <div className="text-center mb-8 -translate-y-[3cm]">
-            <div className="mx-auto mb-4 w-14 h-14 rounded-2xl border-2 border-black bg-blue-600 text-white flex items-center justify-center shadow-[0_4px_0_0_rgba(0,0,0,0.85)]">
+          <div className="text-center mb-8">
+            <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center">
               <Phone className="h-6 w-6" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
+            <h1 className="font-chip text-xl sm:text-2xl font-extrabold text-black tracking-tight leading-snug">
               {stage === 'phone' ? 'Enter your phone number' : 'Enter the OTP'}
             </h1>
             {stage !== 'phone' && (
@@ -446,12 +521,12 @@ const SignInMobile = () => {
           )}
 
           {stage === 'phone' ? (
-            <div className="space-y-4 -translate-y-[3.5cm]">
+            <div className="space-y-4">
               {/* Phone input row */}
               <div className="flex gap-2">
                 {/* Country code — locked to India for this page */}
                 <div
-                  className="h-12 sm:h-14 shrink-0 rounded-2xl border-2 border-black bg-white text-gray-900 flex items-center px-3 text-sm font-bold shadow-[0_4px_0_0_rgba(0,0,0,0.85)] select-none"
+                  className="h-12 sm:h-14 shrink-0 rounded-2xl border-2 border-black bg-white text-gray-900 flex items-center px-3 text-sm font-bold select-none"
                   aria-label="Country code (India only)"
                 >
                   🇮🇳 +91
@@ -469,7 +544,7 @@ const SignInMobile = () => {
                     setPhoneDigits(formatDigits(digits));
                   }}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSendOtp(); }}
-                  className="flex-1 min-w-0 h-12 sm:h-14 rounded-2xl border-2 border-black bg-white px-4 text-base font-semibold text-gray-900 placeholder:text-slate-400 placeholder:font-normal shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:outline-none"
+                  className="flex-1 min-w-0 h-12 sm:h-14 rounded-2xl border-2 border-black bg-white px-4 text-base font-semibold text-gray-900 placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px] focus:outline-none"
                   style={{ fontSize: '16px' }}
                   autoFocus
                 />
@@ -492,12 +567,12 @@ const SignInMobile = () => {
               </button>
 
               {/* Footer switch to email */}
-              <p className="text-center text-xs text-gray-400">
+              <p className="text-center text-[9px] text-gray-400">
                 Prefer email?{' '}
                 <Link
                   to="/signin/email"
                   state={(location.state as any) || undefined}
-                  className="font-semibold text-gray-600 underline hover:text-gray-900"
+                  className="font-semibold text-blue-600 underline hover:text-blue-800"
                 >
                   Continue with Email
                 </Link>
@@ -506,7 +581,7 @@ const SignInMobile = () => {
           ) : (
             <div className="space-y-4">
               {/* OTP input — one box per digit */}
-              <div className="flex gap-2 justify-center -translate-y-[2cm]" onPaste={handleOtpPaste}>
+              <div className="flex gap-2 justify-center" onPaste={handleOtpPaste}>
                 {otpDigits.map((digit, i) => (
                   <input
                     key={i}
@@ -533,7 +608,7 @@ const SignInMobile = () => {
               <button
                 onClick={handleVerifyOtp}
                 disabled={loading || otp.replace(/\D/g, "").length < 6}
-                className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-2 -mt-[2.2cm] rounded-xl border-2 border-black bg-blue-600 text-white font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-2 rounded-xl border-2 border-black bg-blue-600 text-white font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
                 {loading ? (
                   <>
