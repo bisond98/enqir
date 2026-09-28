@@ -2430,8 +2430,8 @@ export default function PostEnquiry() {
                         id="enquiry-title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="e.g., Land Cruiser Prado 70th Anniversary Edition"
-                        className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
+                        placeholder="What do you need?…"
+                        className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:font-normal placeholder:text-[13px] text-slate-900"
                         maxLength={50}
                         autoFocus
                       />

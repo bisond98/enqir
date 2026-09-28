@@ -5741,12 +5741,12 @@ export default function EnquiryWall() {
 
             <div className="max-w-2xl mx-auto w-full">
               <div className="relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground z-20 pointer-events-none" style={{ transform: 'translateY(-50%)' }} />
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-pal-blue z-20 pointer-events-none" style={{ transform: 'translateY(-50%)' }} />
                 <div className="relative">
                 <input
                   ref={searchInputRef}
                   type="text"
-                  placeholder='Search for "enquiries to respond"'
+                  placeholder='Search…'
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   onKeyDown={(e) => {
@@ -5783,21 +5783,22 @@ export default function EnquiryWall() {
                       }, 150);
                     }
                   }}
-                    className="w-full pl-11 sm:pl-12 pr-[4.5rem] sm:pr-[5.25rem] py-3 sm:py-3.5 text-sm sm:text-base border border-black rounded-xl sm:rounded-2xl focus:border-2 focus:border-black focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 placeholder:text-xs sm:placeholder:text-sm placeholder-gray-400 text-left leading-tight sm:leading-normal relative z-10"
+                    className="w-full min-h-[48px] pl-11 sm:pl-12 pr-[4.5rem] sm:pr-[5.25rem] py-3.5 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 rounded-[13px] bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] focus:outline-none focus:border-pal-blue focus:ring-3 focus:ring-pal-blue/20 focus-visible:ring-3 focus-visible:ring-pal-blue/20 focus-visible:ring-offset-0 hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] hover:scale-[1.005] transition-all duration-200 placeholder:text-sm sm:placeholder:text-[15px] placeholder:text-slate-400 placeholder:font-medium text-slate-900 text-left leading-tight sm:leading-normal relative z-10"
                   style={{ 
                     fontSize: '16px', // Prevents zoom on iOS
                     lineHeight: '1.5',
                     paddingTop: '0.75rem',
                     paddingBottom: '0.75rem',
                     paddingLeft: '2.75rem', // More space for icon on mobile
+                    paddingRight: '4.5rem',
                     WebkitAppearance: 'none',
                     WebkitTapHighlightColor: 'transparent',
                     direction: 'ltr'
                   }}
                   disabled={isAISearching}
                 />
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl sm:rounded-2xl pointer-events-none z-0" />
+                  {/* Soft glass sheen — keeps depth without the hard edge */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent rounded-[13px] pointer-events-none z-0" />
                 </div>
                 {isAISearching ? (
                   <div className="absolute right-[4.5rem] sm:right-[5.25rem] top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
