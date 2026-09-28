@@ -398,7 +398,7 @@ const SignInMobile = () => {
           .doodle-float { animation: doodleFloat 5s ease-in-out infinite; }
           .doodle-float-slow { animation: doodleFloat 7s ease-in-out 1.2s infinite; }`}</style>
         <div className="text-center mb-10 sm:mb-14 select-none">
-          <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
+          <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-gray-950">Enqir</span>
         </div>
         {/* Back — pinned to the top of the page, just below the app header */}
         <button
@@ -438,7 +438,7 @@ const SignInMobile = () => {
           )}
 
           {/* Form card — same card as the email login/sign-up page */}
-          <div className="shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm rounded-3xl px-7 py-9 sm:px-10 sm:py-12">
+          <div className="border-[0.25px] border-black/30 bg-white/95 backdrop-blur-sm rounded-3xl px-7 py-9 sm:px-10 sm:py-12">
           {stage === 'phone' ? (
             <div className="space-y-4">
               {/* Phone input row */}
@@ -473,7 +473,7 @@ const SignInMobile = () => {
               <button
                 onClick={handleSendOtp}
                 disabled={loading || phoneDigits.replace(/\D/g, "").length !== maxDigits}
-                className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-2 rounded-2xl border-2 border-black bg-blue-600 text-white font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border border-slate-300 bg-gradient-to-b from-blue-500 to-blue-700 text-white font-bold text-base sm:text-lg rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:translate-y-[-1px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:translate-y-[2px] transition-all duration-200 transform disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -515,7 +515,7 @@ const SignInMobile = () => {
               <button
                 onClick={handleVerifyOtp}
                 disabled={loading || otp.replace(/\D/g, "").length < 6}
-                className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-2 rounded-xl border-2 border-black bg-blue-600 text-white font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border border-slate-300 bg-gradient-to-b from-blue-500 to-blue-700 text-white font-bold text-base sm:text-lg rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:translate-y-[-1px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:translate-y-[2px] transition-all duration-200 transform disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
               >
                 {loading ? (
                   <>
