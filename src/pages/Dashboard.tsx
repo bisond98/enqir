@@ -83,6 +83,22 @@ interface SellerSubmission {
 
 const Dashboard = () => {
   const { user, isProfileVerified } = useAuth();
+
+  // Timeout wrapper so one stalled Firestore read can never block the whole
+  // dashboard load (the fetch below is a long sequential chain).
+  const withTimeout = async <T,>(promise: Promise<T>, ms: number, label: string): Promise<T> => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise<T>((_, reject) => {
+          timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+        }),
+      ]);
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  };
   const location = useLocation();
   const { canPostEnquiry, incrementEnquiries, getRemainingEnquiries, usageStats, purchasePremiumEnquiry } = useUsage();
   const notificationContext = useContext(NotificationContext);
@@ -519,12 +535,12 @@ const Dashboard = () => {
         (async () => {
           try {
             // Try with orderBy first
-            const enquiriesSnapshot = await getDocs(query(
+            const enquiriesSnapshot = await withTimeout(getDocs(query(
                 collection(db, 'enquiries'),
                 where('userId', '==', user.uid),
                 orderBy('createdAt', 'desc')
                 // Removed limit to show all user's enquiries (matching My Enquiries page)
-            ));
+            )), 10000, 'Enquiries fetch');
             const data: Enquiry[] = [];
             enquiriesSnapshot.forEach((doc) => {
               data.push({ id: doc.id, ...doc.data() } as Enquiry);
@@ -534,10 +550,10 @@ const Dashboard = () => {
             // If index error, fallback to query without orderBy
             if (orderByError?.code === 'failed-precondition' || orderByError?.message?.includes('index')) {
               console.warn('Dashboard: Index missing, using fallback query without orderBy');
-              const allEnquiriesSnapshot = await getDocs(query(
+              const allEnquiriesSnapshot = await withTimeout(getDocs(query(
                   collection(db, 'enquiries'),
                   where('userId', '==', user.uid)
-              ));
+              )), 10000, 'Enquiries fallback fetch');
               const data: Enquiry[] = [];
               allEnquiriesSnapshot.forEach((doc) => {
                 data.push({ id: doc.id, ...doc.data() } as Enquiry);
@@ -555,10 +571,10 @@ const Dashboard = () => {
           }
         })(),
         // Fetch seller submissions without orderBy to avoid index requirement, sort in JavaScript
-        getDocs(query(
+        withTimeout(getDocs(query(
           collection(db, 'sellerSubmissions'),
           where('sellerId', '==', user.uid)
-        ))
+        )), 10000, 'Submissions fetch')
       ]);
 
       // Process parallel results
@@ -599,7 +615,7 @@ const Dashboard = () => {
       await Promise.all(
         enquiryIds.map(async (enquiryId) => {
           try {
-            const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+            const enquiryDoc = await withTimeout(getDoc(doc(db, 'enquiries', enquiryId)), 8000, `Enquiry ${enquiryId} check`);
             if (!enquiryDoc.exists()) {
               deletedSet.add(enquiryId);
               console.log('🔍 Dashboard: Enquiry deleted:', enquiryId);

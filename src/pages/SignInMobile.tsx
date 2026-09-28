@@ -392,125 +392,14 @@ const SignInMobile = () => {
       {/* Required invisible reCAPTCHA anchor for Firebase phone auth */}
       <div id="recaptcha-container" />
 
-      <div className="relative min-h-[100dvh] flex flex-col items-center justify-start px-4 pt-[calc(38vh+18px)] pb-10 bg-gradient-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
-        {/* Decorative 2D doodles — Enqir theme */}
+      <div className="relative min-h-[100dvh] flex flex-col items-center justify-start px-4 pt-24 sm:pt-28 pb-10 bg-gradient-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
+        {/* Brand header — same as the sign-up (sign-in options) page */}
         <style>{`@keyframes doodleFloat { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
           .doodle-float { animation: doodleFloat 5s ease-in-out infinite; }
           .doodle-float-slow { animation: doodleFloat 7s ease-in-out 1.2s infinite; }`}</style>
-        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          {/* Business-model story sketch — faithful restyle of the landing hero's
-              connected diagram: User → AI Engine → Match → Success, with
-              Secure / Fast / Chat / Quality satellites. The phone icon on the
-              form sits at the center hub. */}
-          <svg className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-full w-[min(58vw,440px)] max-w-none aspect-square" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-            {/* Central hub rings (the phone icon sits visually at its center) */}
-            <g transform="translate(200, 200)" opacity="0.85">
-              <circle cx="0" cy="0" r="34" fill="none" stroke="#111827" strokeWidth="2" />
-              <circle cx="0" cy="0" r="27" fill="none" stroke="#111827" strokeWidth="1.2" opacity="0.7" />
-              <circle cx="0" cy="0" r="20" fill="none" stroke="#111827" strokeWidth="1" opacity="0.85" />
-            </g>
-
-            {/* Top - User with Smartphone (hero-style face + phone) */}
-            <g transform="translate(200, 80)" opacity="0.95">
-              <circle cx="0" cy="0" r="12" fill="none" stroke="#111827" strokeWidth="2" />
-              <circle cx="-3" cy="-2" r="1.5" fill="#111827" />
-              <circle cx="3" cy="-2" r="1.5" fill="#111827" />
-              <path d="M-2 3 Q0 4 2 3" stroke="#111827" strokeWidth="1.2" fill="none" />
-              <rect x="-8" y="8" width="16" height="20" fill="none" stroke="#111827" strokeWidth="1" rx="2" />
-              <rect x="-6" y="12" width="12" height="8" fill="#111827" opacity="0.85" />
-              <text x="0" y="42" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">User</text>
-            </g>
-
-            {/* Left - AI Processing Center (box + chip dots + crossing lines) */}
-            <g transform="translate(100, 200)" opacity="0.95">
-              <rect x="-15" y="-12" width="30" height="24" fill="none" stroke="#111827" strokeWidth="2" rx="3" />
-              <circle cx="-6" cy="0" r="2" fill="#111827" />
-              <circle cx="0" cy="0" r="2" fill="#111827" />
-              <circle cx="6" cy="0" r="2" fill="#111827" />
-              <path d="M-4 -6 L4 6 M4 -6 L-4 6" stroke="#111827" strokeWidth="1" opacity="0.9" />
-              <text x="0" y="-18" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">AI Engine</text>
-              {/* Processing lines */}
-              <path d="M-20 -5 L-15 -5" stroke="#111827" strokeWidth="1" opacity="0.7" />
-              <path d="M-20 0 L-15 0" stroke="#111827" strokeWidth="1" opacity="0.7" />
-              <path d="M-20 5 L-15 5" stroke="#111827" strokeWidth="1" opacity="0.7" />
-              <path d="M15 -5 L20 -5" stroke="#111827" strokeWidth="1" opacity="0.7" />
-              <path d="M15 0 L20 0" stroke="#111827" strokeWidth="1" opacity="0.7" />
-              <path d="M15 5 L20 5" stroke="#111827" strokeWidth="1" opacity="0.7" />
-            </g>
-
-            {/* Right - Matching Network (concentric rings + satellite nodes) */}
-            <g transform="translate(300, 200)" opacity="0.95">
-              <circle cx="0" cy="0" r="15" fill="none" stroke="#111827" strokeWidth="2" />
-              <circle cx="0" cy="0" r="10" fill="none" stroke="#111827" strokeWidth="1.2" opacity="0.7" />
-              <circle cx="0" cy="0" r="5" fill="none" stroke="#111827" strokeWidth="1" opacity="0.85" />
-              <circle cx="0" cy="0" r="2" fill="#111827" />
-              <text x="0" y="-20" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">Match</text>
-              {/* Network nodes */}
-              <circle cx="-12" cy="-8" r="2" fill="#111827" opacity="0.9" />
-              <circle cx="12" cy="-8" r="2" fill="#111827" opacity="0.9" />
-              <circle cx="-12" cy="8" r="2" fill="#111827" opacity="0.9" />
-              <circle cx="12" cy="8" r="2" fill="#111827" opacity="0.9" />
-              <path d="M-12 -8 L-5 -3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
-              <path d="M12 -8 L5 -3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
-              <path d="M-12 8 L-5 3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
-              <path d="M12 8 L5 3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
-            </g>
-
-            {/* Bottom - Success Celebration (check circle + sparks) */}
-            <g transform="translate(200, 320)" opacity="0.95">
-              <circle cx="0" cy="0" r="16" fill="none" stroke="#111827" strokeWidth="2" />
-              <path d="M-6 0 L-2 4 L6 -2" stroke="#111827" strokeWidth="2.5" fill="none" />
-              <text x="0" y="-22" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">Success!</text>
-              {/* Celebration elements */}
-              <path d="M-20 -8 L-18 -6 L-16 -8 L-18 -10 Z" fill="#111827" opacity="0.9" />
-              <path d="M20 -8 L22 -6 L24 -8 L22 -10 Z" fill="#111827" opacity="0.9" />
-              <path d="M-20 8 L-18 10 L-16 8 L-18 6 Z" fill="#111827" opacity="0.9" />
-              <path d="M20 8 L22 10 L24 8 L22 6 Z" fill="#111827" opacity="0.9" />
-            </g>
-
-            {/* Animated flow lines with arrowheads (hero-style dash animation) */}
-            <path d="M200 112 L200 166" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#signin-arrowhead)">
-              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" />
-            </path>
-            <path d="M130 200 L166 200" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#signin-arrowhead)">
-              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="0.5s" />
-            </path>
-            <path d="M234 200 L270 200" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#signin-arrowhead)">
-              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="1s" />
-            </path>
-            <path d="M200 234 L200 288" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#signin-arrowhead)">
-              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="1.5s" />
-            </path>
-            <path d="M118 218 L172 262" stroke="#111827" strokeWidth="2" fill="none" opacity="0.75" markerEnd="url(#signin-arrowhead)">
-              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="2s" />
-            </path>
-            <path d="M282 218 L228 262" stroke="#111827" strokeWidth="2" fill="none" opacity="0.75" markerEnd="url(#signin-arrowhead)">
-              <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="2.5s" />
-            </path>
-
-            {/* Feature satellites: Secure / Fast / Chat / Quality */}
-            {[
-              { x: 150, y: 120, emoji: "🔒", label: "Secure" },
-              { x: 250, y: 120, emoji: "⚡", label: "Fast" },
-              { x: 150, y: 280, emoji: "💬", label: "Chat" },
-              { x: 250, y: 280, emoji: "⭐", label: "Quality" },
-            ].map((s) => (
-              <g key={s.label} transform={`translate(${s.x}, ${s.y})`} opacity="0.85">
-                <circle cx="0" cy="0" r="8" fill="#111827" />
-                <text x="0" y="2" textAnchor="middle" fontSize="7" fill="white">{s.emoji}</text>
-                <text x="0" y="17" textAnchor="middle" fontSize="6" fill="#1F2937">{s.label}</text>
-              </g>
-            ))}
-
-            {/* Arrowhead marker */}
-            <defs>
-              <marker id="signin-arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-                <polygon points="0 0, 8 3, 0 6" fill="#111827" />
-              </marker>
-            </defs>
-          </svg>
+        <div className="text-center mb-10 sm:mb-14 select-none">
+          <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
         </div>
-
         {/* Back — pinned to the top of the page, just below the app header */}
         <button
           onClick={() => navigate('/signin')}
@@ -547,7 +436,7 @@ const SignInMobile = () => {
               <div className="flex gap-2">
                 {/* Country code — locked to India for this page */}
                 <div
-                  className="h-12 sm:h-14 shrink-0 rounded-2xl border-[0.5px] border-black bg-white text-gray-900 flex items-center px-3 text-sm font-bold select-none"
+                  className="h-12 sm:h-14 min-h-[48px] shrink-0 rounded-[12px] border-[1.5px] border-slate-200 bg-white text-gray-900 flex items-center px-3 text-sm font-bold select-none shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-within:border-black focus-within:ring-3 focus-within:ring-black/15 transition-all duration-200"
                   aria-label="Country code (India only)"
                 >
                   🇮🇳 +91
@@ -565,7 +454,7 @@ const SignInMobile = () => {
                     setPhoneDigits(formatDigits(digits));
                   }}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSendOtp(); }}
-                  className="flex-1 min-w-0 h-12 sm:h-14 rounded-2xl border-[0.5px] border-black bg-white px-4 text-base font-semibold text-gray-900 placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px] focus:outline-none"
+                  className="flex-1 min-w-0 h-12 sm:h-14 min-h-[48px] rounded-[12px] border-[1.5px] border-slate-200 bg-white px-4 text-base font-medium text-slate-900 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] focus:outline-none transition-all duration-200 placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px]"
                   style={{ fontSize: '16px' }}
                   autoFocus
                 />
@@ -586,6 +475,115 @@ const SignInMobile = () => {
                   'Send OTP'
                 )}
               </button>
+
+              {/* Business-model doodle — same sketch that used to sit behind the header,
+                  now placed below the form at the same size */}
+              <div className="pt-8 flex justify-center pointer-events-none select-none" aria-hidden="true">
+                <svg className="w-[min(86vw,400px)] max-w-none aspect-square" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                  {/* Central hub rings */}
+                  <g transform="translate(200, 200)" opacity="0.85">
+                    <circle cx="0" cy="0" r="34" fill="none" stroke="#111827" strokeWidth="2" />
+                    <circle cx="0" cy="0" r="27" fill="none" stroke="#111827" strokeWidth="1.2" opacity="0.7" />
+                    <circle cx="0" cy="0" r="20" fill="none" stroke="#111827" strokeWidth="1" opacity="0.85" />
+                  </g>
+
+                  {/* Top - User with Smartphone */}
+                  <g transform="translate(200, 80)" opacity="0.95">
+                    <circle cx="0" cy="0" r="12" fill="none" stroke="#111827" strokeWidth="2" />
+                    <circle cx="-3" cy="-2" r="1.5" fill="#111827" />
+                    <circle cx="3" cy="-2" r="1.5" fill="#111827" />
+                    <path d="M-2 3 Q0 4 2 3" stroke="#111827" strokeWidth="1.2" fill="none" />
+                    <rect x="-8" y="8" width="16" height="20" fill="none" stroke="#111827" strokeWidth="1" rx="2" />
+                    <rect x="-6" y="12" width="12" height="8" fill="#111827" opacity="0.85" />
+                    <text x="0" y="42" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">User</text>
+                  </g>
+
+                  {/* Left - AI Processing Center */}
+                  <g transform="translate(100, 200)" opacity="0.95">
+                    <rect x="-15" y="-12" width="30" height="24" fill="none" stroke="#111827" strokeWidth="2" rx="3" />
+                    <circle cx="-6" cy="0" r="2" fill="#111827" />
+                    <circle cx="0" cy="0" r="2" fill="#111827" />
+                    <circle cx="6" cy="0" r="2" fill="#111827" />
+                    <path d="M-4 -6 L4 6 M4 -6 L-4 6" stroke="#111827" strokeWidth="1" opacity="0.9" />
+                    <text x="0" y="-18" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">AI Engine</text>
+                    <path d="M-20 -5 L-15 -5" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M-20 0 L-15 0" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M-20 5 L-15 5" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M15 -5 L20 -5" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M15 0 L20 0" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M15 5 L20 5" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                  </g>
+
+                  {/* Right - Matching Network */}
+                  <g transform="translate(300, 200)" opacity="0.95">
+                    <circle cx="0" cy="0" r="15" fill="none" stroke="#111827" strokeWidth="2" />
+                    <circle cx="0" cy="0" r="10" fill="none" stroke="#111827" strokeWidth="1.2" opacity="0.7" />
+                    <circle cx="0" cy="0" r="5" fill="none" stroke="#111827" strokeWidth="1" opacity="0.85" />
+                    <circle cx="0" cy="0" r="2" fill="#111827" />
+                    <text x="0" y="-20" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">Match</text>
+                    <circle cx="-12" cy="-8" r="2" fill="#111827" opacity="0.9" />
+                    <circle cx="12" cy="-8" r="2" fill="#111827" opacity="0.9" />
+                    <circle cx="-12" cy="8" r="2" fill="#111827" opacity="0.9" />
+                    <circle cx="12" cy="8" r="2" fill="#111827" opacity="0.9" />
+                    <path d="M-12 -8 L-5 -3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
+                    <path d="M12 -8 L5 -3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
+                    <path d="M-12 8 L-5 3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
+                    <path d="M12 8 L5 3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
+                  </g>
+
+                  {/* Bottom - Success Celebration */}
+                  <g transform="translate(200, 320)" opacity="0.95">
+                    <circle cx="0" cy="0" r="16" fill="none" stroke="#111827" strokeWidth="2" />
+                    <path d="M-6 0 L-2 4 L6 -2" stroke="#111827" strokeWidth="2.5" fill="none" />
+                    <text x="0" y="-22" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">Success!</text>
+                    <path d="M-20 -8 L-18 -6 L-16 -8 L-18 -10 Z" fill="#111827" opacity="0.9" />
+                    <path d="M20 -8 L22 -6 L24 -8 L22 -10 Z" fill="#111827" opacity="0.9" />
+                    <path d="M-20 8 L-18 10 L-16 8 L-18 6 Z" fill="#111827" opacity="0.9" />
+                    <path d="M20 8 L22 10 L24 8 L22 6 Z" fill="#111827" opacity="0.9" />
+                  </g>
+
+                  {/* Animated flow lines with arrowheads */}
+                  <path d="M200 112 L200 166" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#signin-mobile-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" />
+                  </path>
+                  <path d="M130 200 L166 200" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#signin-mobile-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="0.5s" />
+                  </path>
+                  <path d="M234 200 L270 200" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#signin-mobile-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="1s" />
+                  </path>
+                  <path d="M200 234 L200 288" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#signin-mobile-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="1.5s" />
+                  </path>
+                  <path d="M118 218 L172 262" stroke="#111827" strokeWidth="2" fill="none" opacity="0.75" markerEnd="url(#signin-mobile-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="2s" />
+                  </path>
+                  <path d="M282 218 L228 262" stroke="#111827" strokeWidth="2" fill="none" opacity="0.75" markerEnd="url(#signin-mobile-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="2.5s" />
+                  </path>
+
+                  {/* Feature satellites: Secure / Fast / Chat / Quality */}
+                  {[
+                    { x: 150, y: 120, emoji: "🔒", label: "Secure" },
+                    { x: 250, y: 120, emoji: "⚡", label: "Fast" },
+                    { x: 150, y: 280, emoji: "💬", label: "Chat" },
+                    { x: 250, y: 280, emoji: "⭐", label: "Quality" },
+                  ].map((s) => (
+                    <g key={s.label} transform={`translate(${s.x}, ${s.y})`} opacity="0.85">
+                      <circle cx="0" cy="0" r="8" fill="#111827" />
+                      <text x="0" y="2" textAnchor="middle" fontSize="7" fill="white">{s.emoji}</text>
+                      <text x="0" y="17" textAnchor="middle" fontSize="6" fill="#1F2937">{s.label}</text>
+                    </g>
+                  ))}
+
+                  {/* Arrowhead marker */}
+                  <defs>
+                    <marker id="signin-mobile-arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                      <polygon points="0 0, 8 3, 0 6" fill="#111827" />
+                    </marker>
+                  </defs>
+                </svg>
+              </div>
             </div>
           ) : (
             <div className="space-y-4">

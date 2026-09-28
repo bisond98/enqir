@@ -2690,7 +2690,7 @@ export default function PostEnquiry() {
                             value={jobSkills}
                             onChange={(e) => setJobSkills(e.target.value)}
                             placeholder={jobSkills ? '' : 'Skills — e.g., Tally, Excel, Driving, 2-wheeler license'}
-                            className={`w-full rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            className={`w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-sm sm:text-base text-black'}`}
                           />
                         </div>
                       )}
@@ -2793,7 +2793,7 @@ export default function PostEnquiry() {
                                   value={vehicleDetails.year}
                                   onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
                                   placeholder="Year"
-                                  className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                                  className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
                                 />
                                 <div className="h-3">
                                   <p className="text-[8px] font-bold text-black text-center tracking-wide">year</p>
@@ -2808,7 +2808,7 @@ export default function PostEnquiry() {
                                     value={vehicleDetails.variant}
                                     onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
                                     placeholder="e.g., VXI, ZXI (O)"
-                                    className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                                    className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
                                   />
                                   <div className="h-3">
                                     <p className="text-[8px] font-bold text-black text-center tracking-wide">variant</p>
@@ -3149,7 +3149,7 @@ export default function PostEnquiry() {
                               }}
                               placeholder="Specifications, requirements, timeline..."
                               maxLength={500}
-                              className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                              className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
                               autoFocus
                             />
                           </div>
@@ -3171,7 +3171,7 @@ export default function PostEnquiry() {
                               }}
                               placeholder="Specifications, requirements, timeline..."
                               maxLength={500}
-                              className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                              className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
                               autoFocus
                             />
                           </div>
@@ -3198,7 +3198,7 @@ export default function PostEnquiry() {
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
                           placeholder="Search location..."
-                          className="rounded-2xl h-12 sm:h-14 text-sm border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400 placeholder:text-[10px] sm:placeholder:text-[11px]"
+                          className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-10 pr-4 placeholder:text-slate-400 placeholder:text-[10px] sm:placeholder:text-[11px]"
                           style={{ fontSize: '14px' }}
                         />
                         {showLocationSuggestions && locationSuggestions.length > 0 && (
@@ -3274,7 +3274,7 @@ export default function PostEnquiry() {
                             }}
                             placeholder="50,000"
                             inputMode="decimal"
-                            className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
+                            className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
                             autoFocus
                           />
                         </div>
@@ -3325,7 +3325,7 @@ export default function PostEnquiry() {
                           }}
                           maxLength={50}
                           placeholder="Additional requirements or preferences... (max 50 characters)"
-                          className="rounded-2xl min-h-[120px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150 focus-visible:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !translate-y-0"
+                          className="rounded-[12px] min-h-[120px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
                         />
                         <p className="text-[10px] text-gray-400 text-right">
                           {notes.length}/50
