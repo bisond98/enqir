@@ -397,8 +397,54 @@ const SignInMobile = () => {
         <style>{`@keyframes doodleFloat { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
           .doodle-float { animation: doodleFloat 5s ease-in-out infinite; }
           .doodle-float-slow { animation: doodleFloat 7s ease-in-out 1.2s infinite; }`}</style>
-        <div className="text-center mb-10 sm:mb-14 select-none">
-          <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-gray-950">Enqir</span>
+        <div className="text-center mb-10 sm:mb-14 select-none relative inline-flex items-center justify-center px-8 sm:px-12 py-8 sm:py-10">
+          {/* Painterly brush swash — single tapered stroke, like a spot illustration in a print design */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 640 260"
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient id="brushSwash" x1="0" y1="0" x2="1" y2="0.6">
+                <stop offset="0%" stopColor="#eceef0" />
+                <stop offset="50%" stopColor="#e4e7ea" />
+                <stop offset="100%" stopColor="#dcdfE3" />
+              </linearGradient>
+            </defs>
+            {/* The stroke: thick in the middle, tapering to a fine point on both ends —
+                the way a flat brush deposits paint in one confident pass */}
+            <path
+              d="M18 158
+                 C 40 120, 96 96, 168 92
+                 C 250 86, 330 60, 420 62
+                 C 500 64, 570 84, 614 108
+                 C 620 112, 620 120, 610 126
+                 C 560 158, 470 178, 380 182
+                 C 290 186, 190 192, 112 184
+                 C 66 180, 30 172, 18 158 Z"
+              fill="url(#brushSwash)"
+            />
+            {/* A single lighter pass underneath — like the brush was reloaded once */}
+            <path
+              d="M60 150 C 170 118, 330 96, 520 108"
+              stroke="#f2f3f5"
+              strokeWidth="16"
+              strokeLinecap="round"
+              fill="none"
+              opacity="0.5"
+            />
+            {/* One fine darker edge at the tail — the dry end of the stroke */}
+            <path
+              d="M96 182 C 180 194, 300 192, 420 178"
+              stroke="#d2d6da"
+              strokeWidth="5"
+              strokeLinecap="round"
+              fill="none"
+              opacity="0.45"
+            />
+          </svg>
+          <span className="relative text-8xl sm:text-9xl font-extrabold tracking-tight text-gray-950">Enqir</span>
         </div>
         {/* Back — pinned to the top of the page, just below the app header */}
         <button

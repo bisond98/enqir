@@ -210,14 +210,70 @@ const SignInOptions = () => {
         {/* Heading layered over the homescreen story doodle — same composition as the landing page,
             where the sketch wraps around the brand at the center hub */}
         <div className="relative z-10 w-full h-44 sm:h-96 max-w-[24rem] sm:max-w-md mx-auto mb-4 sm:mb-5 -translate-y-[7rem]">
-          <HomescreenSketchDoodle />
+          {/* Story doodle — pushed to the LOWER part of the block so it sits
+              beneath the wordmark instead of cluttering it */}
+          <div className="absolute inset-x-0 top-56 sm:top-80 bottom-0 flex justify-center">
+            <div className="w-4/5 sm:w-3/4 h-full">
+              <HomescreenSketchDoodle />
+            </div>
+          </div>
 
-          {/* Heading text just above the centre of the doodle */}
+          {/* Heading text — absolutely positioned exactly where it was before:
+              vertically centered in the block, nudged down 24 (translate-y-24) */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center translate-y-24 text-center">
             <h1 className="flex items-baseline justify-center gap-1 flex-wrap">
-              <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-gray-950">Enqir</span>
+              <span className="relative text-8xl sm:text-9xl font-extrabold tracking-tight text-gray-950 inline-flex items-center justify-center px-8 sm:px-12 py-8 sm:py-10 select-none">
+                {/* Painterly brush swash — a semi-transparent grey wash behind the wordmark,
+                    strong enough to read against the page's white-to-grey gradient */}
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 640 260"
+                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <linearGradient id="brushSwashSignup" x1="0" y1="0" x2="1" y2="0.6">
+                      <stop offset="0%" stopColor="#e2e5e9" />
+                      <stop offset="50%" stopColor="#d8dce1" />
+                      <stop offset="100%" stopColor="#ccd1d7" />
+                    </linearGradient>
+                  </defs>
+                  {/* The stroke: thick in the middle, tapering to a fine point on both ends —
+                      the way a flat brush deposits paint in one confident pass */}
+                  <path
+                    d="M18 158
+                       C 40 120, 96 96, 168 92
+                       C 250 86, 330 60, 420 62
+                       C 500 64, 570 84, 614 108
+                       C 620 112, 620 120, 610 126
+                       C 560 158, 470 178, 380 182
+                       C 290 186, 190 192, 112 184
+                       C 66 180, 30 172, 18 158 Z"
+                    fill="url(#brushSwashSignup)"
+                  />
+                  {/* A single lighter pass underneath — like the brush was reloaded once */}
+                  <path
+                    d="M60 150 C 170 118, 330 96, 520 108"
+                    stroke="#f2f3f5"
+                    strokeWidth="16"
+                    strokeLinecap="round"
+                    fill="none"
+                    opacity="0.5"
+                  />
+                  {/* One fine darker edge at the tail — the dry end of the stroke */}
+                  <path
+                    d="M96 182 C 180 194, 300 192, 420 178"
+                    stroke="#c3c8ce"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    fill="none"
+                    opacity="0.5"
+                  />
+                </svg>
+                <span className="relative z-10">Enqir</span>
+              </span>
             </h1>
-            <p className="mt-3 text-[10px] sm:text-sm text-black font-bold">
+            <p className="-mt-4 text-[10px] sm:text-sm text-black font-bold">
               The AI-powered trust-based marketplace
             </p>
           </div>
