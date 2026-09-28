@@ -2413,8 +2413,10 @@ export default function PostEnquiry() {
 
                 {/* Step Title */}
                 <div id="step-title" className="text-center pt-8 mb-10">
-                  <h2 className="font-chip text-xl sm:text-2xl font-extrabold text-black tracking-tight leading-snug">{STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}</h2>
-                  <p className="font-chip mt-2.5 inline-block rounded-full border border-black/[0.06] bg-slate-50 px-3 py-1 text-[10px] sm:text-[11px] font-medium text-slate-500">{STEPS[step].key === 'description' && isJobEnquiry(selectedCategories, category) ? 'Details' : STEPS[step].description}</p>
+                  <span className="inline-flex items-center justify-center rounded-full bg-gray-100 border border-gray-200 px-5 py-1.5 text-xl sm:text-2xl font-extrabold font-chip text-black tracking-tight leading-snug">
+                    {STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}
+                  </span>
+                  <p className="mt-1.5 text-[9px] sm:text-[10px] text-slate-400 font-medium">{STEPS[step].key === 'description' && isJobEnquiry(selectedCategories, category) ? 'Details' : STEPS[step].description}</p>
                 </div>
 
                 {/* Step Content */}
@@ -2562,7 +2564,7 @@ export default function PostEnquiry() {
                                type="button"
                                onClick={() => setCatPage(p => Math.max(0, p - 1))}
                                disabled={catPage === 0}
-                               className="flex items-center gap-1 px-3 py-2 text-xs font-bold border-2 border-black rounded-xl disabled:opacity-30 disabled:cursor-not-allowed hover:bg-black hover:text-white active:scale-95 transition-all"
+                               className="flex items-center gap-1 px-3 py-2 text-xs font-bold !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white rounded-xl !border !border-slate-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-all"
                              >
                                <ChevronLeft className="h-3 w-3" />
                                Prev
@@ -2574,7 +2576,7 @@ export default function PostEnquiry() {
                                type="button"
                                onClick={() => setCatPage(p => Math.min(totalPages - 1, p + 1))}
                                disabled={catPage === totalPages - 1}
-                               className="flex items-center gap-1 px-3 py-2 text-xs font-bold border-2 border-black rounded-xl disabled:opacity-30 disabled:cursor-not-allowed hover:bg-black hover:text-white active:scale-95 transition-all"
+                               className="flex items-center gap-1 px-3 py-2 text-xs font-bold !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white rounded-xl !border !border-slate-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-all"
                              >
                                Next
                                <ChevronRight className="h-3 w-3" />
@@ -3296,7 +3298,7 @@ export default function PostEnquiry() {
                                 setBudgetOpenToDiscussion(false);
                               }
                             }}
-                            className={`appearance-none rounded-2xl h-12 sm:h-14 w-fit max-w-full font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${budgetOpenToDiscussion ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
+                            className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit max-w-full font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-10 ${budgetOpenToDiscussion ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
                           >
                             <option value="">Click here</option>
                             <option value="open-to-discussion">Open to discussion</option>
@@ -3375,7 +3377,7 @@ export default function PostEnquiry() {
                             />
                             <label
                               htmlFor="enquiry-ref-images"
-                              className="block w-full text-center !rounded-2xl !border-[1.5px] !border-black bg-white hover:!bg-gray-50 !text-black transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] !text-[15px] font-black h-[50px] sm:h-[54px] flex items-center justify-center cursor-pointer touch-manipulation select-none"
+                              className="block w-full text-center !rounded-xl !border !border-slate-300 bg-gradient-to-b !from-white !to-slate-100 hover:!from-white hover:!to-slate-100 !text-gray-900 transition-all !duration-200 !shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_12px_rgba(0,0,0,0.08)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_8px_16px_rgba(0,0,0,0.10)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.12),0_3px_6px_rgba(0,0,0,0.08)] active:!translate-y-[2px] !text-base sm:!text-lg font-bold h-14 sm:h-16 flex items-center justify-center cursor-pointer touch-manipulation select-none"
                             >
                               {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking'
                                 ? (referenceImageUrls.length === 0 ? 'Choose File' : 'Add More Files')
@@ -3415,7 +3417,7 @@ export default function PostEnquiry() {
                               }));
                               navigate('/profile?returnTo=/post-enquiry');
                             }}
-                            className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-2xl !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 transition-all !duration-150 group !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
+                            className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border !border-slate-300 !bg-gradient-to-b !from-blue-600 !to-blue-800 hover:!from-blue-600 hover:!to-blue-800 transition-all !duration-200 group !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px] touch-manipulation select-none"
                           >
                             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                               <ShieldCheck className="h-5 w-5 text-white" />
@@ -3676,13 +3678,13 @@ export default function PostEnquiry() {
                     variant="outline"
                     onClick={goBack}
                     disabled={step === 0}
-                    className="!bg-white hover:!bg-gray-50 !text-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] font-black !text-[15px] h-[50px] sm:h-[54px] px-6 flex items-center gap-1 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0"
+                    className={`!bg-gradient-to-b !from-gray-100 !to-gray-200 hover:!from-gray-100 hover:!to-gray-200 ${step === 0 ? '!text-gray-400' : '!text-gray-900'} !rounded-xl !border !border-slate-300 relative transition-all !duration-200 !shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_12px_rgba(0,0,0,0.08)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_8px_16px_rgba(0,0,0,0.10)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.12),0_3px_6px_rgba(0,0,0,0.08)] active:!translate-y-[2px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0`}
                   >
                     <ChevronLeft className="h-4 w-4 relative z-10" />
                     <span className="relative z-10">Back</span>
                   </Button>
                   {step < totalSteps - 1 ? (
-                    <Button type="button" onClick={goNext} className="!bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] font-black !text-[15px] h-[50px] sm:h-[54px] px-6 flex items-center gap-1 touch-manipulation select-none">
+                    <Button type="button" onClick={goNext} className="!bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-slate-300 relative transition-all !duration-200 !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none">
                       <span className="relative z-10">Next</span>
                       <ChevronRight className="h-4 w-4 relative z-10" />
                     </Button>
@@ -3692,7 +3694,7 @@ export default function PostEnquiry() {
                         type="button"
                         onClick={() => handleSubmit(new Event('submit') as any)}
                         disabled={loading || idUploadLoading || paymentLoading}
-                        className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
+                        className="!w-full !h-16 !text-lg !font-black !bg-gradient-to-b !from-blue-600 !to-blue-800 hover:!from-blue-600 hover:!to-blue-800 !text-white !rounded-xl !border !border-slate-300 relative overflow-hidden transition-all !duration-200 !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
                       >
                         <span className="relative z-10 inline-flex items-center justify-center gap-2">
                           {(loading || paymentCaptured) && (
