@@ -29,6 +29,7 @@ import { doc, setDoc, getDoc, onSnapshot, deleteDoc, collection, query, where, g
 import { fetchSignInMethodsForEmail } from 'firebase/auth';
 import { db } from '@/firebase';
 import { friendlyError } from '@/utils/friendlyError';
+import { firestoreGet, firestoreWrite, firestoreWriteBackground } from '@/lib/firestoreSafe';
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -192,8 +193,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setLoading(false);
               return { error: new Error('Email is blocked') };
             } else if (expiresAt) {
-              // Block has expired, remove it
-              await deleteDoc(doc(db, 'blockedEmails', emailLower));
+              // Block has expired, remove it (background — must not gate signup)
+              firestoreWriteBackground(deleteDoc(doc(db, 'blockedEmails', emailLower)), 'Expired block cleanup (email)');
             }
           }
         } catch (blockCheckError) {
@@ -225,9 +226,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setLoading(false);
               return { error: new Error('Email is blocked') };
             } else if (expiresAt) {
-              // Block has expired, remove it
-              await deleteDoc(doc(db, 'blockedUsers', result.user.uid));
-              await deleteDoc(doc(db, 'blockedEmails', identifier.toLowerCase()));
+              // Block has expired, remove it (background — must not gate signup)
+              firestoreWriteBackground(deleteDoc(doc(db, 'blockedUsers', result.user.uid)), 'Expired block cleanup (user)');
+              firestoreWriteBackground(deleteDoc(doc(db, 'blockedEmails', identifier.toLowerCase())), 'Expired block cleanup (email)');
             }
           }
         } catch (blockCheckError) {
@@ -240,9 +241,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
 
         // Store additional user profile data in userProfiles collection
+        // (background write — signup success must never wait on Firestore)
         if (userData?.full_name || userData?.first_name || userData?.last_name) {
           try {
-            await setDoc(doc(db, 'userProfiles', result.user.uid), {
+            firestoreWriteBackground(setDoc(doc(db, 'userProfiles', result.user.uid), {
               userId: result.user.uid,
               fullName: userData?.full_name || '',
               firstName: userData?.first_name || '',
@@ -252,8 +254,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               verificationMethod: 'manual',
               createdAt: new Date(),
               updatedAt: new Date()
-            });
-            console.log('User profile data stored successfully');
+            }), 'Signup profile write');
+            console.log('User profile data stored (background)');
           } catch (profileError) {
             console.error('Error storing user profile:', profileError);
             // Don't fail the signup if profile storage fails
@@ -397,8 +399,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setLoading(false);
             return { error: new Error('Account is blocked') };
           } else if (expiresAt) {
-            // Block has expired, remove it
-            await deleteDoc(doc(db, 'blockedEmails', emailLower));
+            // Block has expired, remove it (background — must not gate sign-in)
+            firestoreWriteBackground(deleteDoc(doc(db, 'blockedEmails', emailLower)), 'Expired block cleanup (sign-in)');
           }
         }
         
@@ -423,10 +425,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setLoading(false);
               return { error: new Error('Account is blocked') };
             } else if (expiresAt) {
-              // Block has expired, remove it
-              await deleteDoc(doc(db, 'blockedUsers', result.user.uid));
+              // Block has expired, remove it (background — must not gate sign-in)
+              firestoreWriteBackground(deleteDoc(doc(db, 'blockedUsers', result.user.uid)), 'Expired block cleanup (user)');
               if (result.user.email) {
-                await deleteDoc(doc(db, 'blockedEmails', result.user.email.toLowerCase()));
+                firestoreWriteBackground(deleteDoc(doc(db, 'blockedEmails', result.user.email.toLowerCase())), 'Expired block cleanup (email)');
               }
             }
           }
@@ -837,30 +839,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const credential = PhoneAuthProvider.credential(verificationId, otp);
       
+      // Store user data in Firestore (doc ID must be the UID to match security rules;
+      // phone-number IDs were always denied and made OTP sign-in report failure
+      // even though sign-in succeeded). Fire-and-forget: sign-in must NEVER be
+      // blocked by a slow Firestore write (the button would spin forever).
+      const persistUser = (uid: string, phoneNumber: string | null, displayName: string | null) => {
+        withTimeout(setDoc(doc(db, 'users', uid), {
+          uid,
+          phoneNumber,
+          displayName,
+          createdAt: new Date(),
+        }, { merge: true }), 8000, 'User doc write').catch((writeError) => {
+          console.warn('Phone sign-in: user doc write delayed/failed (sign-in still valid):', writeError);
+        });
+      };
+      
       if (auth.currentUser) {
         // Link phone to existing account
-        await linkWithCredential(auth.currentUser, credential);
-        
-        // Store user data in Firestore (doc ID must be the UID to match security rules;
-        // phone-number IDs were always denied and made OTP sign-in report failure
-        // even though sign-in succeeded)
-        await setDoc(doc(db, 'users', auth.currentUser.uid), {
-          uid: auth.currentUser.uid,
-          phoneNumber: auth.currentUser.phoneNumber,
-          displayName: auth.currentUser.displayName,
-          createdAt: new Date(),
-        }, { merge: true });
+        await withTimeout(linkWithCredential(auth.currentUser, credential), 15000, 'Phone link');
+        persistUser(auth.currentUser.uid, auth.currentUser.phoneNumber, auth.currentUser.displayName);
       } else {
         // Sign in with phone
-        const result = await signInWithCredential(auth, credential);
-        
-        // Store user data in Firestore (doc ID must be the UID to match security rules)
-        await setDoc(doc(db, 'users', result.user.uid), {
-          uid: result.user.uid,
-          phoneNumber: result.user.phoneNumber,
-          displayName: result.user.displayName,
-          createdAt: new Date(),
-        }, { merge: true });
+        const result = await withTimeout(signInWithCredential(auth, credential), 15000, 'Phone sign-in');
+        persistUser(result.user.uid, result.user.phoneNumber, result.user.displayName);
       }
       
       toast({
@@ -892,21 +893,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await signInWithPopup(auth, provider);
       const u = result.user;
 
-      // Ensure a Firestore users doc exists (same shape as email flow)
+      // Ensure a Firestore users doc exists (same shape as email flow).
+      // Background write — Google sign-in success must never wait on Firestore.
       const userDocRef = doc(db, 'users', u.uid);
-      const snap = await getDoc(userDocRef);
-      if (!snap.exists()) {
-        await setDoc(userDocRef, {
-          uid: u.uid,
-          email: u.email,
-          displayName: u.displayName || u.email?.split('@')[0] || 'User',
-          photoURL: u.photoURL || null,
-          full_name: u.displayName || '',
-          first_name: (u.displayName || '').split(' ')[0] || '',
-          createdAt: new Date(),
-          provider: 'google.com',
-        });
-      }
+      const ensureUserDoc = async () => {
+        try {
+          const snap = await firestoreGet(getDoc(userDocRef), 'Google user doc read');
+          if (!snap.exists()) {
+            await firestoreWrite(setDoc(userDocRef, {
+              uid: u.uid,
+              email: u.email,
+              displayName: u.displayName || u.email?.split('@')[0] || 'User',
+              photoURL: u.photoURL || null,
+              full_name: u.displayName || '',
+              first_name: (u.displayName || '').split(' ')[0] || '',
+              createdAt: new Date(),
+              provider: 'google.com',
+            }), 'Google user doc write');
+          }
+        } catch (docError) {
+          console.warn('Google sign-in: user doc sync delayed/failed (sign-in still valid):', docError);
+        }
+      };
+      // Don't await — navigate immediately, doc lands in background
+      ensureUserDoc();
 
       toast({ title: 'Signed in with Google', description: `Welcome${u.displayName ? `, ${u.displayName.split(' ')[0]}` : ''}!` });
       return { error: null };
