@@ -461,7 +461,7 @@ const SignInMobile = () => {
           <div className="text-center mb-8">
             {stage !== 'phone' && (
               <>
-                <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gray-100 border border-gray-200 px-4 py-1.5 text-xs font-semibold text-gray-900">
+                <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gray-100 border border-gray-200 px-4 py-1.5 text-xs font-semibold text-gray-900 shadow-[0_2px_0_0_rgba(0,0,0,0.09),0_0_10px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)]">
                   <Phone className="h-3.5 w-3.5 fill-gray-900" />
                   Enter the OTP
                 </span>
@@ -479,14 +479,14 @@ const SignInMobile = () => {
           )}
 
           {/* Form card — same card as the email login/sign-up page */}
-          <div className="border-[0.25px] border-black/30 bg-white/95 backdrop-blur-sm rounded-3xl px-7 py-9 sm:px-10 sm:py-12">
+          <div className="border-[0.25px] border-black/30 bg-white/95 backdrop-blur-sm rounded-3xl px-7 py-9 sm:px-10 sm:py-12 shadow-[0_2px_0_0_rgba(0,0,0,0.09),0_0_14px_rgba(0,0,0,0.08),0_10px_26px_rgba(0,0,0,0.14)]">
           {stage === 'phone' ? (
             <div className="space-y-4">
               {/* Phone input row */}
               <div className="flex gap-2">
                 {/* Country code — locked to India for this page */}
                 <div
-                  className="h-12 sm:h-14 min-h-[48px] shrink-0 rounded-[12px] border-[1.5px] border-slate-200 bg-white text-gray-900 flex items-center px-3 text-sm font-bold select-none shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-within:border-black focus-within:ring-3 focus-within:ring-black/15 transition-all duration-200"
+                  className="h-12 sm:h-14 min-h-[48px] shrink-0 rounded-[12px] border-[1.5px] border-slate-200 bg-white text-gray-900 flex items-center px-3 text-sm font-bold select-none shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-within:border-black focus-within:ring-3 focus-within:ring-black/15 transition-all duration-200"
                   aria-label="Country code (India only)"
                 >
                   🇮🇳 +91
@@ -507,7 +507,7 @@ const SignInMobile = () => {
                       setPhoneDigits(formatDigits(digits));
                     }}
                     onKeyDown={(e) => { if (e.key === 'Enter') handleSendOtp(); }}
-                    className="w-full h-12 sm:h-14 min-h-[48px] rounded-[12px] border-[1.5px] border-slate-200 bg-white pl-11 pr-4 text-base font-medium text-slate-900 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] focus:outline-none transition-all duration-200 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] placeholder:text-center"
+                    className="w-full h-12 sm:h-14 min-h-[48px] rounded-[12px] border-[1.5px] border-slate-200 bg-white pl-11 pr-4 text-base font-medium text-slate-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] focus:outline-none transition-all duration-200 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] placeholder:text-center"
                     style={{ fontSize: '16px' }}
                     autoFocus
                   />
@@ -550,7 +550,7 @@ const SignInMobile = () => {
                       if (e.key === 'ArrowRight' && i < 5) otpRefs.current[i + 1]?.focus();
                       if (e.key === 'Enter') handleVerifyOtp();
                     }}
-                    className="w-11 h-14 sm:w-12 sm:h-16 rounded-xl border-[0.5px] border-black bg-white text-center text-2xl font-bold text-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.3)] focus:outline-none"
+                    className="w-11 h-14 sm:w-12 sm:h-16 rounded-xl border-[0.5px] border-black bg-white text-center text-2xl font-bold text-gray-900 shadow-[0_4px_0_0_rgba(0,0,0,0.3),0_0_12px_rgba(0,0,0,0.12),0_8px_18px_rgba(0,0,0,0.16)] focus:outline-none"
                     style={{ fontSize: '24px' }}
                   />
                 ))}
