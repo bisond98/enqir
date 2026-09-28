@@ -392,12 +392,12 @@ const SignInMobile = () => {
       {/* Required invisible reCAPTCHA anchor for Firebase phone auth */}
       <div id="recaptcha-container" />
 
-      <div className="relative min-h-[100dvh] flex flex-col items-center justify-start px-4 pt-24 sm:pt-28 pb-10 bg-gradient-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
+      <div className="relative min-h-[100dvh] flex flex-col items-center justify-start px-4 pt-14 sm:pt-16 pb-10 bg-gradient-to-b from-white via-gray-50 to-gray-100 overflow-hidden">
         {/* Brand header — same as the sign-up (sign-in options) page */}
         <style>{`@keyframes doodleFloat { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
           .doodle-float { animation: doodleFloat 5s ease-in-out infinite; }
           .doodle-float-slow { animation: doodleFloat 7s ease-in-out 1.2s infinite; }`}</style>
-        <div className="text-center mb-10 sm:mb-14 select-none relative inline-flex items-center justify-center px-8 sm:px-12 py-8 sm:py-10">
+        <div className="text-center mb-6 sm:mb-8 select-none relative inline-flex items-center justify-center px-8 sm:px-12 py-8 sm:py-10">
           {/* Painterly brush swash — single tapered stroke, like a spot illustration in a print design */}
           <svg
             aria-hidden="true"
@@ -455,25 +455,20 @@ const SignInMobile = () => {
           <ArrowLeft className="h-5 w-5" />
         </button>
 
-        <div className="relative w-full max-w-sm">
+        <div className="relative w-full max-w-sm -mt-6 sm:-mt-8">
 
-          {/* Heading */}
+          {/* Heading — phone stage keeps its input as the label; OTP stage shows the chip */}
           <div className="text-center mb-8">
-            {stage === 'phone' ? (
-              <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gray-100 border border-gray-200 px-4 py-1.5 text-xs font-semibold text-gray-900">
-                <Phone className="h-3.5 w-3.5 fill-gray-900" />
-                Enter your phone number
-              </span>
-            ) : (
-              <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gray-100 border border-gray-200 px-4 py-1.5 text-xs font-semibold text-gray-900">
-                <Phone className="h-3.5 w-3.5 fill-gray-900" />
-                Enter the OTP
-              </span>
-            )}
             {stage !== 'phone' && (
-              <p className="mt-2 text-xs text-gray-500 font-medium">
-                {`Sent to ${INDIA_CODE} ${formatDigits(phoneDigits)}`}
-              </p>
+              <>
+                <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gray-100 border border-gray-200 px-4 py-1.5 text-xs font-semibold text-gray-900">
+                  <Phone className="h-3.5 w-3.5 fill-gray-900" />
+                  Enter the OTP
+                </span>
+                <p className="mt-2 text-xs text-gray-500 font-medium">
+                  {`Sent to ${INDIA_CODE} ${formatDigits(phoneDigits)}`}
+                </p>
+              </>
             )}
           </div>
 
@@ -497,22 +492,26 @@ const SignInMobile = () => {
                   🇮🇳 +91
                 </div>
 
-                {/* Number input */}
-                <input
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel-national"
-                  placeholder={`${maxDigits}-digit number`}
-                  value={phoneDigits}
-                  onChange={(e) => {
-                    const digits = e.target.value.replace(/\D/g, "").slice(0, maxDigits);
-                    setPhoneDigits(formatDigits(digits));
-                  }}
-                  onKeyDown={(e) => { if (e.key === 'Enter') handleSendOtp(); }}
-                  className="flex-1 min-w-0 h-12 sm:h-14 min-h-[48px] rounded-[12px] border-[1.5px] border-slate-200 bg-white px-4 text-base font-medium text-slate-900 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] focus:outline-none transition-all duration-200 placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px]"
-                  style={{ fontSize: '16px' }}
-                  autoFocus
-                />
+                {/* Number input — "Enter your phone number" with call icon lives inside the field */}
+                <div className="relative flex-1 min-w-0">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 fill-gray-900 text-gray-900 pointer-events-none" />
+                  <input
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
+                    aria-label="Enter your phone number"
+                    placeholder="Enter your phone number"
+                    value={phoneDigits}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, "").slice(0, maxDigits);
+                      setPhoneDigits(formatDigits(digits));
+                    }}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleSendOtp(); }}
+                    className="w-full h-12 sm:h-14 min-h-[48px] rounded-[12px] border-[1.5px] border-slate-200 bg-white pl-11 pr-4 text-base font-medium text-slate-900 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] focus:outline-none transition-all duration-200 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] placeholder:text-center"
+                    style={{ fontSize: '16px' }}
+                    autoFocus
+                  />
+                </div>
               </div>
 
               {/* Send OTP button */}
