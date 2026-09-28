@@ -83,9 +83,9 @@ const AuthCallback = () => {
               title: 'Signed in successfully!', 
               description: 'Your email has been verified and you are now signed in.' 
             });
-            // Redirect to profile page immediately
-            console.log('🔄 Redirecting to /profile...');
-            navigate('/profile', { replace: true });
+            // Redirect to the signed-in home screen (Landing)
+            console.log('🔄 Redirecting to / ...');
+            navigate('/', { replace: true });
             return;
           } catch (err: any) {
             console.error('❌ Sign-in with email link error:', err);
@@ -135,7 +135,7 @@ const AuthCallback = () => {
                 title: 'Email verified!', 
                 description: 'Your email has been successfully verified. Welcome!' 
               });
-              navigate('/profile');
+              navigate('/');
             return;
           }
             

@@ -26,7 +26,7 @@ const SignIn = () => {
   
   // STRICT: Redirect if user is already signed in AND verified - check both AuthContext and Firebase directly
   useEffect(() => {
-    const redirectTo = returnTo || '/dashboard';
+    const redirectTo = returnTo || '/';
     // Check AuthContext user first - only redirect if email is verified
     if (user && !authLoading && user.emailVerified) {
       console.log('✅ SignIn: User already authenticated and verified, redirecting to', redirectTo);

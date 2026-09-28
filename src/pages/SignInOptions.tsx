@@ -183,7 +183,7 @@ const SignInOptions = () => {
 
   // Already signed in and verified? Go straight through.
   useEffect(() => {
-    const returnTo = sessionStorage.getItem('returnAfterSignIn') || '/dashboard';
+    const returnTo = sessionStorage.getItem('returnAfterSignIn') || '/';
     if (user && !authLoading && user.emailVerified) {
       sessionStorage.removeItem('returnAfterSignIn');
       navigate(returnTo, { replace: true });

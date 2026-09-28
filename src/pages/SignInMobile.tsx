@@ -278,7 +278,7 @@ const SignInMobile = () => {
 
   // Already signed in and verified? Go straight through.
   useEffect(() => {
-    const returnTo = sessionStorage.getItem('returnAfterSignIn') || '/dashboard';
+    const returnTo = sessionStorage.getItem('returnAfterSignIn') || '/';
     if (user && !authLoading && user.emailVerified) {
       sessionStorage.removeItem('returnAfterSignIn');
       navigate(returnTo, { replace: true });
@@ -380,7 +380,7 @@ const SignInMobile = () => {
       } else {
         const returnTo = sessionStorage.getItem('returnAfterSignIn');
         sessionStorage.removeItem('returnAfterSignIn');
-        navigate(returnTo || '/dashboard', { replace: true });
+        navigate(returnTo || '/', { replace: true });
       }
     } finally {
       setLoading(false);
