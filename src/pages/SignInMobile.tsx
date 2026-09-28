@@ -438,7 +438,7 @@ const SignInMobile = () => {
           )}
 
           {/* Form card — same card as the email login/sign-up page */}
-          <div className="shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm rounded-2xl px-5 py-6 sm:px-7 sm:py-8">
+          <div className="shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm rounded-3xl px-7 py-9 sm:px-10 sm:py-12">
           {stage === 'phone' ? (
             <div className="space-y-4">
               {/* Phone input row */}
@@ -541,7 +541,7 @@ const SignInMobile = () => {
 
           {/* Business-model doodle — same sketch that used to sit behind the header,
               now placed below the card at the same size */}
-          <div className="pt-8 flex justify-center pointer-events-none select-none" aria-hidden="true">
+          <div className="-mt-10 pt-0 flex justify-center pointer-events-none select-none" aria-hidden="true">
             <svg className="w-[min(86vw,400px)] max-w-none aspect-square" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
               {/* Central hub rings */}
               <g transform="translate(200, 200)" opacity="0.85">
