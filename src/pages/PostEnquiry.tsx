@@ -3377,7 +3377,7 @@ export default function PostEnquiry() {
                             />
                             <label
                               htmlFor="enquiry-ref-images"
-                              className="block w-full text-center !rounded-xl !border !border-slate-300 bg-gradient-to-b !from-white !to-slate-100 hover:!from-white hover:!to-slate-100 !text-gray-900 transition-all !duration-200 !shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_12px_rgba(0,0,0,0.08)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_8px_16px_rgba(0,0,0,0.10)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.12),0_3px_6px_rgba(0,0,0,0.08)] active:!translate-y-[2px] !text-base sm:!text-lg font-bold h-14 sm:h-16 flex items-center justify-center cursor-pointer touch-manipulation select-none"
+                              className="block w-full text-center !rounded-xl !border !border-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] !text-base sm:!text-lg font-bold h-14 sm:h-16 flex items-center justify-center cursor-pointer touch-manipulation select-none"
                             >
                               {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking'
                                 ? (referenceImageUrls.length === 0 ? 'Choose File' : 'Add More Files')
@@ -3417,7 +3417,7 @@ export default function PostEnquiry() {
                               }));
                               navigate('/profile?returnTo=/post-enquiry');
                             }}
-                            className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border !border-slate-300 !bg-gradient-to-b !from-blue-600 !to-blue-800 hover:!from-blue-600 hover:!to-blue-800 transition-all !duration-200 group !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px] touch-manipulation select-none"
+                            className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border !border-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 transition-all !duration-200 group !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] touch-manipulation select-none"
                           >
                             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                               <ShieldCheck className="h-5 w-5 text-white" />
@@ -3678,13 +3678,13 @@ export default function PostEnquiry() {
                     variant="outline"
                     onClick={goBack}
                     disabled={step === 0}
-                    className={`!bg-gradient-to-b !from-gray-100 !to-gray-200 hover:!from-gray-100 hover:!to-gray-200 ${step === 0 ? '!text-gray-400' : '!text-gray-900'} !rounded-xl !border !border-slate-300 relative transition-all !duration-200 !shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_12px_rgba(0,0,0,0.08)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_8px_16px_rgba(0,0,0,0.10)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.12),0_3px_6px_rgba(0,0,0,0.08)] active:!translate-y-[2px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0`}
+                    className={`!bg-gradient-to-b !from-gray-100 !to-gray-200 hover:!from-gray-100 hover:!to-gray-200 ${step === 0 ? '!text-gray-400' : '!text-gray-900'} !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0`}
                   >
                     <ChevronLeft className="h-4 w-4 relative z-10" />
                     <span className="relative z-10">Back</span>
                   </Button>
                   {step < totalSteps - 1 ? (
-                    <Button type="button" onClick={goNext} className="!bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-slate-300 relative transition-all !duration-200 !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none">
+                    <Button type="button" onClick={goNext} className="!bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none">
                       <span className="relative z-10">Next</span>
                       <ChevronRight className="h-4 w-4 relative z-10" />
                     </Button>
@@ -3694,7 +3694,7 @@ export default function PostEnquiry() {
                         type="button"
                         onClick={() => handleSubmit(new Event('submit') as any)}
                         disabled={loading || idUploadLoading || paymentLoading}
-                        className="!w-full !h-16 !text-lg !font-black !bg-gradient-to-b !from-blue-600 !to-blue-800 hover:!from-blue-600 hover:!to-blue-800 !text-white !rounded-xl !border !border-slate-300 relative overflow-hidden transition-all !duration-200 !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
+                        className="!w-full !h-16 !text-lg !font-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative overflow-hidden transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
                       >
                         <span className="relative z-10 inline-flex items-center justify-center gap-2">
                           {(loading || paymentCaptured) && (

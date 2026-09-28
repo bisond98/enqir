@@ -385,8 +385,8 @@ export default function CreateListing() {
         if (d.priceType) setPriceType(d.priceType);
         if (d.price) setPrice(d.price);
         if (d.priceOption) setPriceOption(d.priceOption);
-        if (d.priceMin) setPriceMin(d.priceMin);
-        if (d.priceMax) setPriceMax(d.priceMax);
+        // priceMin/priceMax & 'range' priceType intentionally NOT restored —
+        // the price-range slider section was removed from the form.
         if (d.tags) setTags(d.tags);
         if (d.details) setDetails(d.details);
         if (d.estateType) setEstateType(d.estateType);
@@ -1608,7 +1608,7 @@ export default function CreateListing() {
                       placeholder="25,000"
                       inputMode="decimal"
                       maxLength={13}
-                      className="rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150 focus-visible:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !translate-y-0"
+                      className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
                       autoFocus
                     />
                   </div>
@@ -1631,7 +1631,7 @@ export default function CreateListing() {
                           setPriceMax('');
                         }
                       }}
-                      className={`appearance-none rounded-2xl h-12 sm:h-14 w-fit max-w-full font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150 focus:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] ${priceOption === 'discussion' ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
+                      className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit max-w-full font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-10 ${priceOption === 'discussion' ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
                     >
                       <option value="">Click here</option>
                       <option value="discussion">Open to discussion</option>
@@ -1639,120 +1639,6 @@ export default function CreateListing() {
                     <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                   </div>
                 </div>
-                {/* Price range — dual slider + Min/Max inputs (writes to the existing
-                    priceMin/priceMax range logic; using it marks the listing as a range,
-                    typing a fixed price above keeps it fixed) */}
-                {(() => {
-                  const RANGE_MAX = 1000000;
-                  const toSlider = (v: string) => {
-                    const n = parseFloat(v.replace(/[^0-9.]/g, ''));
-                    return isNaN(n) ? 0 : Math.min(RANGE_MAX, n);
-                  };
-                  const minVal = toSlider(priceMin);
-                  const maxVal = (() => {
-                    const n = parseFloat(priceMax.replace(/[^0-9.]/g, ''));
-                    return isNaN(n) ? RANGE_MAX : Math.max(minVal, Math.min(RANGE_MAX, n));
-                  })();
-                  const isRangeActive = !!(priceMin || priceMax);
-                  const fmt = (n: number) => '₹' + n.toLocaleString('en-IN');
-                  const pct = (n: number) => (n / RANGE_MAX) * 100;
-                  return (
-                    <div className="space-y-2 pt-1">
-                      <Label className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-2 ml-1">
-                        Price range {isRangeActive && <span className="font-normal text-slate-400">— active</span>}
-                      </Label>
-                      {/* Value pills above the track */}
-                      <div className="relative h-6 mb-1">
-                        <span
-                          className="absolute -translate-x-1/2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] sm:text-[10px] font-black whitespace-nowrap"
-                          style={{ left: `${pct(minVal)}%` }}
-                        >{fmt(minVal)}</span>
-                        <span
-                          className="absolute -translate-x-1/2 px-2 py-0.5 rounded-full bg-blue-600 text-white text-[9px] sm:text-[10px] font-black whitespace-nowrap"
-                          style={{ left: `${pct(maxVal)}%` }}
-                        >{maxVal >= RANGE_MAX ? 'Any' : fmt(maxVal)}</span>
-                      </div>
-                      {/* Track with filled range */}
-                      <div className="relative h-6 flex items-center">
-                        <div className="absolute inset-x-0 h-1.5 bg-gray-200 rounded-full" />
-                        <div
-                          className="absolute h-1.5 bg-blue-600 rounded-full"
-                          style={{ left: `${pct(minVal)}%`, width: `${pct(maxVal) - pct(minVal)}%` }}
-                        />
-                        <input
-                          type="range"
-                          min={0}
-                          max={RANGE_MAX}
-                          step={500}
-                          value={minVal}
-                          onChange={(e) => {
-                            const n = Number(e.target.value);
-                            setPriceMin(n === 0 ? '' : String(n));
-                            setPriceType('range');
-                            setPrice('');
-                          }}
-                          aria-label="Minimum price"
-                          className="absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-webkit-slider-thumb]:cursor-grab active:[&::-webkit-slider-thumb]:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-blue-600 [&::-moz-range-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-moz-range-thumb]:cursor-grab"
-                        />
-                        <input
-                          type="range"
-                          min={0}
-                          max={RANGE_MAX}
-                          step={500}
-                          value={maxVal}
-                          onChange={(e) => {
-                            const n = Number(e.target.value);
-                            setPriceMax(n >= RANGE_MAX ? '' : String(n));
-                            setPriceType('range');
-                            setPrice('');
-                          }}
-                          aria-label="Maximum price"
-                          className="absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-webkit-slider-thumb]:cursor-grab active:[&::-webkit-slider-thumb]:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-[3px] [&::-moz-range-thumb]:border-blue-600 [&::-moz-range-thumb]:shadow-[0_2px_6px_rgba(0,0,0,0.25)] [&::-moz-range-thumb]:cursor-grab"
-                        />
-                      </div>
-                      <div className="flex justify-between text-[8px] sm:text-[9px] text-gray-400 font-semibold">
-                        <span>₹0</span>
-                        <span>₹5L</span>
-                        <span>₹10L</span>
-                      </div>
-                      {/* Min / Max inputs — same visual language as the fixed price field */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold text-gray-500 z-10">₹</span>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            value={priceMin}
-                            onChange={(e) => {
-                              const digits = e.target.value.replace(/[^0-9]/g, '');
-                              setPriceMin(digits === '' ? '' : parseInt(digits).toLocaleString('en-IN'));
-                              setPriceType('range');
-                              setPrice('');
-                            }}
-                            placeholder="Min"
-                            className="w-full rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
-                          />
-                        </div>
-                        <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-base font-bold text-gray-500 z-10">₹</span>
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            value={priceMax}
-                            onChange={(e) => {
-                              const digits = e.target.value.replace(/[^0-9]/g, '');
-                              setPriceMax(digits === '' ? '' : parseInt(digits).toLocaleString('en-IN'));
-                              setPriceType('range');
-                              setPrice('');
-                            }}
-                            placeholder="Max"
-                            className="w-full rounded-2xl h-12 sm:h-14 text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
                 {fieldsForCategoryStep(category, 'price').map((f) => (
                   <div key={f.key} className="space-y-2">
                     <Label className="text-[10px] sm:text-xs font-bold">{f.label}</Label>
@@ -1804,7 +1690,7 @@ export default function CreateListing() {
                     />
                     <label
                       htmlFor="listing-images"
-                      className="block w-full text-center !rounded-2xl !border-[1.5px] !border-black bg-white hover:!bg-gray-50 !text-black transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] !text-[15px] font-black h-[50px] sm:h-[54px] flex items-center justify-center cursor-pointer touch-manipulation select-none"
+                      className="block w-full text-center !rounded-xl !border !border-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] !text-base sm:!text-lg font-bold h-14 sm:h-16 flex items-center justify-center cursor-pointer touch-manipulation select-none"
                     >
                       {images.length === 0 ? 'Choose Image' : 'Add More Images'}
                     </label>
@@ -1953,7 +1839,7 @@ export default function CreateListing() {
                   }));
                   navigate('/profile?returnTo=/sell/new');
                 }}
-                className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-2xl !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 transition-all !duration-150 group !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
+                className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border !border-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 transition-all !duration-200 group !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] touch-manipulation select-none"
               >
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                   <ShieldCheck className="h-5 w-5 text-white" />
@@ -2044,13 +1930,13 @@ export default function CreateListing() {
               variant="outline"
               onClick={goBack}
               disabled={step === 0}
-              className="!bg-white hover:!bg-gray-50 !text-black !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] font-black !text-[15px] h-[50px] sm:h-[54px] px-6 flex items-center gap-1 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0"
+              className="!bg-gradient-to-b !from-gray-100 !to-gray-200 hover:!from-gray-100 hover:!to-gray-200 !text-gray-900 !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0"
             >
               <ChevronLeft className="h-4 w-4 relative z-10" />
               <span className="relative z-10">Back</span>
             </Button>
             {step < totalSteps - 1 ? (
-              <Button type="button" onClick={goNext} className="!bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] font-black !text-[15px] h-[50px] sm:h-[54px] px-6 flex items-center gap-1 touch-manipulation select-none">
+              <Button type="button" onClick={goNext} className="!bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none">
                 <span className="relative z-10">Next</span>
                 <ChevronRight className="h-4 w-4 relative z-10" />
               </Button>
@@ -2060,7 +1946,7 @@ export default function CreateListing() {
                   type="button"
                   onClick={publish}
                   disabled={!user || uploading || publishing}
-                  className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
+                  className="!w-full !h-16 !text-lg !font-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative overflow-hidden transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
                 >
                   <span className="relative z-10">{publishing ? 'Selling…' : 'Sell'}</span>
                 </Button>
