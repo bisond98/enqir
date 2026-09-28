@@ -225,13 +225,13 @@ const SignInOptions = () => {
 
         {/* Provider buttons — pushed to the lower part of the screen on mobile, heading stays put.
             Card is wider than the buttons so they keep their full original size inside. */}
-        <div className="relative z-10 w-full max-w-md mt-auto sm:mt-0 -translate-y-[4.75rem]">
+        <div className="relative z-10 w-full max-w-md mt-auto sm:mt-0 -translate-y-[3rem]">
           <div className="bg-white/95 backdrop-blur-sm rounded-3xl px-6 py-6 sm:px-9 sm:py-8">
             <div className="w-full max-w-sm mx-auto space-y-3 sm:space-y-3.5">
           {/* Mobile */}
           <button
             onClick={() => navigate('/signin/mobile', { state: (location.state as any) || undefined })}
-            className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border-2 border-black bg-blue-600 text-white font-bold text-base sm:text-lg rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border border-slate-300 bg-gradient-to-b from-blue-500 to-blue-700 text-white font-bold text-base sm:text-lg rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:translate-y-[-1px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:translate-y-[2px] transition-all duration-200 transform cursor-pointer"
           >
             <MobileIcon />
             Continue with Mobile
@@ -240,7 +240,7 @@ const SignInOptions = () => {
           {/* Email */}
           <button
             onClick={() => navigate('/signin/email', { state: (location.state as any) || undefined })}
-            className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border-2 border-black bg-white text-gray-900 font-bold text-base sm:text-lg rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border border-slate-300 bg-gradient-to-b from-white to-slate-100 text-gray-900 font-bold text-base sm:text-lg rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_8px_16px_rgba(0,0,0,0.10)] hover:translate-y-[-1px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.12),0_3px_6px_rgba(0,0,0,0.08)] active:translate-y-[2px] transition-all duration-200 transform cursor-pointer"
           >
             <MailIcon />
             Continue with Email
@@ -249,7 +249,7 @@ const SignInOptions = () => {
           {/* Google */}
           <button
             onClick={handleGoogle}
-            className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border-2 border-black bg-white text-gray-900 font-bold text-base sm:text-lg rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+            className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border border-slate-300 bg-gradient-to-b from-white to-slate-100 text-gray-900 font-bold text-base sm:text-lg rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_8px_16px_rgba(0,0,0,0.10)] hover:translate-y-[-1px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.12),0_3px_6px_rgba(0,0,0,0.08)] active:translate-y-[2px] transition-all duration-200 transform cursor-pointer"
           >
             <GoogleIcon />
             Continue with Google
@@ -259,7 +259,7 @@ const SignInOptions = () => {
         </div>
 
         {/* Footer — horizontally centered regardless of max-width */}
-        <p className="relative z-10 mt-5 sm:mt-8 text-[8px] text-gray-500 font-medium text-center w-full max-w-xs mx-auto -translate-y-[4.75rem]">
+        <p className="relative z-10 mt-3 sm:mt-6 text-[8px] text-gray-500 font-medium text-center w-full max-w-xs mx-auto -translate-y-[3rem]">
           By continuing you agree to our{' '}
           <Link to="/terms-and-conditions" className="underline text-blue-600/90 hover:text-blue-700">Terms</Link>
           {' '}and{' '}
