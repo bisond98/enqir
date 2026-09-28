@@ -215,7 +215,7 @@ const SignInOptions = () => {
           {/* Heading text just above the centre of the doodle */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center translate-y-24 text-center">
             <h1 className="flex items-baseline justify-center gap-1 flex-wrap">
-              <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-blue-600">Enqir</span>
+              <span className="text-8xl sm:text-9xl font-extrabold tracking-tight text-gray-950">Enqir</span>
             </h1>
             <p className="mt-3 text-[10px] sm:text-sm text-black font-bold">
               The AI-powered trust-based marketplace
@@ -226,12 +226,12 @@ const SignInOptions = () => {
         {/* Provider buttons — pushed to the lower part of the screen on mobile, heading stays put.
             Card is wider than the buttons so they keep their full original size inside. */}
         <div className="relative z-10 w-full max-w-md mt-auto sm:mt-0 -translate-y-[4.75rem]">
-          <div className="shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm rounded-3xl px-6 py-6 sm:px-9 sm:py-8">
+          <div className="bg-white/95 backdrop-blur-sm rounded-3xl px-6 py-6 sm:px-9 sm:py-8">
             <div className="w-full max-w-sm mx-auto space-y-3 sm:space-y-3.5">
           {/* Mobile */}
           <button
             onClick={() => navigate('/signin/mobile', { state: (location.state as any) || undefined })}
-            className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-3 rounded-xl border-2 border-black bg-blue-600 text-white font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] cursor-pointer"
+            className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border-2 border-black bg-blue-600 text-white font-bold text-base sm:text-lg rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           >
             <MobileIcon />
             Continue with Mobile
@@ -240,7 +240,7 @@ const SignInOptions = () => {
           {/* Email */}
           <button
             onClick={() => navigate('/signin/email', { state: (location.state as any) || undefined })}
-            className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-3 rounded-xl border-2 border-black bg-white text-gray-900 font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] cursor-pointer"
+            className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border-2 border-black bg-white text-gray-900 font-bold text-base sm:text-lg rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           >
             <MailIcon />
             Continue with Email
@@ -249,7 +249,7 @@ const SignInOptions = () => {
           {/* Google */}
           <button
             onClick={handleGoogle}
-            className="w-full h-13 sm:h-14 min-h-[52px] flex items-center justify-center gap-3 rounded-xl border-2 border-black bg-white text-gray-900 font-bold text-base transition-all duration-150 shadow-[0_4px_0_0_rgba(0,0,0,0.85)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] hover:translate-y-[2px] active:shadow-none active:translate-y-[4px] cursor-pointer"
+            className="w-full h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border-2 border-black bg-white text-gray-900 font-bold text-base sm:text-lg rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           >
             <GoogleIcon />
             Continue with Google
