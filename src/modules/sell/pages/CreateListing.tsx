@@ -1020,7 +1020,7 @@ export default function CreateListing() {
                     }
                   }}
                   placeholder={(category === 'car' || category === 'vehicles') ? 'e.g., Innova, Scorpio' : 'e.g., iPhone 13 Pro 128GB — excellent condition'}
-                  className="rounded-2xl h-12 sm:h-14 text-base border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:text-[10px]"
+                  className="rounded-2xl h-12 sm:h-14 text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                   maxLength={30}
                   autoFocus
                 />
@@ -1040,7 +1040,7 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
                             placeholder={f.placeholder ?? 'Type year'}
-                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                           />
                         ) : f.type === 'text' ? (
                           <Input
@@ -1049,7 +1049,7 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value)}
                             placeholder={f.placeholder ?? 'Type here'}
-                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 bg-white pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                           />
                         ) : (
                           <>
@@ -1068,7 +1068,7 @@ export default function CreateListing() {
                                   }
                                 }
                               }}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                             >
                               <option value="">{f.placeholder ?? 'Select'}</option>
                               {f.options?.map((opt) => (
@@ -1104,7 +1104,7 @@ export default function CreateListing() {
                           <select
                             value={sneakerBrandVal}
                             onChange={(e) => setDetail('sneakerBrand', e.target.value)}
-                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrandVal ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
+                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrandVal ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
                           >
                             <option value="">Brand</option>
                             {SNEAKER_BRANDS.map((b) => (
@@ -1126,7 +1126,7 @@ export default function CreateListing() {
                           <select
                             value={sneakerSize}
                             onChange={(e) => setDetail('sneakerSize', e.target.value)}
-                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
+                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
                           >
                             <option value="">Size</option>
                             {sizeList.map((s) => (
@@ -1254,14 +1254,14 @@ export default function CreateListing() {
                             onChange={(e) => setDetail(areaKey, e.target.value.replace(/[^0-9]/g, '').slice(0, 7))}
                             placeholder={estateType === 'house' ? '1000 sqft' : estateType === 'built' ? '10000 sqft / 25 acres..' : '25 acres..'}
                             style={{ outline: 'none' }}
-                            className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold"
+                            className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)]"
                           />
                           {estateType === 'land' && (
                             <div className="relative flex-shrink-0">
                               <select
                                 value={unit}
                                 onChange={(e) => setDetail(unitKey, e.target.value)}
-                                className="h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer"
+                                className="h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] appearance-none pl-4 pr-8 cursor-pointer"
                                 style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
                               >
                                 {units.map((u) => <option key={u} value={u}>{u}</option>)}
@@ -1274,7 +1274,7 @@ export default function CreateListing() {
                               <select
                                 value={details['houseBhk'] ?? ''}
                                 onChange={(e) => setDetail('houseBhk', e.target.value)}
-                                className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer', !details['houseBhk'] ? 'text-slate-400' : 'text-black')}
+                                className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] appearance-none pl-4 pr-8 cursor-pointer', !details['houseBhk'] ? 'text-slate-400' : 'text-black')}
                                 style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
                               >
                                 <option value="">BHK</option>
@@ -1351,7 +1351,7 @@ export default function CreateListing() {
                                     <select
                                       value={details[f.key] ?? ''}
                                       onChange={(e) => setDetail(f.key, e.target.value)}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                                     >
                                       <option value="">{f.placeholder ?? 'Select'}</option>
                                       {f.options?.map((opt) => (
@@ -1402,7 +1402,7 @@ export default function CreateListing() {
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Condition, accessories, warranty, reason for selling…"
                         maxLength={250}
-                        className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] transition-all !duration-150 focus-visible:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !translate-y-0"
+                        className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                         autoFocus
                       />
                     </div>
@@ -1428,7 +1428,7 @@ export default function CreateListing() {
                     onFocus={() => setLocationDropdownOpen(true)}
                     onBlur={() => setTimeout(() => setLocationDropdownOpen(false), 200)}
                     placeholder="Search location (required)..."
-                    className="rounded-2xl h-12 sm:h-14 text-sm border-2 border-gray-800 focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-10 pr-4 placeholder:text-slate-400 placeholder:text-[10px] sm:placeholder:text-[11px]"
+                    className="rounded-2xl h-12 sm:h-14 text-sm border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-10 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                     style={{ fontSize: '14px' }}
                   />
                   {locationDropdownOpen && locationSearch.length === 0 && (
@@ -1560,7 +1560,7 @@ export default function CreateListing() {
                           <select
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value)}
-                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                           >
                             <option value="">{f.placeholder ?? 'Select'}</option>
                             {f.options?.map((opt) => (
@@ -1576,7 +1576,7 @@ export default function CreateListing() {
                           value={details[f.key] ?? ''}
                           onChange={(e) => setDetail(f.key, formatPriceInput(e.target.value))}
                           placeholder={f.placeholder}
-                          className="rounded-2xl h-12 sm:h-14 text-base border border-gray-300 focus-visible:border-black focus-visible:ring-1 focus-visible:ring-black focus-visible:ring-offset-0 min-touch pl-4 pr-14 placeholder:text-slate-400 placeholder:text-[10px] font-bold"
+                          className="rounded-2xl h-12 sm:h-14 text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                         />
                       )}
                       {f.suffix && f.type !== 'select' && (
@@ -1608,7 +1608,7 @@ export default function CreateListing() {
                       placeholder="25,000"
                       inputMode="decimal"
                       maxLength={13}
-                      className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
+                      className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-8 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold text-lg"
                       autoFocus
                     />
                   </div>
@@ -1631,7 +1631,7 @@ export default function CreateListing() {
                           setPriceMax('');
                         }
                       }}
-                      className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit max-w-full font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-10 ${priceOption === 'discussion' ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
+                      className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit max-w-full font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${priceOption === 'discussion' ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
                     >
                       <option value="">Click here</option>
                       <option value="discussion">Open to discussion</option>
@@ -1646,7 +1646,7 @@ export default function CreateListing() {
                       <select
                         value={details[f.key] ?? ''}
                         onChange={(e) => setDetail(f.key, e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                       >
                         <option value="">{f.placeholder ?? 'Select'}</option>
                         {f.options?.map((opt) => (
@@ -1879,7 +1879,7 @@ export default function CreateListing() {
                   aria-label="Country code"
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value)}
-                  className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-xs !font-black focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation appearance-none text-center"
+                  className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold focus:outline-none transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation appearance-none text-center"
                 >
                   {[
                     ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
@@ -1916,7 +1916,7 @@ export default function CreateListing() {
                   }}
                   maxLength={countryCode === '+91' ? 11 : 14}
                   placeholder={countryCode === '+91' ? '98765 43210' : 'Mobile number'}
-                  className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
+                  className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-sm !font-medium placeholder:!text-gray-900 placeholder:!font-semibold placeholder:!text-[11px] focus:outline-none focus-visible:!border-black focus-visible:!ring-3 focus-visible:!ring-black/15 transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation"
                 />
               </div>
               <p className="text-[8px] sm:text-[9px] text-slate-400 font-medium mt-1.5 text-right">

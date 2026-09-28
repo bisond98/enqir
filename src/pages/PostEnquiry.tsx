@@ -2433,7 +2433,7 @@ export default function PostEnquiry() {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="What do you need?…"
-                        className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-slate-400 placeholder:font-normal placeholder:text-[13px] text-slate-900"
+                        className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
                         maxLength={50}
                         autoFocus
                       />
@@ -2466,10 +2466,10 @@ export default function PostEnquiry() {
                               value={catSearch}
                               onChange={(e) => { setCatSearch(e.target.value); setCatPage(0); }}
                               placeholder="Search categories..."
-                              className="w-full h-10 sm:h-11 text-xs sm:text-sm border-2 border-gray-800 rounded-xl pr-10 placeholder:text-gray-400 placeholder:text-[10px] sm:placeholder:text-[11px] transition-all"
+                              className="w-full h-10 sm:h-11 text-xs sm:text-sm border-2 border-gray-800 rounded-xl pr-10 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)]"
                               style={{ paddingLeft: '2.75rem', outline: 'none' }}
-                              onFocus={(e) => { e.currentTarget.style.borderColor = 'black'; e.currentTarget.style.boxShadow = '0 0 0 2px black'; }}
-                              onBlur={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.boxShadow = ''; }}
+                              onFocus={(e) => { e.currentTarget.style.borderColor = 'black'; e.currentTarget.style.boxShadow = '0 2px 0 0 rgba(0,0,0,0.10), 0 0 0 2px black, 0 0 10px rgba(0,0,0,0.12)'; }}
+                              onBlur={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.boxShadow = '0 2px 0 0 rgba(0,0,0,0.10), 0 0 8px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.08)'; }}
                             />
                             {catSearch && (
                               <button
@@ -2622,7 +2622,7 @@ export default function PostEnquiry() {
                             <select
                               value={jobDetails.education}
                               onChange={(e) => setJobDetails(v => ({ ...v, education: e.target.value }))}
-                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.education ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.education ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
                             >
                               <option value="">Education</option>
                               {['10th pass', '12th pass', 'ITI', 'Diploma', 'Graduate', 'Post Graduate', 'PhD', 'Other'].map((opt) => (
@@ -2637,7 +2637,7 @@ export default function PostEnquiry() {
                               value={jobDetails.stream}
                               onChange={(e) => setJobDetails(v => ({ ...v, stream: e.target.value.slice(0, 35) }))}
                               placeholder="Stream — e.g., B.Tech CSE"
-                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.stream ? 'text-[9px] text-gray-700 placeholder:text-[9px] placeholder:text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.stream ? 'text-[9px] text-gray-700 placeholder:text-[9px] placeholder:text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
                             />
                           </div>
                         </div>
@@ -2649,7 +2649,7 @@ export default function PostEnquiry() {
                             <select
                               value={jobDetails.experience}
                               onChange={(e) => setJobDetails(v => ({ ...v, experience: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.experience ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.experience ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
                             >
                               <option value="">{jobDirection === 'hiring' ? 'Experience required' : 'Your experience'}</option>
                               {['Fresher', '0-1 year', '1-3 years', '3-5 years', '5-10 years', '10+ years'].map((opt) => (
@@ -2661,7 +2661,7 @@ export default function PostEnquiry() {
                             <select
                               value={jobDetails.jobType}
                               onChange={(e) => setJobDetails(v => ({ ...v, jobType: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.jobType ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.jobType ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
                             >
                               <option value="">Job type</option>
                               {['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'].map((opt) => (
@@ -2673,7 +2673,7 @@ export default function PostEnquiry() {
                             <select
                               value={jobDetails.workMode}
                               onChange={(e) => setJobDetails(v => ({ ...v, workMode: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.workMode ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.workMode ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
                             >
                               <option value="">Work mode</option>
                               {['Work from office', 'Work from home', 'Hybrid'].map((opt) => (
@@ -2692,7 +2692,7 @@ export default function PostEnquiry() {
                             value={jobSkills}
                             onChange={(e) => setJobSkills(e.target.value)}
                             placeholder={jobSkills ? '' : 'Skills — e.g., Tally, Excel, Driving, 2-wheeler license'}
-                            className={`w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            className={`w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-sm sm:text-base text-black'}`}
                           />
                         </div>
                       )}
@@ -2706,7 +2706,7 @@ export default function PostEnquiry() {
                               // Reset gender when switching to a subtype where it doesn't apply
                               if (!GENDER_RELEVANT_ACCOMMODATION_TYPES.has(e.target.value)) setAccommodationGender('any');
                             }}
-                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!accommodationType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!accommodationType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                           >
                             <option value="">Stay type</option>
                             {ACCOMMODATION_SUBTYPES.map((s) => (
@@ -2746,7 +2746,7 @@ export default function PostEnquiry() {
                             <select
                               value={repairType}
                               onChange={(e) => setRepairType(e.target.value)}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!repairType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!repairType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                             >
                               <option value="">What needs fixing?</option>
                               {REPAIR_TYPES.map((t) => (
@@ -2773,7 +2773,7 @@ export default function PostEnquiry() {
                                 <select
                                   value={vehicleDetails.brand}
                                   onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                                 >
                                   <option value="">Brand</option>
                                   {(isBikeOnly ? BIKE_BRANDS : CAR_BRANDS).filter(b => b !== 'Other').map((b) => (
@@ -2795,7 +2795,7 @@ export default function PostEnquiry() {
                                   value={vehicleDetails.year}
                                   onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
                                   placeholder="Year"
-                                  className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                                  className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
                                 />
                                 <div className="h-3">
                                   <p className="text-[8px] font-bold text-black text-center tracking-wide">year</p>
@@ -2810,7 +2810,7 @@ export default function PostEnquiry() {
                                     value={vehicleDetails.variant}
                                     onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
                                     placeholder="e.g., VXI, ZXI (O)"
-                                    className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-slate-400 placeholder:text-[10px]"
+                                    className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
                                   />
                                   <div className="h-3">
                                     <p className="text-[8px] font-bold text-black text-center tracking-wide">variant</p>
@@ -2827,7 +2827,7 @@ export default function PostEnquiry() {
                                     <select
                                       value={vehicleDetails.transmission}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, transmission: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.transmission ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.transmission ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                                     >
                                       <option value="">Transmission</option>
                                       {['Manual', 'Automatic'].map((t) => (
@@ -2851,7 +2851,7 @@ export default function PostEnquiry() {
                                     <select
                                       value={vehicleDetails.fuelType}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, fuelType: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.fuelType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.fuelType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                                     >
                                       <option value="">Fuel Type</option>
                                       {['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'LPG'].map((f) => (
@@ -2887,7 +2887,7 @@ export default function PostEnquiry() {
                                 <select
                                   value={mobileDetails.brand}
                                   onChange={(e) => setMobileDetails(v => ({ ...v, brand: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                                 >
                                   <option value="">Brand</option>
                                   {MOBILE_BRANDS.map((b) => (
@@ -2901,7 +2901,7 @@ export default function PostEnquiry() {
                                 <select
                                   value={mobileDetails.ram}
                                   onChange={(e) => setMobileDetails(v => ({ ...v, ram: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.ram ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.ram ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                                 >
                                   <option value="">RAM</option>
                                   {RAM_OPTIONS.map((r) => (
@@ -2915,7 +2915,7 @@ export default function PostEnquiry() {
                                 <select
                                   value={mobileDetails.memory}
                                   onChange={(e) => setMobileDetails(v => ({ ...v, memory: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.memory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.memory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                                 >
                                   <option value="">Memory</option>
                                   {MEMORY_OPTIONS.map((m) => (
@@ -3104,7 +3104,7 @@ export default function PostEnquiry() {
                                   onChange={(e) => setArea(e.target.value.replace(/[^0-9]/g, '').slice(0, 7))}
                                   placeholder={estateType === 'house' ? '1000 sqft' : estateType === 'built' ? '10000 sqft / 25 acres..' : '25 acres..'}
                                   style={{ outline: 'none' }}
-                                  className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold"
+                                  className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)]"
                                 />
                                 {estateType === 'land' && (
                                   <div className="relative flex-shrink-0">
@@ -3124,7 +3124,7 @@ export default function PostEnquiry() {
                                     <select
                                       value={estateDetails.houseBhk}
                                       onChange={(e) => setEstateDetails(v => ({ ...v, houseBhk: e.target.value }))}
-                                      className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer', !estateDetails.houseBhk ? 'text-slate-400' : 'text-black')}
+                                      className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] appearance-none pl-4 pr-8 cursor-pointer', !estateDetails.houseBhk ? 'text-slate-400' : 'text-black')}
                                       style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
                                     >
                                       <option value="">BHK</option>
@@ -3151,7 +3151,7 @@ export default function PostEnquiry() {
                               }}
                               placeholder="Specifications, requirements, timeline..."
                               maxLength={500}
-                              className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                              className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus
                             />
                           </div>
@@ -3173,7 +3173,7 @@ export default function PostEnquiry() {
                               }}
                               placeholder="Specifications, requirements, timeline..."
                               maxLength={500}
-                              className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                              className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus
                             />
                           </div>
@@ -3200,7 +3200,7 @@ export default function PostEnquiry() {
                           onFocus={() => setShowLocationSuggestions(true)}
                           onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
                           placeholder="Search location..."
-                          className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-10 pr-4 placeholder:text-slate-400 placeholder:text-[10px] sm:placeholder:text-[11px]"
+                          className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-10 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
                           style={{ fontSize: '14px' }}
                         />
                         {showLocationSuggestions && locationSuggestions.length > 0 && (
@@ -3276,7 +3276,7 @@ export default function PostEnquiry() {
                             }}
                             placeholder="50,000"
                             inputMode="decimal"
-                            className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-8 pr-4 placeholder:text-slate-400 placeholder:text-[10px] font-bold text-lg"
+                            className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-8 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold text-lg"
                             autoFocus
                           />
                         </div>
@@ -3298,7 +3298,7 @@ export default function PostEnquiry() {
                                 setBudgetOpenToDiscussion(false);
                               }
                             }}
-                            className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit max-w-full font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 pl-4 pr-10 ${budgetOpenToDiscussion ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
+                            className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit max-w-full font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-10 ${budgetOpenToDiscussion ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
                           >
                             <option value="">Click here</option>
                             <option value="open-to-discussion">Open to discussion</option>
@@ -3327,7 +3327,7 @@ export default function PostEnquiry() {
                           }}
                           maxLength={50}
                           placeholder="Additional requirements or preferences... (max 50 characters)"
-                          className="rounded-[12px] min-h-[120px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_2px_6px_rgba(0,0,0,0.08)] hover:shadow-[0_3px_10px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_10px_rgba(0,0,0,0.15)] transition-all duration-200 min-touch pl-4 pr-4 py-3 placeholder:text-slate-400 placeholder:text-[10px] resize-y"
+                          className="rounded-[12px] min-h-[120px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-4 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                         />
                         <p className="text-[10px] text-gray-400 text-right">
                           {notes.length}/50
@@ -3626,7 +3626,7 @@ export default function PostEnquiry() {
                       aria-label="Country code"
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-xs !font-black focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation appearance-none text-center"
+                      className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold focus:outline-none focus-within:!border-black transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation appearance-none text-center"
                     >
                       {[
                         ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
@@ -3663,7 +3663,7 @@ export default function PostEnquiry() {
                       }}
                       maxLength={countryCode === '+91' ? 11 : 14}
                       placeholder={countryCode === '+91' ? '98765 43210' : 'Mobile number'}
-                      className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
+                      className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-sm !font-medium placeholder:!text-gray-900 placeholder:!font-semibold placeholder:!text-[11px] focus:outline-none focus-visible:!border-black focus-visible:!ring-3 focus-visible:!ring-black/15 transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation"
                     />
                   </div>
                   <p className="text-[8px] sm:text-[9px] text-slate-400 font-medium mt-1.5 text-right">
@@ -3926,7 +3926,7 @@ export default function PostEnquiry() {
                   placeholder="Card Number: 1234 5678 9012 3456"
                   value={paymentDetails.cardNumber}
                   onChange={(e) => setPaymentDetails(prev => ({ ...prev, cardNumber: e.target.value }))}
-                  className="w-full p-2 border border-gray-300 rounded text-xs sm:text-base"
+                  className="w-full p-2 border border-gray-300 rounded text-xs sm:text-base shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)]"
                 />
                 <div className="flex gap-2">
                   <input 
@@ -3941,14 +3941,14 @@ export default function PostEnquiry() {
                       setPaymentDetails(prev => ({ ...prev, expiryDate: value }));
                     }}
                     maxLength={5}
-                    className="flex-1 p-2 border border-gray-300 rounded text-xs sm:text-base"
+                    className="flex-1 p-2 border border-gray-300 rounded text-xs sm:text-base shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)]"
                   />
                   <input 
                     type="text" 
                     placeholder="CVV"
                     value={paymentDetails.cvv}
                     onChange={(e) => setPaymentDetails(prev => ({ ...prev, cvv: e.target.value }))}
-                    className="flex-1 p-2 border border-gray-300 rounded text-xs sm:text-base"
+                    className="flex-1 p-2 border border-gray-300 rounded text-xs sm:text-base shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)]"
                   />
                 </div>
                 <input 
@@ -3956,7 +3956,7 @@ export default function PostEnquiry() {
                   placeholder="Cardholder Name"
                   value={paymentDetails.name}
                   onChange={(e) => setPaymentDetails(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full p-2 border border-gray-300 rounded text-xs sm:text-base"
+                  className="w-full p-2 border border-gray-300 rounded text-xs sm:text-base shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)]"
                 />
               </div>
 
