@@ -413,10 +413,17 @@ const SignInMobile = () => {
 
           {/* Heading */}
           <div className="text-center mb-8">
-            <h1 className="font-chip text-xl sm:text-2xl font-extrabold text-black tracking-tight leading-snug inline-flex items-center justify-center gap-2">
-              <Phone className="h-5 w-5 sm:h-6 sm:w-6 fill-black" />
-              {stage === 'phone' ? 'Enter your phone number' : 'Enter the OTP'}
-            </h1>
+            {stage === 'phone' ? (
+              <span className="inline-flex items-center justify-center gap-1.5 rounded-full bg-gray-100 border border-gray-200 px-4 py-1.5 text-xs font-semibold text-gray-900">
+                <Phone className="h-3.5 w-3.5 fill-gray-900" />
+                Enter your phone number
+              </span>
+            ) : (
+              <h1 className="font-chip text-xl sm:text-2xl font-extrabold text-black tracking-tight leading-snug inline-flex items-center justify-center gap-2">
+                <Phone className="h-5 w-5 sm:h-6 sm:w-6 fill-black" />
+                Enter the OTP
+              </h1>
+            )}
             {stage !== 'phone' && (
               <p className="mt-2 text-xs text-gray-500 font-medium">
                 {`Sent to ${INDIA_CODE} ${formatDigits(phoneDigits)}`}
