@@ -223,8 +223,11 @@ const SignInOptions = () => {
           </div>
         </div>
 
-        {/* Provider buttons — pushed to the lower part of the screen on mobile, heading stays put */}
-        <div className="relative z-10 w-full max-w-sm space-y-3 sm:space-y-3.5 mt-auto sm:mt-0 -translate-y-[4.75rem]">
+        {/* Provider buttons — pushed to the lower part of the screen on mobile, heading stays put.
+            Card is wider than the buttons so they keep their full original size inside. */}
+        <div className="relative z-10 w-full max-w-md mt-auto sm:mt-0 -translate-y-[4.75rem]">
+          <div className="shadow-2xl border-[0.5px] border-black bg-white/95 backdrop-blur-sm rounded-3xl px-6 py-6 sm:px-9 sm:py-8">
+            <div className="w-full max-w-sm mx-auto space-y-3 sm:space-y-3.5">
           {/* Mobile */}
           <button
             onClick={() => navigate('/signin/mobile', { state: (location.state as any) || undefined })}
@@ -251,6 +254,8 @@ const SignInOptions = () => {
             <GoogleIcon />
             Continue with Google
           </button>
+            </div>
+          </div>
         </div>
 
         {/* Footer — horizontally centered regardless of max-width */}
