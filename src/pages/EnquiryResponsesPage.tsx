@@ -84,6 +84,73 @@ const EnquiryResponsesPage = () => {
   // Call Seller — popup shows the seller's number directly (buyer already paid to view responses)
   const [showCallPopup, setShowCallPopup] = useState(false);
   const [callPopupNumber, setCallPopupNumber] = useState<string | null>(null);
+  // Scam-alert caution overlay — shown before Call/Chat, dismissible via ✕ or auto-closes after 10s
+  const [showScamAlert, setShowScamAlert] = useState(false);
+  const [scamAlertAction, setScamAlertAction] = useState<'call' | 'chat' | null>(null);
+  const [scamAlertSeller, setScamAlertSeller] = useState<string | null>(null);
+  const [scamAlertDontShow, setScamAlertDontShow] = useState(() => {
+    try { return localStorage.getItem('scamAlertDontShow') === 'true'; } catch { return false; }
+  });
+  const scamAlertTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Press-and-hold pauses the auto-dismiss countdown; releasing resumes it
+  const scamAlertRemainingRef = useRef<number>(10000);
+  const scamAlertLastTickRef = useRef<number>(0);
+  const scamAlertPausedRef = useRef<boolean>(false);
+  // Progress (0-100) for the countdown bar under the Don't-show-again button
+  const [scamAlertProgress, setScamAlertProgress] = useState(100);
+
+  // Close the caution overlay; resumes the pending Call/Chat action that triggered it
+  const closeScamAlert = (resume: boolean) => {
+    if (scamAlertTimerRef.current) { clearTimeout(scamAlertTimerRef.current); scamAlertTimerRef.current = null; }
+    setShowScamAlert(false);
+    if (resume && scamAlertAction === 'call' && scamAlertSeller) {
+      setCallPopupNumber(scamAlertSeller);
+      setShowCallPopup(true);
+    } else if (resume && scamAlertAction === 'chat' && scamAlertSeller && enquiry) {
+      navigate(`/enquiry/${enquiry.id}/responses?sellerId=${scamAlertSeller}`);
+    }
+    setScamAlertAction(null);
+    setScamAlertSeller(null);
+  };
+
+  // Auto-dismiss the caution overlay after 10 seconds (pausable via press-and-hold,
+  // with a live black progress bar showing time until dismissal)
+  useEffect(() => {
+    if (!showScamAlert) return;
+    scamAlertRemainingRef.current = 10000;
+    scamAlertPausedRef.current = false;
+    scamAlertLastTickRef.current = Date.now();
+    setScamAlertProgress(100);
+    scamAlertTimerRef.current = setInterval(() => {
+      const now = Date.now();
+      if (!scamAlertPausedRef.current) {
+        scamAlertRemainingRef.current = Math.max(0, scamAlertRemainingRef.current - (now - scamAlertLastTickRef.current));
+        setScamAlertProgress(Math.round((scamAlertRemainingRef.current / 10000) * 100));
+        if (scamAlertRemainingRef.current <= 0) {
+          if (scamAlertTimerRef.current) { clearInterval(scamAlertTimerRef.current); scamAlertTimerRef.current = null; }
+          closeScamAlert(true);
+          return;
+        }
+      }
+      scamAlertLastTickRef.current = now;
+    }, 50);
+    return () => { if (scamAlertTimerRef.current) { clearInterval(scamAlertTimerRef.current); scamAlertTimerRef.current = null; } };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showScamAlert]);
+
+  // Hold the popup → freeze the countdown; release → resume with the remaining time
+  const pauseScamAlertTimer = () => {
+    if (!showScamAlert || scamAlertPausedRef.current) return;
+    scamAlertPausedRef.current = true;
+  };
+  const resumeScamAlertTimer = () => {
+    if (!showScamAlert || !scamAlertPausedRef.current) return;
+    scamAlertLastTickRef.current = Date.now();
+    scamAlertPausedRef.current = false;
+  };
+
+  // Clean up the timer if the page unmounts while the overlay is open
+  useEffect(() => () => { if (scamAlertTimerRef.current) clearInterval(scamAlertTimerRef.current); }, []);
   const fullscreenModalRef = useRef<HTMLDivElement>(null);
   // User profiles for trust badge checking
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
@@ -1073,8 +1140,14 @@ const EnquiryResponsesPage = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          setCallPopupNumber(sellerMobile);
-                          setShowCallPopup(true);
+                          if (scamAlertDontShow) {
+                            setCallPopupNumber(sellerMobile);
+                            setShowCallPopup(true);
+                            return;
+                          }
+                          setScamAlertAction('call');
+                          setScamAlertSeller(sellerMobile);
+                          setShowScamAlert(true);
                         }}
                         className="w-full sm:w-auto !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/call min-touch flex items-center justify-center"
                       >
@@ -1088,7 +1161,15 @@ const EnquiryResponsesPage = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`)}
+                    onClick={() => {
+                      if (scamAlertDontShow) {
+                        navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`);
+                        return;
+                      }
+                      setScamAlertAction('chat');
+                      setScamAlertSeller(response.sellerId);
+                      setShowScamAlert(true);
+                    }}
                     className="w-full sm:w-auto !border-[1.5px] !border-black !bg-emerald-500 hover:!bg-emerald-600 !text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/startchat min-touch flex items-center justify-center"
                   >
                     <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-6 lg:w-6 mr-1.5 sm:mr-2 flex-shrink-0 relative z-10" />
@@ -1195,6 +1276,105 @@ const EnquiryResponsesPage = () => {
               <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="text-xs sm:text-sm font-medium hidden sm:inline">Back</span>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Scam Alert caution overlay — shows before Call/Chat, ✕ to close manually or auto-dismisses after 10s */}
+      {showScamAlert && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4"
+          onClick={() => closeScamAlert(true)}
+        >
+          <div
+            className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full max-h-[92vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={pauseScamAlertTimer}
+            onPointerUp={resumeScamAlertTimer}
+            onPointerLeave={resumeScamAlertTimer}
+            onPointerCancel={resumeScamAlertTimer}
+          >
+            {/* Black countdown bar — fills left→right as the auto-dismiss approaches (freezes while held); sits slightly below the top border */}
+            <div className="px-4 pt-2">
+              <div className="h-1.5 w-full bg-gray-200 overflow-hidden rounded-full">
+                <div
+                  className="h-full bg-black rounded-full"
+                  style={{ width: `${100 - scamAlertProgress}%`, transition: 'width 120ms linear' }}
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => closeScamAlert(true)}
+              className="absolute top-2 right-2 z-10 p-1.5 text-red-600 hover:text-red-700 transition-colors"
+              aria-label="Close"
+            >
+              <X className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2.5} />
+            </button>
+            {/* Brand heading — exact replica of the OTP sign-in page header (brush swash + Enqir wordmark), centered */}
+            <div className="w-full flex justify-center">
+              <div className="text-center select-none relative inline-flex items-center justify-center px-8 sm:px-12 py-8 sm:py-10">
+              {/* Painterly brush swash — same tapered stroke as the OTP page */}
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 640 260"
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                preserveAspectRatio="none"
+              >
+                <defs>
+                  <linearGradient id="brushSwashScam" x1="0" y1="0" x2="1" y2="0.6">
+                    <stop offset="0%" stopColor="#eceef0" />
+                    <stop offset="50%" stopColor="#e4e7ea" />
+                    <stop offset="100%" stopColor="#dcdfE3" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M18 158
+                     C 40 120, 96 96, 168 92
+                     C 250 86, 330 60, 420 62
+                     C 500 64, 570 84, 614 108
+                     C 620 112, 620 120, 610 126
+                     C 560 158, 470 178, 380 182
+                     C 290 186, 190 192, 112 184
+                     C 66 180, 30 172, 18 158 Z"
+                  fill="url(#brushSwashScam)"
+                />
+                <path
+                  d="M60 150 C 170 118, 330 96, 520 108"
+                  stroke="#f2f3f5"
+                  strokeWidth="16"
+                  strokeLinecap="round"
+                  fill="none"
+                  opacity="0.5"
+                />
+                <path
+                  d="M96 182 C 180 194, 300 192, 420 178"
+                  stroke="#d2d6da"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  fill="none"
+                  opacity="0.45"
+                />
+              </svg>
+              <span className="relative text-8xl sm:text-9xl font-extrabold tracking-tight text-gray-950">Enqir</span>
+              </div>
+            </div>
+            <img src="/scam-alert.png" alt="Scam Alert — safety precautions before contacting a seller" className="w-full h-auto max-h-[48vh] object-contain mx-auto" />
+            {/* Don't-show-again — red chip, placed high for comfortable mobile tapping */}
+            <div className="py-3 flex justify-center">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  try { localStorage.setItem('scamAlertDontShow', 'true'); } catch {}
+                  setScamAlertDontShow(true);
+                  closeScamAlert(true);
+                }}
+                className="rounded-full bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm font-bold px-6 py-3 shadow-[0_4px_0_0_rgba(0,0,0,0.25)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.25)] active:translate-y-[3px] transition-all min-touch"
+              >
+                Don't show again
+              </button>
+            </div>
           </div>
         </div>
       )}
