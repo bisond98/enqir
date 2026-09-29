@@ -88,8 +88,11 @@ const EnquiryResponsesPage = () => {
   const [showScamAlert, setShowScamAlert] = useState(false);
   const [scamAlertAction, setScamAlertAction] = useState<'call' | 'chat' | null>(null);
   const [scamAlertSeller, setScamAlertSeller] = useState<string | null>(null);
-  const [scamAlertDontShow, setScamAlertDontShow] = useState(() => {
-    try { return localStorage.getItem('scamAlertDontShow') === 'true'; } catch { return false; }
+  // Which seller response triggered the popup (for per-seller dont-show-again)
+  const [scamAlertSellerId, setScamAlertSellerId] = useState<string | null>(null);
+  // Per-seller dont-show-again: sellers whose scam alert was dismissed by the user
+  const [scamAlertDismissedSellers, setScamAlertDismissedSellers] = useState<Set<string>>(() => {
+    try { return new Set<string>(JSON.parse(localStorage.getItem('scamAlertDismissedSellers') || '[]')); } catch { return new Set<string>(); }
   });
   const scamAlertTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Press-and-hold pauses the auto-dismiss countdown; releasing resumes it
@@ -98,6 +101,16 @@ const EnquiryResponsesPage = () => {
   const scamAlertPausedRef = useRef<boolean>(false);
   // Progress (0-100) for the countdown bar under the Don't-show-again button
   const [scamAlertProgress, setScamAlertProgress] = useState(100);
+
+  // Persist a seller to the dont-show-again list (per seller, permanently in this browser)
+  const dismissScamAlertForSeller = (sellerId: string) => {
+    setScamAlertDismissedSellers(prev => {
+      const next = new Set(prev);
+      next.add(sellerId);
+      try { localStorage.setItem('scamAlertDismissedSellers', JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  };
 
   // Close the caution overlay; resumes the pending Call/Chat action that triggered it
   const closeScamAlert = (resume: boolean) => {
@@ -111,6 +124,7 @@ const EnquiryResponsesPage = () => {
     }
     setScamAlertAction(null);
     setScamAlertSeller(null);
+    setScamAlertSellerId(null);
   };
 
   // Auto-dismiss the caution overlay after 10 seconds (pausable via press-and-hold,
@@ -1140,13 +1154,14 @@ const EnquiryResponsesPage = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          if (scamAlertDontShow) {
+                          if (scamAlertDismissedSellers.has(String(response.sellerId))) {
                             setCallPopupNumber(sellerMobile);
                             setShowCallPopup(true);
                             return;
                           }
                           setScamAlertAction('call');
                           setScamAlertSeller(sellerMobile);
+                          setScamAlertSellerId(String(response.sellerId));
                           setShowScamAlert(true);
                         }}
                         className="w-full sm:w-auto !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/call min-touch flex items-center justify-center"
@@ -1162,12 +1177,13 @@ const EnquiryResponsesPage = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      if (scamAlertDontShow) {
+                      if (scamAlertDismissedSellers.has(String(response.sellerId))) {
                         navigate(`/enquiry/${enquiry.id}/responses?sellerId=${response.sellerId}`);
                         return;
                       }
                       setScamAlertAction('chat');
                       setScamAlertSeller(response.sellerId);
+                      setScamAlertSellerId(String(response.sellerId));
                       setShowScamAlert(true);
                     }}
                     className="w-full sm:w-auto !border-[1.5px] !border-black !bg-emerald-500 hover:!bg-emerald-600 !text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/startchat min-touch flex items-center justify-center"
@@ -1366,8 +1382,7 @@ const EnquiryResponsesPage = () => {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  try { localStorage.setItem('scamAlertDontShow', 'true'); } catch {}
-                  setScamAlertDontShow(true);
+                  if (scamAlertSellerId) dismissScamAlertForSeller(scamAlertSellerId);
                   closeScamAlert(true);
                 }}
                 className="rounded-full bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs sm:text-sm font-bold px-6 py-3 shadow-[0_4px_0_0_rgba(0,0,0,0.25)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.25)] active:translate-y-[3px] transition-all min-touch"
