@@ -1338,24 +1338,24 @@ const SellerResponse = () => {
 
           {/* Enhanced Enquiry Display */}
           <Card className="mb-6 sm:mb-8 card-premium overflow-hidden border-2 border-black rounded-2xl">
-            <CardHeader className="bg-black p-3 sm:p-4">
+            <CardHeader className="bg-black p-2.5 sm:p-3">
               {/* Title and Category Row */}
-              <div className="flex items-center justify-between mb-2.5 sm:mb-3">
+              <div className="flex items-center justify-between mb-1.5 sm:mb-2">
                 <div className="flex items-center gap-2 sm:gap-3">
                 {enquiry.idFrontImage || enquiry.idBackImage ? (
                     <>
-                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
-                      <span className="text-[10px] sm:text-xs text-white font-medium">
+                  <CheckCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-400" />
+                      <span className="text-[9px] sm:text-[10px] text-white font-medium">
                         Trust badge
                       </span>
                     </>
                 ) : (
-                  <p className="text-xs sm:text-sm font-semibold text-white">
+                  <p className="text-[11px] sm:text-xs font-semibold text-white">
                     Enquiry Details
                   </p>
                 )}
                 </div>
-                <Badge variant="secondary" className="bg-white/90 text-gray-800 text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full">
+                <Badge variant="secondary" className="bg-white/90 text-gray-800 text-[9px] sm:text-[10px] font-medium px-2 py-0.5 rounded-full">
                   {enquiry.category}
                 </Badge>
               </div>
@@ -1363,38 +1363,32 @@ const SellerResponse = () => {
               {/* Date and Status Row */}
               <div className="flex flex-row items-center justify-between gap-2 sm:gap-3">
                 {/* Date */}
-                <div className="flex items-center text-[10px] sm:text-xs text-gray-300">
-                  <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 flex-shrink-0" />
+                <div className="flex items-center text-[9px] sm:text-[10px] text-gray-300">
+                  <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 flex-shrink-0" />
                   {enquiry.createdAt && (
                     <span>Posted {formatDate(enquiry.createdAt.toDate().toISOString())}</span>
                   )}
                 </div>
-
-                {/* Status */}
-                <div className="flex items-center text-[10px] sm:text-xs text-green-400">
-                  <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 flex-shrink-0" />
-                  Live & Active
-                </div>
               </div>
             </CardHeader>
-            <CardContent className="p-3 sm:p-4">
-              <div className="space-y-3 sm:space-y-4">
+            <CardContent className="p-2.5 sm:p-3">
+              <div className="space-y-2 sm:space-y-2.5">
                 {/* Title and Description Section */}
-                <div className="space-y-2 sm:space-y-2.5">
-                  <h3 className="text-sm sm:text-lg font-bold text-gray-800 flex items-start gap-2">
-                    <span className="text-base sm:text-xl flex-shrink-0">🎯</span> 
+                <div className="space-y-1.5 sm:space-y-2">
+                  <h3 className="text-xs sm:text-sm font-bold text-gray-800 flex items-start gap-1.5">
+                    <span className="text-xs sm:text-sm flex-shrink-0">🎯</span> 
                     <span>Need: {enquiry.title}</span>
                   </h3>
-                  <p className="text-[11px] sm:text-sm text-gray-600 leading-relaxed pl-6 sm:pl-8">
+                  <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed pl-5 sm:pl-6">
                     {enquiry.description}
                   </p>
                 </div>
                 
                   {/* Deadline */}
                   {enquiry.deadline && (
-                  <div className="flex items-center px-4 py-3 sm:px-5 sm:py-3.5 rounded-lg border-[0.5px] shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.2)]" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
-                    <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white mr-2 flex-shrink-0" />
-                    <span className="text-[11px] sm:text-xs text-white font-bold">
+                  <div className="flex items-center px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg border-[0.5px] shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.2)]" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
+                    <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white mr-2 flex-shrink-0" />
+                    <span className="text-[10px] sm:text-[11px] text-white font-bold">
                         Deadline: {formatDate(enquiry.deadline)}
                       </span>
                     </div>
