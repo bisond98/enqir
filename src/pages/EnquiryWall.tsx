@@ -5336,45 +5336,45 @@ export default function EnquiryWall() {
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
 {/* Buy / Sell / Filter row - marketplace style */}
             <div className="sm:hidden grid grid-cols-3 gap-3">
-              <button className="w-full h-14 min-h-[52px] font-bold !text-[15px] !rounded-xl border border-slate-300 relative overflow-hidden transition-all !duration-200 active:!translate-y-[2px] !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] touch-manipulation select-none">
+              <button className="w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none">
                 <span className="relative z-10">Sell</span>
               </button>
-              <button onClick={() => setFilterPanelOpen(v => !v)} className={`w-full h-14 min-h-[52px] font-bold !text-[15px] !rounded-xl border border-slate-300 relative overflow-hidden transition-all !duration-200 active:!translate-y-[2px] flex items-center justify-center gap-1 touch-manipulation select-none ${filterPanelOpen ? '!bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white' : '!bg-gradient-to-b !from-white !to-slate-100 !text-gray-900'} !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)]`}>
+              <button onClick={() => setFilterPanelOpen(v => !v)} className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] flex items-center justify-center gap-1 touch-manipulation select-none ${filterPanelOpen ? '!bg-blue-600 hover:!bg-blue-700 !text-white' : '!bg-white hover:!bg-gray-50 !text-black'} !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]`}>
                 <SlidersHorizontal className="h-4 w-4 relative z-10" />
                 <span className="relative z-10">Filter</span>
               </button>
-              <div className="flex h-14 min-h-[52px] !rounded-xl overflow-hidden !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] border border-slate-300">
+              <div className="flex h-[50px] !rounded-2xl overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] border-[1.5px] border-black">
                 <button
                   onClick={() => { setViewMode('list'); }}
                   aria-label="List view"
-                  className={`h-full flex-1 flex items-center justify-center transition-all !duration-200 touch-manipulation ${viewMode === 'list' ? '!bg-gradient-to-b !from-blue-500 !to-blue-700 text-white' : '!bg-gradient-to-b !from-white !to-slate-100 text-black hover:!bg-gray-100'}`}
+                  className={`h-full flex-1 flex items-center justify-center transition-all touch-manipulation ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
                 >
                   <List className="h-4 w-4" strokeWidth={2.25} />
                 </button>
                 <button
                   onClick={() => { setViewMode('grid'); }}
                   aria-label="Grid view"
-                  className={`h-full flex-1 flex items-center justify-center transition-all !duration-200 border-l border-slate-300 touch-manipulation ${viewMode === 'grid' ? '!bg-gradient-to-b !from-blue-500 !to-blue-700 text-white' : '!bg-gradient-to-b !from-white !to-slate-100 text-black hover:!bg-gray-100'}`}
+                  className={`h-full flex-1 flex items-center justify-center transition-all border-l-[1.5px] border-black touch-manipulation ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
                 >
                   <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
                 </button>
               </div>
             </div>
             <div className="hidden sm:flex items-center justify-end gap-2">
-              <button className="px-5 h-14 min-h-[52px] font-bold text-[15px] !rounded-xl border border-slate-300 !bg-gradient-to-b !from-blue-500 !to-blue-700 text-white !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px] transition-all !duration-200 touch-manipulation select-none">Sell</button>
-              <button onClick={() => setFilterPanelOpen(v => !v)} className={`px-5 h-14 min-h-[52px] font-bold text-[15px] !rounded-xl border border-slate-300 transition-all !duration-200 flex items-center gap-1.5 touch-manipulation select-none ${filterPanelOpen ? '!bg-gradient-to-b !from-blue-500 !to-blue-700 text-white' : '!bg-gradient-to-b !from-white !to-slate-100 text-gray-900'} !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px]`}><SlidersHorizontal className="h-4 w-4" />Filter</button>
-              <div className="flex h-14 min-h-[52px] !rounded-xl overflow-hidden !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] border border-slate-300">
+              <button className="px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black bg-blue-600 hover:bg-blue-700 text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none">Sell</button>
+              <button onClick={() => setFilterPanelOpen(v => !v)} className={`px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black transition-all !duration-150 flex items-center gap-1.5 touch-manipulation select-none ${filterPanelOpen ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-50 text-black'} !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px]`}><SlidersHorizontal className="h-4 w-4" />Filter</button>
+              <div className="flex h-[50px] !rounded-2xl overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] border-[1.5px] border-black">
                 <button
                   onClick={() => { setViewMode('list'); }}
                   aria-label="List view"
-                  className={`h-full px-4 flex items-center justify-center transition-all !duration-200 touch-manipulation ${viewMode === 'list' ? '!bg-gradient-to-b !from-blue-500 !to-blue-700 text-white' : '!bg-gradient-to-b !from-white !to-slate-100 text-black hover:!bg-gray-100'}`}
+                  className={`h-full px-4 flex items-center justify-center transition-all touch-manipulation ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
                 >
                   <List className="h-4 w-4" strokeWidth={2.25} />
                 </button>
                 <button
                   onClick={() => { setViewMode('grid'); }}
                   aria-label="Grid view"
-                  className={`h-full px-4 flex items-center justify-center transition-all !duration-200 border-l border-slate-300 touch-manipulation ${viewMode === 'grid' ? '!bg-gradient-to-b !from-blue-500 !to-blue-700 text-white' : '!bg-gradient-to-b !from-white !to-slate-100 text-black hover:!bg-gray-100'}`}
+                  className={`h-full px-4 flex items-center justify-center transition-all border-l-[1.5px] border-black touch-manipulation ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
                 >
                   <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
                 </button>
@@ -5532,7 +5532,7 @@ export default function EnquiryWall() {
                     setShowSuggestions(false);
                   }
                 }}>
-                  <SelectTrigger className="relative h-14 sm:h-16 min-h-[52px] text-sm sm:text-base sm:text-lg border border-slate-300 !rounded-xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-200 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
+                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
                     <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
@@ -5547,7 +5547,7 @@ export default function EnquiryWall() {
               <div className="flex-1 relative">
                 <button
                   onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                  className="relative w-full h-14 sm:h-16 min-h-[52px] flex items-center text-sm sm:text-base sm:text-lg border border-slate-300 !rounded-xl !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:!translate-y-[-1px] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-200 px-3 gap-1.5 overflow-hidden touch-manipulation"
+                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
                 >
                   <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0 relative z-10" />
                   <span className="flex-1 text-center truncate text-white font-bold relative z-10">
@@ -5977,13 +5977,13 @@ export default function EnquiryWall() {
                 </button>
               )}
               <button
-                className="relative flex-1 h-14 sm:h-16 min-h-[52px] flex items-center justify-center gap-3 border border-slate-300 bg-gradient-to-b from-blue-500 to-blue-700 text-white font-bold text-base sm:text-lg rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:translate-y-[-1px] active:shadow-[0_2px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:translate-y-[2px] transition-all duration-200 transform touch-manipulation select-none cursor-pointer overflow-hidden group"
+                className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none !relative !overflow-hidden group"
                 onClick={() => {
                   submitSearch(searchTerm);
                 }}
               >
-                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
+                <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                 <span className="relative z-10 flex items-center justify-center"><Search className="h-4 w-4 mr-1.5" />Search</span>
               </button>            </div>
             </div>

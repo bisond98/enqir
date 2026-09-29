@@ -862,7 +862,7 @@ export default function Marketplace() {
               load();
             }}
             placeholder='Search listings… or try "used car under 2 lakh"'
-            className="relative pl-10 pr-[4.5rem] sm:pr-[5rem] h-[50px] sm:h-[54px] text-sm sm:text-base bg-gradient-to-br from-white to-slate-50/50 border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] !transition-all !duration-200 placeholder:text-black placeholder:text-[10px] sm:placeholder:text-xs font-bold overflow-hidden"
+            className="relative pl-10 pr-[4.5rem] sm:pr-[5rem] min-h-[48px] h-[50px] sm:h-[54px] text-sm sm:text-base font-medium bg-white border-[1.5px] border-slate-200 rounded-[12px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus:outline-none focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:ring-offset-0 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-[11px] placeholder:text-gray-900 placeholder:font-semibold text-slate-900 text-left overflow-hidden"
           />
           {search && (
             <button onClick={() => { setSearch(''); }} className="absolute right-[3.4rem] sm:right-[3.9rem] top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-20" aria-label="Clear search">
