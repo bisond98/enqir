@@ -815,7 +815,7 @@ export default function ListingDetail() {
                   <Button
                     variant="outline"
                     className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
-                    onClick={() => navigate(`/sell/listing/${listing.id}/chat/${user?.uid}`)}
+                    onClick={() => setScamAlertPending({ action: 'chat' })}
                   >
                     <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
@@ -1002,7 +1002,7 @@ function MessageSellerInline({
             onChange={(e) => setOfferedPrice(e.target.value.replace(/[^0-9]/g, ""))}
             placeholder="e.g., 15,000"
             inputMode="numeric"
-            className="h-10 sm:h-11 text-sm !border-[1.5px] !border-black rounded-2xl bg-white !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:!border-[2px] focus:border-black focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !transition-all !duration-150 placeholder:text-slate-400 placeholder:text-[10px] pl-7 touch-manipulation"
+            className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-7 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
           />
         </div>
       </div>
@@ -1015,7 +1015,7 @@ function MessageSellerInline({
             placeholder="Write your message to the seller…"
             maxLength={250}
             rows={3}
-            className="text-sm !border-[1.5px] !border-black rounded-2xl min-h-[110px] bg-white !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:!border-[2px] focus:border-black focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !transition-all !duration-150 placeholder:text-slate-400 placeholder:text-[10px] resize-none pr-20 touch-manipulation p-3"
+            className="text-sm rounded-[12px] min-h-[110px] w-full font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pr-20 touch-manipulation p-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 resize-none"
           />
           {/* Voice & Attach icons — right side */}
           <div className="absolute right-2 bottom-2 flex items-center gap-1">
@@ -1098,12 +1098,14 @@ function MessageSellerInline({
       </div>
       <Button
         variant="outline"
-        className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none"
+        className="relative w-full !h-16 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-xl !border !border-black !relative !overflow-hidden transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
         onClick={() => { if (user) { submitResponse(); } else { sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller'); navigate('/signin'); } }}
         disabled={sending}
       >
-        <Send className="h-4 w-4 mr-2 relative z-10" />
-        <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Message') : 'Sign in to message'}</span>
+        <span className="relative z-10 inline-flex items-center justify-center gap-2">
+          <Send className="h-4 w-4 relative z-10" />
+          <span className="relative z-10">{user ? (sending ? 'Sending…' : 'Message') : 'Sign in to message'}</span>
+        </span>
       </Button>
       {/* Call Seller — below the message button */}
       {callButton}

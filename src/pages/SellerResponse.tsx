@@ -1440,8 +1440,8 @@ const SellerResponse = () => {
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Response Title */}
               <div className="space-y-3">
-                <Label htmlFor="title" className="text-sm sm:text-lg font-black text-black flex items-center">
-                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-black" />
+                <Label htmlFor="title" className="text-xs sm:text-sm font-black text-black flex items-center">
+                  <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2 sm:mr-2.5 text-black" />
                   <span className="text-black">
                     <span className="hidden sm:inline">Response Title *</span>
                     <span className="sm:hidden">Title *</span>
@@ -1453,8 +1453,8 @@ const SellerResponse = () => {
                   value={title}
                   readOnly
                   disabled
-                    className="h-12 sm:h-14 text-base border border-black focus-visible:border-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-xl transition-all duration-300 min-touch pl-4 pr-4 bg-gradient-to-br from-gray-100 to-gray-200 cursor-not-allowed shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 font-bold text-lg"
-                    style={{ fontSize: '16px' }}
+                    className="rounded-[12px] h-11 sm:h-12 min-h-[44px] w-full text-sm text-center font-semibold bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 cursor-not-allowed"
+                    style={{ fontSize: '15px' }}
                   required
                 />
                   {/* Physical button depth effect */}
@@ -1464,8 +1464,8 @@ const SellerResponse = () => {
 
               {/* Enhanced Product Description */}
               <div className="space-y-3">
-                <Label htmlFor="description" className="text-sm sm:text-base font-black text-black flex items-center whitespace-nowrap">
-                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-black flex-shrink-0" />
+                <Label htmlFor="description" className="text-xs sm:text-sm font-black text-black flex items-center whitespace-nowrap">
+                  <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-2 sm:mr-2.5 text-black flex-shrink-0" />
                   <span className="text-black">
                     Detailed Description *
                   </span>
@@ -1476,7 +1476,7 @@ const SellerResponse = () => {
                 <div className="relative">
                 <Textarea
                   id="description"
-                  placeholder="Tell buyers about your product/service, pricing, availability, and any other important details..."
+                  placeholder="Describe your offer…"
                   value={description}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -1485,7 +1485,7 @@ const SellerResponse = () => {
                     }
                   }}
                   maxLength={500}
-                    className={`min-h-[140px] text-base !border-[0.5px] !border-black focus:!border-[1px] focus:border-black focus:ring-0 focus-visible:!border-[1px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 touch-manipulation ${errors.description ? '!border-red-500 focus:!border-red-500' : ''}`}
+                    className={`min-h-[140px] text-base rounded-[12px] w-full font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] text-slate-900 touch-manipulation ${errors.description ? '!border-red-500 focus-visible:!border-red-500' : ''}`}
                     style={{ fontSize: '16px' }}
                 />
                   {/* AI golden-sparkle icon — tap to generate (empty) or grammar-correct (typed). No background. */}
@@ -1523,8 +1523,8 @@ const SellerResponse = () => {
 
               {/* Enhanced Price Field */}
               <div className="space-y-3">
-                <Label htmlFor="price" className="text-sm sm:text-lg font-black text-black flex items-center">
-                  <span className="text-lg sm:text-2xl mr-2 sm:mr-3 text-black">₹</span>
+                <Label htmlFor="price" className="text-xs sm:text-sm font-black text-black flex items-center">
+                  <span className="text-sm sm:text-base mr-2 sm:mr-2.5 text-black">₹</span>
                   <span className="text-black">
                     {isJobEnquiry ? 'Salary Expectation *' : 'Your Price *'}
                   </span>
@@ -1564,7 +1564,7 @@ const SellerResponse = () => {
                       setPrice('₹' + e.target.value);
                     }
                   }}
-                    className={`h-12 sm:h-14 text-base !border-[0.5px] !border-black focus:!border-[1px] focus:border-black focus:ring-0 focus-visible:!border-[1px] focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 rounded-2xl !transition-all !duration-150 min-touch pl-4 pr-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.85)] focus:shadow-[0_2px_0_0_rgba(0,0,0,0.85)] focus:translate-y-[2px] placeholder:text-slate-400 placeholder:text-[10px] relative z-10 text-lg font-semibold touch-manipulation ${errors.price ? '!border-red-500 focus:!border-red-500' : ''}`}
+                    className={`h-12 sm:h-14 text-base rounded-[12px] w-full font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] text-slate-900 text-lg font-semibold touch-manipulation ${errors.price ? '!border-red-500 focus-visible:!border-red-500' : ''}`}
                     style={{ fontSize: '16px' }}
                   required
                 />
@@ -1604,10 +1604,7 @@ const SellerResponse = () => {
               </div>
 
               {/* Separator */}
-              <Separator className="my-12 sm:my-16 bg-gray-300 h-[2px]" />
-
-              {/* Separator */}
-              <Separator className="my-8" />
+              <Separator className="my-12 sm:my-16 bg-gray-300 h-[2px] hidden" />
 
               {/* Enhanced 5-Slot Image Upload */}
               <div className="space-y-6">
@@ -1653,7 +1650,7 @@ const SellerResponse = () => {
                     />
                     <label
                       htmlFor="response-images"
-                      className="block w-full text-center !rounded-2xl !border-[0.5px] !border-black bg-white hover:bg-gray-50 text-black !transition-all !duration-150 py-3 text-sm font-black cursor-pointer !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] touch-manipulation select-none"
+                      className="block w-full text-center !rounded-xl !border !border-black bg-blue-600 hover:bg-blue-700 text-white !transition-all !duration-200 py-3 text-sm font-black cursor-pointer !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] touch-manipulation select-none"
                     >
                       {images.length === 0 ? 'Choose Image' : 'Add More Images'}
                     </label>
@@ -1771,7 +1768,7 @@ const SellerResponse = () => {
                     aria-label="Country code"
                     value={countryCode}
                     onChange={(e) => setCountryCode(e.target.value)}
-                    className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[0.5px] !border-black bg-white text-black !text-xs !font-black focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation appearance-none text-center"
+                    className="!h-12 sm:!h-14 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-[12px] !border-[1.5px] !border-slate-200 bg-white text-slate-900 !text-xs !font-black focus:outline-none focus:!border-black !transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation appearance-none text-center"
                   >
                     {[
                       ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
@@ -1802,7 +1799,7 @@ const SellerResponse = () => {
                     }}
                     maxLength={countryCode === '+91' ? 11 : 14}
                     placeholder={countryCode === '+91' ? '98765 43210' : 'Mobile number'}
-                    className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[0.5px] !border-black bg-white text-black !text-sm !font-black placeholder:!text-gray-400 placeholder:!font-medium focus:outline-none transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none"
+                    className="flex-1 min-w-0 !h-12 sm:!h-14 px-4 !rounded-[12px] !border-[1.5px] !border-slate-200 bg-white text-slate-900 !text-base !font-medium shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus:!border-black focus:outline-none focus:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] !transition-all !duration-200 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] touch-manipulation select-none"
                   />
                 </div>
                 <p className="text-[8px] sm:text-[9px] text-slate-400 font-medium mt-1.5 text-right">

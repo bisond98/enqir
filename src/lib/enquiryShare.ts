@@ -82,11 +82,11 @@ const moneyLabel = (enquiry: ShareableEnquiry): string => {
   }
   if (isEstateEnquiry(enquiry)) {
     const t = enquiry.details?.listingType;
-    if (t === 'Rent') return 'Rent';
+    if (t === 'Rent') return 'Rent budget';
     if (t === 'Lease') return 'Lease terms';
     return 'Budget'; // Buy and unknown → budget
   }
-  if (isAccommodationEnquiry(enquiry)) return 'Rent';
+  if (isAccommodationEnquiry(enquiry)) return 'Rent budget';
   if (isPetEnquiry(enquiry)) return 'Price range';
   return "Buyer's budget";
 };
@@ -136,7 +136,7 @@ const estateDealSuffix = (enquiry: ShareableEnquiry): string => {
  *
  * Real-estate (rent) example:
  *   🔎 WANTED: 2 bhk House at Bombay for rent
- *   💰 Rent: ₹1,00,000/month | @ Kurla West, Mumbai
+ *   💰 Rent budget: ₹1,00,000/month | @ Kurla West, Mumbai
  *   ⏰ Needed within 14 days
  *   Have a property like this? Respond here 👇
  *
