@@ -22,7 +22,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { PAYMENT_PLANS, getUpgradeOptions } from "../config/paymentPlans";
 import { savePaymentRecord, updateUserPaymentPlan } from "../services/paymentService";
 import { X } from "lucide-react";
-import CallNumberPopup from "../components/CallNumberPopup";
+import CallNumberPopup from "@/components/CallNumberPopup";
+import ScamAlertOverlay from "@/components/ScamAlertOverlay";
 import { LoadingAnimation } from "../components/LoadingAnimation";
 import { listMyListings, listResponsesForSeller } from "../modules/sell/services/sellDb";
 import SellerDashboard from "../modules/sell/pages/SellerDashboard";
@@ -127,6 +128,23 @@ const Dashboard = () => {
   const [deletedEnquiries, setDeletedEnquiries] = useState<Set<string>>(new Set()); // Track deleted enquiry IDs
   // Call Buyer — popup shows the buyer's number directly (Connect already paid on the response form)
   const [showCallPopup, setShowCallPopup] = useState(false);
+  // Scam-alert caution overlay — shown before Call/Chat on responded enquiries (seller side);
+  // shared component handles countdown, hold-to-pause bar and per-enquiry dont-show-again
+  const [scamAlertPending, setScamAlertPending] = useState<null | { action: 'call' | 'chat'; enquiryId: string; sellerId: string }>(null);
+  const continueScamAlertAction = () => {
+    if (!scamAlertPending) return;
+    if (scamAlertPending.action === 'call') {
+      const respondedEnquiry = respondedEnquiriesById[scamAlertPending.enquiryId];
+      const enquiryMobile = respondedEnquiry?.mobileNumber && String(respondedEnquiry.mobileNumber).trim() ? String(respondedEnquiry.mobileNumber).trim() : null;
+      if (enquiryMobile) {
+        setCallPopupNumber(enquiryMobile);
+        setShowCallPopup(true);
+      }
+    } else {
+      navigate(`/enquiry/${scamAlertPending.enquiryId}/responses?sellerId=${scamAlertPending.sellerId}`);
+    }
+    setScamAlertPending(null);
+  };
   const [callPopupNumber, setCallPopupNumber] = useState<string | null>(null);
   // Enquiries the user responded to (buyers' enquiries) — keyed by id, used for the Call button lookup
   const [respondedEnquiriesById, setRespondedEnquiriesById] = useState<{ [key: string]: Enquiry }>({});
@@ -185,6 +203,21 @@ const Dashboard = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // After a successful response submission (flagged by SellerResponse), show the
+  // one-time scam-alert caution popup for that submission
+  useEffect(() => {
+    try {
+      const flagged = sessionStorage.getItem('scamAlertAfterSubmit');
+      if (flagged) {
+        sessionStorage.removeItem('scamAlertAfterSubmit');
+        const parsed = JSON.parse(flagged);
+        if (parsed?.enquiryId && parsed?.sellerId) {
+          setScamAlertPending({ action: 'chat', enquiryId: parsed.enquiryId, sellerId: String(parsed.sellerId) });
+        }
+      }
+    } catch {}
   }, []);
 
   // Hide scroll indicator when user scrolls
@@ -2714,8 +2747,7 @@ const Dashboard = () => {
                                       variant="outline"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        setCallPopupNumber(enquiryMobile);
-                                        setShowCallPopup(true);
+                                        setScamAlertPending({ action: 'call', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                       }}
                                       className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/call flex items-center justify-center sm:min-w-[110px] lg:min-w-[100px] xl:min-w-[110px] relative overflow-hidden touch-manipulation select-none"
                                     >
@@ -2730,7 +2762,10 @@ const Dashboard = () => {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${submission.enquiryId}/responses?sellerId=${submission.sellerId}`); }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setScamAlertPending({ action: 'chat', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
+                                  }}
                                     className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-emerald-500 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
                                 >
                                     <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
@@ -2974,6 +3009,14 @@ const Dashboard = () => {
               </div>
             </DialogContent>
           </Dialog>
+        )}
+
+        {/* Scam Alert caution overlay — shows before Call/Chat for sellers */}
+        {scamAlertPending && (
+          <ScamAlertOverlay
+            dismissKey={`${scamAlertPending.enquiryId}:${scamAlertPending.sellerId}`}
+            onContinue={continueScamAlertAction}
+          />
         )}
 
         {/* Call Buyer Popup — tap number to make the real call */}

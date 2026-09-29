@@ -953,6 +953,10 @@ const SellerResponse = () => {
       // Show success screen immediately
       setSubmitting(false);
       setIsSubmitted(true);
+      // Flag the dashboard to show the one-time scam-alert caution popup after this successful submission
+      try {
+        sessionStorage.setItem('scamAlertAfterSubmit', JSON.stringify({ enquiryId: enquiryId, sellerId: authUser?.uid || '' }));
+      } catch {}
       setTimeout(() => {
         navigate('/dashboard?mode=seller');
       }, 3000);
