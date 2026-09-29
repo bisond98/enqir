@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import CallNumberPopup from '@/components/CallNumberPopup';
+import ScamAlertOverlay from '@/components/ScamAlertOverlay';
 import { createPortal } from 'react-dom';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import SellShell from '../components/SellShell';
@@ -150,6 +151,18 @@ export default function ListingDetail() {
   // Call seller — premium feature integrated with Connect (same ₹10 payment unlocks both)
   const [callPaid, setCallPaid] = useState(false); // paid via call icon this session (connect unlock is per-response)
   const [showCallPopup, setShowCallPopup] = useState(false);
+  // Scam-alert caution overlay — shows before entering chat room / number popup (after Connect payment
+  // or on unlocked clicks); shared component handles countdown, hold-to-pause bar and per-listing dont-show-again
+  const [scamAlertPending, setScamAlertPending] = useState<null | { action: 'call' | 'chat' }>(null);
+  const continueScamAlertAction = () => {
+    if (!scamAlertPending || !listing) return;
+    if (scamAlertPending.action === 'call') {
+      setShowCallPopup(true);
+    } else {
+      navigate(`/sell/listing/${listing.id}/chat/${user?.uid}`);
+    }
+    setScamAlertPending(null);
+  };
   const [callingPayment, setCallingPayment] = useState(false);
 
   const handleCallClick = async () => {
@@ -164,9 +177,9 @@ export default function ListingDetail() {
       toast({ title: 'No number available', description: "User didn't put the number, use chat.", variant: 'destructive' });
       return;
     }
-    // Already unlocked via Connect (has a response = paid) or paid via call icon → show number directly
+    // Already unlocked via Connect (has a response = paid) or paid via call icon → caution popup first, then number
     if (chatUnlocked || callPaid) {
-      setShowCallPopup(true);
+      setScamAlertPending({ action: 'call' });
       return;
     }
     // Not unlocked → open Razorpay ₹10 (same premium that unlocks Connect)
@@ -189,7 +202,8 @@ export default function ListingDetail() {
         return;
       }
       setCallPaid(true);
-      setShowCallPopup(true);
+      // Caution popup first, then the number popup on dismiss
+      setScamAlertPending({ action: 'call' });
 
       // Realtime notification to the seller: buyer paid & clicked the call button
       if (listing.sellerId && listing.sellerId !== user.uid) {
@@ -473,7 +487,8 @@ export default function ListingDetail() {
       setAttachedPreviews([]);
       setFileUploadProgresses([]);
       setVoiceUploadProgress(0);
-      navigate(`/sell/listing/${listing.id}/chat/${user.uid}`);
+      // Caution popup first, then enter the chat room on dismiss
+      setScamAlertPending({ action: 'chat' });
     } catch (err: any) {
       console.error('❌ Failed to send listing response:', err.code, err.message);
       toast({ title: 'Failed', description: friendlyError(err, 'Could not send your message. Please try again.'), variant: 'destructive' });
@@ -553,6 +568,13 @@ export default function ListingDetail() {
           onClose={() => setShowCallPopup(false)}
         />,
         document.body
+      )}
+      {/* Scam Alert caution overlay — shows before entering chat room / number popup */}
+      {scamAlertPending && (
+        <ScamAlertOverlay
+          dismissKey={listing?.id || ''}
+          onContinue={continueScamAlertAction}
+        />
       )}
       <div className="space-y-4 pb-6">
         {/* Unified Listing Card — image + details in one card, single border around the whole block */}
