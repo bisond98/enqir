@@ -958,8 +958,8 @@ const EnquiryDetail = () => {
                     {/* Description — below the detail chips */}
                     <div className="mt-6 sm:mt-7">
                                             <div className="bg-gray-200 rounded-2xl p-4 sm:p-5 !border-[0.5px] !border-black/40 relative overflow-hidden">
-                        <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-2 uppercase tracking-wide" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>Description</h3>
-                        <p className="text-xs sm:text-xs md:text-sm leading-relaxed" style={{ lineHeight: '1.7', color: '#000', WebkitTextStroke: '0.2px black', fontWeight: 800 }}>{enquiry.description}</p>
+                        <h3 className="text-[10px] sm:text-[10px] font-extrabold text-black mb-2 uppercase tracking-wider">Description</h3>
+                        <p className="text-xs sm:text-xs md:text-sm leading-relaxed text-gray-800" style={{ lineHeight: '1.7', fontWeight: 500 }}>{enquiry.description}</p>
                       </div>
                     </div>
                   </div>
