@@ -7,7 +7,7 @@ import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Clock, ShoppingCart, Reply, LayoutDashboard, UserCheck, ArrowRight, MessageCircle, Trash2, X, ChevronLeft, ChevronRight, ArrowLeft, ArrowLeftRight } from "lucide-react";
+import { MessageSquare, Clock, ShoppingCart, Reply, LayoutDashboard, UserCheck, ArrowRight, MessageCircle, Trash2, X, ChevronLeft, ChevronRight, ArrowLeft, ArrowLeftRight, Search } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChatThread {
@@ -62,6 +62,7 @@ export default function MyChats() {
     return !hasChats && chatsLoading;
   });
   const [visibleChatsCount, setVisibleChatsCount] = useState(4);
+  const [chatSearch, setChatSearch] = useState('');
   const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'listings'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('chatsViewMode');
@@ -137,6 +138,14 @@ export default function MyChats() {
       return chat.isSellListingChat === true;
     }
       })
+      .filter(chat => {
+        // Search filter: match enquiry title or last message text
+        const q = chatSearch.trim().toLowerCase();
+        if (!q) return true;
+        const title = (chat.enquiryTitle || `Enquiry ${chat.enquiryId || chat.id}`).toLowerCase();
+        const lastMsg = (typeof chat.lastMessage === 'string' ? chat.lastMessage : chat.lastMessage?.text || '').toLowerCase();
+        return title.includes(q) || lastMsg.includes(q);
+      })
       .sort((a, b) => {
         // Pin warning messages at the top
         const aIsWarning = a.isAdminChat && a.enquiryTitle?.includes('Warning');
@@ -159,7 +168,7 @@ export default function MyChats() {
         const bTime = b.updatedAt?.toDate ? b.updatedAt.toDate().getTime() : (b.updatedAt ? new Date(b.updatedAt).getTime() : 0);
         return bTime - aTime; // Newest first
       });
-  }, [allChats, viewMode, isChatExpired]);
+  }, [allChats, viewMode, chatSearch, isChatExpired]);
 
   // Show only visible chats (pagination)
   const chats = allFilteredChats.slice(0, visibleChatsCount);
@@ -625,6 +634,29 @@ export default function MyChats() {
 
         {/* Content - Inside Container */}
         <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+          {/* Search bar - phone-number input style, below the black header */}
+          {!loading && allChats.length > 0 && (
+            <div className="relative mb-4 max-w-2xl mx-auto">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                value={chatSearch}
+                onChange={(e) => { setChatSearch(e.target.value); setVisibleChatsCount(4); }}
+                placeholder="Search chats..."
+                className="w-full h-12 sm:h-14 min-h-[48px] pl-10 pr-10 rounded-[12px] border-[1.5px] border-slate-200 bg-white text-sm font-medium text-slate-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] focus:outline-none transition-all duration-200 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+              />
+              {chatSearch && (
+                <button
+                  type="button"
+                  onMouseDown={(e) => { e.preventDefault(); setChatSearch(''); setVisibleChatsCount(4); }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-black transition-colors"
+                  aria-label="Clear search"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          )}
           {loading && allChats.length === 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
               {[...Array(4)].map((_, i) => (
@@ -669,7 +701,7 @@ export default function MyChats() {
             </div>
           ) : (
             <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+            <div className="grid grid-cols-1">
               {chats.map((chat, index) => {
                 const isDisabled = chat.isDisabled || false;
                 const statusText = getDisabledStatusText(chat);
@@ -680,12 +712,12 @@ export default function MyChats() {
                     key={chat.id}
                   >
                     <Card
-                      className={`!border-[1.5px] !border-black !rounded-2xl !transition-all !duration-150 relative overflow-hidden touch-manipulation select-none ${
+                      className={`!border-[0.5px] !border-black/40 !shadow-none !rounded-xl !transition-all !duration-150 relative touch-manipulation select-none mb-2 ${
                         isAdminWarning
                           ? 'bg-[#5C1A1A] text-white'
                           : isDisabled 
-                            ? 'opacity-60 grayscale cursor-not-allowed !bg-white !shadow-[0_5px_0_0_rgba(0,0,0,0.3)]' 
-                            : 'cursor-pointer group !bg-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px]'
+                            ? 'opacity-60 grayscale cursor-not-allowed !bg-transparent' 
+                            : 'cursor-pointer group !bg-transparent hover:!bg-black/5'
                       }`}
                       onClick={() => !isDisabled && !isAdminWarning && openChat(chat)}
                     >
@@ -718,13 +750,11 @@ export default function MyChats() {
                       )}
                       
                       {/* Clickable tile with enquiry heading */}
-                      <div className={`flex flex-col h-full relative z-10 ${
-                        isAdminWarning ? 'p-1.5 sm:p-2 lg:p-2.5' : 'p-2.5 sm:p-4 lg:p-5'
+                      <div className={`flex items-start gap-3 sm:gap-4 relative z-10 ${
+                        isAdminWarning ? 'p-2 sm:p-3' : 'p-3 sm:p-4'
                       }`}>
-                        {/* Chat avatar – rounded, WhatsApp-style green bubble with creative animation */}
-                        <div className={`flex items-center justify-center relative ${
-                          isAdminWarning ? 'mb-1 sm:mb-1.5' : 'mb-2 sm:mb-3 lg:mb-4'
-                        }`}>
+                        {/* Chat avatar – rounded, WhatsApp-style green bubble */}
+                        <div className="relative shrink-0 self-center">
                           {/* Glowing ring effect */}
                           {!isDisabled && (
                             <motion.div
@@ -838,89 +868,56 @@ export default function MyChats() {
                           )}
                         </div>
                       
-                        {/* Enquiry heading as tile title */}
-                        <h3 
-                          className={`font-black text-center line-clamp-2 ${
-                            isAdminWarning 
-                              ? 'text-[8px] sm:text-[9px] lg:text-[10px] mb-0.5 sm:mb-1 min-h-[1rem] sm:min-h-[1.25rem]' 
-                              : 'text-xs sm:text-sm lg:text-base mb-1.5 sm:mb-2 lg:mb-3 min-h-[2rem] sm:min-h-[2.5rem] lg:min-h-[3rem]'
-                          } ${
-                            isAdminWarning ? 'text-white' : isDisabled ? 'text-gray-500' : 'text-black'
-                          }`}
-                        >
-                          {chat.enquiryTitle || `Enquiry ${chat.enquiryId || chat.id}`}
-                        </h3>
-                        
-                        {/* Status badge for disabled chats */}
-                        {isDisabled && statusText && (
-                          <div 
-                            className="flex justify-center mb-1.5 sm:mb-2"
-                          >
-                            <span className="text-[8px] sm:text-[9px] px-1.5 sm:px-2 py-0.5 bg-gray-200 text-gray-600 rounded border border-gray-300 font-semibold">
-                              {statusText}
+                        {/* Text column — WhatsApp style: avatar left, title+time row, message below */}
+                        <div className="flex-1 min-w-0">
+                          {/* Title row: title left, timestamp right */}
+                          <div className="flex items-baseline justify-between gap-2">
+                            <h3 
+                              className={`font-semibold truncate text-left flex-1 ${
+                                isAdminWarning 
+                                  ? 'text-[10px] sm:text-xs' 
+                                  : 'text-sm sm:text-base'
+                              } ${
+                                isAdminWarning ? 'text-white' : isDisabled ? 'text-gray-500' : 'text-black'
+                              }`}
+                            >
+                              {chat.enquiryTitle || `Enquiry ${chat.enquiryId || chat.id}`}
+                            </h3>
+                            <span className={`flex items-center gap-1 flex-shrink-0 whitespace-nowrap font-medium ${
+                              isAdminWarning 
+                                ? 'text-[7px] sm:text-[8px]' 
+                                : 'text-[9px] sm:text-[10px]'
+                            } ${
+                              isAdminWarning ? 'text-white/80' : isDisabled ? 'text-gray-400' : (chat.unreadCount || 0) > 0 ? 'text-emerald-600' : 'text-gray-500'
+                            }`}>
+                              <span>{formatTime(chat.updatedAt)}</span>
                             </span>
                           </div>
-                        )}
-                        
-                        {/* Last message preview with typing effect */}
-                        <p 
-                          className={`text-center line-clamp-2 flex-1 ${
-                            isAdminWarning 
-                              ? 'text-[7px] sm:text-[8px] lg:text-[9px] mb-0.5 sm:mb-1' 
-                              : 'text-[9px] sm:text-[10px] lg:text-xs mb-2 sm:mb-3 lg:mb-4'
-                          } ${
-                            isAdminWarning ? 'text-white/90' : isDisabled ? 'text-gray-400' : 'text-gray-600'
-                          }`}
-                        >
-                          {typeof chat.lastMessage === 'string' 
-                            ? chat.lastMessage 
-                            : (chat.lastMessage?.text || "No messages yet")}
-                        </p>
-                        
-                        {/* Timestamp */}
-                        <div 
-                          className={`flex items-center justify-center gap-1 ${
-                            isAdminWarning 
-                              ? 'text-[6px] sm:text-[7px] lg:text-[8px] mb-0.5 sm:mb-1' 
-                              : 'text-[8px] sm:text-[9px] lg:text-[10px] mb-2 sm:mb-3 lg:mb-4'
-                          } ${
-                            isAdminWarning ? 'text-white/80' : isDisabled ? 'text-gray-400' : 'text-gray-500'
-                          }`}
-                          >
-                            <Clock className={`${
-                              isAdminWarning ? 'h-2 w-2 sm:h-2.5 sm:w-2.5' : 'h-2.5 w-2.5 sm:h-3 sm:w-3'
-                            }`} />
-                          <span className="truncate">
-                            {formatTime(chat.updatedAt)}
-                          </span>
-                        </div>
-                        
-                        {/* Open Chat button - Hidden for admin warnings */}
-                        {!isAdminWarning && (
-                          <div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={isDisabled}
-                            className={`relative w-full !rounded-2xl !border-[1.5px] !border-black text-[9px] sm:text-[10px] lg:text-xs font-black py-1.5 sm:py-2 !h-auto !transition-all !duration-150 overflow-hidden touch-manipulation select-none ${
-                              isDisabled
-                                ? '!bg-gray-300 !text-gray-500 cursor-not-allowed !shadow-[0_4px_0_0_rgba(0,0,0,0.15)]'
-                                : '!bg-emerald-600 hover:!bg-emerald-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px]'
+                          
+                          {/* Status badge for disabled chats */}
+                          {isDisabled && statusText && (
+                            <div className="flex mt-0.5 sm:mt-1">
+                              <span className="text-[8px] sm:text-[9px] px-1.5 sm:px-2 py-0.5 bg-gray-200 text-gray-600 rounded border border-gray-300 font-semibold">
+                                {statusText}
+                              </span>
+                            </div>
+                          )}
+                          
+                          {/* Last message preview */}
+                          <p 
+                            className={`text-center truncate mt-0.5 sm:mt-1 ${
+                              isAdminWarning 
+                                ? 'text-[7px] sm:text-[8px] lg:text-[9px]' 
+                                : 'text-[9px] sm:text-[10px]'
+                            } ${
+                              isAdminWarning ? 'text-white/90' : isDisabled ? 'text-gray-400' : 'text-gray-500'
                             }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (!isDisabled) {
-                                openChat(chat);
-                              }
-                            }}
                           >
-                            <span className="flex items-center justify-center relative z-10">
-                              <MessageSquare className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 sm:mr-1.5 flex-shrink-0 relative z-10" />
-                            <span className="relative z-10 whitespace-nowrap tracking-tight">{isDisabled ? 'Chat Closed' : 'Open Chat'}</span>
-                            </span>
-                          </Button>
-                          </div>
-                        )}
+                            {typeof chat.lastMessage === 'string' 
+                              ? chat.lastMessage 
+                              : (chat.lastMessage?.text || "No messages yet")}
+                          </p>
+                        </div>
                       </div>
                     </Card>
                   </div>
