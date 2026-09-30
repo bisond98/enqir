@@ -259,6 +259,9 @@ export default function PostEnquiry() {
     name: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  // Design-preview mode: /post-enquiry?preview=success renders the success
+  // screen without auth/payment (countdown frozen) — used only for styling previews
+  const isPreviewSuccess = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === 'success';
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [idFrontImage, setIdFrontImage] = useState<File | null>(null);
   const [idBackImage, setIdBackImage] = useState<File | null>(null);
@@ -2158,7 +2161,7 @@ export default function PostEnquiry() {
     }
   }, [isSubmitted]);
 
-  if (isSubmitted) {
+  if (isSubmitted || isPreviewSuccess) {
     return (
       <Layout>
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">

@@ -130,9 +130,17 @@ const Dashboard = () => {
   const [showCallPopup, setShowCallPopup] = useState(false);
   // Scam-alert caution overlay — shown before Call/Chat on responded enquiries (seller side);
   // shared component handles countdown, hold-to-pause bar and per-enquiry dont-show-again
-  const [scamAlertPending, setScamAlertPending] = useState<null | { action: 'call' | 'chat'; enquiryId: string; sellerId: string }>(null);
+  // action 'submitted' = one-time post-submission notice: closing it must NOT navigate anywhere
+  // (navigating into the buyer's responses page from here left the seller on a page that
+  // stalls loading — closing the notice should simply return the seller to the dashboard)
+  const [scamAlertPending, setScamAlertPending] = useState<null | { action: 'call' | 'chat' | 'submitted'; enquiryId: string; sellerId: string }>(null);
   const continueScamAlertAction = () => {
     if (!scamAlertPending) return;
+    if (scamAlertPending.action === 'submitted') {
+      // Post-submission notice only — stay on the dashboard
+      setScamAlertPending(null);
+      return;
+    }
     if (scamAlertPending.action === 'call') {
       const respondedEnquiry = respondedEnquiriesById[scamAlertPending.enquiryId];
       const enquiryMobile = respondedEnquiry?.mobileNumber && String(respondedEnquiry.mobileNumber).trim() ? String(respondedEnquiry.mobileNumber).trim() : null;
@@ -141,7 +149,11 @@ const Dashboard = () => {
         setShowCallPopup(true);
       }
     } else {
-      navigate(`/enquiry/${scamAlertPending.enquiryId}/responses?sellerId=${scamAlertPending.sellerId}`);
+      // Seller-side Chat: open the seller's own detail view (My Responses) and
+      // highlight this submission — never the buyer-only responses page, which
+      // a seller cannot use and which previously stalled on an infinite loader
+      const submission = sellerSubmissions.find(s => s.enquiryId === scamAlertPending.enquiryId);
+      navigate('/my-responses', submission ? { state: { highlightSubmissionId: submission.id } } : undefined);
     }
     setScamAlertPending(null);
   };
@@ -214,7 +226,7 @@ const Dashboard = () => {
         sessionStorage.removeItem('scamAlertAfterSubmit');
         const parsed = JSON.parse(flagged);
         if (parsed?.enquiryId && parsed?.sellerId) {
-          setScamAlertPending({ action: 'chat', enquiryId: parsed.enquiryId, sellerId: String(parsed.sellerId) });
+          setScamAlertPending({ action: 'submitted', enquiryId: parsed.enquiryId, sellerId: String(parsed.sellerId) });
         }
       }
     } catch {}

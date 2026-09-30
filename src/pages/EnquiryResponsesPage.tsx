@@ -483,6 +483,40 @@ const EnquiryResponsesPage = () => {
     );
   }
 
+  // The responses page is buyer-only. A seller who arrives here (e.g. via an old
+  // link) previously stalled on the loader below in some paths — show a clear
+  // notice with a way back to their dashboard instead of a spinner.
+  if (user && enquiry.userId && user.uid !== enquiry.userId) {
+    const ownSubmission = responses.find(r => r.sellerId === user.uid);
+    return (
+      <Layout>
+        <div className="min-h-screen flex items-center justify-center px-4">
+          <div className="text-center max-w-md">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Responses are private to the buyer</h2>
+            {ownSubmission ? (
+              <p className="text-gray-600 mb-6">Only the buyer who posted this enquiry can view all responses. You can review your own submission from your dashboard.</p>
+            ) : (
+              <p className="text-gray-600 mb-6">Only the buyer who posted this enquiry can view responses to it.</p>
+            )}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Button onClick={() => navigate('/dashboard?mode=seller')}>
+                Go to Dashboard
+              </Button>
+              {ownSubmission && (
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/my-responses', { state: { highlightSubmissionId: ownSubmission.id } })}
+                >
+                  View My Response
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">

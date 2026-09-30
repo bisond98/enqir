@@ -33,9 +33,8 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
+      initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       className={compact ? `flex items-center justify-center px-4 py-6 ${className}` : `min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 relative ${className}`}
     >
       {/* Back Button - Top Left Corner */}
@@ -50,16 +49,14 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
       )}
 
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 1, y: 0 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
         className="text-center w-full max-w-2xl mx-auto flex flex-col items-center justify-center"
       >
         {/* Business Model Loading Animation */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 1, scale: 1 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
           className={compact
             ? "bg-white p-4 rounded-2xl shadow-md flex flex-col items-center justify-center w-full mx-auto"
             : "bg-white p-8 sm:p-12 lg:p-14 xl:p-16 rounded-2xl sm:rounded-3xl lg:rounded-lg xl:rounded-lg shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto lg:max-w-4xl lg:min-h-[400px]"}
@@ -214,9 +211,8 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
             </g>
           </svg>
           <motion.p 
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 1 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
             className={compact
               ? "text-lg sm:text-xl font-black tracking-tighter leading-none font-heading text-black text-center"
               : "text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-center"}

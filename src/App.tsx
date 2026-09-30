@@ -134,6 +134,11 @@ if (typeof window !== 'undefined') {
     import("./pages/MyChats").catch(() => {});
     import("./pages/Notifications").catch(() => {});
     import("./modules/sell/pages/Marketplace").catch(() => {});
+    import("./pages/SellerResponse").catch(() => {});
+    import("./pages/Profile").catch(() => {});
+    import("./pages/MyEnquiries").catch(() => {});
+    import("./pages/EnquiryResponses").catch(() => {});
+    import("./pages/EnquiryResponsesPage").catch(() => {});
   };
   if ('requestIdleCallback' in window) {
     (window as any).requestIdleCallback(prefetchCommonRoutes, { timeout: 10000 });
@@ -143,6 +148,7 @@ if (typeof window !== 'undefined') {
 }
 // 🛡️ PROTECTED: ChatProvider - DO NOT REMOVE - Required for MyChats and AllChats
 import { ChatProvider } from "./contexts/ChatContext";
+import PageTransitionFade from "./components/PageTransitionFade";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -217,6 +223,7 @@ const App = () => {
                   <ScrollToTop />
                   <StaleBundleRefresher />
                   <Suspense fallback={<LoadingAnimation message="Loading" showBackButton={false} />}>
+                  <PageTransitionFade>
                   <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />
                   <Route path="/dashboard" element={<ErrorBoundary><AuthGuard><Dashboard /></AuthGuard></ErrorBoundary>} />
@@ -269,6 +276,7 @@ const App = () => {
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                   </Routes>
+                  </PageTransitionFade>
                   </Suspense>
                 </BrowserRouter>
                   </ChristmasTheme>

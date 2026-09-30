@@ -280,10 +280,10 @@ const SignInOptions = () => {
         </div>
 
         {/* Provider buttons — pushed to the lower part of the screen on mobile, heading stays put.
-            Card is wider than the buttons so they keep their full original size inside. */}
-        <div className="relative z-10 w-full max-w-md mt-auto sm:mt-0 -translate-y-[3rem]">
-          <div className="bg-white/95 backdrop-blur-sm rounded-3xl px-6 py-6 sm:px-9 sm:py-8">
-            <div className="w-full max-w-sm mx-auto space-y-3 sm:space-y-3.5">
+            Card styled like the Enter-Phone-Number page's form card (border, shadow stack, padding). */}
+        <div className="relative z-10 w-full max-w-sm mt-auto sm:mt-0 -translate-y-[3rem]">
+          <div className="border-[0.25px] border-black/30 bg-white/95 backdrop-blur-sm rounded-3xl px-7 py-9 sm:px-10 sm:py-12 shadow-[0_2px_0_0_rgba(0,0,0,0.09),0_0_14px_rgba(0,0,0,0.08),0_10px_26px_rgba(0,0,0,0.14)]">
+            <div className="w-full space-y-4">
           {/* Mobile */}
           <button
             onClick={() => navigate('/signin/mobile', { state: (location.state as any) || undefined })}
