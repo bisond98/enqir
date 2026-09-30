@@ -246,6 +246,9 @@ const SellerResponse = () => {
   const [isRejected, setIsRejected] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [redirectCountdown, setRedirectCountdown] = useState<number>(5);
+  // Design-preview mode: /seller-response/:id?preview=success renders the success
+  // screen without auth/payment (countdown frozen) — used only for styling previews
+  const isPreviewSuccess = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === 'success';
   const { user: authUser, isProfileVerified, profileVerificationStatus, loading: authLoading } = useAuth();
   // const { createNotification } = useNotifications();
 
@@ -957,9 +960,8 @@ const SellerResponse = () => {
       try {
         sessionStorage.setItem('scamAlertAfterSubmit', JSON.stringify({ enquiryId: enquiryId, sellerId: authUser?.uid || '' }));
       } catch {}
-      setTimeout(() => {
-        navigate('/dashboard?mode=seller');
-      }, 3000);
+      // Redirect happens via the visible 5s countdown effect (below) — no extra timer here
+      // to avoid two competing navigations firing at different times.
 
       // Save to Firebase in background (fire-and-forget)
       (async () => {
@@ -1076,12 +1078,14 @@ const SellerResponse = () => {
   };
 
   // Loading state — also covers the session-restore window on fresh app open
-  if (authLoading || loading) {
+  if (isPreviewSuccess) {
+    // fall through to the success screen below without any auth gating
+  } else if (authLoading || loading) {
     return <LoadingAnimation message="Loading enquiry" />;
   }
 
-  // Redirect if own enquiry
-  if (isOwnEnquiry) {
+  // Redirect if own enquiry (skipped in design-preview mode)
+  if (isOwnEnquiry && !isPreviewSuccess) {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
@@ -1107,8 +1111,8 @@ const SellerResponse = () => {
     );
   }
 
-  // Enquiry not found
-  if (!enquiry) {
+  // Enquiry not found (skipped in design-preview mode — no real enquiry there)
+  if (!enquiry && !isPreviewSuccess) {
     return (
       <Layout>
         <div className="min-h-screen flex items-center justify-center">
@@ -1129,91 +1133,252 @@ const SellerResponse = () => {
     );
   }
 
-    if (isSubmitted) {
+    if (isSubmitted || isPreviewSuccess) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center py-8 sm:py-12 px-4">
-          <div className="max-w-md lg:max-w-2xl xl:max-w-3xl w-full">
-            <Card className="border-4 border-black shadow-xl">
-              <CardContent className="p-6 sm:p-8 lg:p-12 xl:p-16 text-center relative bg-gradient-to-br from-white to-slate-50/30">
-                {/* Countdown Container - Like Trust Badge */}
-                <div className="relative w-full min-h-[400px] sm:min-h-[500px] lg:min-h-[600px] flex flex-col items-center justify-center">
-                  {/* Countdown - Large Transparent Overlapping */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div 
-                      className="text-[120px] sm:text-[180px] lg:text-[220px] font-black text-gray-200/40 tabular-nums animate-pulse select-none"
+        <div className="w-full bg-white">
+          <Card className="w-full border-0 sm:border-[0.5px] sm:border-black shadow-none sm:shadow-lg rounded-none sm:rounded-3xl bg-white overflow-hidden">
+            <CardContent className="p-0 sm:p-6 lg:p-8 text-center relative min-h-screen flex flex-col">
+              {/* Countdown Container - Like Profile Verification */}
+              <div className="relative w-full flex-1 flex flex-col items-center justify-center overflow-hidden">
+                {/* Moving Tick - All Over Screen */}
+                <div
+                  className="absolute w-40 h-40 sm:w-48 sm:h-48 lg:w-56 lg:h-56"
+                  style={{
+                    animation: 'tickMoveAround 8s ease-in-out infinite',
+                    WebkitAnimation: 'tickMoveAround 8s ease-in-out infinite',
+                    transform: 'translateZ(0)',
+                    WebkitTransform: 'translateZ(0)'
+                  }}
+                >
+                  {/* Bright Bold Distorted Tick */}
+                  <svg
+                    className="w-full h-full text-blue-400 drop-shadow-2xl"
+                    viewBox="0 0 100 100"
+                    style={{
+                      filter: 'drop-shadow(0 0 10px rgba(59, 130, 246, 0.8)) drop-shadow(0 0 20px rgba(59, 130, 246, 0.6))',
+                      animation: 'tickForming 2s ease-in-out infinite',
+                      WebkitAnimation: 'tickForming 2s ease-in-out infinite'
+                    }}
+                  >
+                    {/* Bold Distorted Tick */}
+                    <path
+                      d="M 20 50 L 40 70 L 80 30"
+                      stroke="currentColor"
+                      strokeWidth="12"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeDasharray="100"
                       style={{
-                        WebkitTextStroke: '2px rgba(0,0,0,0.1)',
-                        filter: 'blur(1px)'
-                      } as React.CSSProperties}
-                    >
-                      {redirectCountdown}
-                    </div>
-                  </div>
-                  
-                  {/* Content Stack */}
-                  <div className="relative z-10 flex flex-col items-center space-y-5 sm:space-y-6 lg:space-y-8">
-                    {/* Heading */}
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-none text-black drop-shadow-lg" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                      Offer Submitted
-                    </h1>
-                    
-                    {/* Subheading */}
-                    <p className="text-sm sm:text-base lg:text-lg text-gray-700 font-semibold">
-                      Your offer is under review
-                    </p>
-                    
-                    {/* Countdown Number - Visible with styling */}
-                    <div className="relative">
-                      <div 
-                        className="text-[80px] sm:text-[120px] lg:text-[150px] xl:text-[180px] font-black text-black tabular-nums drop-shadow-2xl"
-                        style={{
-                          textShadow: '0 4px 8px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1)',
-                          animation: 'pulse 1.5s ease-in-out infinite'
-                        } as React.CSSProperties}
-                      >
-                        {redirectCountdown}
-                      </div>
-                      {/* Glow effect behind countdown */}
-                      <div 
-                        className="absolute inset-0 flex items-center justify-center"
-                        style={{
-                          filter: 'blur(20px)',
-                          opacity: 0.3,
-                          zIndex: -1
-                        }}
-                      >
-                        <div className="text-[80px] sm:text-[120px] lg:text-[150px] xl:text-[180px] font-black text-blue-400 tabular-nums">
-                          {redirectCountdown}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Don't Press Back */}
-                    <p className="text-[10px] sm:text-xs text-red-600 font-bold tracking-wide uppercase">
-                      Don't press back
-                    </p>
+                        strokeDashoffset: '100',
+                        animation: 'tickDraw 2s ease-in-out infinite',
+                        WebkitAnimation: 'tickDraw 2s ease-in-out infinite',
+                        filter: 'drop-shadow(0 0 8px currentColor)'
+                      }}
+                    />
+                    {/* Bold Pulsing Circles */}
+                    <circle
+                      cx="20"
+                      cy="50"
+                      r="5"
+                      fill="currentColor"
+                      style={{
+                        animation: 'pulse 1.5s ease-in-out infinite',
+                        WebkitAnimation: 'pulse 1.5s ease-in-out infinite',
+                        filter: 'drop-shadow(0 0 6px currentColor)'
+                      }}
+                    />
+                    <circle
+                      cx="40"
+                      cy="70"
+                      r="5"
+                      fill="currentColor"
+                      style={{
+                        animation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                        WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.3s',
+                        filter: 'drop-shadow(0 0 6px currentColor)'
+                      }}
+                    />
+                    <circle
+                      cx="80"
+                      cy="30"
+                      r="5"
+                      fill="currentColor"
+                      style={{
+                        animation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                        WebkitAnimation: 'pulse 1.5s ease-in-out infinite 0.6s',
+                        filter: 'drop-shadow(0 0 6px currentColor)'
+                      }}
+                    />
+                  </svg>
+
+                  {/* Bright Glowing Background */}
+                  <div
+                    className="absolute inset-0 rounded-full bg-blue-300 opacity-50 blur-xl"
+                    style={{
+                      animation: 'pulseGlow 2s ease-in-out infinite',
+                      WebkitAnimation: 'pulseGlow 2s ease-in-out infinite',
+                      transform: 'scale(1.3)',
+                      WebkitTransform: 'scale(1.3)'
+                    }}
+                  ></div>
+                </div>
+
+                {/* Countdown - Large Transparent Overlapping */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                  <div
+                    className="text-[160px] sm:text-[240px] lg:text-[300px] font-black text-black tabular-nums animate-pulse select-none"
+                    style={{
+                      WebkitTextStroke: '1px #000000'
+                    } as React.CSSProperties}
+                  >
+                    {redirectCountdown}
                   </div>
                 </div>
+
+                {/* Content Stack - Above the Countdown */}
+                <div className="absolute top-10 sm:top-16 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center space-y-2 sm:space-y-4 w-full px-4">
+                  {/* Heading */}
+                  <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-none text-black drop-shadow-lg" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                    Offer Submitted
+                  </h1>
+
+                  {/* Subheading */}
+                  <p className="text-xs sm:text-sm lg:text-base text-gray-700 font-semibold">
+                    Your offer is under review
+                  </p>
+                </div>
+              </div>
+
+              {/* Business-model doodle (from Enter Phone page) - low opacity, behind the countdown number */}
+              <div className="absolute left-1/2 -translate-x-1/2 top-[45%] -translate-y-1/2 flex justify-center pointer-events-none select-none opacity-20 z-0" aria-hidden="true">
+                <svg className="w-[min(85vw,420px)] max-w-none aspect-square" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                  {/* Central hub rings */}
+                  <g transform="translate(200, 200)" opacity="0.85">
+                    <circle cx="0" cy="0" r="34" fill="none" stroke="#111827" strokeWidth="2" />
+                    <circle cx="0" cy="0" r="27" fill="none" stroke="#111827" strokeWidth="1.2" opacity="0.7" />
+                    <circle cx="0" cy="0" r="20" fill="none" stroke="#111827" strokeWidth="1" opacity="0.85" />
+                  </g>
+
+                  {/* Top - User with Smartphone */}
+                  <g transform="translate(200, 80)" opacity="0.95">
+                    <circle cx="0" cy="0" r="12" fill="none" stroke="#111827" strokeWidth="2" />
+                    <circle cx="-3" cy="-2" r="1.5" fill="#111827" />
+                    <circle cx="3" cy="-2" r="1.5" fill="#111827" />
+                    <path d="M-2 3 Q0 4 2 3" stroke="#111827" strokeWidth="1.2" fill="none" />
+                    <rect x="-8" y="8" width="16" height="20" fill="none" stroke="#111827" strokeWidth="1" rx="2" />
+                    <rect x="-6" y="12" width="12" height="8" fill="#111827" opacity="0.85" />
+                    <text x="0" y="42" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">User</text>
+                  </g>
+
+                  {/* Left - AI Processing Center */}
+                  <g transform="translate(100, 200)" opacity="0.95">
+                    <rect x="-15" y="-12" width="30" height="24" fill="none" stroke="#111827" strokeWidth="2" rx="3" />
+                    <circle cx="-6" cy="0" r="2" fill="#111827" />
+                    <circle cx="0" cy="0" r="2" fill="#111827" />
+                    <circle cx="6" cy="0" r="2" fill="#111827" />
+                    <path d="M-4 -6 L4 6 M4 -6 L-4 6" stroke="#111827" strokeWidth="1" opacity="0.9" />
+                    <text x="0" y="-18" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">AI Engine</text>
+                    <path d="M-20 -5 L-15 -5" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M-20 0 L-15 0" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M-20 5 L-15 5" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M15 -5 L20 -5" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M15 0 L20 0" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                    <path d="M15 5 L20 5" stroke="#111827" strokeWidth="1" opacity="0.7" />
+                  </g>
+
+                  {/* Right - Matching Network */}
+                  <g transform="translate(300, 200)" opacity="0.95">
+                    <circle cx="0" cy="0" r="15" fill="none" stroke="#111827" strokeWidth="2" />
+                    <circle cx="0" cy="0" r="10" fill="none" stroke="#111827" strokeWidth="1.2" opacity="0.7" />
+                    <circle cx="0" cy="0" r="5" fill="none" stroke="#111827" strokeWidth="1" opacity="0.85" />
+                    <circle cx="0" cy="0" r="2" fill="#111827" />
+                    <text x="0" y="-20" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">Match</text>
+                    <circle cx="-12" cy="-8" r="2" fill="#111827" opacity="0.9" />
+                    <circle cx="12" cy="-8" r="2" fill="#111827" opacity="0.9" />
+                    <circle cx="-12" cy="8" r="2" fill="#111827" opacity="0.9" />
+                    <circle cx="12" cy="8" r="2" fill="#111827" opacity="0.9" />
+                    <path d="M-12 -8 L-5 -3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
+                    <path d="M12 -8 L5 -3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
+                    <path d="M-12 8 L-5 3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
+                    <path d="M12 8 L5 3" stroke="#111827" strokeWidth="0.8" opacity="0.7" />
+                  </g>
+
+                  {/* Bottom - Success Celebration */}
+                  <g transform="translate(200, 320)" opacity="0.95">
+                    <circle cx="0" cy="0" r="16" fill="none" stroke="#111827" strokeWidth="2" />
+                    <path d="M-6 0 L-2 4 L6 -2" stroke="#111827" strokeWidth="2.5" fill="none" />
+                    <text x="0" y="-22" textAnchor="middle" fontSize="9" fill="#1F2937" fontWeight="500">Success!</text>
+                    <path d="M-20 -8 L-18 -6 L-16 -8 L-18 -10 Z" fill="#111827" opacity="0.9" />
+                    <path d="M20 -8 L22 -6 L24 -8 L22 -10 Z" fill="#111827" opacity="0.9" />
+                    <path d="M-20 8 L-18 10 L-16 8 L-18 6 Z" fill="#111827" opacity="0.9" />
+                    <path d="M20 8 L22 10 L24 8 L22 6 Z" fill="#111827" opacity="0.9" />
+                  </g>
+
+                  {/* Animated flow lines with arrowheads */}
+                  <path d="M200 112 L200 166" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#offer-submitted-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" />
+                  </path>
+                  <path d="M130 200 L166 200" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#offer-submitted-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="0.5s" />
+                  </path>
+                  <path d="M234 200 L270 200" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#offer-submitted-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="1s" />
+                  </path>
+                  <path d="M200 234 L200 288" stroke="#111827" strokeWidth="2" fill="none" opacity="0.9" markerEnd="url(#offer-submitted-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="1.5s" />
+                  </path>
+                  <path d="M118 218 L172 262" stroke="#111827" strokeWidth="2" fill="none" opacity="0.75" markerEnd="url(#offer-submitted-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="2s" />
+                  </path>
+                  <path d="M282 218 L228 262" stroke="#111827" strokeWidth="2" fill="none" opacity="0.75" markerEnd="url(#offer-submitted-arrowhead)">
+                    <animate attributeName="stroke-dasharray" values="0,100;100,0;0,100" dur="3s" repeatCount="indefinite" begin="2.5s" />
+                  </path>
+
+                  {/* Feature satellites: Secure / Fast / Chat / Quality */}
+                  {[
+                    { x: 150, y: 120, emoji: "🔒", label: "Secure" },
+                    { x: 250, y: 120, emoji: "⚡", label: "Fast" },
+                    { x: 150, y: 280, emoji: "💬", label: "Chat" },
+                    { x: 250, y: 280, emoji: "⭐", label: "Quality" },
+                  ].map((s) => (
+                    <g key={s.label} transform={`translate(${s.x}, ${s.y})`} opacity="0.85">
+                      <circle cx="0" cy="0" r="8" fill="#111827" />
+                      <text x="0" y="2" textAnchor="middle" fontSize="7" fill="white">{s.emoji}</text>
+                      <text x="0" y="17" textAnchor="middle" fontSize="6" fill="#1F2937">{s.label}</text>
+                    </g>
+                  ))}
+
+                  {/* Arrowhead marker */}
+                  <defs>
+                    <marker id="offer-submitted-arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                      <polygon points="0 0, 8 3, 0 6" fill="#111827" />
+                    </marker>
+                  </defs>
+                </svg>
+              </div>
+
+              {/* Don't Press Back - Red Chip */}
+              <div className="relative z-10 flex justify-center -translate-y-16 sm:-translate-y-24">
+                <span className="inline-flex items-center gap-1.5 bg-red-600 text-white text-[10px] sm:text-xs font-bold tracking-wide uppercase px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-[0_3px_0_0_rgba(0,0,0,0.3)]">
+                  Don't press back
+                </span>
+              </div>
                 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 xl:gap-5 mt-6 lg:mt-8">
+                <div className="relative z-10 flex flex-col sm:flex-row gap-3 lg:gap-4 xl:gap-5 mt-2 sm:mt-4 -translate-y-16 sm:-translate-y-24 px-4 sm:px-0">
                   <Link to="/dashboard" className="flex-1">
-                    <Button className="w-full bg-black hover:bg-gray-900 text-white text-sm lg:text-base xl:text-lg py-2.5 lg:py-3 xl:py-4 border-2 border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+                    <Button
+                      variant="default"
+                      className="!w-full !h-14 sm:!h-16 !text-base sm:!text-lg !font-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative overflow-hidden transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] touch-manipulation select-none flex items-center justify-center"
+                    >
                       <span className="relative z-10">Go to Dashboard</span>
-                    </Button>
-                  </Link>
-                  <Link to="/enquiries" className="flex-1">
-                    <Button variant="outline" className="w-full border-2 border-black text-black hover:bg-gray-50 text-sm lg:text-base xl:text-lg py-2.5 lg:py-3 xl:py-4 shadow-[0_4px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(0,0,0,0.1)] transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
-                      <span className="relative z-10">Browse Enquiries</span>
                     </Button>
                   </Link>
                 </div>
               </CardContent>
             </Card>
-          </div>
         </div>
       </Layout>
     );
