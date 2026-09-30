@@ -882,7 +882,7 @@ export default function CreateListing() {
                       value={catSearch}
                       onChange={(e) => { setCatSearch(e.target.value); setCatPage(0); }}
                       placeholder="Search categories..."
-                      className="w-full h-11 pl-10 pr-10 rounded-xl border-2 border-black bg-white text-sm font-medium text-black placeholder:text-gray-400 placeholder:text-[10px] sm:placeholder:text-[11px] focus:outline-none focus:border-black transition-colors"
+                      className="w-full h-12 sm:h-14 min-h-[48px] pl-10 pr-10 rounded-[12px] border-[1.5px] border-slate-200 bg-white text-sm font-medium text-slate-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] focus:outline-none transition-all duration-200 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
                     />
                     {catSearch && (
                       <button

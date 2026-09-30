@@ -2460,25 +2460,23 @@ export default function PostEnquiry() {
                       <div className="max-w-2xl mx-auto w-full">
                         {/* Search bar */}
                         <div className="mb-4">
-                          <div className="relative overflow-hidden rounded-xl">
+                          <div className="relative">
                             <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-                              <svg className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-5-5m0 0a7 7 0 10-9.9-9.9 7 7 0 009.9 9.9z" /></svg>
+                              <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
                             </div>
                             <input
                               type="text"
                               value={catSearch}
                               onChange={(e) => { setCatSearch(e.target.value); setCatPage(0); }}
                               placeholder="Search categories..."
-                              className="w-full h-10 sm:h-11 text-xs sm:text-sm border-2 border-gray-800 rounded-xl pr-10 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)]"
-                              style={{ paddingLeft: '2.75rem', outline: 'none' }}
-                              onFocus={(e) => { e.currentTarget.style.borderColor = 'black'; e.currentTarget.style.boxShadow = '0 2px 0 0 rgba(0,0,0,0.10), 0 0 0 2px black, 0 0 10px rgba(0,0,0,0.12)'; }}
-                              onBlur={(e) => { e.currentTarget.style.borderColor = ''; e.currentTarget.style.boxShadow = '0 2px 0 0 rgba(0,0,0,0.10), 0 0 8px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.08)'; }}
+                              className="w-full h-12 sm:h-14 min-h-[48px] text-sm border-[1.5px] border-slate-200 rounded-[12px] pr-10 text-slate-900 font-medium placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] focus:outline-none transition-all duration-200 bg-white"
+                              style={{ paddingLeft: '2.75rem' }}
                             />
                             {catSearch && (
                               <button
                                 type="button"
                                 onMouseDown={(e) => { e.preventDefault(); setCatSearch(''); }}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-black transition-colors"
                               >
                                 <X className="h-4 w-4" />
                               </button>
