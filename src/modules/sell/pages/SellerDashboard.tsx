@@ -210,21 +210,26 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           )}
 
           {!loading && paginatedListings.map((l) => (
-            <div key={l.id} className="border border-black rounded-2xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.1)]">
+            <div key={l.id} className="border-[0.5px] border-black rounded-2xl overflow-hidden shadow-[0_4px_0_0_rgba(0,0,0,0.1)]">
               {editingId === l.id ? (
                 <div className="p-4 space-y-3" onClick={(e) => e.preventDefault()}>
                   {/* Price */}
                   <div>
                     <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price</label>
-                    <div className="flex items-center bg-gradient-to-br from-white to-slate-50/50 border-[1.5px] border-black !rounded-2xl h-10 sm:h-11 overflow-hidden !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.2),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:!translate-y-[4px] focus-within:!border-black transition-all !duration-200">
-                      <span className="flex items-center justify-center pl-3 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
+                    <div className="flex items-center border-[1.5px] border-slate-200 !rounded-[12px] h-12 sm:h-14 min-h-[48px] overflow-hidden bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-within:border-black focus-within:ring-3 focus-within:ring-black/15 focus-within:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200">
+                      <span className="flex items-center justify-center pl-4 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
                       <input
                         type="text"
                         inputMode="numeric"
                         value={editPrice ? Number(editPrice).toLocaleString('en-IN') : ''}
                         onChange={(e) => setEditPrice(e.target.value.replace(/[^0-9]/g, ''))}
                         placeholder="0"
-                        className="flex-1 h-full text-sm font-bold bg-transparent px-3 outline-none border-none placeholder:text-gray-400"
+                        className="flex-1 h-full w-full text-base font-medium text-slate-900 bg-transparent px-3 outline-none border-none ring-0 focus:ring-0 focus:outline-none shadow-none focus:shadow-none placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] [caret-color:black] [-webkit-tap-highlight-color:transparent]"
+                        style={{ fontSize: '16px', WebkitTapHighlightColor: 'transparent', WebkitAppearance: 'none' }}
+                        spellCheck={false}
+                        autoCorrect="off"
+                        autoCapitalize="off"
+                        autoFocus
                       />
                     </div>
                   </div>
@@ -259,14 +264,13 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                             
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 mt-3">
+                        <div className="flex items-center flex-wrap gap-1.5 mt-3">
                           {l.price != null && (
-                            <span className="text-[13px] font-bold text-gray-900">
+                            <span className="inline-flex items-center text-[11px] font-bold text-black bg-gray-200 border-[0.5px] border-black/40 rounded-xl px-2.5 py-1">
                               ₹{l.price.toLocaleString('en-IN')}
                             </span>
                           )}
-                          <span className="text-[11px] text-gray-400">•</span>
-                          <span className="text-[11px] text-gray-500 flex items-center gap-1">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-black bg-gray-200 border-[0.5px] border-black/40 rounded-xl px-2.5 py-1">
                             <MapPin className="h-3 w-3 text-red-500" />{l.location}
                           </span>
                         </div>
@@ -277,13 +281,13 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   <div className="flex border-t border-gray-200 mx-4 mb-4 mt-0 rounded-b-2xl overflow-hidden">
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                      className="relative flex-1 py-2.5 text-[11px] font-black text-gray-800 !border-[1.5px] !border-black !rounded-2xl mx-2 my-2 flex items-center justify-center gap-1.5 !transition-all !duration-150 !bg-white hover:!bg-gray-50 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] overflow-hidden group/edit touch-manipulation select-none"
+                      className="relative flex-1 py-2.5 text-[11px] font-black text-slate-900 !border-[1.5px] !border-slate-200 !rounded-[12px] mx-2 my-2 flex items-center justify-center gap-1.5 !transition-all !duration-200 !bg-white hover:!bg-white !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.14),0_0_8px_rgba(0,0,0,0.08)] active:!translate-y-[2px] focus-visible:!border-black focus-visible:!ring-3 focus-visible:!ring-black/15 overflow-hidden group/edit touch-manipulation select-none"
                     >
                       <Pencil className="h-3 w-3 relative z-10" /><span className="relative z-10">Edit</span>
                     </button>
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
-                      className="relative flex-1 py-2.5 text-[11px] font-black text-white !border-[1.5px] !border-black !rounded-2xl mx-2 my-2 flex items-center justify-center gap-1.5 !transition-all !duration-150 !bg-[#800020] hover:!bg-[#6b0019] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] overflow-hidden group/del touch-manipulation select-none"
+                      className="relative flex-1 py-2.5 text-[11px] font-black text-white !border-[1.5px] !border-[#6b0019] !rounded-[12px] mx-2 my-2 flex items-center justify-center gap-1.5 !transition-all !duration-200 !bg-[#800020] hover:!bg-[#6b0019] !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.14),0_0_8px_rgba(0,0,0,0.08)] active:!translate-y-[2px] focus-visible:!ring-3 focus-visible:!ring-black/15 overflow-hidden group/del touch-manipulation select-none"
                     >
                       <Trash2 className="h-3 w-3 relative z-10" /><span className="relative z-10">Delete</span>
                     </button>
