@@ -67,6 +67,10 @@ const AIChatbot: React.FC = () => {
     if (path.includes('/enquiry/') && path.includes('/responses')) return 'enquiry-detail';
     if (path.includes('/seller-response/')) return 'seller-response';
     if (path === '/help-guide') return 'help-guide';
+    if (path === '/sell' || path === '/sell/new') return 'create-listing';
+    if (path.includes('/sell/marketplace')) return 'marketplace';
+    if (path.includes('/sell/listing/')) return 'listing-detail';
+    if (path.includes('/sell/my-listings') || path.includes('/my-listings')) return 'my-listings';
     return 'unknown';
   };
 
@@ -85,11 +89,11 @@ const AIChatbot: React.FC = () => {
     const baseQuestions = {
       'home': [
         "Post enquiry",
+        "Sell a listing",
         "Browse enquiries",
+        "Buy from listings",
         "Trust badge",
-        "Premium features",
-        "How to use",
-        "Dashboard"
+        "Premium features"
       ],
       'post-enquiry': [
         "How to post enquiry",
@@ -166,10 +170,35 @@ const AIChatbot: React.FC = () => {
       'help-guide': [
         "Post enquiry",
         "Respond to enquiry",
+        "Sell a listing",
+        "Buy from listings",
         "Trust badge",
-        "Premium",
-        "Chat features",
-        "Dashboard"
+        "Premium"
+      ],
+      'create-listing': [
+        "Sell a listing",
+        "Listing price types",
+        "Listing photos",
+        "Edit my listing",
+        "Listing vs enquiry"
+      ],
+      'marketplace': [
+        "Buy from listings",
+        "Connect fee",
+        "Chat with seller",
+        "Call seller",
+        "Sell a listing"
+      ],
+      'listing-detail': [
+        "Connect fee",
+        "Chat with seller",
+        "Call seller",
+        "Scam alert"
+      ],
+      'my-listings': [
+        "Edit my listing",
+        "Remove listing",
+        "Mark as sold"
       ],
       'unknown': [
         "Post enquiry",
@@ -295,6 +324,113 @@ const AIChatbot: React.FC = () => {
       answer: "Response form fields:\n\nRequired: Price, Description, Product images\nOptional: Trust badge (ID upload), Notes",
       actions: ["Go to Live Enquiries"],
       navigateTo: "/enquiry-wall"
+    },
+    "sell": {
+      answer: "Two ways to sell on Enqir:\n\n1. List directly: Click 'Sell' on the homepage, add photos/price, publish — buyers come to you!\n2. Respond to enquiries: Go to 'Live Enquiries', find buyer enquiries you can fulfill, click 'Respond', add price/description/images.",
+      actions: ["Sell a Listing", "Go to Live Enquiries"],
+      navigateTo: "/sell/new"
+    },
+    "selling": {
+      answer: "Selling options:\n\n• List directly: Click 'Sell' on homepage, add photos/price, publish — buyers come to you!\n• Respond to enquiries: Browse 'Live Enquiries', click 'Respond' on matching ones. AI auto-approves!",
+      actions: ["Sell a Listing", "Go to Live Enquiries"],
+      navigateTo: "/sell/new"
+    },
+    
+    // ========== FOR SALE / MARKETPLACE ==========
+    "sell a listing": {
+      answer: "To list something for sale:\n\n1. Click the 'Sell' button on the homepage\n2. Choose a category and name your listing\n3. Add description, condition and location\n4. Set your price — fixed, a range, or open to discussion\n5. Upload up to 5 photos and publish\n\nYour listing goes live instantly on the marketplace!",
+      actions: ["Sell a Listing", "View Marketplace"],
+      navigateTo: "/sell/new"
+    },
+    "create listing": {
+      answer: "Create a listing: Click 'Sell' on the homepage. Choose category, add title, description, condition, location, price (fixed/range/discussion) and up to 5 photos. Publish — it's live instantly!",
+      actions: ["Sell a Listing"],
+      navigateTo: "/sell/new"
+    },
+    "list item for sale": {
+      answer: "List an item: Click 'Sell' on the homepage, pick a category, add details and price, upload up to 5 photos, publish. Buyers will find it on the marketplace!",
+      actions: ["Sell a Listing"],
+      navigateTo: "/sell/new"
+    },
+    "for sale": {
+      answer: "For Sale marketplace: Sellers list items directly with photos and prices. Buyers browse and connect via chat/call with a small Connect fee (₹10). Click 'For Sale' on the homepage!",
+      actions: ["View Marketplace", "Sell a Listing"],
+      navigateTo: "/sell/marketplace"
+    },
+    "marketplace": {
+      answer: "Marketplace: Browse items sellers have listed for sale. Open a listing to see photos, price and details. Pay ₹10 Connect fee to unlock chat and call with the seller!",
+      actions: ["View Marketplace", "Sell a Listing"],
+      navigateTo: "/sell/marketplace"
+    },
+    "browse marketplace": {
+      answer: "Browse marketplace: Click 'For Sale' on the homepage. Search or filter by category, open listings to see photos, price and details!",
+      actions: ["View Marketplace"],
+      navigateTo: "/sell/marketplace"
+    },
+    "buy from listings": {
+      answer: "To buy from listings:\n\n1. Click 'For Sale' on the homepage\n2. Search or filter by category\n3. Open a listing to see photos, price and details\n4. Pay the Connect fee (₹10) to unlock chat and call\n5. Chat with the seller and close the deal!",
+      actions: ["View Marketplace"],
+      navigateTo: "/sell/marketplace"
+    },
+    "buy product": {
+      answer: "Buying options:\n\n1. For Sale marketplace: browse listings, pay ₹10 Connect fee to chat/call the seller directly\n2. Post an enquiry: describe what you need and let sellers come to you!",
+      actions: ["View Marketplace", "Post Enquiry"],
+      navigateTo: "/sell/marketplace"
+    },
+    "connect fee": {
+      answer: "Connect fee (₹10): A small one-time payment that unlocks chat AND call with the seller for that listing. Pay securely via Razorpay — connect instantly after payment!",
+      actions: ["View Marketplace"],
+      navigateTo: "/sell/marketplace"
+    },
+    "unlock chat": {
+      answer: "Unlock chat: On a listing page, tap Chat or Call. Pay the ₹10 Connect fee via Razorpay — both chat and call unlock together. A scam-alert safety popup shows first!",
+      actions: ["View Marketplace"],
+      navigateTo: "/sell/marketplace"
+    },
+    "call seller": {
+      answer: "Call a seller: On a listing page, tap the call button. The ₹10 Connect fee unlocks call + chat together (if not already unlocked). A scam-alert caution popup shows before the call for your safety!",
+      actions: ["View Marketplace"],
+      navigateTo: "/sell/marketplace"
+    },
+    "listing price types": {
+      answer: "Listing price types:\n\n• Fixed price: one exact price\n• Range: minimum to maximum\n• Open to discussion: negotiate in chat\n\nChoose whichever suits when creating your listing!",
+      actions: ["Sell a Listing"],
+      navigateTo: "/sell/new"
+    },
+    "listing photos": {
+      answer: "Listing photos: Upload up to 5 images per listing. First photo becomes the cover. Clear photos get more buyer interest!",
+      actions: ["Sell a Listing"],
+      navigateTo: "/sell/new"
+    },
+    "my listings": {
+      answer: "My Listings: See all your listings, edit price/details/photos anytime, or remove a listing once it's sold. Go to your dashboard!",
+      actions: ["Go to Dashboard"],
+      navigateTo: "/dashboard"
+    },
+    "edit my listing": {
+      answer: "Edit listing: Go to your dashboard and open 'My Listings'. Tap a listing to edit price, details or photos. Changes go live immediately!",
+      actions: ["Go to Dashboard"],
+      navigateTo: "/dashboard"
+    },
+    "remove listing": {
+      answer: "Remove listing: Go to Dashboard → My Listings, open the listing and use the remove/delete option. Use it once your item is sold!",
+      actions: ["Go to Dashboard"],
+      navigateTo: "/dashboard"
+    },
+    "mark as sold": {
+      answer: "Item sold: Go to Dashboard → My Listings and remove the listing so buyers stop contacting you. Your deal history stays in chats!",
+      actions: ["Go to Dashboard"],
+      navigateTo: "/dashboard"
+    },
+    "listing vs enquiry": {
+      answer: "Listing vs Enquiry:\n\n• Listing (For Sale): You have an item to sell — list it with photos/price, buyers come to you\n• Enquiry: You need something — post what you want, sellers respond with offers\n\nUse whichever fits your situation!",
+      actions: ["Sell a Listing", "Post Enquiry"],
+      navigateTo: "/sell/new"
+    },
+    "scam alert": {
+      answer: "Scam alert: Before chat or call on any listing, a safety caution popup appears. Stay safe: never share OTPs/passwords, meet in public places, inspect items before paying!",
+      actions: ["View Marketplace"],
+      navigateTo: "/sell/marketplace"
     },
     
     // ========== TRUST BADGE ==========
@@ -680,12 +816,12 @@ const AIChatbot: React.FC = () => {
     
     // ========== GENERAL HELP ==========
     "how to use": {
-      answer: "How to use Enqir:\n\nFor Buyers:\n• Post your enquiry\n• Get responses from sellers\n• Chat and close deals\n\nFor Sellers:\n• Browse live enquiries\n• Respond with your offer\n• Chat with buyers\n• Close sales\n\nAI helps match and verify everything!",
+      answer: "How to use Enqir:\n\nTwo ways to trade:\n\n1. Enquiries — Buyers post what they need, sellers respond with offers\n2. For Sale marketplace — Sellers list items with photos/price, buyers browse and connect (₹10 Connect fee unlocks chat/call)\n\nEither way: chat, verify and close deals safely!",
       actions: ["View Help Guide", "Go to Dashboard"],
       navigateTo: "/help-guide"
     },
     "help": {
-      answer: "I'm here to help! Ask me about:\n\n• Posting enquiries\n• Responding to enquiries\n• Trust badges\n• Premium features\n• Dashboard\n• Chats\n• Search & filters\n• Any feature!\n\nWhat do you need help with?",
+      answer: "I'm here to help! Ask me about:\n\n• Posting enquiries\n• Responding to enquiries\n• Selling a listing (For Sale)\n• Buying from listings\n• Trust badges\n• Premium features\n• Dashboard\n• Chats\n• Search & filters\n• Any feature!\n\nWhat do you need help with?",
       actions: ["View Help Guide"],
       navigateTo: "/help-guide"
     },
@@ -700,12 +836,12 @@ const AIChatbot: React.FC = () => {
       navigateTo: "/help-guide"
     },
     "what is enqir": {
-      answer: "Enqir: A platform connecting buyers and sellers. Buyers post what they need, sellers respond with offers. AI helps verify and match. Chat to close deals!",
+      answer: "Enqir: A platform connecting buyers and sellers two ways:\n\n• Enquiries: buyers post what they need, sellers respond with offers\n• For Sale marketplace: sellers list items directly, buyers browse and connect (₹10 Connect fee)\n\nAI helps verify and match. Chat to close deals!",
       actions: ["View Help Guide"],
       navigateTo: "/help-guide"
     },
     "how it works": {
-      answer: "How Enqir works:\n\nBuyers: Post enquiry → Get responses → Chat → Close deal\nSellers: Browse enquiries → Respond → Chat → Close sale\n\nAI verifies and matches automatically!",
+      answer: "How Enqir works:\n\nEnquiries:\nBuyers: Post enquiry → Get responses → Chat → Close deal\nSellers: Browse enquiries → Respond → Chat → Close sale\n\nFor Sale marketplace:\nSellers: Click Sell → List item with photos/price → Buyers connect\nBuyers: Browse listings → Pay ₹10 Connect → Chat/Call → Buy\n\nAI verifies and matches automatically!",
       actions: ["View Help Guide"],
       navigateTo: "/help-guide"
     },
@@ -1346,7 +1482,10 @@ const AIChatbot: React.FC = () => {
       "View Responses": "/dashboard",
       "View Premium": "/dashboard",
       "Learn More": "/help-guide",
-      "Take Tour": "/help-guide"
+      "Take Tour": "/help-guide",
+      "Sell a Listing": "/sell/new",
+      "View Marketplace": "/sell/marketplace",
+      "Post Enquiry": "/post-enquiry"
     };
 
     const route = actionRoutes[action];
