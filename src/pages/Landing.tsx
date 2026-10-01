@@ -15,7 +15,6 @@ import { collection, query, where, orderBy, limit, doc, updateDoc, setDoc, array
 import { createPortal } from "react-dom";
 import { formatIndianCurrency } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
-import { listMarketplace } from "@/modules/sell/services/sellDb";
 import { buildEnquiryShareText } from "@/lib/enquiryShare";
 import ShareMenu from "@/components/ShareMenu";
 
@@ -1088,27 +1087,29 @@ const Landing = () => {
     fetchUserProfiles();
   }, [publicRecentEnquiries]);
 
-  // Mobile home "For Sale" card deck with shuffle behavior similar to enquiry cards
+  // Mobile home "For Sale" card deck — real-time listener (same as enquiry cards)
+  // onSnapshot renders instantly from Firestore's local cache, unlike a one-shot
+  // getDocs fetch which waits for a full network round-trip (deck appeared late).
   useEffect(() => {
-    let isMounted = true;
-
-    const loadSellListings = async () => {
-      try {
-        const listings = await listMarketplace({ pageSize: 24 });
-        if (!isMounted) return;
-        setSellListings(listings);
-        setShuffledSellListings(getRandomThree(listings));
-      } catch (error) {
-        console.error("Failed to load sell listings for landing:", error);
-      }
-    };
-
-    loadSellListings();
-    const refreshTimer = setInterval(loadSellListings, 60000);
-    return () => {
-      isMounted = false;
-      clearInterval(refreshTimer);
-    };
+    const q = query(
+      collection(db, 'sell_listings'),
+      where('status', '==', 'live'),
+      limit(24)
+    );
+    const unsubscribe = onSnapshot(q, (snap) => {
+      const listings = snap.docs
+        .map((d) => ({ id: d.id, ...(d.data() as any) }))
+        .sort((a, b) => {
+          const aMs = a.createdAt?.toMillis?.() ?? 0;
+          const bMs = b.createdAt?.toMillis?.() ?? 0;
+          return bMs - aMs;
+        });
+      setSellListings(listings);
+      setShuffledSellListings(getRandomThree(listings));
+    }, (error) => {
+      console.error("Failed to load sell listings for landing:", error);
+    });
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -2022,8 +2023,8 @@ const Landing = () => {
 
           {/* Mobile: All cards in one container for equal spacing and centering */}
           <div className="flex flex-col md:contents gap-3 mb-6 sm:mb-16">
-          {/* Deal Closure card - Mobile only, desktop shows in features grid */}
-            <div className="block md:hidden animate-slide-up" style={{ animationDelay: '0.55s' }}>
+          {/* Deal Closure card - Hidden on mobile (desktop shows it in features grid) */}
+            <div className="hidden animate-slide-up" style={{ animationDelay: '0.55s' }}>
             <Card className="p-3 sm:p-6 bg-gray-200 border border-black rounded-xl sm:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)]">
               <div className="relative">
                 <Users className="h-5 w-5 sm:h-8 sm:w-8 text-black mx-auto mb-2 sm:mb-4" />
@@ -2036,7 +2037,7 @@ const Landing = () => {
           </div>
 
           {/* Features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
+            <div className="hidden md:grid grid-cols-3 gap-3 sm:gap-6 animate-slide-up px-1 sm:px-0" style={{ animationDelay: '0.6s' }}>
             {features.map((feature, index) => (
               <Card key={index} className={`p-3 sm:p-6 bg-gray-200 border border-black rounded-xl sm:rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)] ${feature.title === "Deal Closure" ? "hidden md:block" : ""}`}>
                 <div className="relative">
@@ -2930,6 +2931,19 @@ const Landing = () => {
                     </div>
                   </div>
                 )}
+
+          {/* Feature tiles - Mobile only: under For Sale deck, above categories circles */}
+          <div className="md:hidden grid grid-cols-1 gap-3 animate-slide-up px-4 mt-6 mb-2" style={{ animationDelay: '1.1s' }}>
+            {features.map((feature, index) => (
+              <Card key={index} className="p-3 bg-gray-200 border border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)]">
+                <div className="relative">
+                  <feature.icon className="h-5 w-5 text-black mx-auto mb-2" />
+                </div>
+                <h3 className="text-xs font-black text-black mb-1 text-center">{feature.title}</h3>
+                <p className="text-[10px] text-muted-foreground text-center leading-relaxed">{feature.description}</p>
+              </Card>
+            ))}
+          </div>
 
           {/* Categories Preview - Professional & Engaging */}
           <div className="mb-12 sm:mb-20 animate-slide-up" style={{ animationDelay: '1.2s' }}>
