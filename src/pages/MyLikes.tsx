@@ -458,10 +458,10 @@ const MyLikes = () => {
               )}
             </div>
             <div className="flex items-center justify-between gap-3 mt-1.5">
-              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+              <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate">
                 Tap a category to like / unlike it
               </p>
-              <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">{effective.length} selected</span>
+              <span className="text-[8px] sm:text-[10px] text-muted-foreground flex-shrink-0">{effective.length} selected</span>
             </div>
 
             {/* Keywords — custom free-text follows */}
@@ -480,7 +480,7 @@ const MyLikes = () => {
                   placeholder="Type a keyword (e.g., innova, 2012)…"
                   maxLength={MAX_KEYWORD_LENGTH}
                   disabled={effectiveKeywords.length >= MAX_KEYWORDS}
-                  className="w-full h-14 sm:h-16 pl-4 pr-24 rounded-2xl border-2 border-black bg-white text-base sm:text-lg font-black text-black placeholder:text-[10px] sm:placeholder:text-xs placeholder:font-medium placeholder:text-gray-400 focus:outline-none focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !transition-all !duration-200 !transform focus:!scale-[0.98] disabled:bg-gray-50 disabled:text-gray-400"
+                  className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-24 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 focus:outline-none disabled:bg-gray-50 disabled:text-gray-400"
                 />
                 <button
                   type="button"
@@ -493,10 +493,10 @@ const MyLikes = () => {
                 </button>
               </div>
               <div className="flex items-center justify-between gap-3 mt-2">
-                <p className="text-[10px] sm:text-xs text-muted-foreground truncate leading-none">
+                <p className="text-[8px] sm:text-[10px] text-muted-foreground truncate leading-none">
                   Matches titles, descriptions, tags & categories
                 </p>
-                <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0">{effectiveKeywords.length}/{MAX_KEYWORDS}</span>
+                <span className="text-[8px] sm:text-[10px] text-muted-foreground flex-shrink-0">{effectiveKeywords.length}/{MAX_KEYWORDS}</span>
                 {(effective.length > 0 || effectiveKeywords.length > 0) && (
                   <button
                     type="button"
@@ -595,7 +595,7 @@ const MyLikes = () => {
                                 key={l.id}
                                 type="button"
                                 onClick={() => navigate(`/sell/listing/${l.id}`)}
-                                className="group/tile relative flex items-center gap-3 !rounded-2xl !border-[1.5px] !border-black bg-white px-3 py-3 text-left !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden touch-manipulation select-none"
+                                className="group/tile relative flex items-center gap-3 rounded-[12px] !border-[1.5px] !border-slate-200 bg-white px-3 py-3 text-left shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.14),0_0_8px_rgba(0,0,0,0.08)] active:!translate-y-[2px] !transition-all !duration-200 overflow-hidden touch-manipulation select-none"
                               >
                                 {l.images?.[0] ? (
                                   <img src={l.images[0]} alt="" loading="lazy" decoding="async" className="w-12 h-12 rounded-lg object-cover flex-shrink-0 border border-gray-200" />
@@ -638,7 +638,7 @@ const MyLikes = () => {
                                 key={e.id}
                                 type="button"
                                 onClick={() => navigate(`/enquiry/${e.id}`)}
-                                className="group/tile relative flex items-center gap-3 !rounded-2xl !border-[1.5px] !border-black bg-white px-3 py-3 text-left !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden touch-manipulation select-none"
+                                className="group/tile relative flex items-center gap-3 rounded-[12px] !border-[1.5px] !border-slate-200 bg-white px-3 py-3 text-left shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.14),0_0_8px_rgba(0,0,0,0.08)] active:!translate-y-[2px] !transition-all !duration-200 overflow-hidden touch-manipulation select-none"
                               >
                                 <span className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
                                   <Icon className="w-5 h-5 text-gray-500" />
