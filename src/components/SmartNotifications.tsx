@@ -189,8 +189,9 @@ const SmartNotifications: React.FC<{ className?: string }> = ({ className = '' }
                     setIsOpen(false);
                     navigate('/notifications');
                   }}
-                  className="w-full text-center text-sm font-medium bg-black hover:bg-gray-900 text-white py-2 rounded transition-colors"
+                  className="w-full text-center text-xs sm:text-sm font-black bg-black hover:bg-gray-900 text-white py-2.5 !rounded-xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 touch-manipulation select-none inline-flex items-center justify-center gap-1.5"
                 >
+                  <Bell className="w-3.5 h-3.5 text-white" />
                   View All Notifications
                 </button>
               </div>
