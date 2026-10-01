@@ -629,7 +629,7 @@ export default function ListingDetail() {
 
         {/* Listing Details — inside the same unified card */}
         <div className="relative">
-          <div className="p-6 sm:p-7">
+          <div className="p-6 sm:p-7 pb-10 sm:pb-14">
             {/* Title */}
             <div className="w-full text-center">
               <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight inline-flex items-center justify-center gap-2 flex-wrap">
@@ -987,22 +987,23 @@ function MessageSellerInline({
   sending, user, submitResponse, navigate, listingId, callButton, formatRecordingTime,
 }: any) {
   return (
-    <div className="-mx-6 sm:-mx-7 mt-10 space-y-4">
-      {/* Divider — tiny app icons (AI, matching, trust, payments, actions) packed edge-to-edge,
-          stretched to touch the card's left/right borders (negative margins cancel the card padding) */}
-      <div className="mb-8 flex w-full items-center overflow-hidden" aria-hidden="true">
-        {Array.from({ length: 9 }).flatMap((_, rep) =>
+    <div className="mt-4 pt-16 sm:pt-20 space-y-4">
+      {/* Divider — tiny app icons (AI, matching, trust, payments, actions) */}
+      <div className="mb-24 sm:mb-28 flex justify-center" aria-hidden="true">
+        {Array.from({ length: 2 }).flatMap((_, rep) =>
           [Sparkles, CheckCircle, BadgeCheck, IndianRupee, MessageSquare, MessageCircle, Phone, MapPin, Calendar, Fuel, Bookmark, Flag, UserCircle].map((Icon, i) => (
             <Icon
               key={rep * 13 + i}
-              className="h-2 w-2 shrink-0 text-black"
+              className="h-2 w-2 shrink-0"
+              fill="black"
+              stroke="black"
               strokeWidth={3.25}
             />
           ))
         )}
       </div>
-      {/* Inputs & content stay inset from the card borders — only the divider above touches them */}
-      <div className="px-6 sm:px-7 space-y-5">
+      {/* Inputs & content stay inset from the card borders */}
+      <div className="space-y-5">
       <h3 className="text-sm font-black text-black flex items-center justify-center gap-1.5 mb-2">
         <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-600"><MessageSquare className="h-3.5 w-3.5 text-white" /></span>
         Connect Seller

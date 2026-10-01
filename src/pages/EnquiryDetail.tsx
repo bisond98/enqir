@@ -962,7 +962,7 @@ const EnquiryDetail = () => {
 
                     {/* Description — below the detail chips */}
                     <div className="mt-6 sm:mt-7">
-                                            <div className="bg-gray-100 rounded-2xl p-4 sm:p-5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                                            <div className="bg-gray-200 rounded-2xl p-4 sm:p-5 !border-[0.5px] !border-black/40 relative overflow-hidden">
                         <h3 className="text-[10px] sm:text-[10px] font-extrabold text-black mb-2 uppercase tracking-wider">Description</h3>
                         <p className="text-xs sm:text-xs md:text-sm leading-relaxed text-gray-800" style={{ lineHeight: '1.7', fontWeight: 500 }}>{enquiry.description}</p>
                       </div>
@@ -970,7 +970,7 @@ const EnquiryDetail = () => {
                   </div>
 
                   <div className="flex flex-wrap items-stretch gap-3 sm:gap-4">
-                    <div className="bg-gray-100 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -991,7 +991,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-gray-100 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -1004,7 +1004,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-gray-100 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -1032,7 +1032,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-gray-100 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
 
                       <div className="flex items-center gap-3 sm:gap-3 relative z-10">
                         <div className="w-12 h-12 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -1051,7 +1051,7 @@ const EnquiryDetail = () => {
                   {/* Reference Images Section - now below the Budget/Location/Deadline/Posted chips */}
                   {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
                     <div className="mt-5 sm:mt-6">
-                      <div className="bg-gray-100 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
                         <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide flex items-center gap-1.5" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>
                           <ImageIcon className="h-3 w-3 sm:h-3 sm:w-3" />
                           Reference Images ({enquiry.referenceImages.length})
@@ -1086,7 +1086,7 @@ const EnquiryDetail = () => {
 
                   {enquiry.notes && (
                     <div className="mt-5 sm:mt-6 mb-4">
-                      <div className="bg-gray-100 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
                         <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>Additional Notes</h3>
                         <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
                       </div>
@@ -1137,14 +1137,16 @@ const EnquiryDetail = () => {
                   )}
 
                   {/* Connect — inside the card, below save/share */}
-                  <div className="mt-8">
-                  {/* Divider — tiny app icons (discovery, AI, matching, trust, payments) packed edge-to-edge forming a line, clipped to the container */}
-                  <div className="mb-8 flex w-full items-center justify-center overflow-hidden" aria-hidden="true">
-                    {Array.from({ length: 5 }).flatMap((_, rep) =>
+                  <div className="mt-4 pt-16 sm:pt-20">
+                  {/* Divider — tiny app icons (discovery, AI, matching, trust, payments) forming a centered line */}
+                  <div className="mb-10 sm:mb-12 flex w-full items-center justify-center overflow-hidden" aria-hidden="true">
+                    {Array.from({ length: 2 }).flatMap((_, rep) =>
                       [Sparkles, Bot, Zap, Search, Tag, MessageSquare, Users, ShieldCheck, CheckCircle, IndianRupee, Crown, Eye, MapPin, Clock, Bookmark, Share2, Flag, User].map((Icon, i) => (
                         <Icon
                           key={rep * 18 + i}
-                          className="h-2.5 w-2.5 shrink-0 text-black"
+                          className="h-2.5 w-2.5 shrink-0"
+                          fill="black"
+                          stroke="black"
                           strokeWidth={2.25}
                         />
                       ))
