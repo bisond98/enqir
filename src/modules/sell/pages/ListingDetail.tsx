@@ -773,7 +773,7 @@ export default function ListingDetail() {
               </div>
             )}
 
-              <div className="w-full flex items-center justify-between mt-8 mb-0.5 gap-2">
+              <div className="w-full flex items-center justify-between mt-8 mb-6 gap-4">
                 <button
                   onClick={toggleSave}
                   aria-label={saved ? 'Remove from saved' : 'Save listing'}
@@ -987,7 +987,22 @@ function MessageSellerInline({
   sending, user, submitResponse, navigate, listingId, callButton, formatRecordingTime,
 }: any) {
   return (
-    <div className="border-t-2 border-black pt-7 mt-10 space-y-4">
+    <div className="-mx-6 sm:-mx-7 mt-10 space-y-4">
+      {/* Divider — tiny app icons (AI, matching, trust, payments, actions) packed edge-to-edge,
+          stretched to touch the card's left/right borders (negative margins cancel the card padding) */}
+      <div className="mb-8 flex w-full items-center overflow-hidden" aria-hidden="true">
+        {Array.from({ length: 9 }).flatMap((_, rep) =>
+          [Sparkles, CheckCircle, BadgeCheck, IndianRupee, MessageSquare, MessageCircle, Phone, MapPin, Calendar, Fuel, Bookmark, Flag, UserCircle].map((Icon, i) => (
+            <Icon
+              key={rep * 13 + i}
+              className="h-2 w-2 shrink-0 text-black"
+              strokeWidth={3.25}
+            />
+          ))
+        )}
+      </div>
+      {/* Inputs & content stay inset from the card borders — only the divider above touches them */}
+      <div className="px-6 sm:px-7 space-y-5">
       <h3 className="text-sm font-black text-black flex items-center justify-center gap-1.5 mb-2">
         <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-600"><MessageSquare className="h-3.5 w-3.5 text-white" /></span>
         Connect Seller
@@ -1007,7 +1022,7 @@ function MessageSellerInline({
         </div>
       </div>
       <div>
-        <Label className="text-[7px] font-semibold text-gray-500 uppercase mb-1.5 block">Chat with Seller</Label>
+        <Label className="text-[7px] font-semibold text-gray-500 uppercase mb-1.5 mt-4 block">Chat with Seller</Label>
         <div className="relative">
           <Textarea
             value={message}
@@ -1109,6 +1124,7 @@ function MessageSellerInline({
       </Button>
       {/* Call Seller — below the message button */}
       {callButton}
+      </div>
     </div>
   );
 }

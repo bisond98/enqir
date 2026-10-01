@@ -27,7 +27,12 @@ import {
   Flag,
   Fuel,
   Search,
-  MessageCircle
+  MessageCircle,
+  Sparkles,
+  Bot,
+  Zap,
+  ShieldCheck,
+  Users
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import ShareMenu from '@/components/ShareMenu';
@@ -1132,7 +1137,19 @@ const EnquiryDetail = () => {
                   )}
 
                   {/* Connect — inside the card, below save/share */}
-                  <div className="mt-5 pt-6 border-t-2 border-black">
+                  <div className="mt-8">
+                  {/* Divider — tiny app icons (discovery, AI, matching, trust, payments) packed edge-to-edge forming a line, clipped to the container */}
+                  <div className="mb-8 flex w-full items-center justify-center overflow-hidden" aria-hidden="true">
+                    {Array.from({ length: 5 }).flatMap((_, rep) =>
+                      [Sparkles, Bot, Zap, Search, Tag, MessageSquare, Users, ShieldCheck, CheckCircle, IndianRupee, Crown, Eye, MapPin, Clock, Bookmark, Share2, Flag, User].map((Icon, i) => (
+                        <Icon
+                          key={rep * 18 + i}
+                          className="h-2.5 w-2.5 shrink-0 text-black"
+                          strokeWidth={2.25}
+                        />
+                      ))
+                    )}
+                  </div>
                   <div className="space-y-4">
                     {user && enquiry.userId === user.uid ? (
                       <div className="space-y-3">
