@@ -414,6 +414,12 @@ export default function CreateListing() {
     if (isPublished) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [isPublished]);
 
+  // "Open to discussion" — price dropdown alternative to typing a number
+  // NOTE: declared BEFORE the auth early-returns below — every hook in this
+  // component must run on every render, or React throws "Rendered more hooks
+  // than during the previous render" when the auth listener fires.
+  const [priceOption, setPriceOption] = useState<'' | 'discussion'>('');
+
   // IMPORTANT: wait for Firebase to restore the persisted session before
   // deciding the user is signed out. On a fresh app open (or restored tab)
   // `user` is null for the first few hundred ms while Firebase reads its
@@ -534,9 +540,6 @@ export default function CreateListing() {
       else delete next[key];
       return next;
     });
-
-  // "Open to discussion" — price dropdown alternative to typing a number
-  const [priceOption, setPriceOption] = useState<'' | 'discussion'>('');
 
   const formatPriceInput = (value: string): string => {
     const digits = value.replace(/[^\d]/g, '');
@@ -850,17 +853,62 @@ export default function CreateListing() {
           <Progress value={progressPct} className="h-2 rounded-full bg-slate-200" />
         </CardHeader>
 
-        <CardContent className="pt-6 sm:pt-8 pb-6 min-h-[320px] sm:min-h-[360px] flex flex-col">
+        <CardContent className="pt-6 sm:pt-8 pb-6 flex flex-col">
           <div id="step-top">
             <StepIcon active />
           </div>
 
-          <div id="step-title" className="text-center mb-6">
-            <h2 className="font-chip text-xl sm:text-2xl font-extrabold text-black tracking-tight leading-snug">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
-            <p className="font-chip mt-2.5 inline-block rounded-full border border-black/[0.06] bg-slate-50 px-3 py-1 text-[10px] sm:text-[11px] font-medium text-slate-500">{STEPS[step].description}</p>
+          <div id="step-title" className="text-center pt-4 mb-4">
+            {/* Title styled like the "Enqir" wordmark on the phone sign-in page:
+                brush-swash stroke behind the text, no pill/background */}
+            <div className="relative mx-auto inline-flex items-center justify-center select-none px-8 sm:px-12 py-6 sm:py-8">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 640 260"
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                preserveAspectRatio="none"
+              >
+                <defs>
+                  <linearGradient id="brushSwashSell" x1="0" y1="0" x2="1" y2="0.6">
+                    <stop offset="0%" stopColor="#eceef0" />
+                    <stop offset="50%" stopColor="#e4e7ea" />
+                    <stop offset="100%" stopColor="#dcdfE3" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M18 158
+                     C 40 120, 96 96, 168 92
+                     C 250 86, 330 60, 420 62
+                     C 500 64, 570 84, 614 108
+                     C 620 112, 620 120, 610 126
+                     C 560 158, 470 178, 380 182
+                     C 290 186, 190 192, 112 184
+                     C 66 180, 30 172, 18 158 Z"
+                  fill="url(#brushSwashSell)"
+                />
+                <path
+                  d="M60 150 C 170 118, 330 96, 520 108"
+                  stroke="#f2f3f5"
+                  strokeWidth="16"
+                  strokeLinecap="round"
+                  fill="none"
+                  opacity="0.5"
+                />
+                <path
+                  d="M96 182 C 180 194, 300 192, 420 178"
+                  stroke="#d2d6da"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  fill="none"
+                  opacity="0.45"
+                />
+              </svg>
+              <h2 className="relative text-xl sm:text-2xl font-extrabold text-gray-950 tracking-tight leading-snug">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
+            </div>
+            <p className="font-chip -mt-2 sm:-mt-4 text-[10px] sm:text-[11px] font-medium text-slate-400">{STEPS[step].description}</p>
           </div>
 
-          <div key={step} className="flex-1 space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
+          <div key={step} className="space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
             {step === 0 && (() => {
               const filteredCats = filterCategoriesBySearch(SELL_CATEGORIES, catSearch);
               // Selected categories float to the top (stable sort keeps the rest in order)
@@ -1371,9 +1419,6 @@ export default function CreateListing() {
                 )}
                 {(category !== 'real-estate' || estateType) && (
                   <>
-                    <Label htmlFor="listing-desc" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 ml-1">
-                      Description
-                    </Label>
                     <div className="relative">
                       <button
                         type="button"
@@ -1402,7 +1447,7 @@ export default function CreateListing() {
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Condition, accessories, warranty, reason for selling…"
                         maxLength={250}
-                        className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
+                        className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] resize-y shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                         autoFocus
                       />
                     </div>

@@ -67,6 +67,7 @@ const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
 
 // ✨ AI description assistant — golden sparkle icon (no background) inside the
 // textarea's bottom-right corner. Same style as the respond form's AI button.
+
 const AiDescriptionBar = ({ onRun, generating }: { onRun: () => void; generating: boolean }) => (
   <button
     type="button"
@@ -1467,7 +1468,11 @@ export default function PostEnquiry() {
       </div>
     </Layout>
   ) : null;
-  if (!user) return notAuth;
+  // NOTE: the `if (!user) return notAuth;` guard lives further down (just before
+  // the success-screen return) — it must come AFTER every hook in this component,
+  // otherwise the hook count differs between the pre-auth render and the
+  // signed-in render and React throws "Rendered more hooks than during the
+  // previous render" the moment the auth listener fires.
 
   // Categories — shared unified list, identical to the Sell form
   // (Main categories on top, max 3 can be selected below).
@@ -2161,6 +2166,10 @@ export default function PostEnquiry() {
     }
   }, [isSubmitted]);
 
+  // Auth guard — placed after ALL hooks so every render runs the same number
+  // of them (see note above).
+  if (!user) return notAuth;
+
   if (isSubmitted || isPreviewSuccess) {
     return (
       <Layout>
@@ -2400,7 +2409,7 @@ export default function PostEnquiry() {
                 </div>
               </div>
 
-              <CardContent className="pt-6 sm:pt-8 pb-6 min-h-[320px] sm:min-h-[360px] flex flex-col">
+              <CardContent className="pt-6 sm:pt-8 pb-6 flex flex-col">
                 {/* Step Icon */}
                 <div id="step-top">
                   <div className="mx-auto mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)] bg-black text-white">
@@ -2414,16 +2423,61 @@ export default function PostEnquiry() {
                   </div>
                 </div>
 
-                {/* Step Title */}
-                <div id="step-title" className="text-center pt-8 mb-10">
-                  <span className="inline-flex items-center justify-center rounded-full bg-gray-100 border border-gray-200 px-5 py-1.5 text-xl sm:text-2xl font-extrabold font-chip text-black tracking-tight leading-snug">
-                    {STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}
-                  </span>
+                {/* Step Title — styled like the "Enqir" wordmark on the phone sign-in page:
+                    brush-swash stroke behind the text, no pill/background */}
+                <div id="step-title" className="text-center pt-4 mb-4">
+                  <div className="relative mx-auto inline-flex items-center justify-center select-none px-8 sm:px-12 py-6 sm:py-8">
+                    {/* Painterly brush swash — same tapered stroke as the sign-in wordmark */}
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 640 260"
+                      className="absolute inset-0 w-full h-full pointer-events-none"
+                      preserveAspectRatio="none"
+                    >
+                      <defs>
+                        <linearGradient id="brushSwashStep" x1="0" y1="0" x2="1" y2="0.6">
+                          <stop offset="0%" stopColor="#eceef0" />
+                          <stop offset="50%" stopColor="#e4e7ea" />
+                          <stop offset="100%" stopColor="#dcdfE3" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        d="M18 158
+                           C 40 120, 96 96, 168 92
+                           C 250 86, 330 60, 420 62
+                           C 500 64, 570 84, 614 108
+                           C 620 112, 620 120, 610 126
+                           C 560 158, 470 178, 380 182
+                           C 290 186, 190 192, 112 184
+                           C 66 180, 30 172, 18 158 Z"
+                        fill="url(#brushSwashStep)"
+                      />
+                      <path
+                        d="M60 150 C 170 118, 330 96, 520 108"
+                        stroke="#f2f3f5"
+                        strokeWidth="16"
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity="0.5"
+                      />
+                      <path
+                        d="M96 182 C 180 194, 300 192, 420 178"
+                        stroke="#d2d6da"
+                        strokeWidth="5"
+                        strokeLinecap="round"
+                        fill="none"
+                        opacity="0.45"
+                      />
+                    </svg>
+                    <span className="relative inline-flex items-center justify-center text-xl sm:text-2xl font-extrabold text-gray-950 tracking-tight leading-snug text-center">
+                      {STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}
+                    </span>
+                  </div>
                   <p className="mt-1.5 text-[9px] sm:text-[10px] text-slate-400 font-medium">{STEPS[step].key === 'description' && isJobEnquiry(selectedCategories, category) ? 'Details' : STEPS[step].description}</p>
                 </div>
 
                 {/* Step Content */}
-                <div key={step} className="flex-1 space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
+                <div key={step} className="space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
 
                   {/* Step 0: Title */}
                   {step === 0 && (
@@ -3673,7 +3727,7 @@ export default function PostEnquiry() {
                 </div>
 
                 {/* Navigation Buttons */}
-                <div className="mt-8 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
+                <div className="mt-5 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
                   <Button
                     type="button"
                     variant="outline"
