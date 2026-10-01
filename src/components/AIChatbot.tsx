@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Sparkles, HelpCircle, Search, Plus, Settings } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Sparkles, HelpCircle, Search, Plus, Settings, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -1767,14 +1767,16 @@ const AIChatbot: React.FC = () => {
             {/* Clean Input Area */}
             <div className="p-4 border-t border-gray-100 bg-white rounded-b-2xl sm:rounded-b-3xl">
               <div className="flex gap-3">
+                {/* Message input — styled like the phone number input on the sign-up page */}
                 <div className="flex-1 relative">
+                  <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 fill-gray-900 text-gray-900 pointer-events-none" />
                   <input
                     ref={inputRef}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
-                    className="w-full px-4 py-3 pr-12 text-sm border border-gray-200 rounded-2xl sm:rounded-3xl focus:border-gray-800 focus:ring-2 focus:ring-gray-200 transition-all duration-200 bg-gray-50 focus:bg-white"
+                    className="w-full h-12 sm:h-14 min-h-[48px] rounded-[12px] border-[1.5px] border-slate-200 bg-white pl-11 pr-10 text-base font-medium text-slate-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] focus:outline-none transition-all duration-200 placeholder:text-gray-900 placeholder:font-semibold"
                     style={{ fontSize: '16px' }}
                     disabled={isLoading}
                   />
@@ -1787,7 +1789,7 @@ const AIChatbot: React.FC = () => {
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputText.trim() || isLoading}
-                  className="px-4 py-3 bg-black hover:bg-gray-900 disabled:bg-gray-300 text-white rounded-2xl sm:rounded-3xl transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center min-w-[48px]"
+                  className="h-12 sm:h-14 min-h-[48px] px-4 border border-slate-300 bg-gradient-to-b from-blue-500 to-blue-700 disabled:from-gray-300 disabled:to-gray-300 text-white font-bold rounded-xl shadow-[0_3px_0_0_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.10)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_8px_16px_rgba(0,0,0,0.12)] hover:translate-y-[-1px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.18),0_3px_6px_rgba(0,0,0,0.10)] active:translate-y-[2px] transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center min-w-[48px] disabled:pointer-events-none"
                 >
                   {isLoading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
