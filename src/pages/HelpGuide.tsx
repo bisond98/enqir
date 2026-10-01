@@ -11,6 +11,7 @@ import {
   MessageSquare, 
   LayoutDashboard, 
   Filter,
+  Package,
   CheckCircle,
   ArrowRight,
   X,
@@ -230,6 +231,44 @@ const HelpGuide = () => {
             "Use quick buttons for fast replies",
             "Share more details or images",
             "Finalize and complete the sale"
+          ]
+        }
+      ]
+    },
+    {
+      id: "marketplace",
+      title: "For Sale / Marketplace",
+      icon: Package,
+      content: [
+        {
+          title: "Sell a Listing",
+          description: "Have something to sell? List it directly on the marketplace — no enquiry needed.",
+          steps: [
+            "Click the 'Sell' button on the homescreen",
+            "Choose a category and name your listing",
+            "Add description, condition and location",
+            "Set your price — fixed, a range, or open to discussion",
+            "Upload up to 5 photos and publish — your listing goes live instantly"
+          ]
+        },
+        {
+          title: "Buy from Listings",
+          description: "Browse what sellers have listed and connect with them directly.",
+          steps: [
+            "Click 'For Sale' on the homescreen to browse the marketplace",
+            "Search or filter by category to find what you want",
+            "Open a listing to see photos, price and details",
+            "Pay the small Connect fee (₹10) to unlock chat and call with the seller",
+            "Chat, ask questions and close the deal"
+          ]
+        },
+        {
+          title: "Manage Your Listings",
+          description: "Track and control everything you've listed.",
+          steps: [
+            "Go to 'My Listings' to see all your listings",
+            "Edit price, details or photos anytime",
+            "Remove a listing once it's sold"
           ]
         }
       ]
@@ -1105,6 +1144,14 @@ const HelpGuide = () => {
                   >
                     Post an Enquiry
                     <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1.5 sm:ml-2" />
+                  </Button>
+                  <Button
+                    onClick={() => navigate('/sell/new')}
+                    variant="outline"
+                    className="border-[0.5px] border-black bg-white text-black hover:bg-gray-50 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.4)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.2)] active:scale-95 transition-all duration-200 text-xs sm:text-sm px-3 sm:px-4 py-2 sm:py-2.5 h-auto"
+                  >
+                    Sell an Item
+                    <Store className="h-3 w-3 sm:h-4 sm:w-4 ml-1.5 sm:ml-2" />
                   </Button>
                   <Button
                     onClick={() => navigate('/enquiries')}
