@@ -61,7 +61,6 @@ export default function MyChats() {
     const hasChats = allChats.length > 0;
     return !hasChats && chatsLoading;
   });
-  const [visibleChatsCount, setVisibleChatsCount] = useState(4);
   const [chatSearch, setChatSearch] = useState('');
   const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'listings'>(() => {
     if (typeof window !== 'undefined') {
@@ -170,18 +169,9 @@ export default function MyChats() {
       });
   }, [allChats, viewMode, chatSearch, isChatExpired]);
 
-  // Show only visible chats (pagination)
-  const chats = allFilteredChats.slice(0, visibleChatsCount);
-  const hasMoreChats = allFilteredChats.length > visibleChatsCount;
-
-  // Reset visible count when view mode changes
-  useEffect(() => {
-    setVisibleChatsCount(4);
-  }, [viewMode]);
-
-  const loadMoreChats = () => {
-    setVisibleChatsCount(prev => prev + 4);
-  };
+  // Show all chats (pagination removed)
+  const chats = allFilteredChats;
+  const hasMoreChats = false;
 
   // Use preloaded chats from context - update immediately when available
   useEffect(() => {
@@ -641,14 +631,14 @@ export default function MyChats() {
               <input
                 type="text"
                 value={chatSearch}
-                onChange={(e) => { setChatSearch(e.target.value); setVisibleChatsCount(4); }}
+                onChange={(e) => setChatSearch(e.target.value)}
                 placeholder="Search chats..."
                 className="w-full h-12 sm:h-14 min-h-[48px] pl-10 pr-10 rounded-[12px] border-[1.5px] border-slate-200 bg-white text-sm font-medium text-slate-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] focus:outline-none transition-all duration-200 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
               />
               {chatSearch && (
                 <button
                   type="button"
-                  onMouseDown={(e) => { e.preventDefault(); setChatSearch(''); setVisibleChatsCount(4); }}
+                  onMouseDown={(e) => { e.preventDefault(); setChatSearch(''); }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-black transition-colors"
                   aria-label="Clear search"
                 >
@@ -701,7 +691,7 @@ export default function MyChats() {
             </div>
           ) : (
             <>
-            <div className="grid grid-cols-1">
+            <div className="grid grid-cols-1 !gap-0">
               {chats.map((chat, index) => {
                 const isDisabled = chat.isDisabled || false;
                 const statusText = getDisabledStatusText(chat);
@@ -712,12 +702,12 @@ export default function MyChats() {
                     key={chat.id}
                   >
                     <Card
-                      className={`!border-[0.5px] !border-black/40 !shadow-none !rounded-xl !transition-all !duration-150 relative touch-manipulation select-none mb-2 ${
+                      className={`!border-[0.5px] !border-black/40 !rounded-xl relative touch-manipulation select-none !mb-0 !transition-all !duration-200 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05),0_3px_10px_rgba(0,0,0,0.07)] ${
                         isAdminWarning
                           ? 'bg-[#5C1A1A] text-white'
                           : isDisabled 
-                            ? 'opacity-60 grayscale cursor-not-allowed !bg-transparent' 
-                            : 'cursor-pointer group !bg-transparent hover:!bg-black/5'
+                            ? 'opacity-60 grayscale cursor-not-allowed bg-white' 
+                            : 'cursor-pointer hover:-translate-y-[1px] hover:shadow-[0_2px_4px_rgba(0,0,0,0.07),0_7px_18px_rgba(0,0,0,0.11)] active:translate-y-0 active:shadow-[0_1px_2px_rgba(0,0,0,0.05),0_3px_10px_rgba(0,0,0,0.07)]'
                       }`}
                       onClick={() => !isDisabled && !isAdminWarning && openChat(chat)}
                     >
@@ -734,138 +724,27 @@ export default function MyChats() {
                           <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         </button>
                       )}
-                      {/* Physical button depth effect */}
-                      {!isDisabled && (
-                        <>
-                          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-lg sm:rounded-xl pointer-events-none" />
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-lg sm:rounded-xl" />
-                        </>
-                      )}
-                      {/* Animated background gradient */}
-                      {!isDisabled && (
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-br from-emerald-100/20 via-green-50/10 to-transparent opacity-0 group-hover:opacity-100"
-                          transition={{ duration: 0.4 }}
-                        />
-                      )}
-                      
                       {/* Clickable tile with enquiry heading */}
                       <div className={`flex items-start gap-3 sm:gap-4 relative z-10 ${
                         isAdminWarning ? 'p-2 sm:p-3' : 'p-3 sm:p-4'
                       }`}>
                         {/* Chat avatar – rounded, WhatsApp-style green bubble */}
                         <div className="relative shrink-0 self-center">
-                          {/* Glowing ring effect */}
-                          {!isDisabled && (
-                            <motion.div
-                              className="absolute inset-0 rounded-full bg-emerald-400/30 blur-xl"
-                              animate={{
-                                scale: [1, 1.3, 1],
-                                opacity: [0.3, 0.6, 0.3],
-                              }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                            />
-                          )}
-                          
-                          <motion.div 
+                          <div 
                             className={`rounded-full ${
                               isAdminWarning 
                                 ? 'w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8' 
                                 : 'w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14'
                             } ${
                               isDisabled ? 'bg-gray-400' : 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600'
-                            } flex items-center justify-center border-[0.5px] border-black shadow-lg relative overflow-hidden`}
-                            animate={!isDisabled ? {
-                              rotate: [0, 360],
-                              scale: [1, 1.1, 1],
-                            } : {}}
-                            transition={{
-                              rotate: {
-                                duration: 8,
-                                repeat: Infinity,
-                                ease: "linear"
-                              },
-                              scale: {
-                                duration: 2,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }
-                            }}
-                            whileHover={!isDisabled ? {
-                              scale: 1.2,
-                              rotate: [0, 180, 360],
-                              transition: { duration: 0.6 }
-                            } : {}}
+                            } flex items-center justify-center border-[0.5px] border-black shadow-[0_1px_2px_rgba(0,0,0,0.2),0_2px_5px_rgba(0,0,0,0.15)] relative overflow-hidden`}
                           >
-                            {/* Shimmer effect */}
-                            {!isDisabled && (
-                              <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                                animate={{
-                                  x: ['-100%', '100%'],
-                                }}
-                                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatDelay: 1,
-                  ease: "easeInOut"
-                }}
-                              />
-                            )}
-                            
-                            <motion.div
-                              animate={!isDisabled ? {
-                                y: [0, -5, 0],
-                                rotate: [0, 10, -10, 0],
-                              } : {}}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                              whileHover={!isDisabled ? {
-                                scale: 1.2,
-                                rotate: 360,
-                                transition: { duration: 0.5 }
-                              } : {}}
-                            >
-                              <MessageSquare className={`text-white relative z-10 ${
-                                isAdminWarning 
-                                  ? 'h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5' 
-                                  : 'h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6'
-                              }`} />
-                            </motion.div>
-                          </motion.div>
-                          
-                          {!isDisabled && (chat.unreadCount || 0) > 0 && (
-                            <motion.span 
-                              className={`absolute -top-1 -right-1 sm:top-0 sm:right-0 bg-gradient-to-br from-red-500 to-red-600 text-white font-bold rounded-full flex items-center justify-center border-2 border-white shadow-xl z-20 ${
-                                isAdminWarning
-                                  ? 'text-[7px] sm:text-[8px] min-w-[14px] h-3.5 sm:min-w-[16px] sm:h-4'
-                                  : 'text-[10px] sm:text-[11px] min-w-[20px] h-5 sm:min-w-[24px] sm:h-6'
-                              }`}
-                              animate={{
-                                scale: [1, 1.3, 1],
-                                rotate: [0, 10, -10, 0],
-                              }}
-                              transition={{
-                                duration: 1,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                              }}
-                              whileHover={{
-                                scale: 1.4,
-                                rotate: 360,
-                                transition: { duration: 0.3 }
-                              }}
-                            >
-                              1
-                            </motion.span>
-                          )}
+                            <MessageSquare className={`text-white relative z-10 ${
+                              isAdminWarning 
+                                ? 'h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5' 
+                                : 'h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6'
+                            }`} />
+                          </div>
                         </div>
                       
                         {/* Text column — WhatsApp style: avatar left, title+time row, message below */}
@@ -924,25 +803,6 @@ export default function MyChats() {
                 );
               })}
             </div>
-            
-            {/* Load More Button */}
-            {hasMoreChats && (
-              <div className="flex justify-center mt-6 sm:mt-8">
-                <Button
-                  onClick={loadMoreChats}
-                  className="border-[0.5px] border-black bg-gradient-to-r from-emerald-600 via-green-600 to-emerald-700 text-white hover:from-emerald-700 hover:via-green-700 hover:to-emerald-800 text-xs sm:text-sm font-black px-6 sm:px-8 py-2 sm:py-2.5 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/loadmore"
-                >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/loadmore:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                  <span className="relative z-10 flex items-center gap-2">
-                    Load More
-                    <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 relative z-10" />
-                  </span>
-                </Button>
-            </div>
-            )}
             </>
           )}
           
@@ -964,22 +824,6 @@ export default function MyChats() {
                 </span>
               </Button>
             )}
-            
-            {/* Show All Chats Button */}
-            <Button
-              variant="outline"
-              onClick={() => navigate('/all-chats')}
-              className="!border-[0.5px] !border-black !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm font-black px-4 sm:px-6 py-2 sm:py-2.5 !rounded-2xl !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group/allchats"
-            >
-              {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-              {/* Shimmer effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/allchats:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-              <span className="relative z-10 flex items-center gap-2">
-                Show All Chats
-                <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 relative z-10" />
-              </span>
-            </Button>
           </div>
         </div>
       </div>
