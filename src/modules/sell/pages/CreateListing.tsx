@@ -861,7 +861,7 @@ export default function CreateListing() {
           <div id="step-title" className="text-center pt-4 mb-4">
             {/* Title styled like the "Enqir" wordmark on the phone sign-in page:
                 brush-swash stroke behind the text, no pill/background */}
-            <div className="relative mx-auto inline-flex items-center justify-center select-none px-8 sm:px-12 py-6 sm:py-8">
+            <div className="relative mx-auto inline-flex items-center justify-center select-none px-9 sm:px-14 py-7 sm:py-9">
               <svg
                 aria-hidden="true"
                 viewBox="0 0 640 260"
@@ -903,7 +903,7 @@ export default function CreateListing() {
                   opacity="0.45"
                 />
               </svg>
-              <h2 className="relative text-xl sm:text-2xl font-extrabold text-gray-950 tracking-tight leading-snug">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
+              <h2 className="relative text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug whitespace-nowrap">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
             </div>
             <p className="font-chip -mt-2 sm:-mt-4 text-[10px] sm:text-[11px] font-medium text-slate-400">{STEPS[step].description}</p>
           </div>
