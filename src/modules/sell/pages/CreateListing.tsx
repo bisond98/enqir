@@ -904,8 +904,7 @@ export default function CreateListing() {
                 />
               </svg>
               <h2 className="relative text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug whitespace-nowrap">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
-            </div>
-            <p className="font-chip -mt-2 sm:-mt-4 text-[10px] sm:text-[11px] font-medium text-slate-400">{STEPS[step].description}</p>
+          </div>
           </div>
 
           <div key={step} className="space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>

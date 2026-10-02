@@ -2472,8 +2472,7 @@ export default function PostEnquiry() {
                     <span className="relative inline-flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug text-center whitespace-nowrap">
                       {STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}
                     </span>
-                  </div>
-                  <p className="mt-1.5 text-[9px] sm:text-[10px] text-slate-400 font-medium">{STEPS[step].key === 'description' && isJobEnquiry(selectedCategories, category) ? 'Details' : STEPS[step].description}</p>
+                </div>
                 </div>
 
                 {/* Step Content */}
