@@ -2426,7 +2426,7 @@ export default function PostEnquiry() {
                 {/* Step Title — styled like the "Enqir" wordmark on the phone sign-in page:
                     brush-swash stroke behind the text, no pill/background */}
                 <div id="step-title" className="text-center pt-4 mb-4">
-                  <div className="relative mx-auto inline-flex items-center justify-center select-none px-8 sm:px-12 py-6 sm:py-8">
+                  <div className="relative mx-auto inline-flex items-center justify-center select-none px-9 sm:px-14 py-7 sm:py-9">
                     {/* Painterly brush swash — same tapered stroke as the sign-in wordmark */}
                     <svg
                       aria-hidden="true"
@@ -2469,7 +2469,7 @@ export default function PostEnquiry() {
                         opacity="0.45"
                       />
                     </svg>
-                    <span className="relative inline-flex items-center justify-center text-xl sm:text-2xl font-extrabold text-gray-950 tracking-tight leading-snug text-center">
+                    <span className="relative inline-flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug text-center">
                       {STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}
                     </span>
                   </div>
