@@ -2080,7 +2080,6 @@ const Landing = () => {
                 - Same filtering: status='live' or 'deal_closed', exclude deal_closed, exclude expired */}
             {/* Live Enquiries section title */}
             <div className="text-center mb-5 sm:mb-7">
-              <p className="text-[9px] sm:text-[10px] font-medium uppercase tracking-[0.3em] text-gray-400 mb-1.5">What people need, right now</p>
               <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight leading-none">
                 Enquiries<span className="text-gray-300">.</span>
               </h2>
@@ -2763,7 +2762,16 @@ const Landing = () => {
                 {/* For Sale cards with enquiry-card style deck + shuffle - All screen sizes */}
                 {shuffledSellListings.length > 0 && (
                   <div className="mt-4 w-full flex flex-col items-center">
-                    <p className="inline-block !border-[1.5px] !border-black !rounded-2xl px-3 py-1 text-xs sm:text-sm font-black text-black bg-white mb-3 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">For Sale</p>
+                    <div className="text-center mb-3">
+                      <h3 className="text-2xl sm:text-3xl font-black text-black tracking-tight leading-none">
+                        For Sale<span className="text-gray-300">.</span>
+                      </h3>
+                      <div className="mt-3 flex items-center justify-center gap-1.5">
+                        <span className="h-px w-8 sm:w-10 bg-black/15"></span>
+                        <span className="h-[3px] w-[3px] rounded-full bg-black/70"></span>
+                        <span className="h-px w-8 sm:w-10 bg-black/15"></span>
+                      </div>
+                    </div>
                     <div
                       className="relative bg-white rounded-2xl"
                       style={{
