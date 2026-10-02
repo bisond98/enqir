@@ -2469,7 +2469,7 @@ export default function PostEnquiry() {
                         opacity="0.45"
                       />
                     </svg>
-                    <span className="relative inline-flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug text-center">
+                    <span className="relative inline-flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug text-center whitespace-nowrap">
                       {STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}
                     </span>
                   </div>
