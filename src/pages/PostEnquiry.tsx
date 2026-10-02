@@ -3371,8 +3371,8 @@ export default function PostEnquiry() {
                         <TimeLimitSelector value={deadline} onChange={setDeadline} className="w-full" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="enquiry-notes" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 ml-1">
-                          Notes <span className="text-slate-400 font-normal">(Optional)</span>
+                        <Label htmlFor="enquiry-notes" className="text-[10px] sm:text-xs font-bold text-black ml-1">
+                          Notes <span className="text-slate-500 font-medium">(Optional)</span>
                         </Label>
                         <Textarea
                           id="enquiry-notes"
