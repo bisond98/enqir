@@ -5532,7 +5532,7 @@ export default function EnquiryWall() {
                     setShowSuggestions(false);
                   }
                 }}>
-                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-[#1a2744] hover:!bg-[#24345c] !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
+                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
                     <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
@@ -5547,7 +5547,7 @@ export default function EnquiryWall() {
               <div className="flex-1 relative">
                 <button
                   onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-[#1a2744] hover:!bg-[#24345c] !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
+                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
                 >
                   <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0 relative z-10" />
                   <span className="flex-1 text-center truncate text-white font-bold relative z-10">
@@ -5681,7 +5681,7 @@ export default function EnquiryWall() {
                         setShowLocationSuggestions(false);
                         setSortDropdownOpen(false);
                       }}
-                      className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-[#1a2744] border-[0.5px] border-[#1a2744] text-white text-[10px] font-black h-8 shadow-[0_3px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.4)] active:translate-y-px active:shadow-none transition-all touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+                      className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 border-[0.5px] border-blue-700 text-white text-[10px] font-black h-8 shadow-[0_3px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_1px_0_0_rgba(37,99,235,0.4)] active:translate-y-px active:shadow-none transition-all touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
                     >
                       Submit
                     </button>
@@ -5755,7 +5755,7 @@ export default function EnquiryWall() {
                           setShowLocationSuggestions(false);
                           setSortDropdownOpen(false);
                         }}
-                        className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-[#1a2744] border-[0.5px] border-[#1a2744] text-white text-[10px] font-black h-8 shadow-[0_3px_0_0_rgba(0,0,0,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.4)] active:translate-y-px active:shadow-none transition-all touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+                        className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-blue-600 border-[0.5px] border-blue-700 text-white text-[10px] font-black h-8 shadow-[0_3px_0_0_rgba(37,99,235,0.4),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_1px_0_0_rgba(37,99,235,0.4)] active:translate-y-px active:shadow-none transition-all touch-manipulation focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
                       >
                         Submit
                       </button>
@@ -5848,7 +5848,7 @@ export default function EnquiryWall() {
                     <button
                       type="button"
                       onClick={() => submitSearch(searchTerm)}
-                      className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 z-50 h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center bg-[#1a2744] text-white rounded-lg sm:rounded-xl border-[0.5px] border-[#1a2744] shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[calc(-50%+2px)] transition-all touch-manipulation"
+                      className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 z-50 h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center bg-black text-white rounded-lg sm:rounded-xl border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[calc(-50%+2px)] transition-all touch-manipulation"
                       aria-label="Search"
                     >
                       <Search className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={2.5} />
