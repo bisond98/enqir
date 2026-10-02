@@ -3311,7 +3311,7 @@ export default function PostEnquiry() {
                   {step === 4 && (
                     <div className="max-w-md mx-auto w-full space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="enquiry-budget" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-1.5">
+                        <Label htmlFor="enquiry-budget" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-1.5">
                           <IndianRupee className="h-3.5 w-3.5" />
                           {isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered (INR)' : 'Salary Expected (INR)') : 'Budget (INR)'}
                         </Label>
@@ -3338,7 +3338,7 @@ export default function PostEnquiry() {
                       </div>
                       {/* Open to discussion — alternative to entering a specific budget */}
                       <div className="flex items-center justify-end gap-3">
-                        <Label htmlFor="enquiry-budget-option" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 whitespace-nowrap">
+                        <Label htmlFor="enquiry-budget-option" className="text-[9px] sm:text-[10px] font-bold text-black whitespace-nowrap">
                           Not fixed yet?
                         </Label>
                         <div className="relative">
@@ -3371,7 +3371,7 @@ export default function PostEnquiry() {
                         <TimeLimitSelector value={deadline} onChange={setDeadline} className="w-full" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="enquiry-notes" className="text-[10px] sm:text-xs font-bold text-black ml-1">
+                        <Label htmlFor="enquiry-notes" className="text-[9px] sm:text-[10px] font-bold text-black ml-1">
                           Notes <span className="text-slate-500 font-medium">(Optional)</span>
                         </Label>
                         <Textarea
@@ -3396,7 +3396,7 @@ export default function PostEnquiry() {
                     <div className="max-w-lg mx-auto w-full space-y-6">
                       {/* Reference Images (matching CreateListing style) */}
                       <div className="space-y-2">
-                        <Label className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-1.5">
+                        <Label className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-1.5">
                           <Upload className="h-3 w-3" />
                           {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking'
                             ? 'Upload your Resume (optional)'
@@ -3672,7 +3672,7 @@ export default function PostEnquiry() {
 
                 {/* Contact Mobile Number (optional) — shown only to paid users via the call icon popup */}
                 <div className={step === totalSteps - 1 ? 'mt-6' : 'hidden'}>
-                  <Label htmlFor="enquiry-mobile" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-1.5">
+                  <Label htmlFor="enquiry-mobile" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-1.5">
                     <Phone className="h-3 w-3" />
                     Mobile Number <span className="text-slate-400 font-normal">(Optional)</span>
                   </Label>
