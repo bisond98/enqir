@@ -463,6 +463,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
             <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 !border-red-500 focus:!border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-2xl !bg-red-500 hover:!bg-red-600 !text-white relative overflow-hidden transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none">
               <Clock className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
               <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
+              <span className="ml-auto relative z-10 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-white/80 mr-1">Click</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto border-2 border-black p-0 flex flex-col">
@@ -481,6 +482,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
             <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 !border-red-500 focus:!border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-2xl !bg-red-500 hover:!bg-red-600 !text-white relative overflow-hidden transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none">
               <Clock className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
               <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
+              <span className="ml-auto relative z-10 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-white/80 mr-1">Click</span>
             </Button>
           </PopoverTrigger>
           <PopoverContent 
