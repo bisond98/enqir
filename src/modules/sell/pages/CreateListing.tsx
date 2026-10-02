@@ -945,7 +945,7 @@ export default function CreateListing() {
 
                   {/* Max-3 hint */}
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-[9px] sm:text-[10px] font-semibold text-slate-600">Choose up to 3 categories to best match</p>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-black">Choose up to 3 categories to best match</p>
                     <span className={`text-[9px] sm:text-[10px] font-semibold px-2.5 py-1 rounded-full border ${selectedCats.length >= 3 ? 'bg-black text-white border-black' : 'bg-white text-black border-black/20'}`}>{selectedCats.length}/3</span>
                   </div>
 
@@ -1050,7 +1050,7 @@ export default function CreateListing() {
               <div className="relative space-y-2 max-w-lg mx-auto w-full">
                 {/* Single quiet line-art doodle — seller offering */}
                 <SellerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
-                <Label htmlFor="listing-title" className="text-[9px] sm:text-[10px] font-semibold text-slate-600">
+                <Label htmlFor="listing-title" className="text-[9px] sm:text-[10px] font-bold text-black">
                   Listing title
                 </Label>
                 <Input
@@ -1637,7 +1637,7 @@ export default function CreateListing() {
             {step === 5 && (
               <div className="max-w-md mx-auto w-full space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price-fixed" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-2 ml-1">
+                  <Label htmlFor="price-fixed" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-2 ml-1">
                     <IndianRupee className="h-3.5 w-3.5" />
                     {category === 'jobs' ? 'Salary (INR)' : 'Your price (INR)'}
                   </Label>
@@ -1660,7 +1660,7 @@ export default function CreateListing() {
                 </div>
                 {/* Open to discussion — alternative to entering a specific price */}
                 <div className="flex items-center justify-end gap-3">
-                  <Label htmlFor="price-option" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 whitespace-nowrap">
+                  <Label htmlFor="price-option" className="text-[9px] sm:text-[10px] font-bold text-black whitespace-nowrap">
                     Not fixed yet?
                   </Label>
                   <div className="relative">
@@ -1703,7 +1703,7 @@ export default function CreateListing() {
                   </div>
                 ))}
                 <div className="space-y-2 !mt-8">
-                  <Label className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-2 ml-1">
+                  <Label className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-2 ml-1">
                     <Upload className="h-3.5 w-3.5" />
                     Photos (up to 5){category === 'service' && <span className="font-normal text-slate-400">— optional</span>}
                   </Label>
@@ -1915,7 +1915,7 @@ export default function CreateListing() {
           {/* Contact Mobile Number (optional) — shown only to paid users via the call icon popup */}
           {step === totalSteps - 1 && (
             <div className="mt-6">
-              <Label htmlFor="listing-mobile" className="text-[9px] sm:text-[10px] font-semibold text-slate-600 flex items-center gap-1.5">
+              <Label htmlFor="listing-mobile" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-1.5">
                 <Phone className="h-3 w-3" />
                 Mobile Number <span className="text-slate-400 font-normal">(Optional)</span>
               </Label>
