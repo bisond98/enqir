@@ -3720,9 +3720,6 @@ export default function PostEnquiry() {
                       className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-sm !font-medium placeholder:!text-gray-900 placeholder:!font-semibold placeholder:!text-[11px] focus:outline-none focus-visible:!border-black focus-visible:!ring-3 focus-visible:!ring-black/15 transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation"
                     />
                   </div>
-                  <p className="text-[8px] sm:text-[9px] text-slate-400 font-medium mt-1.5 text-right">
-                    Connect with privacy
-                  </p>
                 </div>
 
                 {/* Navigation Buttons */}
