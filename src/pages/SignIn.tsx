@@ -919,14 +919,10 @@ const SignIn = () => {
                           id="identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 min-h-[48px] text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-gradient-to-b from-white to-slate-50/80 shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_14px_rgba(0,0,0,0.10)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_7px_16px_rgba(0,0,0,0.12)] focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_0_0_rgba(0,0,0,0.12),0_4px_10px_rgba(0,0,0,0.10)] focus-visible:translate-y-[1px] transition-all duration-200 min-touch placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px] text-slate-900 relative z-10"
-                          style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 min-h-[48px] text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 relative z-10"
+                          style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none' }}
                           value={identifier}
                           onChange={(e) => setIdentifier(e.target.value)}
-                          onFocus={(e) => {
-                            e.target.style.outline = 'none';
-                            e.target.style.boxShadow = 'none';
-                          }}
                           required
                         />
                         {/* Physical button depth effect */}
@@ -944,14 +940,10 @@ const SignIn = () => {
                           id="password"
                           type="password"
                           placeholder="Enter your password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 min-h-[48px] text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-gradient-to-b from-white to-slate-50/80 shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_14px_rgba(0,0,0,0.10)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_7px_16px_rgba(0,0,0,0.12)] focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_0_0_rgba(0,0,0,0.12),0_4px_10px_rgba(0,0,0,0.10)] focus-visible:translate-y-[1px] transition-all duration-200 min-touch placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px] text-slate-900 relative z-10"
-                          style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 min-h-[48px] text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 relative z-10"
+                          style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none' }}
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          onFocus={(e) => {
-                            e.target.style.outline = 'none';
-                            e.target.style.boxShadow = 'none';
-                          }}
                           required
                         />
                         {/* Physical button depth effect */}
@@ -995,14 +987,10 @@ const SignIn = () => {
                           id="signup-identifier"
                           type="email"
                           placeholder="Enter your email address"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 min-h-[48px] text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-gradient-to-b from-white to-slate-50/80 shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_14px_rgba(0,0,0,0.10)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_7px_16px_rgba(0,0,0,0.12)] focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_0_0_rgba(0,0,0,0.12),0_4px_10px_rgba(0,0,0,0.10)] focus-visible:translate-y-[1px] transition-all duration-200 min-touch placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px] text-slate-900 relative z-10"
-                          style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 min-h-[48px] text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 relative z-10"
+                          style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none' }}
                           value={signUpIdentifier}
                           onChange={(e) => setSignUpIdentifier(e.target.value)}
-                          onFocus={(e) => {
-                            e.target.style.outline = 'none';
-                            e.target.style.boxShadow = 'none';
-                          }}
                           required
                         />
                         {/* Physical button depth effect */}
@@ -1020,14 +1008,10 @@ const SignIn = () => {
                           id="signup-password"
                           type="password"
                           placeholder="Create a secure password"
-                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 min-h-[48px] text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-gradient-to-b from-white to-slate-50/80 shadow-[0_4px_0_0_rgba(0,0,0,0.12),0_6px_14px_rgba(0,0,0,0.10)] hover:shadow-[0_5px_0_0_rgba(0,0,0,0.12),0_7px_16px_rgba(0,0,0,0.12)] focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_3px_0_0_rgba(0,0,0,0.12),0_4px_10px_rgba(0,0,0,0.10)] focus-visible:translate-y-[1px] transition-all duration-200 min-touch placeholder:text-slate-400 placeholder:font-normal placeholder:text-[12px] text-slate-900 relative z-10"
-                          style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none', boxShadow: 'none' }}
+                              className="!pl-12 sm:!pl-14 pr-4 h-12 sm:h-14 min-h-[48px] text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 relative z-10"
+                          style={{ fontSize: '16px', fontFamily: 'Roboto, sans-serif', outline: 'none' }}
                           value={signUpPassword}
                           onChange={(e) => setSignUpPassword(e.target.value)}
-                          onFocus={(e) => {
-                            e.target.style.outline = 'none';
-                            e.target.style.boxShadow = 'none';
-                          }}
                           required
                         />
                         {/* Physical button depth effect */}
