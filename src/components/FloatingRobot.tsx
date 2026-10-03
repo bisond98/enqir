@@ -86,8 +86,10 @@ const FloatingRobot = ({ size = 56, className = '' }: { size?: number; className
 
         {/* Arms */}
         <g>
-          <ellipse cx="28" cy="62" rx="5" ry="10" fill="url(#whiteMatte-${uid})" transform="rotate(-15 28 62)" />
-          <circle cx="24" cy="70" r="3.5" fill={`url(#whiteMatte-${uid})`}>
+          {/* Left arm + hand */}
+          <g>
+            <ellipse cx="28" cy="62" rx="5" ry="10" fill={`url(#whiteMatte-${uid})`} transform="rotate(-15 28 62)" />
+            <circle cx="24" cy="70" r="3.5" fill={`url(#whiteMatte-${uid})`} />
             <animateTransform
               attributeName="transform"
               type="rotate"
@@ -98,9 +100,11 @@ const FloatingRobot = ({ size = 56, className = '' }: { size?: number; className
               keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
               keyTimes="0;0.5;1"
             />
-          </circle>
-          <ellipse cx="72" cy="62" rx="5" ry="10" fill={`url(#lightGrey-${uid})`} transform="rotate(15 72 62)" />
-          <circle cx="76" cy="70" r="3.5" fill={`url(#whiteMatte-${uid})`}>
+          </g>
+          {/* Right arm + hand */}
+          <g>
+            <ellipse cx="72" cy="62" rx="5" ry="10" fill={`url(#lightGrey-${uid})`} transform="rotate(15 72 62)" />
+            <circle cx="76" cy="70" r="3.5" fill={`url(#whiteMatte-${uid})`} />
             <animateTransform
               attributeName="transform"
               type="rotate"
@@ -112,7 +116,7 @@ const FloatingRobot = ({ size = 56, className = '' }: { size?: number; className
               keyTimes="0;0.5;1"
               begin="2s"
             />
-          </circle>
+          </g>
         </g>
 
         {/* Head */}
@@ -135,12 +139,9 @@ const FloatingRobot = ({ size = 56, className = '' }: { size?: number; className
           </ellipse>
           <ellipse cx="44.8" cy="28" rx="1.4" ry="1.8" fill={`url(#eyeHighlight-${uid})`} />
           <ellipse cx="55.2" cy="28" rx="1.4" ry="1.8" fill={`url(#eyeHighlight-${uid})`} />
-          {/* Blink */}
-          <rect x="39" y="25" width="10" height="7" fill="#1a1a1a" rx="3.5" opacity="0">
-            <animate attributeName="opacity" values="0;0;0;0;1;1;0;0;0;0" dur="3s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.2;0.25;0.27;0.3;0.33;0.35;0.4;0.6;1" begin="1s" />
-          </rect>
-          <rect x="51" y="25" width="10" height="7" fill="#1a1a1a" rx="3.5" opacity="0">
-            <animate attributeName="opacity" values="0;0;0;0;1;1;0;0;0;0" dur="3s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.2;0.25;0.27;0.3;0.33;0.35;0.4;0.6;1" begin="1.05s" />
+          {/* Blink — a full-width lid rect that sweeps down over the eyes */}
+          <rect x="36" y="25" width="28" height="0.01" fill="#1a1a1a" rx="2">
+            <animate attributeName="height" values="0.01;0.01;14;0.01;0.01" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.48;0.5;0.52;1" />
           </rect>
           {/* Head float (offset phase) */}
           <animateTransform
