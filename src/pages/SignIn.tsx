@@ -1080,8 +1080,8 @@ const SignIn = () => {
               position: 'absolute',
               left: `${robotPosition.x || 0}px`,
               top: `${robotPosition.y || 0}px`,
-              width: '80px',
-              height: '80px',
+              width: '56px',
+              height: '56px',
               transform: `translate(-50%, -50%) rotate(${robotAngle || 0}deg)`,
               willChange: 'transform',
               transition: 'none',
@@ -1091,7 +1091,7 @@ const SignIn = () => {
             }}
           >
             {/* Same Robot from HelpGuide - Smaller */}
-            <svg width="80" height="80" viewBox="0 0 100 100" className="robot-svg" style={{ overflow: 'visible', background: 'transparent' }}>
+            <svg width="56" height="56" viewBox="0 0 100 100" className="robot-svg" style={{ overflow: 'visible', background: 'transparent' }}>
               <defs>
                 <filter id="cyan-glow-signin">
                   <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
