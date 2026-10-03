@@ -1,0 +1,204 @@
+/**
+ * FloatingRobot — the same robot mascot from the sign-in / help-guide pages,
+ * packaged as a reusable, self-contained component. All animations (floating
+ * body/head, blinking eyes, swinging arms, pulsing shadow) run inside the SVG,
+ * so no external state or CSS is needed. Size it via the `size` prop.
+ */
+const FloatingRobot = ({ size = 56, className = '' }: { size?: number; className?: string }) => {
+  // Unique gradient/filter IDs per instance so multiple robots can coexist
+  const uid = `fr${Math.random().toString(36).slice(2, 8)}`;
+  return (
+    <div className={className} style={{ width: size, height: size, pointerEvents: 'none' }}>
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 100 100"
+        style={{ overflow: 'visible', background: 'transparent', display: 'block' }}
+      >
+        <defs>
+          <filter id={`cyan-glow-${uid}`}>
+            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <linearGradient id={`whiteMatte-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 1 }} />
+            <stop offset="50%" style={{ stopColor: '#fafafa', stopOpacity: 1 }} />
+            <stop offset="100%" style={{ stopColor: '#f0f0f0', stopOpacity: 1 }} />
+          </linearGradient>
+          <linearGradient id={`lightGrey-${uid}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style={{ stopColor: '#f5f5f5', stopOpacity: 0.4 }} />
+            <stop offset="50%" style={{ stopColor: '#e8e8e8', stopOpacity: 0.5 }} />
+            <stop offset="100%" style={{ stopColor: '#d8d8d8', stopOpacity: 0.3 }} />
+          </linearGradient>
+          <radialGradient id={`cyanGlow-${uid}`} cx="50%" cy="50%">
+            <stop offset="0%" style={{ stopColor: '#00e5ff', stopOpacity: 1 }} />
+            <stop offset="40%" style={{ stopColor: '#00d4ff', stopOpacity: 0.95 }} />
+            <stop offset="70%" style={{ stopColor: '#00b8d4', stopOpacity: 0.85 }} />
+            <stop offset="100%" style={{ stopColor: '#0097a7', stopOpacity: 0.6 }} />
+          </radialGradient>
+          <radialGradient id={`eyeHighlight-${uid}`} cx="30%" cy="30%">
+            <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.8 }} />
+            <stop offset="100%" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
+          </radialGradient>
+        </defs>
+
+        {/* Soft floating shadow */}
+        <ellipse cx="50" cy="95" rx="18" ry="4" fill="#000000" opacity="0.08">
+          <animate attributeName="rx" values="18;20;18" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" />
+          <animate attributeName="opacity" values="0.08;0.1;0.08" dur="5s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" />
+        </ellipse>
+
+        {/* Body */}
+        <g>
+          <ellipse cx="50" cy="65" rx="18" ry="20" fill="#4a5568" stroke="#2d3748" strokeWidth="0.5" />
+          <ellipse cx="50" cy="65" rx="16" ry="18" fill="#718096" />
+          <rect x="32" y="60" width="36" height="4" rx="1" fill="#1a1a1a" opacity="0.9" />
+          <rect x="47" y="60" width="6" height="4" rx="0.5" fill="#00bcd4" stroke="#0097a7" strokeWidth="0.3" />
+          <rect x="38" y="55" width="24" height="6" rx="1.5" fill="#1a1a1a" opacity="0.7" />
+          <text x="50" y="59" fontSize="3.5" fill="#ffffff" textAnchor="middle" fontWeight="bold" fontFamily="Arial, sans-serif" opacity="0.95">
+            ENQIR
+          </text>
+          <circle cx="50" cy="68" r="1.6" fill="#00bcd4" opacity="0.9">
+            <animate attributeName="opacity" values="0.9;1;0.9" dur="1.5s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="50" cy="72" r="1.6" fill="#00bcd4" opacity="0.9">
+            <animate attributeName="opacity" values="0.9;1;0.9" dur="1.5s" repeatCount="indefinite" begin="0.3s" />
+          </circle>
+          {/* Body float */}
+          <animateTransform
+            attributeName="transform"
+            type="translate"
+            values="0,0; 0,-2.5; 0,0"
+            dur="5s"
+            repeatCount="indefinite"
+            calcMode="spline"
+            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+            keyTimes="0;0.5;1"
+          />
+        </g>
+
+        {/* Arms */}
+        <g>
+          <ellipse cx="28" cy="62" rx="5" ry="10" fill="url(#whiteMatte-${uid})" transform="rotate(-15 28 62)" />
+          <circle cx="24" cy="70" r="3.5" fill={`url(#whiteMatte-${uid})`}>
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              values="-15 28 62; -28 28 62; -15 28 62"
+              dur="4s"
+              repeatCount="indefinite"
+              calcMode="spline"
+              keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+              keyTimes="0;0.5;1"
+            />
+          </circle>
+          <ellipse cx="72" cy="62" rx="5" ry="10" fill={`url(#lightGrey-${uid})`} transform="rotate(15 72 62)" />
+          <circle cx="76" cy="70" r="3.5" fill={`url(#whiteMatte-${uid})`}>
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              values="15 72 62; 28 72 62; 15 72 62"
+              dur="4s"
+              repeatCount="indefinite"
+              calcMode="spline"
+              keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+              keyTimes="0;0.5;1"
+              begin="2s"
+            />
+          </circle>
+        </g>
+
+        {/* Head */}
+        <g>
+          <ellipse cx="50" cy="30" rx="18" ry="20" fill={`url(#whiteMatte-${uid})`} stroke="none" />
+          <ellipse cx="50" cy="30" rx="16" ry="18" fill={`url(#lightGrey-${uid})`} />
+          <line x1="50" y1="8" x2="50" y2="12" stroke="#1a1a1a" strokeWidth="2.5" strokeLinecap="round" />
+          <circle cx="50" cy="8" r="3" fill="#00bcd4" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite" />
+          </circle>
+          {/* Face screen */}
+          <ellipse cx="50" cy="32" rx="14" ry="16" fill="#1a1a1a" opacity="0.96" />
+          <ellipse cx="50" cy="29" rx="9" ry="6" fill={`url(#eyeHighlight-${uid})`} opacity="0.15" />
+          {/* Eyes */}
+          <ellipse cx="44" cy="29" rx="4" ry="5" fill={`url(#cyanGlow-${uid})`} style={{ filter: `url(#cyan-glow-${uid})` }}>
+            <animate attributeName="opacity" values="0.85;1;0.85" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" />
+          </ellipse>
+          <ellipse cx="56" cy="29" rx="4" ry="5" fill={`url(#cyanGlow-${uid})`} style={{ filter: `url(#cyan-glow-${uid})` }}>
+            <animate attributeName="opacity" values="0.85;1;0.85" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1; 0.4 0 0.6 1" keyTimes="0;0.5;1" begin="0.5s" />
+          </ellipse>
+          <ellipse cx="44.8" cy="28" rx="1.4" ry="1.8" fill={`url(#eyeHighlight-${uid})`} />
+          <ellipse cx="55.2" cy="28" rx="1.4" ry="1.8" fill={`url(#eyeHighlight-${uid})`} />
+          {/* Blink */}
+          <rect x="39" y="25" width="10" height="7" fill="#1a1a1a" rx="3.5" opacity="0">
+            <animate attributeName="opacity" values="0;0;0;0;1;1;0;0;0;0" dur="3s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.2;0.25;0.27;0.3;0.33;0.35;0.4;0.6;1" begin="1s" />
+          </rect>
+          <rect x="51" y="25" width="10" height="7" fill="#1a1a1a" rx="3.5" opacity="0">
+            <animate attributeName="opacity" values="0;0;0;0;1;1;0;0;0;0" dur="3s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.2;0.25;0.27;0.3;0.33;0.35;0.4;0.6;1" begin="1.05s" />
+          </rect>
+          {/* Head float (offset phase) */}
+          <animateTransform
+            attributeName="transform"
+            type="translate"
+            values="0,0; 0,-2; 0,0"
+            dur="5s"
+            repeatCount="indefinite"
+            calcMode="spline"
+            keySplines="0.4 0 0.6 1; 0.4 0 0.6 1"
+            keyTimes="0;0.5;1"
+            begin="0.8s"
+          />
+        </g>
+      </svg>
+    </div>
+  );
+};
+
+export default FloatingRobot;
+
+/**
+ * RoamingFloatingRobot — the same mascot, but it glides to a new random spot
+ * across the viewport every few seconds (like the sign-in page robot that
+ * wanders around the card). Fixed position, behind page content, no pointer
+ * events so it never blocks taps.
+ */
+import { useEffect, useRef } from 'react';
+
+export const RoamingFloatingRobot = ({ size = 56 }: { size?: number }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const move = () => {
+      if (!alive || !ref.current) return;
+      const margin = 48;
+      const maxX = Math.max(window.innerWidth - margin * 2 - size, 0);
+      const maxY = Math.max(window.innerHeight - margin * 2 - size, 0);
+      const x = margin + Math.random() * maxX;
+      const y = margin + Math.random() * maxY;
+      ref.current.style.left = `${x}px`;
+      ref.current.style.top = `${y}px`;
+    };
+    move();
+    const id = window.setInterval(move, 6500);
+    return () => {
+      alive = false;
+      window.clearInterval(id);
+    };
+  }, [size]);
+
+  return (
+    <div
+      ref={ref}
+      className="fixed z-0 pointer-events-none"
+      style={{
+        transition: 'left 5.5s cubic-bezier(0.45, 0, 0.55, 1), top 5.5s cubic-bezier(0.45, 0, 0.55, 1)',
+        willChange: 'left, top',
+      }}
+    >
+      <FloatingRobot size={size} className="animate-[float_5s_ease-in-out_infinite]" />
+    </div>
+  );
+};

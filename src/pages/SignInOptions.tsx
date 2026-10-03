@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
+import { RoamingFloatingRobot } from "@/components/FloatingRobot";
 
 // Inline brand icons
 const GoogleIcon = () => (
@@ -207,8 +208,10 @@ const SignInOptions = () => {
     <Layout>
       <div className="relative min-h-screen flex flex-col items-center justify-start sm:justify-center px-4 pt-20 pb-20 sm:pt-10 sm:pb-10 bg-gradient-to-b from-white via-gray-50 to-gray-100 overflow-x-hidden">
 
-        {/* Heading layered over the homescreen story doodle — same composition as the landing page,
-            where the sketch wraps around the brand at the center hub */}
+        {/* Floating robot mascot — same one from the sign-in page, roaming the
+            whole page behind the content. Lives outside the transformed blocks
+            so its fixed positioning works. */}
+        <RoamingFloatingRobot size={56} />
         <div className="relative z-10 w-full h-44 sm:h-96 max-w-[24rem] sm:max-w-md mx-auto mb-4 sm:mb-5 -translate-y-[7rem]">
           {/* Story doodle — pushed to the LOWER part of the block so it sits
               beneath the wordmark instead of cluttering it */}
