@@ -4,9 +4,13 @@
  * body/head, blinking eyes, swinging arms, pulsing shadow) run inside the SVG,
  * so no external state or CSS is needed. Size it via the `size` prop.
  */
+import { useEffect, useRef, useMemo } from 'react';
+
 const FloatingRobot = ({ size = 56, className = '' }: { size?: number; className?: string }) => {
-  // Unique gradient/filter IDs per instance so multiple robots can coexist
-  const uid = `fr${Math.random().toString(36).slice(2, 8)}`;
+  // Unique gradient/filter IDs per instance so multiple robots can coexist.
+  // useMemo keeps IDs stable across re-renders (a new random ID on every render
+  // would remount the SVG defs and can make the robot flash/disappear).
+  const uid = useMemo(() => `fr${Math.random().toString(36).slice(2, 8)}`, []);
   return (
     <div className={className} style={{ width: size, height: size, pointerEvents: 'none' }}>
       <svg
@@ -161,33 +165,49 @@ export default FloatingRobot;
 /**
  * RoamingFloatingRobot — the same mascot, but it glides to a new random spot
  * across the viewport every few seconds (like the sign-in page robot that
- * wanders around the card). Fixed position, behind page content, no pointer
- * events so it never blocks taps.
+ * wanders around the card). Fixed position, floats above page content, no
+ * pointer events so it never blocks taps.
  */
-import { useEffect, useRef } from 'react';
-
-export const RoamingFloatingRobot = ({ size = 56 }: { size?: number }) => {
+export const RoamingFloatingRobot = ({ size = 56, avoidSelector }: { size?: number; avoidSelector?: string }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let alive = true;
+
+    const intersectsAvoid = (x: number, y: number): boolean => {
+      if (!avoidSelector) return false;
+      const zone = document.querySelector(avoidSelector);
+      if (!zone) return false;
+      const r = zone.getBoundingClientRect();
+      // Robot box overlaps the avoid zone (with a little padding)
+      return x < r.right + 8 && x + size > r.left - 8 && y < r.bottom + 8 && y + size > r.top - 8;
+    };
+
     const move = () => {
       if (!alive || !ref.current) return;
       const margin = 48;
       const maxX = Math.max(window.innerWidth - margin * 2 - size, 0);
       const maxY = Math.max(window.innerHeight - margin * 2 - size, 0);
-      const x = margin + Math.random() * maxX;
-      const y = margin + Math.random() * maxY;
+      // Try a few times to land in the open (not behind cards/titles);
+      // if every try overlaps, take the last one anyway so it keeps moving.
+      let x = 0;
+      let y = 0;
+      for (let attempt = 0; attempt < 12; attempt++) {
+        x = margin + Math.random() * maxX;
+        y = margin + Math.random() * maxY;
+        if (!intersectsAvoid(x, y)) break;
+      }
       ref.current.style.left = `${x}px`;
       ref.current.style.top = `${y}px`;
     };
+
     move();
     const id = window.setInterval(move, 6500);
     return () => {
       alive = false;
       window.clearInterval(id);
     };
-  }, [size]);
+  }, [size, avoidSelector]);
 
   return (
     <div

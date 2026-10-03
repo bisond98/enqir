@@ -209,9 +209,10 @@ const SignInOptions = () => {
       <div className="relative min-h-screen flex flex-col items-center justify-start sm:justify-center px-4 pt-20 pb-20 sm:pt-10 sm:pb-10 bg-gradient-to-b from-white via-gray-50 to-gray-100 overflow-x-hidden">
 
         {/* Floating robot mascot — same one from the sign-in page, roaming the
-            whole page behind the content. Lives outside the transformed blocks
+            whole page behind the content (it ducks under cards/titles but picks
+            open spots so it stays visible). Lives outside the transformed blocks
             so its fixed positioning works. */}
-        <RoamingFloatingRobot size={56} />
+        <RoamingFloatingRobot size={56} avoidSelector=".signup-buttons-card" />
         <div className="relative z-10 w-full h-44 sm:h-96 max-w-[24rem] sm:max-w-md mx-auto mb-4 sm:mb-5 -translate-y-[7rem]">
           {/* Story doodle — pushed to the LOWER part of the block so it sits
               beneath the wordmark instead of cluttering it */}
@@ -284,7 +285,7 @@ const SignInOptions = () => {
 
         {/* Provider buttons — pushed to the lower part of the screen on mobile, heading stays put.
             Card styled like the Enter-Phone-Number page's form card (border, shadow stack, padding). */}
-        <div className="relative z-10 w-full max-w-sm mt-auto sm:mt-0 -translate-y-[3rem]">
+        <div className="signup-buttons-card relative z-10 w-full max-w-sm mt-auto sm:mt-0 -translate-y-[3rem]">
           <div className="border-[0.25px] border-black/30 bg-white/95 backdrop-blur-sm rounded-3xl px-7 py-9 sm:px-10 sm:py-12 shadow-[0_2px_0_0_rgba(0,0,0,0.09),0_0_14px_rgba(0,0,0,0.08),0_10px_26px_rgba(0,0,0,0.14)]">
             <div className="w-full space-y-4">
           {/* Mobile */}
