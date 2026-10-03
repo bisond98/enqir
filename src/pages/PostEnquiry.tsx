@@ -3401,7 +3401,7 @@ export default function PostEnquiry() {
                             ? 'Upload your Resume (optional)'
                             : isJobEnquiry(selectedCategories, category) && jobDirection === 'hiring'
                             ? 'Workspace, etc. (optional)'
-                            : 'Show your need (optional)'}
+                            : 'Optional'}
                         </Label>
                         {referenceImageUrls.length > 0 && (
                           <div className="grid grid-cols-3 gap-2 mb-3">
@@ -3435,7 +3435,7 @@ export default function PostEnquiry() {
                             >
                               {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking'
                                 ? (referenceImageUrls.length === 0 ? 'Choose File' : 'Add More Files')
-                                : (referenceImageUrls.length === 0 ? 'Choose Image' : 'Add More Images')}
+                                : (referenceImageUrls.length === 0 ? 'Reference' : 'Add More References')}
                             </label>
                             <p className="text-[11px] text-slate-600 mt-2 text-right">
                               {referenceImageUrls.length}/5
