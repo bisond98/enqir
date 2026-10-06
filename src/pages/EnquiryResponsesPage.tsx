@@ -951,7 +951,7 @@ const EnquiryResponsesPage = () => {
                       {/* Content */}
                       <div className="relative z-10 flex items-center min-h-full py-4 sm:py-6 lg:py-8">
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-base sm:text-lg lg:text-xl font-bold text-gray-800 tracking-tight drop-shadow-sm flex items-center"
+                          <span className={`font-bold text-gray-800 tracking-tight drop-shadow-sm flex items-center ${isJobCategory ? 'text-[10px] sm:text-xs lg:text-sm' : 'text-base sm:text-lg lg:text-xl'}`}
                             style={{
                               transform: 'translateZ(10px)',
                               textShadow: '0 2px 4px rgba(0,0,0,0.1)'
