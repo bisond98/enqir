@@ -81,6 +81,9 @@ const EnquiryResponsesPage = () => {
   const [responses, setResponses] = useState<Response[]>([]);
   // Jobs & services talk about salary, not offer
   const useSalaryWording = !!enquiry && ['jobs', 'job', 'service', 'services'].some(k => enquiry.category.toLowerCase().includes(k));
+  // Jobs category: responders are "Users" (not Sellers) and their quote is "User's Demand"
+  const isJobCategory = !!enquiry && ['jobs', 'job'].some(k => enquiry.category.toLowerCase().includes(k));
+  const responderNoun = isJobCategory ? 'User' : 'Seller';
   const [loading, setLoading] = useState(true);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   // Call Seller — popup shows the seller's number directly (buyer already paid to view responses)
@@ -914,7 +917,7 @@ const EnquiryResponsesPage = () => {
                     {/* Seller Info - chips row: user code chip left, Seller 1/1 chip right */}
                     <div className="flex items-center justify-between gap-2 w-full">
                       <h4 className="font-black text-[10px] sm:text-xs lg:text-sm text-black truncate border border-black rounded-full px-2.5 py-1">{getSellerCode(response.sellerId)}</h4>
-                      <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-black border border-black/30 bg-gray-50 rounded-full px-2.5 py-1 whitespace-nowrap">Seller {index + 1}/{visibleResponses.length}</span>
+                      <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-black border border-black/30 bg-gray-50 rounded-full px-2.5 py-1 whitespace-nowrap">{responderNoun} {index + 1}/{visibleResponses.length}</span>
                     </div>
                     
                     {/* Seller's Quote (top) — jobs/services only; other categories show the offer card at the bottom instead */}
@@ -953,7 +956,7 @@ const EnquiryResponsesPage = () => {
                               transform: 'translateZ(10px)',
                               textShadow: '0 2px 4px rgba(0,0,0,0.1)'
                             }}
-                          >Seller {index + 1} {useSalaryWording ? 'salary' : 'offer'}</span>
+                          >{responderNoun} {index + 1} {useSalaryWording ? (isJobCategory ? "User's Demand" : 'salary') : 'offer'}</span>
                           <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-gray-600 mx-2 sm:mx-3 lg:mx-4 flex-shrink-0" style={{ transform: 'translateZ(10px)' }} />
                           <div className="flex items-center space-x-1 sm:space-x-1.5">
                             <div className="relative w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg sm:rounded-xl flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.9)] ring-2 ring-gray-300/50 transform group-hover/quote:scale-110 transition-transform duration-300"

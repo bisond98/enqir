@@ -195,6 +195,11 @@ const DetailedResponses = () => {
 
   const visibleResponses = getVisibleResponses();
 
+  // Job-category enquiries call responders "User" (not "Seller") and show
+  // the quoted amount under a "User's Demand" heading
+  const isJobCategoryEnquiry = !!enquiry && ['jobs', 'job'].some(k => enquiry.category.toLowerCase().includes(k));
+  const responderNoun = isJobCategoryEnquiry ? 'User' : 'Seller';
+
   // Check if enquiry is expired
   const isEnquiryExpired = enquiry && enquiry.deadline ? (() => {
     const now = new Date();
@@ -302,7 +307,7 @@ const DetailedResponses = () => {
           {visibleResponses.length > 0 ? (
             <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between mb-2 sm:mb-3">
-                <h2 className="text-base sm:text-xl font-bold text-slate-900">Seller Responses</h2>
+                <h2 className="text-base sm:text-xl font-bold text-slate-900">{responderNoun} Responses</h2>
                 <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-600">
                   <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span>{visibleResponses.length} available</span>
@@ -337,6 +342,7 @@ const DetailedResponses = () => {
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0">
+                          <div className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-0.5">User's Demand</div>
                           <div className="text-base sm:text-lg font-bold font-chip text-emerald-400">₹{response.price}</div>
                           <div className="text-[9px] sm:text-[10px] font-chip text-gray-400">Starting price</div>
                         </div>
