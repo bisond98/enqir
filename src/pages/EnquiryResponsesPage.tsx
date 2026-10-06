@@ -995,7 +995,7 @@ const EnquiryResponsesPage = () => {
                             // Documents (resumes) download directly; images keep
                             // the existing fullscreen viewer
                             if (isDoc) {
-                              downloadAttachment(imageUrl);
+                              downloadAttachment(imageUrl, attachmentFileName(imageUrl, imgIndex, response.imageNames));
                             } else {
                               console.log('Image clicked:', imageUrl);
                               setFullscreenImage(imageUrl);

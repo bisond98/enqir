@@ -2155,7 +2155,7 @@ const Admin = () => {
                                           {isDoc ? (
                                             <div 
                                               className="w-full h-16 sm:h-20 rounded-lg border-4 border-black bg-slate-100 flex flex-col items-center justify-center gap-0.5 px-1 cursor-pointer"
-                                              onClick={() => downloadAttachment(url)}
+                                              onClick={() => downloadAttachment(url, attachmentFileName(url, index, submission.imageNames))}
                                             >
                                               <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-slate-600" />
                                               <span className="text-[8px] sm:text-[9px] font-semibold text-slate-600 text-center line-clamp-1">

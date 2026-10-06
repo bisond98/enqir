@@ -365,7 +365,7 @@ const DetailedResponses = () => {
                                   // Documents (resumes etc.) download directly;
                                   // images keep the existing fullscreen viewer
                                   if (isDocumentUrl(imageUrl)) {
-                                    downloadAttachment(imageUrl);
+                                    downloadAttachment(imageUrl, attachmentFileName(imageUrl, imgIndex, response.imageNames));
                                   } else {
                                     handleImageClick(imageUrl);
                                   }

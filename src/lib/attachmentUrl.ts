@@ -31,13 +31,53 @@ export const toAttachmentDownloadUrl = (url: string): string => {
   return url;
 };
 
-/** Trigger a direct download of a document attachment. */
-export const downloadAttachment = (url: string): void => {
-  const a = document.createElement('a');
-  a.href = toAttachmentDownloadUrl(url);
-  a.target = '_blank';
-  a.rel = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+/**
+ * Trigger a download of a document attachment without ever navigating the user
+ * to a Cloudinary URL:
+ *
+ * 1. fetch() the file bytes in the background (Cloudinary sends
+ *    `access-control-allow-origin: *`, so this works cross-origin)
+ * 2. wrap them in a Blob and create a `blob:https://enqir.in/...` object URL
+ * 3. click an invisible anchor pointing at the blob URL
+ *
+ * The user stays on the page — no new tab, no address-bar flash, no visible
+ * res.cloudinary.com address. Falls back to opening the fl_attachment URL if
+ * fetch is unavailable or fails (e.g. offline).
+ */
+export const downloadAttachment = async (url: string, fileNameOverride?: string): Promise<void> => {
+  const fileName = fileNameOverride || (() => {
+    try {
+      const path = new URL(url, window.location.origin).pathname;
+      return decodeURIComponent(path.split('/').pop() || '') || 'document';
+    } catch {
+      return 'document';
+    }
+  })();
+
+  try {
+    const response = await fetch(toAttachmentDownloadUrl(url));
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    // Release the blob once the browser has picked it up
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 30_000);
+  } catch {
+    // Fallback: old behaviour (opens fl_attachment URL, which still forces a
+    // download via Cloudinary's content-disposition header)
+    const a = document.createElement('a');
+    a.href = toAttachmentDownloadUrl(url);
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
 };
