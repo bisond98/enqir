@@ -18,7 +18,7 @@ import LoadingAnimation from "@/components/LoadingAnimation";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
 import { addDoc, collection, serverTimestamp, doc, getDoc, updateDoc, query, where, getDocs, onSnapshot, increment } from "firebase/firestore";
-import { uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
+import { uploadToCloudinaryUnsigned, uploadToCloudinaryAuto } from "@/integrations/cloudinary";
 import { processPayment } from "@/services/paymentService";
 import { PAYMENT_PLANS } from "@/config/paymentPlans";
 import { realtimeAI } from "@/services/ai/realtimeAI";
@@ -103,6 +103,8 @@ const SellerResponse = () => {
   const [price, setPrice] = useState("");
   const [notes, setNotes] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  // Original filenames for uploaded files (matters for resumes on hiring forms)
+  const [fileNames, setFileNames] = useState<string[]>([]);
   const [uploadProgresses, setUploadProgresses] = useState<number[]>([]);
   const [uploading, setUploading] = useState(false);
                         const submitButtonRef = useRef<HTMLDivElement>(null);
@@ -600,7 +602,7 @@ const SellerResponse = () => {
   const onAddImages = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     if (images.length >= 5) {
-      toast({ title: 'Image limit reached', description: 'You can upload up to 5 images only.', variant: 'destructive' });
+      toast({ title: isHiringEnquiry ? 'File limit reached' : 'Image limit reached', description: isHiringEnquiry ? 'You can upload up to 5 files only.' : 'You can upload up to 5 images only.', variant: 'destructive' });
       return;
     }
     setUploading(true);
@@ -624,7 +626,13 @@ const SellerResponse = () => {
           });
         }, 200);
 
-        const url = await uploadToCloudinaryUnsigned(selectedFiles[i]);
+        // Resume attachments (hiring enquiries) can be PDF/DOC — route them
+        // through the auto uploader, which skips image compression and posts
+        // to Cloudinary's /auto endpoint. Image files keep the exact existing path.
+        const isResumeFile = isHiringEnquiry && !selectedFiles[i].type.startsWith('image/');
+        const url = isResumeFile
+          ? await uploadToCloudinaryAuto(selectedFiles[i])
+          : await uploadToCloudinaryUnsigned(selectedFiles[i]);
 
         clearInterval(progressInterval);
         setUploadProgresses(prev => {
@@ -634,14 +642,17 @@ const SellerResponse = () => {
         });
         urls.push(url);
       }
+      // Track the original filenames of any non-image attachments (resumes)
+      // so they can be stored alongside the response
+      setFileNames(prev => [...prev, ...selectedFiles.filter(f => !f.type.startsWith('image/')).map(f => f.name)].slice(0, 5));
       if (files.length > selectedFiles.length) {
-        toast({ title: 'Only 5 images allowed', description: `Only ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'} could be added — extra selected images were skipped.` });
+        toast({ title: isHiringEnquiry ? 'Only 5 files allowed' : 'Only 5 images allowed', description: `Only ${remainingSlots} more ${isHiringEnquiry ? 'file' + (remainingSlots === 1 ? '' : 's') : 'image' + (remainingSlots === 1 ? '' : 's')} could be added — extra selected ${isHiringEnquiry ? 'files' : 'images'} were skipped.` });
       }
       setImages((prev) => [...prev, ...urls].slice(0, 5));
       // Clear progress after a short delay
       setTimeout(() => setUploadProgresses([]), 1000);
     } catch {
-      toast({ title: 'Upload failed', description: 'Could not upload one or more images.', variant: 'destructive' });
+      toast({ title: 'Upload failed', description: isHiringEnquiry ? 'Could not upload one or more files.' : 'Could not upload one or more images.', variant: 'destructive' });
       setUploadProgresses([]);
     } finally {
       setUploading(false);
@@ -650,6 +661,7 @@ const SellerResponse = () => {
 
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+    setFileNames(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleGovIdUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -972,7 +984,11 @@ const SellerResponse = () => {
           console.log('📤 Saving offer to Firebase...');
 
         const validImageUrls = images.filter(url => url && url.trim() !== "");
-        const validImageNames = validImageUrls.map((_, i) => `image-${i + 1}.jpg`);
+        // Keep the real filename for resume attachments; fall back to the old
+        // generated names for plain image responses (unchanged behaviour)
+        const validImageNames = isHiringEnquiry && fileNames.length === validImageUrls.length
+          ? fileNames
+          : validImageUrls.map((_, i) => `image-${i + 1}.jpg`);
 
         const responseData: SellerSubmission = {
           enquiryId: enquiryId!,
@@ -1788,7 +1804,17 @@ const SellerResponse = () => {
                     <div className="grid grid-cols-3 gap-2 mb-3">
                       {images.map((url, i) => (
                         <div key={i} className="relative group">
-                          <img src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
+                          {isHiringEnquiry && !/\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(url) ? (
+                            /* Resume/document attachment — icon tile, not an <img> */
+                            <div className="w-full h-20 rounded-lg border border-black/10 bg-slate-100 flex flex-col items-center justify-center gap-0.5">
+                              <FileText className="h-6 w-6 text-slate-600" />
+                              <span className="text-[8px] font-semibold text-slate-600 truncate max-w-[90%] px-1">
+                                {fileNames[i] || 'Document'}
+                              </span>
+                            </div>
+                          ) : (
+                            <img src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
+                          )}
                           <button
                             type="button"
                             onClick={() => removeImage(i)}
