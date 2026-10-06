@@ -9,7 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { db } from '@/firebase';
 import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot, increment, setDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
-import { Crown, Trash2, Eye, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server } from 'lucide-react';
+import { Crown, Trash2, Eye, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server, FileText } from 'lucide-react';
+import { isDocumentUrl, attachmentFileName } from '@/lib/attachmentUrl';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
@@ -2147,22 +2148,37 @@ const Admin = () => {
                                   <div className="mt-3">
                                     <p className="text-xs font-semibold text-gray-700 mb-2">Product Images</p>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-                            {submission.imageUrls.map((url, index) => (
+                            {submission.imageUrls.map((url, index) => {
+                                        const isDoc = isDocumentUrl(url);
+                                        return (
                                         <div key={index} className="relative group cursor-pointer">
-                                  <img 
-                                    src={url} 
-                                    alt={`Product ${index + 1}`} 
-                                            className="w-full h-16 sm:h-20 object-cover rounded-lg border-4 border-black hover:opacity-80 transition-opacity"
-                                    onClick={() => window.open(url, '_blank')}
-                                  />
-                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                                          {isDoc ? (
+                                            <div 
+                                              className="w-full h-16 sm:h-20 rounded-lg border-4 border-black bg-slate-100 flex flex-col items-center justify-center gap-0.5 px-1"
+                                              onClick={() => window.open(url, '_blank', 'noopener')}
+                                            >
+                                              <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-slate-600" />
+                                              <span className="text-[8px] sm:text-[9px] font-semibold text-slate-600 text-center line-clamp-1">
+                                                {attachmentFileName(url, index, submission.imageNames)}
+                                              </span>
+                                            </div>
+                                          ) : (
+                                            <img 
+                                              src={url} 
+                                              alt={`Product ${index + 1}`} 
+                                              className="w-full h-16 sm:h-20 object-cover rounded-lg border-4 border-black hover:opacity-80 transition-opacity"
+                                              onClick={() => window.open(url, '_blank')}
+                                            />
+                                          )}
+                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center pointer-events-none">
                                             <Eye className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                                   </div>
                                           <p className="text-[9px] text-gray-600 mt-1 truncate">
-                                            {submission.imageNames[index] || `Img ${index + 1}`}
+                                            {submission.imageNames[index] || (isDoc ? attachmentFileName(url, index) : `Img ${index + 1}`)}
                                           </p>
                               </div>
-                            ))}
+                                        );
+                            })}
                           </div>
                         </div>
                       )}

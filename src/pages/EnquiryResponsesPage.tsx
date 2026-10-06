@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Filter, Phone } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, Clock, CheckCircle, AlertTriangle, Star, MessageSquare, Image as ImageIcon, Crown, X, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Filter, Phone, FileText } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import CallNumberPopup from "../components/CallNumberPopup";
 import ScamAlertOverlay from "@/components/ScamAlertOverlay";
@@ -17,6 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import CountdownTimer from "@/components/CountdownTimer";
 import { PaymentPlan, PAYMENT_PLANS } from "@/config/paymentPlans";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { isDocumentUrl, attachmentFileName } from "@/lib/attachmentUrl";
 
 interface Enquiry {
   id: string;
@@ -984,29 +985,50 @@ const EnquiryResponsesPage = () => {
                 {response.imageUrls && response.imageUrls.length > 0 && (
                   <div className="pb-3 sm:pb-5 lg:pb-6">
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
-                      {response.imageUrls.map((imageUrl, imgIndex) => (
+                      {response.imageUrls.map((imageUrl, imgIndex) => {
+                        const isDoc = isDocumentUrl(imageUrl);
+                        return (
                         <div 
                           key={imgIndex} 
                           className="relative group cursor-pointer rounded-lg sm:rounded-xl overflow-hidden shadow-md sm:shadow-lg lg:hover:shadow-2xl transition-all duration-300 sm:hover:-translate-y-1 lg:hover:-translate-y-2 border-[0.5px] border-black"
                           onClick={() => {
-                            console.log('Image clicked:', imageUrl);
-                            setFullscreenImage(imageUrl);
+                            // Documents (resumes) open in a new tab; images keep
+                            // the existing fullscreen viewer
+                            if (isDoc) {
+                              window.open(imageUrl, '_blank', 'noopener');
+                            } else {
+                              console.log('Image clicked:', imageUrl);
+                              setFullscreenImage(imageUrl);
+                            }
                           }}
                         >
-                          <img 
-                            src={imageUrl} 
-                            alt={`Response image ${imgIndex + 1}`}
-                            className="w-full h-20 sm:h-24 lg:h-32 xl:h-40 object-cover transition-transform duration-300 sm:group-hover:scale-110"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-2 sm:pb-3">
-                            <div className="bg-white rounded-full p-2 sm:p-3 transform translate-y-2 sm:translate-y-4 sm:group-hover:translate-y-0 transition-transform duration-300 shadow-lg sm:shadow-xl">
-                              <Eye className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-black" />
+                          {isDoc ? (
+                            <div className="w-full h-20 sm:h-24 lg:h-32 xl:h-40 bg-slate-100 flex flex-col items-center justify-center gap-1.5 px-2">
+                              <FileText className="h-6 w-6 lg:h-8 lg:w-8 text-slate-600" />
+                              <span className="text-[9px] sm:text-[10px] font-semibold text-slate-600 text-center line-clamp-2">
+                                {attachmentFileName(imageUrl, imgIndex, response.imageNames)}
+                              </span>
+                              <span className="text-[8px] sm:text-[9px] text-slate-400">Open file</span>
                             </div>
-                          </div>
+                          ) : (
+                            <img 
+                              src={imageUrl} 
+                              alt={`Response image ${imgIndex + 1}`}
+                              className="w-full h-20 sm:h-24 lg:h-32 xl:h-40 object-cover transition-transform duration-300 sm:group-hover:scale-110"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          )}
+                          {!isDoc && (
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-2 sm:pb-3">
+                              <div className="bg-white rounded-full p-2 sm:p-3 transform translate-y-2 sm:translate-y-4 sm:group-hover:translate-y-0 transition-transform duration-300 shadow-lg sm:shadow-xl">
+                                <Eye className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-black" />
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}

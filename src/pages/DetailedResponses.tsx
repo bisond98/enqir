@@ -7,11 +7,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ArrowLeft, MessageSquare, Shield, ImageIcon, Crown, Lock, Eye, Star, Clock, User, CheckCircle, X } from "lucide-react";
+import { ArrowLeft, MessageSquare, Shield, ImageIcon, Crown, Lock, Eye, Star, Clock, User, CheckCircle, X, FileText } from "lucide-react";
 import Layout from "@/components/Layout";
 import { getPrivacyProtectedName, isUserVerified } from "@/utils/privacy";
 import VerificationBadge from "@/components/VerificationBadge";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { isDocumentUrl, attachmentFileName } from "@/lib/attachmentUrl";
 
 interface Enquiry {
   id: string;
@@ -37,6 +38,7 @@ interface SellerSubmission {
   message: string;
   price: string;
   imageUrls: string[];
+  imageNames?: string[];
   imageCount: number;
   isIdentityVerified: boolean;
   createdAt: any;
@@ -359,19 +361,37 @@ const DetailedResponses = () => {
                               <div
                                 key={imgIndex}
                                 className="aspect-square bg-slate-100 rounded-md sm:rounded-lg overflow-hidden border-[0.5px] border-black/40 cursor-pointer hover:opacity-90 transition-opacity"
-                                onClick={() => handleImageClick(imageUrl)}
+                                onClick={() => {
+                                  // Documents (resumes etc.) open in a new tab;
+                                  // images keep the existing fullscreen viewer
+                                  if (isDocumentUrl(imageUrl)) {
+                                    window.open(imageUrl, '_blank', 'noopener');
+                                  } else {
+                                    handleImageClick(imageUrl);
+                                  }
+                                }}
                               >
-                                <img
-                                  src={imageUrl}
-                                  alt={`Product ${imgIndex + 1}`}
-                                  className="w-full h-full object-cover"
-                                  loading="lazy"
-                                  decoding="async"
-                                  onError={(e) => {
-                                    console.error('Image load error:', imageUrl);
-                                    e.currentTarget.style.display = 'none';
-                                  }}
-                                />
+                                {isDocumentUrl(imageUrl) ? (
+                                  <div className="w-full h-full flex flex-col items-center justify-center gap-1 px-1">
+                                    <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-slate-600" />
+                                    <span className="text-[8px] sm:text-[9px] font-semibold text-slate-600 text-center line-clamp-2">
+                                      {attachmentFileName(imageUrl, imgIndex, response.imageNames)}
+                                    </span>
+                                    <span className="text-[7px] sm:text-[8px] text-slate-400">Open</span>
+                                  </div>
+                                ) : (
+                                  <img
+                                    src={imageUrl}
+                                    alt={`Product ${imgIndex + 1}`}
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                    decoding="async"
+                                    onError={(e) => {
+                                      console.error('Image load error:', imageUrl);
+                                      e.currentTarget.style.display = 'none';
+                                    }}
+                                  />
+                                )}
                               </div>
                             ))}
                           </div>
