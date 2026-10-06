@@ -17,7 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import CountdownTimer from "@/components/CountdownTimer";
 import { PaymentPlan, PAYMENT_PLANS } from "@/config/paymentPlans";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
-import { isDocumentUrl, attachmentFileName } from "@/lib/attachmentUrl";
+import { isDocumentUrl, attachmentFileName, downloadAttachment } from "@/lib/attachmentUrl";
 
 interface Enquiry {
   id: string;
@@ -992,10 +992,10 @@ const EnquiryResponsesPage = () => {
                           key={imgIndex} 
                           className="relative group cursor-pointer rounded-lg sm:rounded-xl overflow-hidden shadow-md sm:shadow-lg lg:hover:shadow-2xl transition-all duration-300 sm:hover:-translate-y-1 lg:hover:-translate-y-2 border-[0.5px] border-black"
                           onClick={() => {
-                            // Documents (resumes) open in a new tab; images keep
+                            // Documents (resumes) download directly; images keep
                             // the existing fullscreen viewer
                             if (isDoc) {
-                              window.open(imageUrl, '_blank', 'noopener');
+                              downloadAttachment(imageUrl);
                             } else {
                               console.log('Image clicked:', imageUrl);
                               setFullscreenImage(imageUrl);
@@ -1008,7 +1008,7 @@ const EnquiryResponsesPage = () => {
                               <span className="text-[9px] sm:text-[10px] font-semibold text-slate-600 text-center line-clamp-2">
                                 {attachmentFileName(imageUrl, imgIndex, response.imageNames)}
                               </span>
-                              <span className="text-[8px] sm:text-[9px] text-slate-400">Open file</span>
+                              <span className="text-[8px] sm:text-[9px] font-bold text-white bg-blue-600 rounded-full px-2.5 py-1">Download</span>
                             </div>
                           ) : (
                             <img 

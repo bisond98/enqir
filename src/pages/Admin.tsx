@@ -10,7 +10,7 @@ import { db } from '@/firebase';
 import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot, increment, setDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import { Crown, Trash2, Eye, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server, FileText } from 'lucide-react';
-import { isDocumentUrl, attachmentFileName } from '@/lib/attachmentUrl';
+import { isDocumentUrl, attachmentFileName, downloadAttachment } from '@/lib/attachmentUrl';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
@@ -2154,13 +2154,14 @@ const Admin = () => {
                                         <div key={index} className="relative group cursor-pointer">
                                           {isDoc ? (
                                             <div 
-                                              className="w-full h-16 sm:h-20 rounded-lg border-4 border-black bg-slate-100 flex flex-col items-center justify-center gap-0.5 px-1"
-                                              onClick={() => window.open(url, '_blank', 'noopener')}
+                                              className="w-full h-16 sm:h-20 rounded-lg border-4 border-black bg-slate-100 flex flex-col items-center justify-center gap-0.5 px-1 cursor-pointer"
+                                              onClick={() => downloadAttachment(url)}
                                             >
                                               <FileText className="h-5 w-5 sm:h-6 sm:w-6 text-slate-600" />
                                               <span className="text-[8px] sm:text-[9px] font-semibold text-slate-600 text-center line-clamp-1">
                                                 {attachmentFileName(url, index, submission.imageNames)}
                                               </span>
+                                              <span className="text-[8px] font-bold text-white bg-blue-600 rounded-full px-2 py-0.5">Download</span>
                                             </div>
                                           ) : (
                                             <img 

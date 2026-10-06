@@ -12,7 +12,7 @@ import Layout from "@/components/Layout";
 import { getPrivacyProtectedName, isUserVerified } from "@/utils/privacy";
 import VerificationBadge from "@/components/VerificationBadge";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
-import { isDocumentUrl, attachmentFileName } from "@/lib/attachmentUrl";
+import { isDocumentUrl, attachmentFileName, downloadAttachment } from "@/lib/attachmentUrl";
 
 interface Enquiry {
   id: string;
@@ -362,10 +362,10 @@ const DetailedResponses = () => {
                                 key={imgIndex}
                                 className="aspect-square bg-slate-100 rounded-md sm:rounded-lg overflow-hidden border-[0.5px] border-black/40 cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => {
-                                  // Documents (resumes etc.) open in a new tab;
+                                  // Documents (resumes etc.) download directly;
                                   // images keep the existing fullscreen viewer
                                   if (isDocumentUrl(imageUrl)) {
-                                    window.open(imageUrl, '_blank', 'noopener');
+                                    downloadAttachment(imageUrl);
                                   } else {
                                     handleImageClick(imageUrl);
                                   }
@@ -377,7 +377,7 @@ const DetailedResponses = () => {
                                     <span className="text-[8px] sm:text-[9px] font-semibold text-slate-600 text-center line-clamp-2">
                                       {attachmentFileName(imageUrl, imgIndex, response.imageNames)}
                                     </span>
-                                    <span className="text-[7px] sm:text-[8px] text-slate-400">Open</span>
+                                    <span className="text-[7px] sm:text-[8px] font-bold text-white bg-blue-600 rounded-full px-2 py-0.5">Download</span>
                                   </div>
                                 ) : (
                                   <img

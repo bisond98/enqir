@@ -18,3 +18,26 @@ export const attachmentFileName = (url: string, index: number, names?: string[])
     return `Document ${index + 1}`;
   }
 };
+
+/**
+ * Cloudinary serves PDFs as raw bytes under /image/upload/, which renders as a
+ * blank browser tab. Inserting the fl_attachment flag makes Cloudinary return
+ * the file as a download with its filename, instead of a blank page.
+ */
+export const toAttachmentDownloadUrl = (url: string): string => {
+  if (/res\.cloudinary\.com/.test(url) && /\/upload\//.test(url) && !/fl_attachment/.test(url)) {
+    return url.replace('/upload/', '/upload/fl_attachment/');
+  }
+  return url;
+};
+
+/** Trigger a direct download of a document attachment. */
+export const downloadAttachment = (url: string): void => {
+  const a = document.createElement('a');
+  a.href = toAttachmentDownloadUrl(url);
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+};
