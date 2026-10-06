@@ -38,6 +38,7 @@ interface Enquiry {
   lastResponseAt?: any;
   idFrontImage?: string | null;
   idBackImage?: string | null;
+  details?: { jobDirection?: string } | null;
 }
 
 interface SellerSubmission {
@@ -224,6 +225,8 @@ const SellerResponse = () => {
   const [enquiry, setEnquiry] = useState<Enquiry | null>(null);
   // Job enquiries talk about salary, not budget/price
   const isJobEnquiry = !!enquiry && (enquiry.category === 'jobs' || enquiry.category === 'job' || enquiry.category.toLowerCase().includes('job'));
+  // Hiring enquiries collect a resume from respondents; other jobs keep photo wording
+  const isHiringEnquiry = isJobEnquiry && enquiry?.details?.jobDirection === 'hiring';
   const [loading, setLoading] = useState(true);
   const [isOwnEnquiry, setIsOwnEnquiry] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -1770,7 +1773,7 @@ const SellerResponse = () => {
                 <div className="text-center flex flex-col items-center justify-center">
                   <div className="flex items-center justify-center gap-2 mb-1 sm:mb-2">
                     <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
-                      Product Images
+                      {isHiringEnquiry ? 'Upload Resume' : 'Product Images'}
                     </h3>
                     <span className="text-[8px] sm:text-[9px] text-slate-400 font-medium">(optional)</span>
                   </div>
@@ -1802,7 +1805,7 @@ const SellerResponse = () => {
                       ref={responseImageInputRef}
                       type="file"
                       multiple={images.length < 4}
-                      accept="image/*"
+                      accept={isHiringEnquiry ? 'image/*,.pdf,.doc,.docx' : 'image/*'}
                       onChange={(e) => { onAddImages(e.target.files); if (responseImageInputRef.current) responseImageInputRef.current.value = ''; }}
                       disabled={uploading || images.length >= 5}
                       className="hidden"
@@ -1811,9 +1814,11 @@ const SellerResponse = () => {
                       htmlFor="response-images"
                       className="block w-full text-center !rounded-xl !border !border-black bg-blue-600 hover:bg-blue-700 text-white !transition-all !duration-200 py-3 text-sm font-black cursor-pointer !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] touch-manipulation select-none"
                     >
-                      {images.length === 0 ? 'Choose Image' : 'Add More Images'}
+                      {isHiringEnquiry
+                        ? (images.length === 0 ? 'Choose Resume' : 'Add More Files')
+                        : (images.length === 0 ? 'Choose Image' : 'Add More Images')}
                     </label>
-                    <p className="text-[9px] text-slate-400 mt-2 text-right">{images.length}/5 images</p>
+                    <p className="text-[9px] text-slate-400 mt-2 text-right">{images.length}/5 {isHiringEnquiry ? 'files' : 'images'}</p>
                     {uploading && uploadProgresses.length > 0 && (
                       <div className="mt-2 space-y-1">
                         {uploadProgresses.map((p, i) => (
