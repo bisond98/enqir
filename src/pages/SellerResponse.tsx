@@ -1716,7 +1716,7 @@ const SellerResponse = () => {
                         {isJobEnquiry ? 'Salary Offered' : "Buyer's Budget"}
                       </span>
                     </Label>
-                    <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
+                    <div className="border-4 rounded-lg px-1 sm:px-1.5 py-0.5 sm:py-0.5 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
                       <div className="flex flex-row items-center justify-between gap-2">
                         <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
                         {/* Accept button — fills the price with the buyer's exact budget, vertically centred in the card */}
@@ -1733,13 +1733,13 @@ const SellerResponse = () => {
                             }
                           }}
                           aria-pressed={budgetAccepted}
-                          className={`flex items-center self-center gap-1 text-[10px] sm:text-xs font-bold px-2.5 py-0.5 rounded-full transition-all duration-150 active:translate-y-[1px] ${
+                          className={`flex items-center self-center gap-0.5 text-[8px] sm:text-[9px] font-bold px-1.5 py-0 rounded-full transition-all duration-150 active:translate-y-[1px] ${
                             budgetAccepted
                               ? 'bg-emerald-500 text-white shadow-[0_2px_0_0_rgba(0,0,0,0.25)]'
                               : 'bg-white text-black hover:bg-gray-100 shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
                           }`}
                         >
-                          {budgetAccepted && <Check className="h-3 w-3" strokeWidth={3} />}
+                          {budgetAccepted && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
                           {budgetAccepted ? 'Accepted' : 'Accept'}
                         </button>
                       </div>
