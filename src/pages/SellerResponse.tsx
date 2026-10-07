@@ -1716,7 +1716,7 @@ const SellerResponse = () => {
                         {isJobEnquiry ? 'Salary Offered' : "Buyer's Budget"}
                       </span>
                     </Label>
-                    <div className="relative border-4 rounded-lg px-1 sm:px-1.5 py-0.5 sm:py-0.5 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
+                    <div className="relative border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
                       <div className="flex flex-row items-center justify-between gap-2 pr-20">
                         <span className="text-lg sm:text-xl font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
                       </div>
