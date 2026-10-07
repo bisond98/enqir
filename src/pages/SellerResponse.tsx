@@ -1717,12 +1717,9 @@ const SellerResponse = () => {
                       </span>
                     </Label>
                     <div className="relative border-4 rounded-lg px-1 sm:px-1.5 py-0.5 sm:py-0.5 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
-                      <div className="flex flex-row items-center justify-between gap-2">
-                        <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
+                      <div className="flex flex-row items-center justify-between gap-2 pr-20">
+                        <span className="text-lg sm:text-xl font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
                       </div>
-                      <p className="text-[9px] sm:text-[10px] text-white/90 mt-1 sm:mt-0.5">
-                        Remember, you're here to close a deal.
-                      </p>
                       {/* Accept button — fills the price with the buyer's exact budget,
                           pinned to the true vertical centre of the card */}
                       <button
@@ -1739,13 +1736,12 @@ const SellerResponse = () => {
                         }}
                         aria-pressed={budgetAccepted}
                         aria-label="Accept buyer's budget"
-                        className={`absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 px-2.5 py-1 rounded-full transition-all duration-150 active:translate-y-[calc(-50%+1px)] ${
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 flex items-center text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full transition-all duration-150 active:translate-y-[calc(-50%+1px)] ${
                           budgetAccepted
                             ? 'bg-emerald-500 shadow-[0_2px_0_0_rgba(0,0,0,0.25)]'
                             : 'bg-white hover:bg-gray-100 shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
                         }`}
                       >
-                        <Check strokeWidth={3} className={`h-3.5 w-3.5 ${budgetAccepted ? 'text-white' : 'text-black'}`} />
                         <span className={`text-[10px] sm:text-xs font-bold ${budgetAccepted ? 'text-white' : 'text-black'}`}>
                           {budgetAccepted ? 'Accepted' : 'Accept'}
                         </span>
