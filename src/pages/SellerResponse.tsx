@@ -1733,7 +1733,7 @@ const SellerResponse = () => {
                             }
                           }}
                           aria-pressed={budgetAccepted}
-                          className={`flex items-center self-center gap-0.5 text-[8px] sm:text-[9px] font-bold px-1.5 py-0 rounded-full transition-all duration-150 active:translate-y-[1px] ${
+                          className={`flex items-center self-center mt-[2px] gap-0.5 text-[8px] sm:text-[9px] font-bold px-1.5 py-0 rounded-full transition-all duration-150 active:translate-y-[1px] ${
                             budgetAccepted
                               ? 'bg-emerald-500 text-white shadow-[0_2px_0_0_rgba(0,0,0,0.25)]'
                               : 'bg-white text-black hover:bg-gray-100 shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
