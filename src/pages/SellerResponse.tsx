@@ -1709,15 +1709,22 @@ const SellerResponse = () => {
               <div className="space-y-3">
                 {/* Enquiry Budget Display */}
                 {enquiry && (
-                  <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
-                    <div className="flex flex-row items-center justify-between gap-2">
-                      <span className="text-[10px] sm:text-xs text-white font-semibold">{isJobEnquiry ? 'Salary Offered:' : "Buyer's Budget:"}</span>
-                      <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
+                  <>
+                    <Label className="text-xs sm:text-sm font-black text-black flex items-center">
+                      <span className="text-sm sm:text-base mr-2 sm:mr-2.5 text-black">₹</span>
+                      <span className="text-black">
+                        {isJobEnquiry ? 'Salary Offered' : "Buyer's Budget"}
+                      </span>
+                    </Label>
+                    <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
+                      <div className="flex flex-row items-center justify-end gap-2">
+                        <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
+                      </div>
+                      <p className="text-[9px] sm:text-[10px] text-white/90 mt-1 sm:mt-0.5">
+                        Remember, you're here to close a deal.
+                      </p>
                     </div>
-                    <p className="text-[9px] sm:text-[10px] text-white/90 mt-1 sm:mt-0.5">
-                      Remember, you're here to close a deal.
-                    </p>
-                  </div>
+                  </>
                 )}
 
                 {/* Accept tick — fills the price with the buyer's exact budget */}
