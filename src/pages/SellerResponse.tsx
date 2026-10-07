@@ -1717,7 +1717,7 @@ const SellerResponse = () => {
                       </span>
                     </Label>
                     <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
-                      <div className="flex flex-row items-center justify-end gap-2">
+                      <div className="flex flex-row items-center justify-start gap-2">
                         <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
                       </div>
                       <p className="text-[9px] sm:text-[10px] text-white/90 mt-1 sm:mt-0.5">
