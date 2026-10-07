@@ -1733,14 +1733,14 @@ const SellerResponse = () => {
                             }
                           }}
                           aria-pressed={budgetAccepted}
-                          className={`flex items-center self-center -my-1.5 mt-[0px] gap-1 text-[11px] sm:text-sm font-bold px-3 py-1 rounded-full transition-all duration-150 active:translate-y-[1px] ${
+                          aria-label="Accept buyer's budget"
+                          className={`flex items-center justify-center self-center h-8 w-8 -my-1 rounded-full transition-all duration-150 active:translate-y-[1px] ${
                             budgetAccepted
-                              ? 'bg-emerald-500 text-white shadow-[0_2px_0_0_rgba(0,0,0,0.25)]'
-                              : 'bg-white text-black hover:bg-gray-100 shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
+                              ? 'bg-emerald-500 shadow-[0_2px_0_0_rgba(0,0,0,0.25)]'
+                              : 'bg-white hover:bg-gray-100 shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
                           }`}
                         >
-                          {budgetAccepted && <Check className="h-3 w-3" strokeWidth={3} />}
-                          {budgetAccepted ? 'Accepted' : 'Accept'}
+                          <Check strokeWidth={3} className={`h-4 w-4 ${budgetAccepted ? 'text-white' : 'text-black'}`} />
                         </button>
                       </div>
                       <p className="text-[9px] sm:text-[10px] text-white/90 mt-1 sm:mt-0.5">
