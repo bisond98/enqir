@@ -1707,13 +1707,6 @@ const SellerResponse = () => {
 
               {/* Enhanced Price Field */}
               <div className="space-y-3">
-                <Label htmlFor="price" className="text-xs sm:text-sm font-black text-black flex items-center">
-                  <span className="text-sm sm:text-base mr-2 sm:mr-2.5 text-black">₹</span>
-                  <span className="text-black">
-                    {isJobEnquiry ? 'Salary Expectation *' : 'Your Price *'}
-                  </span>
-                </Label>
-                
                 {/* Enquiry Budget Display */}
                 {enquiry && (
                   <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
@@ -1758,7 +1751,14 @@ const SellerResponse = () => {
                     </span>
                   </button>
                 ) : null}
-                
+
+                <Label htmlFor="price" className="text-xs sm:text-sm font-black text-black flex items-center">
+                  <span className="text-sm sm:text-base mr-2 sm:mr-2.5 text-black">₹</span>
+                  <span className="text-black">
+                    {isJobEnquiry ? 'Salary Expectation *' : 'Your Price *'}
+                  </span>
+                </Label>
+
                 <div className="relative">
                 <Input
                   id="price"
