@@ -1717,7 +1717,30 @@ const SellerResponse = () => {
                       </span>
                     </Label>
                     <div className="border-4 rounded-lg px-1.5 sm:px-2 py-1 sm:py-1 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
-                      <div className="flex flex-row items-center justify-start gap-2">
+                      <div className="flex flex-row items-center justify-between gap-2">
+                        {/* Accept button — fills the price with the buyer's exact budget */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!budgetAccepted) {
+                              setBudgetAccepted(true);
+                              setPrice('₹' + enquiry.budget.toLocaleString('en-IN'));
+                              setErrors((prev) => ({ ...prev, price: undefined }));
+                            } else {
+                              setBudgetAccepted(false);
+                              setPrice('');
+                            }
+                          }}
+                          aria-pressed={budgetAccepted}
+                          className={`flex items-center gap-1 text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full transition-all duration-150 active:translate-y-[1px] ${
+                            budgetAccepted
+                              ? 'bg-emerald-500 text-white shadow-[0_2px_0_0_rgba(0,0,0,0.25)]'
+                              : 'bg-white text-black hover:bg-gray-100 shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
+                          }`}
+                        >
+                          {budgetAccepted && <Check className="h-3 w-3" strokeWidth={3} />}
+                          {budgetAccepted ? 'Accepted' : 'Accept'}
+                        </button>
                         <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
                       </div>
                       <p className="text-[9px] sm:text-[10px] text-white/90 mt-1 sm:mt-0.5">
@@ -1726,38 +1749,6 @@ const SellerResponse = () => {
                     </div>
                   </>
                 )}
-
-                {/* Accept tick — fills the price with the buyer's exact budget */}
-                {enquiry?.budget ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!budgetAccepted) {
-                        setBudgetAccepted(true);
-                        setPrice('₹' + enquiry.budget.toLocaleString('en-IN'));
-                        setErrors((prev) => ({ ...prev, price: undefined }));
-                      } else {
-                        setBudgetAccepted(false);
-                        setPrice('');
-                      }
-                    }}
-                    className="flex items-center gap-2 mb-3 group"
-                    aria-pressed={budgetAccepted}
-                  >
-                    <span
-                      className={`h-5 w-5 rounded-[6px] border-[1.5px] flex items-center justify-center transition-all duration-150 ${
-                        budgetAccepted
-                          ? 'bg-black border-black shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
-                          : 'bg-white border-slate-300 group-hover:border-black shadow-[0_2px_0_0_rgba(0,0,0,0.1)]'
-                      }`}
-                    >
-                      {budgetAccepted && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
-                    </span>
-                    <span className={`text-xs font-bold ${budgetAccepted ? 'text-black' : 'text-slate-700 group-hover:text-black'}`}>
-                      Accept
-                    </span>
-                  </button>
-                ) : null}
 
                 <Label htmlFor="price" className="text-xs sm:text-sm font-black text-black flex items-center">
                   <span className="text-sm sm:text-base mr-2 sm:mr-2.5 text-black">₹</span>
