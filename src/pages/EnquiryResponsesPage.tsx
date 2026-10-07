@@ -64,6 +64,8 @@ interface Response {
   isIdentityVerified: boolean;
   status: 'pending' | 'approved' | 'rejected';
   createdAt: any;
+  /** True when the seller ticked "Accept" and charged exactly the buyer's budget */
+  budgetAccepted?: boolean;
   updatedAt: any;
   buyerViewed: boolean;
   chatEnabled: boolean;
@@ -956,7 +958,11 @@ const EnquiryResponsesPage = () => {
                               transform: 'translateZ(10px)',
                               textShadow: '0 2px 4px rgba(0,0,0,0.1)'
                             }}
-                          >{responderNoun} {index + 1} {useSalaryWording ? (isJobCategory ? "User's Demand" : 'salary') : 'offer'}</span>
+                          >{responderNoun} {index + 1} {useSalaryWording ? (isJobCategory ? "User's Demand" : 'salary') : 'offer'}{response.budgetAccepted && (
+                            <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full bg-emerald-500 text-white text-[8px] sm:text-[9px] lg:text-[10px] font-bold whitespace-nowrap" style={{ transform: 'translateZ(10px)' }}>
+                              ✓ {isJobCategory ? 'Salary' : 'Budget'} Accepted
+                            </span>
+                          )}</span>
                           <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-gray-600 mx-2 sm:mx-3 lg:mx-4 flex-shrink-0" style={{ transform: 'translateZ(10px)' }} />
                           <div className="flex items-center space-x-1 sm:space-x-1.5">
                             <div className="relative w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg sm:rounded-xl flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.2),inset_0_1px_2px_rgba(255,255,255,0.9)] ring-2 ring-gray-300/50 transform group-hover/quote:scale-110 transition-transform duration-300"

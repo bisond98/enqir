@@ -42,6 +42,8 @@ interface SellerSubmission {
   imageCount: number;
   isIdentityVerified: boolean;
   createdAt: any;
+  /** True when the seller ticked "Accept" and charged exactly the buyer's budget */
+  budgetAccepted?: boolean;
 }
 
 const DetailedResponses = () => {
@@ -344,7 +346,13 @@ const DetailedResponses = () => {
                         <div className="text-right flex-shrink-0">
                           <div className="text-[9px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-0.5">User's Demand</div>
                           <div className="text-base sm:text-lg font-bold font-chip text-emerald-400">₹{response.price}</div>
-                          <div className="text-[9px] sm:text-[10px] font-chip text-gray-400">Starting price</div>
+                          {response.budgetAccepted ? (
+                            <div className="mt-0.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-[8px] sm:text-[9px] font-bold text-emerald-400 whitespace-nowrap">
+                              ✓ Budget Accepted
+                            </div>
+                          ) : (
+                            <div className="text-[9px] sm:text-[10px] font-chip text-gray-400">Starting price</div>
+                          )}
                         </div>
                       </div>
                     </div>

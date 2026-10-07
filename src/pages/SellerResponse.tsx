@@ -68,6 +68,8 @@ interface SellerSubmission {
   chatEnabled: boolean;
   userVerified?: boolean;
   isProfileVerified?: boolean;
+  /** True when the seller ticked "Accept" to charge exactly the buyer's budget */
+  budgetAccepted?: boolean;
 }
 
 const SellerResponse = () => {
@@ -101,6 +103,9 @@ const SellerResponse = () => {
     }, 250);
   };
   const [price, setPrice] = useState("");
+  // Ticked when the seller accepts the buyer's budget exactly — fills the price
+  // field with the enquiry budget and flags the submission for display pages
+  const [budgetAccepted, setBudgetAccepted] = useState(false);
   const [notes, setNotes] = useState("");
   const [images, setImages] = useState<string[]>([]);
   // Original filenames for uploaded files (matters for resumes on hiring forms)
@@ -1014,7 +1019,8 @@ const SellerResponse = () => {
           buyerViewed: false,
           chatEnabled: false,
           userVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl)),
-          isProfileVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl))
+          isProfileVerified: isUserVerified || !!(govIdType && govIdNumber && (idFrontUrl || govIdUrl)),
+          budgetAccepted: budgetAccepted && !!enquiry?.budget
         };
 
         const docRef = await addDoc(collection(db, "sellerSubmissions"), responseData);
@@ -1720,6 +1726,38 @@ const SellerResponse = () => {
                     </p>
                   </div>
                 )}
+
+                {/* Accept tick — fills the price with the buyer's exact budget */}
+                {enquiry?.budget ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!budgetAccepted) {
+                        setBudgetAccepted(true);
+                        setPrice('₹' + enquiry.budget.toLocaleString('en-IN'));
+                        setErrors((prev) => ({ ...prev, price: undefined }));
+                      } else {
+                        setBudgetAccepted(false);
+                        setPrice('');
+                      }
+                    }}
+                    className="flex items-center gap-2 mb-3 group"
+                    aria-pressed={budgetAccepted}
+                  >
+                    <span
+                      className={`h-5 w-5 rounded-[6px] border-[1.5px] flex items-center justify-center transition-all duration-150 ${
+                        budgetAccepted
+                          ? 'bg-black border-black shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
+                          : 'bg-white border-slate-300 group-hover:border-black shadow-[0_2px_0_0_rgba(0,0,0,0.1)]'
+                      }`}
+                    >
+                      {budgetAccepted && <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />}
+                    </span>
+                    <span className={`text-xs font-bold ${budgetAccepted ? 'text-black' : 'text-slate-700 group-hover:text-black'}`}>
+                      Accept
+                    </span>
+                  </button>
+                ) : null}
                 
                 <div className="relative">
                 <Input
@@ -1729,6 +1767,8 @@ const SellerResponse = () => {
                   onChange={(e) => {
                     // Remove non-numeric characters and format with commas
                     const value = e.target.value.replace(/[^\d]/g, '');
+                    // Manual edit means a custom amount — clear the Accept tick
+                    if (budgetAccepted) setBudgetAccepted(false);
                     if (value) {
                       const num = parseInt(value);
                       setPrice(num.toLocaleString('en-IN'));
