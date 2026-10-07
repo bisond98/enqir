@@ -1716,36 +1716,37 @@ const SellerResponse = () => {
                         {isJobEnquiry ? 'Salary Offered' : "Buyer's Budget"}
                       </span>
                     </Label>
-                    <div className="border-4 rounded-lg px-1 sm:px-1.5 py-0.5 sm:py-0.5 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
+                    <div className="relative border-4 rounded-lg px-1 sm:px-1.5 py-0.5 sm:py-0.5 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
                       <div className="flex flex-row items-center justify-between gap-2">
                         <span className="text-sm sm:text-base font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
-                        {/* Accept button — fills the price with the buyer's exact budget, vertically centred in the card */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (!budgetAccepted) {
-                              setBudgetAccepted(true);
-                              setPrice('₹' + enquiry.budget.toLocaleString('en-IN'));
-                              setErrors((prev) => ({ ...prev, price: undefined }));
-                            } else {
-                              setBudgetAccepted(false);
-                              setPrice('');
-                            }
-                          }}
-                          aria-pressed={budgetAccepted}
-                          aria-label="Accept buyer's budget"
-                          className={`flex items-center justify-center self-center h-8 w-8 -my-1 rounded-full transition-all duration-150 active:translate-y-[1px] ${
-                            budgetAccepted
-                              ? 'bg-emerald-500 shadow-[0_2px_0_0_rgba(0,0,0,0.25)]'
-                              : 'bg-white hover:bg-gray-100 shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
-                          }`}
-                        >
-                          <Check strokeWidth={3} className={`h-4 w-4 ${budgetAccepted ? 'text-white' : 'text-black'}`} />
-                        </button>
                       </div>
                       <p className="text-[9px] sm:text-[10px] text-white/90 mt-1 sm:mt-0.5">
                         Remember, you're here to close a deal.
                       </p>
+                      {/* Accept button — fills the price with the buyer's exact budget,
+                          pinned to the true vertical centre of the card */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!budgetAccepted) {
+                            setBudgetAccepted(true);
+                            setPrice('₹' + enquiry.budget.toLocaleString('en-IN'));
+                            setErrors((prev) => ({ ...prev, price: undefined }));
+                          } else {
+                            setBudgetAccepted(false);
+                            setPrice('');
+                          }
+                        }}
+                        aria-pressed={budgetAccepted}
+                        aria-label="Accept buyer's budget"
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center h-8 w-8 rounded-full transition-all duration-150 active:translate-y-[calc(-50%+1px)] ${
+                          budgetAccepted
+                            ? 'bg-emerald-500 shadow-[0_2px_0_0_rgba(0,0,0,0.25)]'
+                            : 'bg-white hover:bg-gray-100 shadow-[0_2px_0_0_rgba(0,0,0,0.3)]'
+                        }`}
+                      >
+                        <Check strokeWidth={3} className={`h-4 w-4 ${budgetAccepted ? 'text-white' : 'text-black'}`} />
+                      </button>
                     </div>
                   </>
                 )}
