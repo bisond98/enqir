@@ -1718,7 +1718,12 @@ const SellerResponse = () => {
                     </Label>
                     <div className="relative border-4 rounded-lg px-3 sm:px-4 py-3 sm:py-4 mb-3" style={{ backgroundColor: '#800020', borderColor: '#6b0019' }}>
                       <div className="flex flex-row items-center justify-between gap-2 pr-20">
-                        <span className="text-lg sm:text-xl font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
+                        <div>
+                          <span className="text-lg sm:text-xl font-bold text-white">₹{enquiry.budget?.toLocaleString('en-IN') || 'Not specified'}</span>
+                          <p className="text-[8px] sm:text-[9px] text-white/80 mt-0.5">
+                            Remember, you're here to close a deal.
+                          </p>
+                        </div>
                       </div>
                       {/* Accept button — fills the price with the buyer's exact budget,
                           pinned to the true vertical centre of the card */}
