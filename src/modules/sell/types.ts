@@ -35,6 +35,8 @@ export interface SellListingResponse {
   sellerId: string;
   buyerId: string;
   message: string;
+  /** 'connect' = buyer paid to call/connect without writing a message. */
+  type?: 'message' | 'connect';
   offeredPrice?: number | null;
   voiceUrl?: string;
   attachments?: { url: string; name: string; type: string }[];

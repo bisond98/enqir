@@ -136,7 +136,9 @@ export async function createListingResponse(input: Omit<SellListingResponse, 'id
       recipientId: input.sellerId,
       // Required for real-time chat listeners (ChatContext onSnapshot filters on participants)
       participants: [input.buyerId, input.sellerId],
-      message: input.offeredPrice ? `₹${Number(input.offeredPrice).toLocaleString("en-IN")}${input.message ? " - " + input.message : ""}` : input.message,
+      message: input.offeredPrice
+        ? `₹${Number(input.offeredPrice).toLocaleString("en-IN")}${input.message ? " - " + input.message : ""}`
+        : (input.message || (input.type === 'connect' ? '👋 is interested in your listing' : '')),
       timestamp: serverTimestamp(),      offeringPrice: input.offeredPrice || null,
       voiceUrl: input.voiceUrl || null,
       attachments: input.attachments || null,

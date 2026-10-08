@@ -205,6 +205,25 @@ export default function ListingDetail() {
       // Caution popup first, then the number popup on dismiss
       setScamAlertPending({ action: 'call' });
 
+      // Persist the paid connect so the seller sees it in Buyer Responses
+      // even when the buyer never writes a message (call-only connect).
+      if (listing.sellerId && listing.sellerId !== user.uid && !responses.some(r => r.buyerId === user.uid)) {
+        try {
+          await createListingResponse({
+            listingId: listing.id,
+            sellerId: listing.sellerId,
+            buyerId: user.uid,
+            buyerName: user.displayName || user.email?.split('@')[0] || 'Buyer',
+            message: '',
+            type: 'connect',
+          } as any);
+          // Refresh the list so the seller's Buyer Responses updates
+          listResponsesForListing(listing.id).then(setResponses).catch(() => {});
+        } catch (connectErr) {
+          console.error('Failed to save connect response:', connectErr);
+        }
+      }
+
       // Realtime notification to the seller: buyer paid & clicked the call button
       if (listing.sellerId && listing.sellerId !== user.uid) {
         try {
@@ -897,7 +916,11 @@ export default function ListingDetail() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-bold font-chip text-gray-400 uppercase">{r.buyerName || 'Buyer'}</p>
-                      <p className="text-xs font-chip text-gray-700 line-clamp-2 mt-0.5">{r.message}</p>
+                      {r.type === 'connect' ? (
+                        <p className="text-xs font-chip font-bold text-green-600 mt-0.5">Interested</p>
+                      ) : (
+                        <p className="text-xs font-chip text-gray-700 line-clamp-2 mt-0.5">{r.message}</p>
+                      )}
                       {r.offeredPrice != null && (
                         <span className="inline-flex items-center gap-0.5 text-sm font-bold font-chip text-black mt-1.5">
                           <IndianRupee className="h-3.5 w-3.5" />{r.offeredPrice.toLocaleString('en-IN')}

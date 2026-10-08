@@ -123,6 +123,26 @@ export default function ListingChat() {
   const isBuyer = !!user && !!listing && user.uid !== listing.sellerId;
   const sellerHasNumber = !!(listing?.mobileNumber && String(listing.mobileNumber).trim());
 
+  // Seller-side call — if the buyer signed in with a mobile number, the seller
+  // can call them too (the buyer already paid to reach the seller)
+  const [buyerNumber, setBuyerNumber] = useState<string | null>(null);
+  const isSellerView = !!user && !!listing && user.uid === listing.sellerId;
+  useEffect(() => {
+    if (!isSellerView || !buyerId) {
+      setBuyerNumber(null);
+      return;
+    }
+    getDoc(doc(db, 'users', buyerId)).then((snap) => {
+      const num = snap.exists() ? (snap.data() as any)?.phoneNumber : null;
+      setBuyerNumber(num ? String(num) : null);
+    }).catch(() => setBuyerNumber(null));
+  }, [isSellerView, buyerId]);
+
+  // Number shown in the call popup depends on who is viewing
+  const callPopupNumber = isBuyer
+    ? (listing?.mobileNumber ? String(listing.mobileNumber) : '')
+    : (buyerNumber || '');
+
   const handleChatCallClick = () => {
     if (!sellerHasNumber) {
       toast({ title: 'No number available', description: "User didn't put the number, use chat.", variant: 'destructive' });
@@ -624,6 +644,18 @@ export default function ListingChat() {
                         </Button>
                       </div>
                     )}
+                    {isSellerView && buyerNumber && (
+                      <div className="relative">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowCallPopup(true)}
+                          className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md flex-shrink-0 relative z-10 cursor-pointer"
+                        >
+                          <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+                        </Button>
+                      </div>
+                    )}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-white hover:text-white hover:bg-white/10 rounded-md flex-shrink-0 cursor-pointer">
@@ -1003,10 +1035,11 @@ export default function ListingChat() {
             </div>
           </div>
         )}
-        {/* Call Seller Popup — tap number to make the real call */}
-        {showCallPopup && listing?.mobileNumber && (
+        {/* Call popup — tap number to make the real call. Buyers call the
+            seller (number on the listing); sellers call a mobile-verified buyer. */}
+        {showCallPopup && callPopupNumber && (
           <CallNumberPopup
-            number={String(listing.mobileNumber)}
+            number={callPopupNumber}
             onClose={() => setShowCallPopup(false)}
           />
         )}
