@@ -1758,7 +1758,7 @@ const SellerResponse = () => {
                 <Label htmlFor="price" className="text-xs sm:text-sm font-black text-black flex items-center">
                   <span className="text-sm sm:text-base mr-2 sm:mr-2.5 text-black">₹</span>
                   <span className="text-black">
-                    {isJobEnquiry ? 'Salary Expectation *' : 'Your Price *'}
+                    {isJobEnquiry ? 'Salary Counteroffer *' : 'Your Price *'}
                   </span>
                 </Label>
 
