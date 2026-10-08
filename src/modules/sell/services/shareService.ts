@@ -21,7 +21,6 @@ function listingSpecSentence(listing: SellListing): string {
     if (d.fuel) bits.push(d.fuel);
     if (d.transmission) bits.push(d.transmission);
     if (d.ownership) bits.push(d.ownership);
-    if (d.kmsDriven) bits.push(`${Number(d.kmsDriven).toLocaleString('en-IN')} km driven`);
     if (d.accidentHistory && d.accidentHistory !== 'No accidents') bits.push(d.accidentHistory);
   } else if (cat === 'mobiles') {
     if (d.brand) bits.push(d.brand);
@@ -54,49 +53,45 @@ function listingSpecSentence(listing: SellListing): string {
     if (d.sneakerAudience) bits.push(d.sneakerAudience);
   }
 
-  return bits.join(' · ');
+  const bits2 = bits;
+  return bits2
+    .filter((b) => b.toLowerCase() !== (listing.title || '').toLowerCase())
+    .join(' · ');
 }
 
-// AI-generated share messages for listings
-const shareTemplates = [
-  (title: string, price: string, location: string) => 
-    `🔥 Just found "${title}" for ${price} in ${location}! Check it out on Enqir.in 🛒`,
-  
-  (title: string, price: string, location: string) => 
-    `✨ Great deal alert! "${title}" available for ${price} in ${location}. Shop now on Enqir.in! 🎯`,
-  
-  (title: string, price: string, location: string) => 
-    `👀 Check this out! "${title}" for only ${price} in ${location}. Find it on Enqir.in! 💎`,
-  
-  (title: string, price: string, location: string) => 
-    `🎯 Found a gem! "${title}" priced at ${price} in ${location}. See it on Enqir.in! 🛍️`,
-  
-  (title: string, price: string, location: string) => 
-    `💥 Hot deal! "${title}" for ${price} in ${location}. Browse more on Enqir.in! 🔥`,
-];
-
-// Generate a catchy AI-style share message
+// Generate the share message for a listing — natural sentence, no price:
+//   "Used BMW, 21,000 km driven, for sale in Kerala"
 export function generateShareMessage(listing: SellListing): string {
-  const price = (listing as any).priceType === 'discussion'
-    ? '₹ Open to discussion'
-    : listing.price
-      ? `₹${listing.price.toLocaleString('en-IN')}`
-      : 'contact for price';
-  
-  const location = locationStateOnly(listing.location);
-  const templateIndex = Math.floor(Math.random() * shareTemplates.length);
-  
-  let message = shareTemplates[templateIndex](listing.title, price, location);
+  const d: any = listing.details || {};
+  const cat = listing.category;
+  const isRealEstate = ['real-estate', 'real-estate-services'].includes(cat);
+  // Jobs and services aren't products for sale — they're offered as available
+  const isOffered = cat === 'jobs' || cat.includes('service');
+  const listingFor = d.listingFor as string | undefined;
+  const state = locationStateOnly(listing.location);
 
-  // Spec chips as a sentence on its own line (fuel · transmission · owner · km driven…)
+  // Sentence body: condition + title + km driven ("Used BMW, 21,000 km driven")
+  const cond = listing.condition
+    ? listing.condition.charAt(0).toUpperCase() + listing.condition.slice(1).toLowerCase()
+    : null;
+  const head = cond ? `${cond} ${listing.title || ''}`.trim() : (listing.title || '');
+  const bits: string[] = [];
+  if (head) bits.push(head);
+  if (d.kmsDriven) bits.push(`${Number(d.kmsDriven).toLocaleString('en-IN')} km driven`);
+
+  // Deal phrase: rent/lease for real estate, available for jobs/services, else for sale
+  let dealPhrase = 'for sale';
+  if (isRealEstate && listingFor === 'Rent') dealPhrase = 'for rent';
+  else if (isRealEstate && listingFor === 'Lease') dealPhrase = 'for lease';
+  else if (isOffered) dealPhrase = 'available';
+
+  let message = `${bits.join(', ')} ${dealPhrase}${state ? ` in ${state}` : ''}`;
+
+  // Spec chips as a sentence on its own line (fuel · transmission · owner…)
   const specs = listingSpecSentence(listing);
   if (specs) message = `${message}\n${specs}`;
 
-  // Real-estate listings — make the deal type explicit (For Rent / For Lease / For Sale)
-  const listingFor = (listing.details as any)?.listingFor as string | undefined;
-  const isRealEstate = ['real-estate', 'real-estate-services'].includes(listing.category);
-  // Jobs and services aren't products for sale — they're offered as available
-  const isOffered = listing.category === 'jobs' || listing.category.includes('service');
+  // Prefix: make the deal type explicit at a glance
   if (isRealEstate && listingFor && listingFor !== 'Sale') {
     message = `🏠 FOR ${listingFor.toUpperCase()} — ${message}`;
   } else if (isOffered) {
