@@ -1,3 +1,5 @@
+import { ACCOMMODATION_SUBTYPES } from '@/constants/categories';
+
 interface ShareableEnquiry {
   id?: string;
   title: string;
@@ -54,6 +56,13 @@ const isAccommodationEnquiry = (enquiry: ShareableEnquiry): boolean =>
   [enquiry.category, ...(enquiry.categories || [])].some(
     (c) => c && c.toLowerCase().includes('accommodation')
   );
+
+/** Show only the state (last comma-separated part) of a location in shares. */
+const locationStateOnly = (location?: string): string | null => {
+  if (!location) return null;
+  const parts = location.split(',').map((s) => s.trim()).filter(Boolean);
+  return parts.length > 1 ? parts[parts.length - 1] : (parts[0] || null);
+};
 
 /**
  * Category-aware money line:
@@ -126,6 +135,66 @@ const estateDealSuffix = (enquiry: ShareableEnquiry): string => {
 };
 
 /**
+ * Product spec chips — the needful details buyers/sellers look for, mirroring
+ * the chips shown on the enquiry detail page (vehicle, mobile, sneaker, job,
+ * estate, stay and service specs).
+ */
+const chipLines = (enquiry: ShareableEnquiry): string[] => {
+  const d: any = enquiry.details || {};
+  const lines: string[] = [];
+
+  // Vehicles — brand / variant / year / fuel / transmission
+  if (d.brand) {
+    const bits = [d.brand, d.variant, d.year ? `${d.year} model` : null, d.fuelType, d.transmission].filter(Boolean);
+    lines.push(`🚗 ${bits.join(' · ')}`);
+  }
+
+  // Mobiles — brand / RAM / storage
+  if (d.mobileBrand) {
+    const bits = [d.mobileBrand, d.ram ? `${d.ram} RAM` : null, d.memory].filter(Boolean);
+    lines.push(`📱 ${bits.join(' · ')}`);
+  }
+
+  // Sneakers — brand / size / audience
+  if (d.sneakerBrand || d.sneakerSize) {
+    const bits = [d.sneakerBrand, d.sneakerSize ? `Size ${d.sneakerSize}` : null, d.sneakerAudience].filter(Boolean);
+    lines.push(`👟 ${bits.join(' · ')}`);
+  }
+
+  // Jobs — skills / experience / type / mode (+ education for seekers)
+  if (d.skills || d.experience || d.jobType || d.workMode) {
+    const bits = [d.skills, d.experience ? `${d.experience} experience` : null, d.jobType, d.workMode].filter(Boolean);
+    lines.push(`🧰 ${bits.join(' · ')}`);
+  }
+  if (d.education) {
+    lines.push(`🎓 ${[d.education, d.stream].filter(Boolean).join(' · ')}`);
+  }
+
+  // Real estate — land / buildings / house areas
+  if (d.landArea || d.builtUpArea || d.houseArea) {
+    const bits = [
+      d.landArea ? `Land: ${d.landArea}` : null,
+      d.builtUpArea ? `Buildings: ${d.builtUpArea}` : null,
+      d.houseArea ? `House: ${d.houseBhk ? `${d.houseBhk} · ` : ''}${d.houseArea}` : null,
+    ].filter(Boolean);
+    lines.push(`🏠 ${bits.join(' · ')}`);
+  }
+
+  // Accommodation — readable stay type
+  if (d.accommodationType) {
+    const label = ACCOMMODATION_SUBTYPES.find((s) => s.value === d.accommodationType)?.label ?? d.accommodationType;
+    lines.push(`🛏 Stay type: ${label}`);
+  }
+
+  // Repairs / services
+  if (d.repairType) {
+    lines.push(`🔧 Service type: ${d.repairType}`);
+  }
+
+  return lines;
+};
+
+/**
  * Category-aware share text — sells the *need*, not the description.
  *
  * Products/vehicles example:
@@ -169,8 +238,14 @@ export const buildEnquiryShareText = (enquiry: ShareableEnquiry, url: string): s
   const facts: string[] = [];
   const money = moneyLine(enquiry);
   if (money) facts.push(money);
-  if (enquiry.location) facts.push(`@ ${enquiry.location}`);
+  if (enquiry.location) {
+    const state = locationStateOnly(enquiry.location);
+    if (state) facts.push(`@ ${state}`);
+  }
   if (facts.length) parts.push(facts.join(' | '));
+
+  // Needful spec chips (brand/variant/RAM/skills/areas/stay type…)
+  parts.push(...chipLines(enquiry));
 
   // Job seekers "available" by a date; buyers "need" it
   const deadline = formatDeadline(enquiry.deadline);

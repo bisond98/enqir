@@ -1,6 +1,62 @@
 import type { SellListing } from '../types';
 import { shareToTarget } from '@/lib/socialShare';
 
+/** Show only the state (last comma-separated part) of a location in shares. */
+function locationStateOnly(location?: string): string {
+  if (!location) return 'India';
+  const parts = location.split(',').map((s) => s.trim()).filter(Boolean);
+  return parts.length > 1 ? parts[parts.length - 1] : (parts[0] || 'India');
+}
+
+/**
+ * Spec sentence from the listing's category detail chips — the needful facts
+ * a buyer asks for first (fuel, transmission, ownership, km driven…).
+ */
+function listingSpecSentence(listing: SellListing): string {
+  const d: any = listing.details || {};
+  const cat = listing.category;
+  const bits: string[] = [];
+
+  if (cat === 'car' || cat === 'vehicles' || cat === 'bike') {
+    if (d.fuel) bits.push(d.fuel);
+    if (d.transmission) bits.push(d.transmission);
+    if (d.ownership) bits.push(d.ownership);
+    if (d.kmsDriven) bits.push(`${Number(d.kmsDriven).toLocaleString('en-IN')} km driven`);
+    if (d.accidentHistory && d.accidentHistory !== 'No accidents') bits.push(d.accidentHistory);
+  } else if (cat === 'mobiles') {
+    if (d.brand) bits.push(d.brand);
+    if (d.storage) bits.push(d.storage);
+    if (d.warranty) bits.push(d.warranty);
+  } else if (cat === 'laptops') {
+    if (d.processor) bits.push(d.processor);
+    if (d.ram) bits.push(`${d.ram} RAM`);
+    if (d.storage) bits.push(d.storage);
+  } else if (cat === 'jobs') {
+    if (d.experience) bits.push(d.experience);
+    if (d.jobType) bits.push(d.jobType);
+    if (d.workMode) bits.push(d.workMode);
+  } else if (cat === 'service') {
+    if (d.repairType) bits.push(d.repairType);
+    if (d.serviceMode) bits.push(d.serviceMode);
+    if (d.experience) bits.push(d.experience);
+  } else if (cat === 'accommodations') {
+    if (d.accommodationType) bits.push(d.accommodationType);
+    if (d.furnishing) bits.push(d.furnishing);
+  } else if (cat === 'real-estate') {
+    if (d.houseBhk) bits.push(d.houseBhk);
+    if (d.landArea) bits.push(`Land: ${d.landArea}`);
+    if (d.builtUpArea) bits.push(`Buildings: ${d.builtUpArea}`);
+    if (d.houseArea) bits.push(`House: ${d.houseArea}`);
+    if (d.furnishing) bits.push(d.furnishing);
+  } else if (cat === 'sneakers') {
+    if (d.sneakerBrand) bits.push(d.sneakerBrand);
+    if (d.sneakerSize) bits.push(`Size ${d.sneakerSize}`);
+    if (d.sneakerAudience) bits.push(d.sneakerAudience);
+  }
+
+  return bits.join(' · ');
+}
+
 // AI-generated share messages for listings
 const shareTemplates = [
   (title: string, price: string, location: string) => 
@@ -27,15 +83,31 @@ export function generateShareMessage(listing: SellListing): string {
       ? `₹${listing.price.toLocaleString('en-IN')}`
       : 'contact for price';
   
-  const location = listing.location || 'India';
+  const location = locationStateOnly(listing.location);
   const templateIndex = Math.floor(Math.random() * shareTemplates.length);
   
   let message = shareTemplates[templateIndex](listing.title, price, location);
 
+  // Spec chips as a sentence on its own line (fuel · transmission · owner · km driven…)
+  const specs = listingSpecSentence(listing);
+  if (specs) message = `${message}\n${specs}`;
+
   // Real-estate listings — make the deal type explicit (For Rent / For Lease / For Sale)
   const listingFor = (listing.details as any)?.listingFor as string | undefined;
-  if (['real-estate', 'real-estate-services'].includes(listing.category) && listingFor && listingFor !== 'Sale') {
+  const isRealEstate = ['real-estate', 'real-estate-services'].includes(listing.category);
+  // Jobs and services aren't products for sale — they're offered as available
+  const isOffered = listing.category === 'jobs' || listing.category.includes('service');
+  if (isRealEstate && listingFor && listingFor !== 'Sale') {
     message = `🏠 FOR ${listingFor.toUpperCase()} — ${message}`;
+  } else if (isOffered) {
+    // Jobs and service listings read as availability, not a sale
+    message = `✅ AVAILABLE — ${message}`;
+  } else if (isRealEstate) {
+    // Real-estate listed for sale
+    message = `🏠 FOR SALE — ${message}`;
+  } else {
+    // Every other listing here is a sale — say so up front
+    message = `🛒 FOR SALE — ${message}`;
   }
 
   return message;
