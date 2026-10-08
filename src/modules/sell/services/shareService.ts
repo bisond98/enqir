@@ -9,8 +9,9 @@ import { shareToTarget } from '@/lib/socialShare';
 function locationStateOnly(location?: string): string {
   if (!location) return '';
   const parts = location.split(',').map((s) => s.trim()).filter(Boolean);
-  const states = parts.filter((p) => p.toLowerCase() !== 'india');
-  return states.length ? states[states.length - 1] : '';
+  // Skip the country and bare pin codes — show the last actual place name
+  const names = parts.filter((p) => p.toLowerCase() !== 'india' && !/^\d{4,8}$/.test(p));
+  return names.length ? names[names.length - 1] : '';
 }
 
 /** Emoji for the listing's category — an apt icon for every category. */

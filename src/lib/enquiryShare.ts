@@ -65,8 +65,9 @@ const isAccommodationEnquiry = (enquiry: ShareableEnquiry): boolean =>
 const locationStateOnly = (location?: string): string | null => {
   if (!location) return null;
   const parts = location.split(',').map((s) => s.trim()).filter(Boolean);
-  const states = parts.filter((p) => p.toLowerCase() !== 'india');
-  return states.length ? states[states.length - 1] : null;
+  // Skip the country and bare pin codes — show the last actual place name
+  const names = parts.filter((p) => p.toLowerCase() !== 'india' && !/^\d{4,8}$/.test(p));
+  return names.length ? names[names.length - 1] : null;
 };
 
 /**
