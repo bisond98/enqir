@@ -57,11 +57,16 @@ const isAccommodationEnquiry = (enquiry: ShareableEnquiry): boolean =>
     (c) => c && c.toLowerCase().includes('accommodation')
   );
 
-/** Show only the state (last comma-separated part) of a location in shares. */
+/**
+ * Show only the state (e.g. "Kerala") of a location in shares — never the
+ * country. A trailing "India" part is skipped; if nothing but the country
+ * remains, no location is shown.
+ */
 const locationStateOnly = (location?: string): string | null => {
   if (!location) return null;
   const parts = location.split(',').map((s) => s.trim()).filter(Boolean);
-  return parts.length > 1 ? parts[parts.length - 1] : (parts[0] || null);
+  const states = parts.filter((p) => p.toLowerCase() !== 'india');
+  return states.length ? states[states.length - 1] : null;
 };
 
 /**
@@ -240,7 +245,7 @@ export const buildEnquiryShareText = (enquiry: ShareableEnquiry, url: string): s
   if (money) facts.push(money);
   if (enquiry.location) {
     const state = locationStateOnly(enquiry.location);
-    if (state) facts.push(`@ ${state}`);
+    if (state) facts.push(`📍 ${state}`);
   }
   if (facts.length) parts.push(facts.join(' | '));
 
