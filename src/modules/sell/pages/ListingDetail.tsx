@@ -17,7 +17,7 @@ import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLef
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs } from 'firebase/firestore';
 import { suggestEnquiriesForListing } from '../services/aiMatching';
 import { processPayment } from '@/services/paymentService';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
@@ -150,6 +150,7 @@ export default function ListingDetail() {
 
   // Call seller — premium feature integrated with Connect (same ₹10 payment unlocks both)
   const [callPaid, setCallPaid] = useState(false); // paid via call icon this session (connect unlock is per-response)
+  const [responsesLoaded, setResponsesLoaded] = useState(false);
   const [showCallPopup, setShowCallPopup] = useState(false);
   // Scam-alert caution overlay — shows before entering chat room / number popup (after Connect payment
   // or on unlocked clicks); shared component handles countdown, hold-to-pause bar and per-listing dont-show-again
@@ -224,12 +225,12 @@ export default function ListingDetail() {
         }
       }
 
-      // Realtime notification to the seller: buyer paid & clicked the call button
+      // Realtime notification to the seller: buyer is interested (paid via call/connect)
       if (listing.sellerId && listing.sellerId !== user.uid) {
         try {
           await notificationCtx?.createNotificationForUser(listing.sellerId, 'call', {
-            title: '📞 Buyer Wants to Call You!',
-            message: `${user.displayName || user.email?.split('@')[0] || 'A buyer'} paid to call about "${listing.title}" — they may call from your listed number.`,
+            title: '🎯 New Interested Buyer on Your Listing!',
+            message: `${user.displayName || user.email?.split('@')[0] || 'A buyer'} is interested in "${listing.title}" — check Buyer Responses to chat or share your number.`,
             priority: 'high',
             actionUrl: `/sell/listing/${listing.id}`,
             actionText: 'View Listing',
@@ -269,7 +270,7 @@ export default function ListingDetail() {
         const l = await getListing(id);
         setListing(l);
         if (l) {
-          listResponsesForListing(l.id).then(setResponses);
+          listResponsesForListing(l.id).then(rs => { setResponses(rs); setResponsesLoaded(true); });
         }
       } finally {
         setLoading(false);
@@ -277,6 +278,38 @@ export default function ListingDetail() {
     };
     run();
   }, [id]);
+
+  // Backfill: buyers who paid via the call icon before the connect-response feature
+  // shipped have a payment record but no response doc — create the missing
+  // "Interested" tile (once) when they revisit the listing.
+  useEffect(() => {
+    if (!user || !listing || !listing.sellerId || listing.sellerId === user.uid) return;
+    if (!responsesLoaded) return; // wait until responses have loaded
+    if (responses.some(r => r.buyerId === user.uid)) return; // already has a response
+    let cancelled = false;
+    (async () => {
+      try {
+        const paysSnap = await getDocs(query(
+          collection(db, 'payments'),
+          where('enquiryId', '==', listing.id),
+          where('userId', '==', user.uid)
+        ));
+        if (cancelled || paysSnap.empty) return;
+        await createListingResponse({
+          listingId: listing.id,
+          sellerId: listing.sellerId,
+          buyerId: user.uid,
+          buyerName: user.displayName || user.email?.split('@')[0] || 'Buyer',
+          message: '',
+          type: 'connect',
+        } as any);
+        if (!cancelled) listResponsesForListing(listing.id).then(setResponses).catch(() => {});
+      } catch (err) {
+        console.error('Failed to backfill connect response:', err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user, listing, responses, responsesLoaded]);
 
   // Voice recording functions
   const startRecording = async () => {
