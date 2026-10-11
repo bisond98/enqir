@@ -13,6 +13,8 @@ import { ArrowLeft, Upload, Shield, ShieldCheck, CheckCircle, Clock, AlertTriang
 import { buildResponseDescription } from "@/services/ai/descriptionAssistant";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
+import { splitE164Phone, formatNationalForInput } from "@/lib/phonePrefill";
+import { displayNameForUser } from "@/lib/userDisplayName";
 import LoadingAnimation from "@/components/LoadingAnimation";
 
 import { NotificationContext } from "@/contexts/NotificationContext";
@@ -259,7 +261,23 @@ const SellerResponse = () => {
   // Design-preview mode: /seller-response/:id?preview=success renders the success
   // screen without auth/payment (countdown frozen) — used only for styling previews
   const isPreviewSuccess = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === 'success';
-  const { user: authUser, isProfileVerified, profileVerificationStatus, loading: authLoading } = useAuth();
+  const { user: authUser, isProfileVerified, profileVerificationStatus, savedFullName, savedPhone, loading: authLoading } = useAuth();
+
+  // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
+  // number. Only fills an empty field, so restored drafts and user edits win.
+  useEffect(() => {
+    const phoneToUse = authUser?.phoneNumber || savedPhone || '';
+    if (phoneToUse && !mobileNumber) {
+      const split = splitE164Phone(phoneToUse);
+      if (split) {
+        setCountryCode(split.code);
+        setMobileNumber(formatNationalForInput(split.national, split.code));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authUser?.phoneNumber, savedPhone]);
+  // Display name: saved profile name → clean displayName → #userXXXX (never email prefix)
+  const myName = displayNameForUser(authUser, savedFullName);
   // const { createNotification } = useNotifications();
 
   // Helper function to determine if user is verified
@@ -998,7 +1016,7 @@ const SellerResponse = () => {
         const responseData: SellerSubmission = {
           enquiryId: enquiryId!,
           sellerId: authUser?.uid || "",
-          sellerName: authUser?.displayName || "A user",
+          sellerName: myName || "A user",
           sellerEmail: authUser?.email || "",
           title: title.trim(),
           message: description.trim(),
@@ -1051,13 +1069,13 @@ const SellerResponse = () => {
               'new_response',
               {
                 title: '🎯 New Response to Your Enquiry!',
-                message: `${authUser?.displayName || 'A user'} responded to "${enquiry.title}"`,
+                message: `${myName || 'A user'} responded to "${enquiry.title}"`,
                 priority: 'high',
                 actionUrl: `/enquiry/${enquiryId}/responses?sellerId=${authUser?.uid}`,
                 actionText: 'View Response',
                 enquiryId: enquiryId,
                 sellerId: authUser?.uid,
-                sellerName: authUser?.displayName || 'A user'
+                sellerName: myName || 'A user'
               }
             );
           } catch {}

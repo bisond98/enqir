@@ -27,6 +27,7 @@ import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import { friendlyError } from '@/utils/friendlyError';
 import { useContext } from 'react';
+import { displayNameForUser } from '@/lib/userDisplayName';
 import { NotificationContext } from '@/contexts/NotificationContext';
 
 
@@ -61,7 +62,9 @@ function formatPostedDate(dateString: any): string {
 export default function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, savedFullName } = useAuth();
+  // Display name: saved profile name → clean displayName → #userXXXX (never email prefix)
+  const myName = displayNameForUser(user, savedFullName);
   const notificationCtx = useContext(NotificationContext);
   const [listing, setListing] = useState<SellListing | null>(null);
   const [loading, setLoading] = useState(true);
@@ -214,7 +217,7 @@ export default function ListingDetail() {
             listingId: listing.id,
             sellerId: listing.sellerId,
             buyerId: user.uid,
-            buyerName: user.displayName || user.email?.split('@')[0] || 'Buyer',
+            buyerName: myName,
             message: '',
             type: 'connect',
           } as any);
@@ -299,7 +302,7 @@ export default function ListingDetail() {
           listingId: listing.id,
           sellerId: listing.sellerId,
           buyerId: user.uid,
-          buyerName: user.displayName || user.email?.split('@')[0] || 'Buyer',
+          buyerName: myName,
           message: '',
           type: 'connect',
         } as any);
@@ -501,7 +504,7 @@ export default function ListingDetail() {
         listingId: listing.id,
         sellerId: listing.sellerId,
         buyerId: user.uid,
-        buyerName: user.displayName || user.email?.split('@')[0] || 'Buyer',
+        buyerName: myName,
         message: message.trim(),
         offeredPrice: offeredPrice.trim() ? Number(offeredPrice) : null,
         voiceUrl,

@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { MapLocationPicker } from "@/components/MapLocationPicker";
+import { MapLocationPickerLazy as MapLocationPicker } from "@/components/MapLocationPickerLazy";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints } from "lucide-react";
@@ -107,7 +107,7 @@ const GearShifterIcon = ({ className = "" }: { className?: string }) => (
 
 export default function PostEnquiry() {
   // Version: 3.0 - Multi-step wizard (matching sell listing flow)
-  const { user, isProfileVerified, profileVerificationStatus, loading: authLoading } = useAuth();
+  const { user, isProfileVerified, profileVerificationStatus, loading: authLoading, savedPhone } = useAuth();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
 
@@ -359,21 +359,54 @@ export default function PostEnquiry() {
   // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
   // number. Only fills an empty field, so restored drafts and user edits win.
   useEffect(() => {
-    if (user?.phoneNumber && !mobileNumber) {
-      const split = splitE164Phone(user.phoneNumber);
+    const phoneToUse = user?.phoneNumber || savedPhone || '';
+    if (phoneToUse && !mobileNumber) {
+      const split = splitE164Phone(phoneToUse);
       if (split) {
         setCountryCode(split.code);
         setMobileNumber(formatNationalForInput(split.national, split.code));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.phoneNumber]);
+  }, [user?.phoneNumber, savedPhone]);
   
   // AI Location suggestions
   const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
 
   const [aiGenerating, setAiGenerating] = useState(false);
+
+  // Step 0 ("What are you looking for?") on mobile: when the keyboard shrinks
+  // the visual viewport, keep the title input clearly visible by scrolling it
+  // to the top of the visible area. Purely visual — no logic or flow changes.
+  useEffect(() => {
+    if (step !== 0) return;
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    const input = () => document.getElementById('enquiry-title');
+    // One-frame delayed so the browser finishes its own refocus scroll first
+    const reveal = () => {
+      requestAnimationFrame(() => {
+        input()?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      });
+    };
+    // Initial load of this tab: show the input near the top right away
+    reveal();
+    if (!vv) return;
+    let lastHeight = vv.height;
+    const onResize = () => {
+      // Keyboard opening (viewport shrinks) or closing — re-reveal the input
+      if (Math.abs(vv.height - lastHeight) > 40) {
+        lastHeight = vv.height;
+        reveal();
+      }
+    };
+    vv.addEventListener('resize', onResize);
+    return () => vv.removeEventListener('resize', onResize);
+  }, [step]);
+
+  // Step 0 ("What are you looking for?") on mobile: when the keyboard shrinks
+  // the visual viewport, keep the title input clearly visible by scrolling it
+  // to the top of the visible area. Purely visual — no logic or flow changes.
 
   // Scroll to ID verification card when verification is successful
   useEffect(() => {

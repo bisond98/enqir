@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enquiry Submitted — Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif; }
+  body { background: #fff; }
+
+  @keyframes tickForming {
+    0% { transform: scale(0.8) rotate(-10deg) translateX(-5px); opacity: 0.6; }
+    25% { transform: scale(0.9) rotate(5deg) translateX(3px); opacity: 0.8; }
+    50% { transform: scale(1) rotate(0deg) translateX(0px); opacity: 1; }
+    75% { transform: scale(1.05) rotate(-2deg) translateX(-2px); opacity: 0.9; }
+    100% { transform: scale(1) rotate(0deg) translateX(0px); opacity: 1; }
+  }
+  @keyframes tickMoveAround {
+    0% { top: 10%; left: 10%; transform: translate(0,0) rotate(0deg); }
+    25% { top: 10%; left: 70%; transform: translate(0,0) rotate(90deg); }
+    50% { top: 60%; left: 70%; transform: translate(0,0) rotate(180deg); }
+    75% { top: 60%; left: 10%; transform: translate(0,0) rotate(270deg); }
+    100% { top: 10%; left: 10%; transform: translate(0,0) rotate(360deg); }
+  }
+  @keyframes tickDraw {
+    0% { stroke-dashoffset: 100; opacity: 0.3; }
+    50% { stroke-dashoffset: 50; opacity: 0.7; }
+    100% { stroke-dashoffset: 0; opacity: 1; }
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+  @keyframes pulseGlow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(37,99,235,.8), 0 0 20px rgba(37,99,235,.3); }
+    50% { box-shadow: 0 0 0 12px rgba(37,99,235,0), 0 0 30px rgba(37,99,235,.5); }
+  }
+  @keyframes dashFlow { 0% { stroke-dasharray: 0,100; } 50% { stroke-dasharray: 100,0; } 100% { stroke-dasharray: 0,100; } }
+
+  .screen { position: relative; width: 100%; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: #fff; }
+  .countdown-area { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+
+  /* Heading top */
+  .heading-stack { position: absolute; top: 44px; left: 50%; transform: translateX(-50%); z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding: 0 16px; text-align: center; }
+  .heading-stack h1 { font-size: clamp(48px, 13vw, 72px); font-weight: 900; letter-spacing: -0.04em; line-height: 1; color: #000; text-shadow: 0 2px 4px rgba(0,0,0,.1); }
+  .heading-stack p { font-size: 12px; font-weight: 600; color: #374151; }
+
+  /* Moving tick */
+  .tick-wrap { position: absolute; width: 160px; height: 160px; animation: tickMoveAround 8s ease-in-out infinite; transform: translateZ(0); }
+  @media (min-width: 640px) { .tick-wrap { width: 200px; height: 200px; } }
+  .tick-wrap svg { width: 100%; height: 100%; color: #60a5fa; filter: drop-shadow(0 0 10px rgba(59,130,246,.8)) drop-shadow(0 0 20px rgba(59,130,246,.6)); animation: tickForming 2s ease-in-out infinite; }
+  .tick-wrap path { stroke: currentColor; stroke-width: 12; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 100; stroke-dashoffset: 100; animation: tickDraw 2s ease-in-out infinite; filter: drop-shadow(0 0 8px currentColor); }
+  .tick-wrap circle { fill: currentColor; animation: pulse 1.5s ease-in-out infinite; filter: drop-shadow(0 0 6px currentColor); }
+  .tick-wrap circle:nth-of-type(2) { animation-delay: .3s; }
+  .tick-wrap circle:nth-of-type(3) { animation-delay: .6s; }
+  .tick-glow { position: absolute; inset: 0; border-radius: 9999px; background: #93c5fd; opacity: .5; filter: blur(24px); transform: scale(1.3); animation: pulseGlow 2s ease-in-out infinite; }
+
+  /* Doodle watermark */
+  .doodle { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); opacity: .2; z-index: 0; pointer-events: none; user-select: none; width: min(85vw, 420px); }
+  .doodle svg { width: 100%; aspect-ratio: 1; }
+  .doodle .flow { animation: dashFlow 3s linear infinite; }
+  .doodle .flow.d2 { animation-delay: .5s; } .doodle .flow.d3 { animation-delay: 1s; }
+  .doodle .flow.d4 { animation-delay: 1.5s; } .doodle .flow.d5 { animation-delay: 2s; } .doodle .flow.d6 { animation-delay: 2.5s; }
+
+  /* Countdown */
+  .countdown { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 10; }
+  .countdown span { font-size: clamp(160px, 40vw, 300px); font-weight: 900; color: #000; font-variant-numeric: tabular-nums; animation: pulse 1.5s ease-in-out infinite; user-select: none; }
+
+  /* Chip */
+  .chip-row { position: relative; z-index: 10; display: flex; justify-content: center; transform: translateY(-64px); }
+  @media (min-width: 640px) { .chip-row { transform: translateY(-96px); } }
+  .chip { display: inline-flex; align-items: center; gap: 6px; background: #dc2626; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 6px 14px; border-radius: 9999px; box-shadow: 0 3px 0 0 rgba(0,0,0,.3); }
+  @media (min-width: 640px) { .chip { font-size: 12px; padding: 8px 16px; } }
+
+  /* Button */
+  .btn-row { position: relative; z-index: 10; display: flex; padding: 8px 16px 24px; transform: translateY(-64px); }
+  @media (min-width: 640px) { .btn-row { transform: translateY(-96px); padding: 8px 0 24px; } }
+  .btn { flex: 1; display: flex; align-items: center; justify-content: center; height: 56px; font-size: 16px; font-weight: 900; color: #fff; background: linear-gradient(to bottom, #3b82f6, #1d4ed7); border: 1px solid #000; border-radius: 12px; box-shadow: 0 5px 0 0 rgba(0,0,0,.85), 0 8px 12px rgba(0,0,0,.25); cursor: pointer; transition: all .2s; overflow: hidden; user-select: none; }
+  @media (min-width: 640px) { .btn { height: 64px; font-size: 18px; } }
+  .btn:hover { box-shadow: 0 6px 0 0 rgba(0,0,0,.85), 0 10px 16px rgba(0,0,0,.28); transform: translateY(-1px); }
+  .btn:active { box-shadow: 0 1px 0 0 rgba(0,0,0,.85), 0 3px 6px rgba(0,0,0,.2); transform: translateY(4px); }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="countdown-area">
+    <!-- Heading -->
+    <div class="heading-stack">
+      <h1>Enquiry Submitted</h1>
+      <p>Your enquiry is under review</p>
+    </div>
+
+    <!-- Doodle watermark -->
+    <div class="doodle" aria-hidden="true">
+      <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(200,200)" opacity="0.85">
+          <circle r="34" stroke="#111827" stroke-width="2"/><circle r="27" stroke="#111827" stroke-width="1.2" opacity="0.7"/><circle r="20" stroke="#111827" stroke-width="1" opacity="0.85"/>
+        </g>
+        <g transform="translate(200,80)" opacity="0.95">
+          <circle r="12" stroke="#111827" stroke-width="2"/><circle cx="-3" cy="-2" r="1.5" fill="#111827"/><circle cx="3" cy="-2" r="1.5" fill="#111827"/>
+          <path d="M-2 3 Q0 4 2 3" stroke="#111827" stroke-width="1.2"/>
+          <rect x="-8" y="8" width="16" height="20" stroke="#111827" rx="2"/><rect x="-6" y="12" width="12" height="8" fill="#111827" opacity="0.85"/>
+          <text y="42" text-anchor="middle" font-size="9" fill="#1F2937" font-weight="500">User</text>
+        </g>
+        <g transform="translate(100,200)" opacity="0.95">
+          <rect x="-15" y="-12" width="30" height="24" stroke="#111827" stroke-width="2" rx="3"/>
+          <circle cx="-6" r="2" fill="#111827"/><circle r="2" fill="#111827"/><circle cx="6" r="2" fill="#111827"/>
+          <path d="M-4 -6 L4 6 M4 -6 L-4 6" stroke="#111827" stroke-width="1" opacity="0.9"/>
+          <text y="-18" text-anchor="middle" font-size="9" fill="#1F2937" font-weight="500">AI Engine</text>
+        </g>
+        <g transform="translate(300,200)" opacity="0.95">
+          <circle r="15" stroke="#111827" stroke-width="2"/><circle r="10" stroke="#111827" stroke-width="1.2" opacity="0.7"/><circle r="5" stroke="#111827" stroke-width="1" opacity="0.85"/><circle r="2" fill="#111827"/>
+          <text y="-20" text-anchor="middle" font-size="9" fill="#1F2937" font-weight="500">Match</text>
+        </g>
+        <g transform="translate(200,320)" opacity="0.95">
+          <circle r="16" stroke="#111827" stroke-width="2"/><path d="M-6 0 L-2 4 L6 -2" stroke="#111827" stroke-width="2.5"/>
+          <text y="-22" text-anchor="middle" font-size="9" fill="#1F2937" font-weight="500">Success!</text>
+        </g>
+        <path class="flow" d="M200 112 L200 166" stroke="#111827" stroke-width="2"/>
+        <path class="flow d2" d="M130 200 L166 200" stroke="#111827" stroke-width="2"/>
+        <path class="flow d3" d="M234 200 L270 200" stroke="#111827" stroke-width="2"/>
+        <path class="flow d4" d="M200 234 L200 288" stroke="#111827" stroke-width="2"/>
+        <path class="flow d5" d="M118 218 L172 262" stroke="#111827" stroke-width="2" opacity="0.75"/>
+        <path class="flow d6" d="M282 218 L228 262" stroke="#111827" stroke-width="2" opacity="0.75"/>
+        <g transform="translate(150,120)" opacity="0.85"><circle r="8" fill="#111827"/><text y="2" text-anchor="middle" font-size="7" fill="#fff">🔒</text><text y="17" text-anchor="middle" font-size="6" fill="#1F2937">Secure</text></g>
+        <g transform="translate(250,120)" opacity="0.85"><circle r="8" fill="#111827"/><text y="2" text-anchor="middle" font-size="7" fill="#fff">⚡</text><text y="17" text-anchor="middle" font-size="6" fill="#1F2937">Fast</text></g>
+        <g transform="translate(150,280)" opacity="0.85"><circle r="8" fill="#111827"/><text y="2" text-anchor="middle" font-size="7" fill="#fff">💬</text><text y="17" text-anchor="middle" font-size="6" fill="#1F2937">Chat</text></g>
+        <g transform="translate(250,280)" opacity="0.85"><circle r="8" fill="#111827"/><text y="2" text-anchor="middle" font-size="7" fill="#fff">⭐</text><text y="17" text-anchor="middle" font-size="6" fill="#1F2937">Quality</text></g>
+      </svg>
+    </div>
+
+    <!-- Moving tick -->
+    <div class="tick-wrap">
+      <div class="tick-glow"></div>
+      <svg viewBox="0 0 100 100">
+        <path d="M 20 50 L 40 70 L 80 30"/>
+        <circle cx="20" cy="50" r="5"/>
+        <circle cx="40" cy="70" r="5"/>
+        <circle cx="80" cy="30" r="5"/>
+      </svg>
+    </div>
+
+    <!-- Countdown -->
+    <div class="countdown"><span id="count">5</span></div>
+  </div>
+
+  <!-- Red chip -->
+  <div class="chip-row"><span class="chip">Don't press back</span></div>
+
+  <!-- Button -->
+  <div class="btn-row"><button class="btn">Go to Dashboard</button></div>
+</div>
+
+<script>
+  let n = 5;
+  setInterval(() => { n = n <= 1 ? 5 : n - 1; document.getElementById('count').textContent = n; }, 1000);
+</script>
+</body>
+</html>

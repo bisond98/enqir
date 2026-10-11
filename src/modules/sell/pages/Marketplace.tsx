@@ -12,7 +12,7 @@ import { parseNLSearch, isNLSearchQuery, type NLFilters } from '../services/nlSe
 import type { SellListing } from '../types';
 import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, Navigation, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale,  Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User, Bookmark, Footprints } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
-import { MapLocationPicker } from '@/components/MapLocationPicker';
+import { MapLocationPickerLazy as MapLocationPicker } from '@/components/MapLocationPickerLazy';
 import type { MapLocationAddress, SortReferenceLocation } from '@/types/mapLocation';
 import { haversineKm } from '@/lib/haversine';
 import { loadNearestRadiusKm, saveNearestRadiusKm } from '@/lib/nearestRadiusStorage';

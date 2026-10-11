@@ -37,6 +37,9 @@ interface AuthContextType {
   isEmailVerified: boolean;
   isProfileVerified: boolean;
   profileVerificationStatus: string | null;
+  /** Saved full name from userProfiles/{uid} — set in Profile → Profile Details. Shows app-wide in chat/responses; falls back to #userXXXX. */
+  savedFullName: string;
+  savedPhone?: string;
   showWelcomePopup: boolean;
   signUp: (identifier: string, password: string, userData?: { full_name?: string; first_name?: string; last_name?: string }) => Promise<{ error: any | null; requiresVerification?: boolean; emailSent?: boolean }>;
   signIn: (identifier: string, password: string) => Promise<{ error: any | null; requiresVerification?: boolean; emailSent?: boolean }>;
@@ -62,6 +65,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isEmailVerified, setIsEmailVerified] = useState<boolean>(false);
   const [isProfileVerified, setIsProfileVerified] = useState<boolean>(false);
   const [profileVerificationStatus, setProfileVerificationStatus] = useState<string | null>(null);
+  const [savedFullName, setSavedFullName] = useState<string>('');
+  const [savedPhone, setSavedPhone] = useState<string>('');
   const [showWelcomePopup, setShowWelcomePopup] = useState<boolean>(false);
 
   // Load profile verification status when user changes - REALTIME
@@ -77,15 +82,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Profile data updated
           setIsProfileVerified(profileData.isProfileVerified || false);
           setProfileVerificationStatus(profileData.verificationStatus || null);
+          setSavedFullName(profileData.fullName || '');
+          setSavedPhone(profileData.phone || '');
         } else {
           // No profile found, setting defaults
           setIsProfileVerified(false);
           setProfileVerificationStatus(null);
+          setSavedFullName('');
+          setSavedPhone('');
         }
       }, (error) => {
         console.log('Error in profile listener:', error);
         setIsProfileVerified(false);
         setProfileVerificationStatus(null);
+        setSavedFullName('');
       });
       
       // Return unsubscribe function for cleanup
@@ -93,6 +103,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       setIsProfileVerified(false);
       setProfileVerificationStatus(null);
+      setSavedFullName('');
+      setSavedPhone('');
       return null;
     }
   };
@@ -560,6 +572,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsEmailVerified(false);
     setIsProfileVerified(false);
     setProfileVerificationStatus(null);
+    setSavedPhone('');
     setShowWelcomePopup(false);
     setLoading(false);
   };
@@ -799,6 +812,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         (window.recaptchaVerifier as any)?.clear?.();
       } catch { /* already cleared */ }
       window.recaptchaVerifier = undefined;
+      // Widgets rendered outside the page's React tree (e.g. the Profile page
+      // mounts/unmounts its #recaptcha-container anchor) can leave a stale
+      // widget bound to a removed element — clear Firebase's cache too.
+      try {
+        (window as any).grecaptcha?.reset?.();
+      } catch { /* grecaptcha not loaded yet */ }
     };
     resetRecaptcha();
     try {
@@ -965,6 +984,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isEmailVerified,
       isProfileVerified,
       profileVerificationStatus,
+      savedFullName,
+      savedPhone,
       showWelcomePopup,
       signUp, 
       signIn, 

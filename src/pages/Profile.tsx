@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2, X, Tag, MapPin, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { shortUserId } from "@/lib/userDisplayName";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
 import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, orderBy, onSnapshot, updateDoc, deleteField } from "firebase/firestore";
@@ -24,7 +25,7 @@ import SecurityDashboard from "@/components/SecurityDashboard";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 
 const Profile = () => {
-  const { user: authUser } = useAuth();
+  const { user: authUser, sendPhoneOTP, verifyPhoneOTP } = useAuth();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const returnTo = searchParams.get('returnTo');
@@ -34,12 +35,30 @@ const Profile = () => {
   });
   
   // Profile states
-  const [fullName, setFullName] = useState("");
+  const [fullName /* shown in UI as username */ , setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
   const [isProfileVerified, setIsProfileVerified] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+
+  // Mobile OTP verification (username/phone section above the ID card)
+  const [otpStage, setOtpStage] = useState(false);          // OTP boxes visible after clicking Verify
+  const [otpListeners, setOtpListeners] = useState<string[]>(["", "", "", "", "", ""]);
+  const [verificationId, setVerificationId] = useState<string | null>(null);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [confirmingOtp, setConfirmingOtp] = useState(false);
+  const [savingUsername, setSavingUsername] = useState(false);
+  const [isEditingUsername, setIsEditingUsername] = useState(true);
+  const [resendSeconds, setResendSeconds] = useState(60);
+  const otpBoxRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // The mobile number is considered verified when it matches the number the
+  // account is linked with (mobile-OTP sign-in or profile OTP verification).
+  const linkedPhone = authUser?.phoneNumber || "";
+  const e164Typed = `${countryCode}${phone.replace(/\D/g, "")}`;
+  const isPhoneVerified = !!linkedPhone && linkedPhone === e164Typed;
   
   // ID upload states
   const [idType, setIdType] = useState("");
@@ -153,13 +172,18 @@ const Profile = () => {
       if (profileDoc.exists()) {
         const profileData = profileDoc.data();
         console.log('🔄 Profile: Profile data updated (REALTIME):', profileData);
-        setFullName(profileData.fullName || "");
+        const loadedName = profileData.fullName || "";
+        const loadedUsername = profileData.username || "";
+        setFullName(loadedName);
+        setUsername(loadedUsername);
+        setIsEditingUsername(!loadedUsername.trim());
         setPhone(profileData.phone || "");
         setCountryCode(profileData.countryCode || "+91");
         setIsProfileVerified(profileData.isProfileVerified || false);
         setVerificationStatus(profileData.verificationStatus || null);
       } else {
         console.log('🔄 Profile: No profile found, setting defaults');
+        setIsEditingUsername(true);
         setIsProfileVerified(false);
         setVerificationStatus(null);
       }
@@ -214,9 +238,140 @@ const Profile = () => {
     loadSecurityData();
   }, [authUser]);
 
-  // Handle profile save
+  // ---------------- Username & Mobile number (section above the ID card) ----------------
+
+  // Save just the username (writes the same fullName field — it is the
+  // app-wide display name everywhere via userDisplayName helpers).
+  const handleUsernameSave = async () => {
+    if (!authUser) return;
+    setSavingUsername(true);
+    try {
+      await setDoc(doc(db, 'userProfiles', authUser.uid), {
+        userId: authUser.uid,
+        username: username.trim() || "",
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+      setIsEditingUsername(false);
+      toast({
+        title: "Username saved",
+        description: "Your username now shows everywhere — chats, responses and listings.",
+      });
+    } catch (error) {
+      console.error('Error saving username:', error);
+      toast({
+        title: "Save failed",
+        description: "Could not save the username. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingUsername(false);
+    }
+  };
+
+  const handleUsernameEdit = () => {
+    setIsEditingUsername(true);
+  };
+
+  // Send OTP to the typed mobile number.
+  const handlePhoneOtpSend = async () => {
+    if (!authUser) return;
+    const digits = phone.replace(/\D/g, "");
+    const expectedLen = countryCode === "+91" ? 10 : 8;
+    if (digits.length < expectedLen) {
+      toast({ title: "Invalid number", description: "Enter a valid mobile number first.", variant: "destructive" });
+      return;
+    }
+    setSendingOtp(true);
+    try {
+      const result = await sendPhoneOTP(`${countryCode}${digits}`);
+      if (result?.error) return;
+      setVerificationId(result.verificationId || null);
+      setOtpListeners(["", "", "", "", "", ""]);
+      setResendSeconds(60);
+      setOtpStage(true);
+      setTimeout(() => otpBoxRefs.current[0]?.focus(), 100);
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  // Confirm the OTP — links the number to the account (Firebase-level
+  // verification) and stores it on the profile so every form auto-fills it.
+  const handlePhoneOtpConfirm = async () => {
+    const code = otpListeners.join("");
+    if (code.length < 6) {
+      toast({ title: "Incomplete OTP", description: "Enter all 6 digits.", variant: "destructive" });
+      return;
+    }
+    if (!verificationId) {
+      toast({ title: "Session expired", description: "Request a new OTP.", variant: "destructive" });
+      setOtpStage(false);
+      return;
+    }
+    setConfirmingOtp(true);
+    try {
+      const result = await verifyPhoneOTP(code, verificationId);
+      if (result?.error) return;
+      if (authUser) {
+        await setDoc(doc(db, 'userProfiles', authUser.uid), {
+          userId: authUser.uid,
+          phone: phone.replace(/\D/g, ""),       // national digits, same shape the forms use
+          countryCode: countryCode,
+          phoneVerified: true,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      }
+      setOtpStage(false);
+      setVerificationId(null);
+    } finally {
+      setConfirmingOtp(false);
+    }
+  };
+
+  // OTP box helpers (same pattern as the sign-in mobile page)
+  const setOtpDigit = (index: number, raw: string) => {
+    const digit = raw.replace(/\D/g, "").slice(-1);
+    setOtpListeners((prev) => {
+      const next = [...prev];
+      next[index] = digit;
+      return next;
+    });
+    if (digit && index < 5) otpBoxRefs.current[index + 1]?.focus();
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    const digits = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!digits) return;
+    e.preventDefault();
+    setOtpListeners(digits.split("").concat(Array(6 - digits.length).fill("")));
+    otpBoxRefs.current[Math.min(digits.length, 5)]?.focus();
+  };
+
+  // Countdown the resend timer while the OTP boxes are open
+  useEffect(() => {
+    if (!otpStage || resendSeconds <= 0) return;
+    const id = setInterval(() => setResendSeconds((s) => s - 1), 1000);
+    return () => clearInterval(id);
+  }, [otpStage, resendSeconds]);
+
+  // Prefill the mobile number when the account already has a linked phone
+  // (mobile-OTP sign-in) — only fills an empty field so edits always win.
+  useEffect(() => {
+    if (linkedPhone && !phone) {
+      const digits = linkedPhone.replace(/\D/g, "");
+      const national = digits.startsWith("91") && digits.length === 12 ? digits.slice(2) : digits;
+      if (countryCode === "+91") {
+        setPhone(national.slice(0, 10).replace(/(\d{5})(?=\d)/g, '$1 '));
+      } else {
+        setPhone(digits); // fall back to full digits; user can trim the code
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedPhone]);
+
+  // Handle profile save (edits from the verification card / edit mode)
   const handleProfileSave = async () => {
-    if (!authUser || !fullName.trim() || !phone.trim()) return;
+    if (!authUser || !fullName.trim()) return;
     
     try {
       await setDoc(doc(db, 'userProfiles', authUser.uid), {
@@ -714,6 +869,8 @@ const Profile = () => {
     return <LoadingAnimation message="Loading your profile" />;
   }
 
+  const Username = username.trim() || authUser?.displayName || "Username";
+
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
@@ -738,7 +895,7 @@ const Profile = () => {
             {/* Profile Heading in Black Header */}
             <div className="flex justify-center items-center mb-4 sm:mb-6">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl dashboard-header-no-emoji">
-                    <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Profile.</span>
+                    <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{Username}</span>
               </h1>
             </div>
             
@@ -747,7 +904,7 @@ const Profile = () => {
               <div className="text-center">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
                   <h2 className="text-[10px] sm:text-xs lg:text-sm font-bold text-white tracking-tight inline-flex items-center gap-2 sm:gap-3">
-                    {fullName || authUser.displayName || "User"}
+                    {username.trim() || authUser.displayName || "User"}
                     {isProfileVerified && (
                       <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                     )}
@@ -764,20 +921,159 @@ const Profile = () => {
         {/* Profile Form - Inside Container */}
         <div className="max-w-2xl lg:max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
 
+        {/* Username & Mobile number — bare inputs, no card */}
+        <div className="mt-20 sm:mt-28 space-y-5">
+            {/* Username */}
+            <div className="space-y-2">
+              {!username.trim() && !isEditingUsername && (
+                <p className="text-[10px] text-gray-400 font-normal">Unnamed users show as {shortUserId(authUser?.uid || "")}</p>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  onBlur={() => {
+                    if (isEditingUsername) {
+                      handleUsernameSave();
+                    }
+                  }}
+                  placeholder="Enter your username"
+                  disabled={!isEditingUsername}
+                  className="rounded-[12px] h-10 sm:h-12 min-h-[44px] flex-1 text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 disabled:bg-gray-50 disabled:text-gray-600"
+                  maxLength={30}
+                />
+                {isEditingUsername ? (
+                  <Button
+                    type="button"
+                    onClick={handleUsernameSave}
+                    disabled={savingUsername}
+                    className="h-10 sm:h-12 px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black disabled:opacity-60 shrink-0"
+                  >
+                    {savingUsername ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4 mr-1" />
+                    )}
+                    Save
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    onClick={handleUsernameEdit}
+                    className="h-10 sm:h-12 px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black shrink-0"
+                  >
+                    <Edit className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Mobile number + OTP - only show for users who didn't sign in with phone */}
+            {!linkedPhone && (
+              <div className="space-y-2">
+                {isPhoneVerified && (
+                  <span className="inline-flex items-center gap-1 text-[10px] text-green-600 font-bold">
+                    <CheckCircle className="h-3 w-3" /> Verified
+                  </span>
+                )}
+                <div className="flex gap-2">
+                  <div className="flex gap-1.5 flex-1">
+                    <div className="h-10 sm:h-12 min-h-[44px] shrink-0 flex items-center justify-center px-3 rounded-[12px] border-[1.5px] border-slate-200 bg-white text-black text-sm font-bold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)]">🇮🇳 +91</div>
+                    <Input
+                      value={phone}
+                      onChange={(e) => {
+                        const digitsOnly = e.target.value.replace(/[^\d ]/g, "");
+                        setPhone(countryCode === "+91" ? digitsOnly.replace(/(\d{5})(?=\d)/g, "$1 ").slice(0, 11) : digitsOnly);
+                      }}
+                      placeholder="Enter mobile number"
+                      className="flex-1 min-w-0 rounded-[12px] h-10 sm:h-12 min-h-[44px] w-full text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
+                      inputMode="numeric"
+                      maxLength={countryCode === "+91" ? 11 : 14}
+                      disabled={isPhoneVerified}
+                    />
+                  </div>
+                  {!isPhoneVerified && (
+                    <Button
+                      type="button"
+                      onClick={handlePhoneOtpSend}
+                      disabled={!phone.trim() || sendingOtp || confirmingOtp}
+                      className="h-10 sm:h-12 px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black disabled:opacity-60 shrink-0"
+                    >
+                      {sendingOtp ? (
+                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                      ) : (
+                        <Shield className="h-4 w-4 mr-1" />
+                      )}
+                      Verify
+                    </Button>
+                  )}
+                </div>
+
+                {/* OTP boxes — appear under the phone input after Verify is clicked */}
+                {otpStage && (
+                  <div className="mt-3 rounded-2xl border-[1.5px] border-slate-200 bg-slate-50 p-3 space-y-3">
+                    <p className="text-[11px] font-bold text-gray-700">
+                      Enter the 6-digit code sent to {countryCode} {phone}
+                    </p>
+                    <div className="flex gap-2" onPaste={handleOtpPaste}>
+                      {otpListeners.map((d, i) => (
+                        <input
+                          key={i}
+                          ref={(el) => { otpBoxRefs.current[i] = el; }}
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={1}
+                          value={d}
+                          onChange={(e) => setOtpDigit(i, e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Backspace" && !d && i > 0) otpBoxRefs.current[i - 1]?.focus();
+                          }}
+                          className="w-10 h-12 text-center text-base font-bold border-[1.5px] border-slate-200 rounded-xl bg-white focus:outline-none focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15"
+                        />
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={handlePhoneOtpSend}
+                        disabled={resendSeconds > 0 || sendingOtp}
+                        className="text-[11px] font-bold text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                      >
+                        {resendSeconds > 0 ? `Resend in ${resendSeconds}s` : "Resend OTP"}
+                      </button>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={handlePhoneOtpConfirm}
+                      disabled={confirmingOtp || otpListeners.join("").length < 6}
+                      className="w-full h-10 text-xs sm:text-sm bg-black hover:bg-gray-900 text-white font-black rounded-2xl border-[0.5px] border-black disabled:opacity-60"
+                    >
+                      {confirmingOtp && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      Confirm OTP
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>          {/* recaptcha anchor for Firebase phone auth (required, invisible) */}
+        <div id="recaptcha-container" />
+
+        <div className="mt-24 sm:mt-28" />
+
         {/* Trust Badge Section - SIMPLE & CLEAN */}
-        <Card className={`mt-4 sm:mt-6 ${verifyingId ? '' : 'border-[0.5px] border-black'} shadow-lg rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px]`}>
-          {/* Card Header - Black Background */}
-          <div className="bg-black px-4 sm:px-4 py-3.5 sm:py-4 lg:px-5 lg:py-4 rounded-t-3xl sm:rounded-t-2xl">
-            <h2 className="text-sm sm:text-sm md:text-base font-bold text-white flex items-center gap-2.5">
-              <Shield className="h-4 w-4 sm:h-4 sm:w-4" />
-              Profile Verification
-            </h2>
-            <p className="text-[10px] sm:text-xs text-gray-300 mt-1.5">
-              Make all enquires and responses verified.
-            </p>
+        <Card className={`mt-4 sm:mt-6 ${verifyingId ? '' : 'border-[2px] border-black'} shadow-lg rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px]`}>
+          {/* Card Header - White Background */}
+          <div className="bg-white px-4 sm:px-4 py-4 sm:py-5 lg:px-5 lg:py-6 rounded-t-3xl sm:rounded-t-2xl">
+            <div className="flex flex-col items-center justify-center gap-2">
+              <Shield className="h-14 w-14 sm:h-16 sm:w-16 text-blue-600 fill-blue-600" />
+              <p className="text-[10px] sm:text-xs text-gray-700 font-medium text-center">
+                Verification badge for all the enquires, responses, listings etc.
+              </p>
+            </div>
           </div>
           {/* Card Content - Enhanced White Background */}
-          <CardContent className="p-4 sm:p-5 lg:p-5 lg:pt-4 space-y-4 sm:space-y-6 lg:space-y-4 relative">
+          <CardContent className="p-4 sm:p-5 lg:p-5 lg:pt-10 space-y-8 sm:space-y-10 lg:space-y-8 relative">
             
             {/* Loading Animation - Distorted Blue Tick Forming */}
             {verifyingId && (
@@ -1024,19 +1320,31 @@ const Profile = () => {
              (!verificationStatus || verificationStatus === 'rejected') ? (
               <>
                 <div className="space-y-1 sm:space-y-2">
-                  <Label htmlFor="fullName" className="text-xs sm:text-sm">Full Name</Label>
+                  {/* <Label htmlFor="fullName" className="text-xs sm:text-sm">Full name</Label> */}
                   <Input
                     id="fullName"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
-                    className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
+                    onBlur={async () => {
+                      if (!authUser) return;
+                      try {
+                        await setDoc(doc(db, 'userProfiles', authUser.uid), {
+                          userId: authUser.uid,
+                          fullName: fullName.trim() || "",
+                          updatedAt: serverTimestamp()
+                        }, { merge: true });
+                      } catch (e) {
+                        console.error('Error saving full name:', e);
+                      }
+                    }}
+                    placeholder="Enter your name"
+                    className="rounded-[12px] h-10 sm:h-12 min-h-[44px] w-full text-sm font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 relative z-10"
                     required
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-8">
                   <div className="space-y-1 sm:space-y-2">
-                    <Label htmlFor="idType" className="text-xs sm:text-sm">ID Type</Label>
+                    {/* <Label htmlFor="idType" className="text-xs sm:text-sm">ID Type</Label> */}
                         <Select value={idType} onValueChange={(value) => {
                           setIdType(value);
                           if (idNumber && value) {
@@ -1046,7 +1354,7 @@ const Profile = () => {
                           }
                           setIdVerificationResult(null);
                         }} disabled={verifyingId || isUploading}>
-                      <SelectTrigger className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] relative z-10" disabled={verifyingId || isUploading}>
+                      <SelectTrigger className="rounded-[12px] h-10 sm:h-12 min-h-[44px] w-full text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 data-[placeholder]:text-gray-900 data-[placeholder]:font-semibold data-[placeholder]:text-[11px] text-slate-900 relative z-10" disabled={verifyingId || isUploading}>
                         <SelectValue placeholder="Select ID type" />
                       </SelectTrigger>
                         <SelectContent>
@@ -1059,7 +1367,7 @@ const Profile = () => {
                     </Select>
                   </div>
                   <div className="space-y-1 sm:space-y-2">
-                    <Label htmlFor="idNumber" className="text-xs sm:text-sm">ID Number</Label>
+                    {/* <Label htmlFor="idNumber" className="text-xs sm:text-sm">ID Number</Label> */}
                     <Input
                       id="idNumber"
                       value={idNumber}
@@ -1081,7 +1389,7 @@ const Profile = () => {
                         setIdVerificationResult(null);
                       }}
                       placeholder={idType === 'aadhaar' ? "Enter 12 digits (e.g., 1234 5678 9012)" : "Enter ID number"}
-                      className="h-8 sm:h-10 border border-black focus:border-black focus:ring-4 focus:ring-black/20 rounded-xl transition-all duration-300 bg-gradient-to-br from-white to-slate-50/50 hover:from-white hover:to-slate-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] placeholder:text-slate-400 placeholder:text-[10px] text-xs sm:text-sm relative z-10"
+                      className="rounded-[12px] h-10 sm:h-12 min-h-[44px] w-full text-sm font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900 relative z-10"
                       disabled={verifyingId || isUploading}
                     />
                     {idErrors.idNumber && !idVerificationResult && (
@@ -1148,9 +1456,9 @@ const Profile = () => {
 
                 {/* ID Upload - Single Slot with Camera */}
                 <div className="space-y-2.5">
-                  <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
+                  {/* <Label htmlFor="idFront" className="text-xs sm:text-sm font-semibold text-slate-700">
                     ID Document *
-                  </Label>
+                  </Label> */}
                   
                   {/* Upload Button - Shows native mobile options (Choose image, Take photo, etc.) */}
                   <div className="mb-3 sm:mb-2">
@@ -1185,10 +1493,10 @@ const Profile = () => {
                     {/* Upload Button - Full Width */}
                     <label
                       htmlFor="idFront"
-                      className={`w-full h-14 border border-black rounded-xl transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation relative overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] ${
+                      className={`w-full h-12 sm:h-14 min-h-[48px] rounded-[12px] border-[1.5px] transition-all duration-200 flex items-center justify-center cursor-pointer touch-manipulation relative overflow-hidden shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] ${
                         verifyingId || isUploading || (idFront || idFrontUrl)
                           ? 'border-slate-200 bg-slate-50 cursor-not-allowed opacity-50'
-                          : 'border-black bg-white hover:border-black hover:bg-blue-50/30 active:bg-blue-100 active:scale-[0.98]'
+                          : 'border-slate-200 bg-white hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] hover:border-black focus-within:border-black focus-within:ring-3 focus-within:ring-black/15 focus-within:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] active:scale-[0.98]'
                       }`}
                       onClick={(e) => {
                         if (verifyingId || isUploading || (idFront || idFrontUrl)) {
@@ -1200,7 +1508,7 @@ const Profile = () => {
                       <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none z-0" />
                       <div className="flex items-center gap-2 relative z-10">
                         <Upload className="h-5 w-5 text-slate-600" />
-                        <span className="text-sm text-slate-700 font-semibold">Upload</span>
+                        <span className="text-sm text-slate-700 font-semibold">ID upload</span>
                       </div>
                     </label>
                   </div>

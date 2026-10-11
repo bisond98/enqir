@@ -19,6 +19,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
 import { collection, query, where, addDoc, serverTimestamp, onSnapshot, doc, getDoc, updateDoc, setDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
+import { displayNameForUser } from '@/lib/userDisplayName';
 import { getListing, listResponsesForListing } from '../services/sellDb';
 import type { SellListing } from '../types';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
@@ -97,7 +98,9 @@ function VoicePlayer({ src }: { src: string }) {
 
 export default function ListingChat() {
   const { id, buyerId } = useParams<{ id: string; buyerId: string }>();
-  const { user } = useAuth();
+  const { user, savedFullName } = useAuth();
+  // Display name: saved profile name → clean displayName → #userXXXX (never email prefix)
+  const myName = displayNameForUser(user, savedFullName);
   const navigate = useNavigate();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -337,7 +340,7 @@ export default function ListingChat() {
         const chatId = `sell_${id}_${buyerId}`;
         await addDoc(collection(db, 'chatMessages'), {
           enquiryId: `sell_listing_${id}`, chatId,
-          senderId: user.uid, senderName: user.displayName || 'User',
+          senderId: user.uid, senderName: myName,
           recipientId: user.uid === listing?.sellerId ? buyerId : listing?.sellerId || '',
           sellerId: buyerId,
           senderType: user.uid === listing?.sellerId ? 'seller' : 'buyer',
@@ -391,7 +394,7 @@ export default function ListingChat() {
       const chatId = `sell_${id}_${buyerId}`;
       await addDoc(collection(db, 'chatMessages'), {
         enquiryId: `sell_listing_${id}`, chatId,
-        senderId: user.uid, senderName: user.displayName || 'User',
+        senderId: user.uid, senderName: myName,
         recipientId: user.uid === listing?.sellerId ? buyerId : listing?.sellerId || '',
         sellerId: buyerId,
         senderType: user.uid === listing?.sellerId ? 'seller' : 'buyer',

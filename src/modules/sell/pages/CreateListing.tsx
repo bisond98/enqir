@@ -17,7 +17,7 @@ import { SNEAKER_BRANDS } from '../categoryBrands';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MapLocationPicker } from '@/components/MapLocationPicker';
+import { MapLocationPickerLazy as MapLocationPicker } from '@/components/MapLocationPickerLazy';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep, isFieldHiddenForDetails } from '../categoryDetails';
@@ -212,7 +212,7 @@ const STEPS = [
 ] as const;
 
 export default function CreateListing() {
-  const { user, isProfileVerified, loading: authLoading } = useAuth();
+  const { user, isProfileVerified, loading: authLoading, savedPhone } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
@@ -313,15 +313,16 @@ export default function CreateListing() {
   // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
   // number. Only fills an empty field, so user edits always win.
   useEffect(() => {
-    if (user?.phoneNumber && !mobileNumber) {
-      const split = splitE164Phone(user.phoneNumber);
+    const phoneToUse = user?.phoneNumber || savedPhone || '';
+    if (phoneToUse && !mobileNumber) {
+      const split = splitE164Phone(phoneToUse);
       if (split) {
         setCountryCode(split.code);
         setMobileNumber(formatNationalForInput(split.national, split.code));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.phoneNumber]);
+  }, [user?.phoneNumber, savedPhone]);
 
   const [aiGenerating, setAiGenerating] = useState(false);
 

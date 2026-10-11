@@ -75,7 +75,7 @@ function listingSpecSentence(listing: SellListing): string {
   } else if (cat === 'mobiles') {
     if (d.brand) bits.push(`📱 ${d.brand}`);
     if (d.storage) bits.push(`💾 ${d.storage}`);
-    if (d.warranty) bits.push(`🛡️ ${d.warranty}`);
+    // No warranty in share messages — buyer can ask in chat
   } else if (cat === 'laptops') {
     if (d.processor) bits.push(`⚡ ${d.processor}`);
     if (d.ram) bits.push(`🧠 ${d.ram} RAM`);

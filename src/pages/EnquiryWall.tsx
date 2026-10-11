@@ -34,7 +34,7 @@ import { AISearchService } from "@/services/ai/aiSearchService";
 import { formatIndianCurrency } from "@/lib/utils";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { debounce } from "@/utils/performance";
-import { MapLocationPicker } from "@/components/MapLocationPicker";
+import { MapLocationPickerLazy as MapLocationPicker } from "@/components/MapLocationPickerLazy";
 import { getEnquiryCoordinates } from "@/lib/enquiryCoordinates";
 import { sortByDistanceWithUnknownsAtBottom } from "@/lib/sortEnquiriesByDistance";
 import { haversineKm } from "@/lib/haversine";
