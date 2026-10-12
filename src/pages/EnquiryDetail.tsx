@@ -39,7 +39,7 @@ import { shortUserId } from '@/lib/userDisplayName';
 import ShareMenu from '@/components/ShareMenu';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
-import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, increment, arrayUnion, arrayRemove, setDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
 import CountdownTimer from '@/components/CountdownTimer';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
@@ -158,14 +158,16 @@ const EnquiryDetail = () => {
     loadEnquiryDetails();
   }, [id]);
 
-  // Load the poster's userProfiles doc for the "Posted by" line
+  // Live listener on the poster's userProfiles doc for the "Posted by" line —
+  // a profile picture uploaded moments ago shows up without a page refresh.
   useEffect(() => {
     if (!enquiry?.userId) return;
-    let cancelled = false;
-    getDoc(doc(db, 'userProfiles', enquiry.userId)).then(snap => {
-      if (!cancelled && snap.exists()) setPosterProfile(snap.data());
-    }).catch(() => {});
-    return () => { cancelled = true; };
+    const unsubscribe = onSnapshot(
+      doc(db, 'userProfiles', enquiry.userId),
+      (snap) => setPosterProfile(snap.exists() ? snap.data() : null),
+      () => {} // listener errors are non-fatal — falls back to the person icon
+    );
+    return unsubscribe;
   }, [enquiry?.userId]);
 
   useEffect(() => {
@@ -916,7 +918,8 @@ const EnquiryDetail = () => {
                         d.ram && { label: 'RAM', value: d.ram, highlight: true },
                         d.memory && { label: 'Memory', value: d.memory, highlight: true },
                         d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },
-                        d.sneakerAudience && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
+                        // Audience chip is sneaker-only — sneakerAudience defaults to 'Adults' and gets saved for every category
+                        (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
                         d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
                         d.repairType && { label: 'Service type', value: d.repairType, highlight: true },
                       ].filter(Boolean) as { label: string; value: string; highlight?: boolean; icon?: string; logoUrl?: string | null }[];
@@ -1106,13 +1109,22 @@ const EnquiryDetail = () => {
                     </div>
                   )}
 
-                  {/* Posted by — poster's username only, else neutral #userXXXX (never a name/email-derived fallback) */}
-                  <p className="mt-4 sm:mt-5 mb-4 text-[11px] sm:text-xs font-medium text-gray-500 text-center">
-                    Posted by {posterProfile?.username?.trim() || shortUserId(enquiry.userId)}
-                  </p>
+                  {/* Posted by — poster's profile pic (or person icon) beside username / #userXXXX */}
+                  <div className="mt-10 sm:mt-12 mb-4 flex items-center justify-end gap-1.5 pr-1">
+                    <span className="w-9 h-9 rounded-full border-[1.5px] border-black overflow-hidden bg-white flex items-center justify-center flex-shrink-0">
+                      {posterProfile?.profilePicture ? (
+                        <img src={posterProfile.profilePicture} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-5 h-5 text-black" />
+                      )}
+                    </span>
+                    <p className="text-[9px] sm:text-[10px] font-semibold text-gray-900">
+                      Posted by {posterProfile?.username?.trim() || shortUserId(enquiry.userId)}
+                    </p>
+                  </div>
 
                   {/* Save & Share - solid black circular buttons, matching the listing detail page */}
-                  <div className="flex justify-between items-center mt-8">
+                  <div className="flex justify-between items-center mt-14 sm:mt-16">
                     <button
                       onClick={handleSave}
                       aria-label={savedEnquiries.includes(enquiry.id) ? 'Remove from saved' : 'Save enquiry'}

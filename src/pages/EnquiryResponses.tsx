@@ -2866,8 +2866,17 @@ const EnquiryResponses = () => {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                       {/* Left: Chat Info */}
                       <div className="flex items-center space-x-1 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0 border-[0.5px] border-black">
-                          <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0 border-[0.5px] border-black overflow-hidden">
+                          {(() => {
+                            // Header avatar shows the OTHER party's photo — buyer sees the seller's, seller sees the buyer's
+                            const otherPartyId = user && enquiry && selectedResponse && user.uid === enquiry.userId ? selectedResponse.sellerId : enquiry?.userId;
+                            const otherPartyPic = otherPartyId ? userProfiles[otherPartyId]?.profilePicture : undefined;
+                            return otherPartyPic ? (
+                              <img src={otherPartyPic} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
+                            );
+                          })()}
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-0 sm:gap-2 flex-nowrap">

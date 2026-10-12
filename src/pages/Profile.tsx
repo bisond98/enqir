@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { flushSync } from "react-dom";
 import Layout from "@/components/Layout";
 import { shortUserId } from "@/lib/userDisplayName";
+import { firestoreWrite } from "@/lib/firestoreSafe";
 // Trigger Vercel deployment
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -11,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2, X, Tag, MapPin, ArrowLeft } from "lucide-react";
+import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2, X, Tag, MapPin, ArrowLeft, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
@@ -37,6 +38,12 @@ const Profile = () => {
   // Profile states
   const [fullName /* shown in UI as username */ , setFullName] = useState("");
   const [username, setUsername] = useState("");
+  // Profile picture (userProfiles.profilePicture → Cloudinary URL)
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [showPhotoActions, setShowPhotoActions] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [phone, setPhone] = useState("");
   const [countryCode, setCountryCode] = useState("+91");
   const [isProfileVerified, setIsProfileVerified] = useState(false);
@@ -176,6 +183,7 @@ const Profile = () => {
         const loadedUsername = profileData.username || "";
         setFullName(loadedName);
         setUsername(loadedUsername);
+        setPhotoUrl(profileData.profilePicture || "");
         setIsEditingUsername(!loadedUsername.trim());
         setPhone(profileData.phone || "");
         setCountryCode(profileData.countryCode || "+91");
@@ -186,6 +194,7 @@ const Profile = () => {
         setIsEditingUsername(true);
         setIsProfileVerified(false);
         setVerificationStatus(null);
+        setPhotoUrl("");
       }
     }, (error) => {
       console.error('Error in profile listener:', error);
@@ -270,6 +279,73 @@ const Profile = () => {
 
   const handleUsernameEdit = () => {
     setIsEditingUsername(true);
+  };
+
+  // Profile picture: upload to Cloudinary, then persist the URL on the
+  // profile doc (same merge-write pattern as the username).
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
+    if (!file || !authUser) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Invalid file", description: "Please choose an image file.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image too large", description: "Please choose a photo under 5 MB.", variant: "destructive" });
+      return;
+    }
+    setUploadingPhoto(true);
+    try {
+      const url = await uploadToCloudinaryUnsigned(file);
+      if (!url) throw new Error("Upload returned no URL");
+      // Timed write — a stalled Firestore connection must never leave the
+      // spinner running forever (same hardening as sign-in/OTP flows).
+      await firestoreWrite(
+        setDoc(doc(db, "userProfiles", authUser.uid), {
+          userId: authUser.uid,
+          profilePicture: url,
+          updatedAt: serverTimestamp(),
+        }, { merge: true }),
+        "Profile photo write"
+      );
+      setPhotoUrl(url);
+      setShowPhotoActions(false);
+      toast({ title: "Profile photo updated", description: "Your new photo is saved to your profile." });
+    } catch (error) {
+      console.error("Error uploading profile photo:", error);
+      toast({
+        title: "Upload failed",
+        description: "Could not upload the photo. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
+
+  // Remove the saved profile picture (deleteField keeps the rest of the doc intact)
+  const handlePhotoRemove = async () => {
+    if (!authUser) return;
+    setShowPhotoActions(false);
+    try {
+      await firestoreWrite(
+        setDoc(doc(db, "userProfiles", authUser.uid), {
+          profilePicture: deleteField(),
+          updatedAt: serverTimestamp(),
+        }, { merge: true }),
+        "Profile photo remove"
+      );
+      setPhotoUrl("");
+      toast({ title: "Profile photo removed" });
+    } catch (error) {
+      console.error("Error removing profile photo:", error);
+      toast({
+        title: "Could not remove photo",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Send OTP to the typed mobile number.
@@ -924,6 +1000,79 @@ const Profile = () => {
 
         {/* Username & Mobile number — bare inputs, no card */}
         <div className="mt-20 sm:mt-28 space-y-5">
+            {/* Profile picture — centered; tapping the circle opens a share-style menu card below it */}
+            <div className="flex items-center justify-center gap-2.5 -mt-10 sm:-mt-14">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowPhotoActions(true)}
+                  disabled={uploadingPhoto}
+                  aria-label={photoUrl ? "Profile photo options" : "Add profile photo"}
+                  className="relative w-20 h-20 rounded-full border-[1.5px] border-black bg-white overflow-hidden flex items-center justify-center disabled:opacity-60 shrink-0"
+                >
+                  {photoUrl ? (
+                    <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-10 h-10 text-black" />
+                  )}
+                  <span className="absolute bottom-2.5 right-2.5 w-6 h-6 rounded-full bg-black border-2 border-white flex items-center justify-center">
+                    {uploadingPhoto ? <Loader2 className="w-3 h-3 text-white animate-spin" /> : <Camera className="w-3 h-3 text-white" />}
+                  </span>
+                </button>
+                {showPhotoActions && (
+                  <>
+                    {/* Tap anywhere outside closes the menu — blurs + dims the background behind it */}
+                    <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[3px]" aria-hidden="true" onClick={() => setShowPhotoActions(false)} />
+                    {/* Popup card holding the input-styled option buttons, anchored below the circle */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 flex flex-col gap-2.5 min-w-[260px] bg-white border-2 border-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.2)] p-4">
+                      <button
+                        type="button"
+                        onClick={() => { setShowPhotoActions(false); photoInputRef.current?.click(); }}
+                        className="w-full h-11 px-4 rounded-[12px] bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black transition-all duration-200 flex items-center gap-3 text-xs font-semibold text-slate-900"
+                      >
+                        <ImageIcon className="h-4 w-4 text-black" />
+                        Choose image
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setShowPhotoActions(false); cameraInputRef.current?.click(); }}
+                        className="w-full h-11 px-4 rounded-[12px] bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black transition-all duration-200 flex items-center gap-3 text-xs font-semibold text-slate-900"
+                      >
+                        <Camera className="h-4 w-4 text-black" />
+                        Take image
+                      </button>
+                      {photoUrl && (
+                        <button
+                          type="button"
+                          onClick={handlePhotoRemove}
+                          className="w-full h-11 px-4 rounded-[12px] bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black transition-all duration-200 flex items-center gap-3 text-xs font-semibold text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoSelect}
+              />
+              {/* Camera capture — opens the device camera directly (mobile) */}
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handlePhotoSelect}
+              />
+            </div>
+
             {/* Username */}
             <div className="space-y-2">
               {!username.trim() && !isEditingUsername && (

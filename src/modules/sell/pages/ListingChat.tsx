@@ -126,6 +126,19 @@ export default function ListingChat() {
   const isBuyer = !!user && !!listing && user.uid !== listing.sellerId;
   const sellerHasNumber = !!(listing?.mobileNumber && String(listing.mobileNumber).trim());
 
+  // Counterpart's profile — the header avatar shows their photo when they have one
+  const [chatCounterpartProfile, setChatCounterpartProfile] = useState<any>(null);
+  useEffect(() => {
+    const counterpartId = listing ? (user?.uid === listing.sellerId ? buyerId : listing.sellerId) : null;
+    if (!counterpartId) {
+      setChatCounterpartProfile(null);
+      return;
+    }
+    getDoc(doc(db, 'userProfiles', counterpartId)).then(snap => {
+      setChatCounterpartProfile(snap.exists() ? snap.data() : null);
+    }).catch(() => {});
+  }, [listing?.sellerId, buyerId, user?.uid]);
+
   // Seller-side call — if the buyer signed in with a mobile number, the seller
   // can call them too (the buyer already paid to reach the seller)
   const [buyerNumber, setBuyerNumber] = useState<string | null>(null);
@@ -619,8 +632,12 @@ export default function ListingChat() {
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 relative">
                     <div className="flex items-center space-x-1 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
-                      <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0 border-[0.5px] border-black">
-                        <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0 border-[0.5px] border-black overflow-hidden">
+                        {chatCounterpartProfile?.profilePicture ? (
+                          <img src={chatCounterpartProfile.profilePicture} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-0 sm:gap-2 flex-nowrap">

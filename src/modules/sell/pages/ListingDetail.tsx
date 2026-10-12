@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, User, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -828,10 +828,19 @@ export default function ListingDetail() {
               </div>
             )}
 
-              {/* Posted by — seller's username only, else neutral #userXXXX (never a name/email-derived fallback) */}
-              <p className="w-full text-center text-[11px] sm:text-xs font-medium text-gray-500 mb-2">
-                Posted by {sellerProfile?.username?.trim() || shortUserId(listing.sellerId)}
-              </p>
+              {/* Posted by — seller's profile pic (or person icon) beside username / #userXXXX — matches the enquiry detail page */}
+              <div className="mt-10 sm:mt-12 mb-4 flex items-center justify-end gap-1.5 pr-1">
+                <span className="w-9 h-9 rounded-full border-[1.5px] border-black overflow-hidden bg-white flex items-center justify-center flex-shrink-0">
+                  {sellerProfile?.profilePicture ? (
+                    <img src={sellerProfile.profilePicture} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-5 h-5 text-black" />
+                  )}
+                </span>
+                <p className="text-[9px] sm:text-[10px] font-semibold text-gray-900">
+                  Posted by {sellerProfile?.username?.trim() || shortUserId(listing.sellerId)}
+                </p>
+              </div>
 
               <div className="w-full flex items-center justify-between mt-8 mb-6 gap-4">
                 <button

@@ -84,8 +84,16 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
   }, [listing]);
 
   const menu = isOpen ? createPortal(
-    <div
-      data-share-menu
+    <>
+      {/* Blur/dim backdrop behind the share menu — tap anywhere to close */}
+      <div
+        className="fixed inset-0 bg-black/20 backdrop-blur-[3px]"
+        style={{ zIndex: 9998 }}
+        aria-hidden="true"
+        onClick={() => setIsOpen(false)}
+      />
+      <div
+        data-share-menu
       className="fixed bg-white border-2 border-black rounded-xl shadow-[0_8px_0_0_rgba(0,0,0,0.2)] min-w-[180px] py-1 overflow-y-auto"
       style={{
         zIndex: 9999,
@@ -146,7 +154,8 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
         {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-500" />}
         {copied ? 'Copied!' : 'Copy Link'}
       </button>
-    </div>,
+    </div>
+    </>,
     document.body
   ) : null;
 
