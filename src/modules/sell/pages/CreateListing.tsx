@@ -25,6 +25,7 @@ import { improveDescription, isVehicleCategory } from '@/services/ai/description
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
 import { processPayment } from '@/services/paymentService';
+import { displayNameForUser } from '@/lib/userDisplayName';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import {
   AlignLeft,
@@ -212,7 +213,7 @@ const STEPS = [
 ] as const;
 
 export default function CreateListing() {
-  const { user, isProfileVerified, loading: authLoading, savedPhone } = useAuth();
+  const { user, isProfileVerified, loading: authLoading, savedPhone, savedFullName, savedUsername } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
@@ -694,7 +695,7 @@ export default function CreateListing() {
         user.uid,
         listingPlan,
         {
-          name: user.displayName || user.email?.split('@')[0] || '',
+          name: displayNameForUser(user, savedFullName, savedUsername),
           email: user.email || '',
           contact: '',
         }

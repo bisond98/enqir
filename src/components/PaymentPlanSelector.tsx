@@ -6,6 +6,8 @@ import { Check, Crown, Star, Zap, CheckCircle, Loader2 } from 'lucide-react';
 import { PaymentPlan, PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
 import PaymentModal from './PaymentModal';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { displayNameForUser } from '@/lib/userDisplayName';
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 import { getUserPaymentPlan, hasProEnquiriesRemaining } from '@/services/paymentService';
 
@@ -41,6 +43,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
   const [userCurrentPlan, setUserCurrentPlan] = useState<string>('free');
   const [proActivationDate, setProActivationDate] = useState<any>(null);
   const { toast } = useToast();
+  const { savedFullName, savedUsername } = useAuth();
 
   // Check if user has Pro plan with remaining enquiries
   useEffect(() => {
@@ -154,7 +157,7 @@ const PaymentPlanSelector: React.FC<PaymentPlanSelectorProps> = ({
         planForPayment,
         {
           // Use user's info from Firebase auth - Razorpay will show its own card form
-          name: user.displayName || user.email?.split('@')[0] || '',
+          name: displayNameForUser(user, savedFullName, savedUsername),
           email: user.email || '',
           contact: '', // Optional
         }

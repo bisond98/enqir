@@ -23,7 +23,9 @@ import { matchesForEnquiry, notifyMatch, type MatchItem } from "@/modules/sell/s
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { friendlyError } from "@/utils/friendlyError";
 import { useAuth } from "@/contexts/AuthContext";
-import { splitE164Phone, formatNationalForInput } from "@/lib/phonePrefill";import { db } from "@/firebase";
+import { splitE164Phone, formatNationalForInput } from "@/lib/phonePrefill";
+import { displayNameForUser } from "@/lib/userDisplayName";
+import { db } from "@/firebase";
 import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
 import { uploadToCloudinary, uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
 import { Badge } from "@/components/ui/badge";
@@ -107,7 +109,7 @@ const GearShifterIcon = ({ className = "" }: { className?: string }) => (
 
 export default function PostEnquiry() {
   // Version: 3.0 - Multi-step wizard (matching sell listing flow)
-  const { user, isProfileVerified, profileVerificationStatus, loading: authLoading, savedPhone } = useAuth();
+  const { user, isProfileVerified, profileVerificationStatus, loading: authLoading, savedPhone, savedFullName, savedUsername } = useAuth();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
 
@@ -116,9 +118,10 @@ export default function PostEnquiry() {
   // undefined" BEFORE the write — which failed every paid enquiry posted
   // from a phone account (payment taken, enquiry never saved).
   const safeUserEmail = user?.email ?? null;
-  const safeUserName = user?.displayName
-    || (user?.email ? user.email.split('@')[0] : null)
-    || (user?.phoneNumber ? `Buyer ${user.phoneNumber.slice(-4)}` : 'Buyer');
+  // Username → saved full name → clean auth displayName → #userXXXX (never an
+  // email prefix). Must always be a non-empty string: undefined would make
+  // Firestore reject the write before it happens.
+  const safeUserName = displayNameForUser(user, savedFullName, savedUsername);
   
   // Force component remount on version change
   useEffect(() => {
@@ -982,7 +985,7 @@ export default function PostEnquiry() {
         selectedPlan,
         {
           // Use user's info from Firebase auth - Razorpay will show its own card form
-          name: user.displayName || user.email?.split('@')[0] || '',
+          name: displayNameForUser(user, savedFullName, savedUsername),
           email: user.email || '',
           contact: '', // Optional
         }

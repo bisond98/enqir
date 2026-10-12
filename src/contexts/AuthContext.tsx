@@ -28,6 +28,7 @@ import {
 import { doc, setDoc, getDoc, onSnapshot, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { fetchSignInMethodsForEmail } from 'firebase/auth';
 import { db } from '@/firebase';
+import { displayNameForUser } from '@/lib/userDisplayName';
 import { friendlyError } from '@/utils/friendlyError';
 import { firestoreGet, firestoreWrite, firestoreWriteBackground } from '@/lib/firestoreSafe';
 
@@ -39,6 +40,8 @@ interface AuthContextType {
   profileVerificationStatus: string | null;
   /** Saved full name from userProfiles/{uid} — set in Profile → Profile Details. Shows app-wide in chat/responses; falls back to #userXXXX. */
   savedFullName: string;
+  /** Saved username from userProfiles/{uid} — the user's chosen display name; takes priority over fullName app-wide. */
+  savedUsername: string;
   savedPhone?: string;
   showWelcomePopup: boolean;
   signUp: (identifier: string, password: string, userData?: { full_name?: string; first_name?: string; last_name?: string }) => Promise<{ error: any | null; requiresVerification?: boolean; emailSent?: boolean }>;
@@ -66,6 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isProfileVerified, setIsProfileVerified] = useState<boolean>(false);
   const [profileVerificationStatus, setProfileVerificationStatus] = useState<string | null>(null);
   const [savedFullName, setSavedFullName] = useState<string>('');
+  const [savedUsername, setSavedUsername] = useState<string>('');
   const [savedPhone, setSavedPhone] = useState<string>('');
   const [showWelcomePopup, setShowWelcomePopup] = useState<boolean>(false);
 
@@ -83,12 +87,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsProfileVerified(profileData.isProfileVerified || false);
           setProfileVerificationStatus(profileData.verificationStatus || null);
           setSavedFullName(profileData.fullName || '');
+          setSavedUsername(profileData.username || '');
           setSavedPhone(profileData.phone || '');
         } else {
           // No profile found, setting defaults
           setIsProfileVerified(false);
           setProfileVerificationStatus(null);
           setSavedFullName('');
+          setSavedUsername('');
           setSavedPhone('');
         }
       }, (error) => {
@@ -96,6 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsProfileVerified(false);
         setProfileVerificationStatus(null);
         setSavedFullName('');
+        setSavedUsername('');
       });
       
       // Return unsubscribe function for cleanup
@@ -104,6 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsProfileVerified(false);
       setProfileVerificationStatus(null);
       setSavedFullName('');
+      setSavedUsername('');
       setSavedPhone('');
       return null;
     }
@@ -572,6 +580,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsEmailVerified(false);
     setIsProfileVerified(false);
     setProfileVerificationStatus(null);
+    setSavedUsername('');
     setSavedPhone('');
     setShowWelcomePopup(false);
     setLoading(false);
@@ -922,7 +931,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             await firestoreWrite(setDoc(userDocRef, {
               uid: u.uid,
               email: u.email,
-              displayName: u.displayName || u.email?.split('@')[0] || 'User',
+              // Never store an email prefix as a display name — nameless
+              // Google users resolve to the neutral #userXXXX instead.
+              displayName: u.displayName || '',
               photoURL: u.photoURL || null,
               full_name: u.displayName || '',
               first_name: (u.displayName || '').split(' ')[0] || '',
@@ -985,6 +996,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isProfileVerified,
       profileVerificationStatus,
       savedFullName,
+      savedUsername,
       savedPhone,
       showWelcomePopup,
       signUp, 
@@ -1005,7 +1017,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
       <WelcomePopup 
         isVisible={showWelcomePopup}
-        userName={user?.displayName || undefined}
+        userName={displayNameForUser(user, savedFullName, savedUsername)}
         onClose={closeWelcomePopup}
       />
     </AuthContext.Provider>

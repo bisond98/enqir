@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { displayNameForUser } from "@/lib/userDisplayName";
 import { useChats } from "@/contexts/ChatContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +28,7 @@ import { usePerformanceOptimizations } from "@/hooks/use-performance";
 const MobileAIController = lazy(() => import("./MobileAIController"));
 
 export default function Layout({ children, showNavigation = true }: { children: React.ReactNode; showNavigation?: boolean }) {
-  const { user, signOut, isProfileVerified, profileVerificationStatus, loading: authLoading } = useAuth();
+  const { user, signOut, isProfileVerified, profileVerificationStatus, loading: authLoading, savedFullName, savedUsername } = useAuth();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -753,7 +754,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-white truncate text-sm">
-                      {user.displayName || user.email}
+                      {displayNameForUser(user, savedFullName, savedUsername)}
                     </p>
                     <p className="text-xs text-white/70 truncate">
                       {user.email}

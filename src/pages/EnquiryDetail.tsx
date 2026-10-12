@@ -35,6 +35,7 @@ import {
   Users
 } from 'lucide-react';
 import Layout from '@/components/Layout';
+import { shortUserId } from '@/lib/userDisplayName';
 import ShareMenu from '@/components/ShareMenu';
 import { useAuth } from '@/contexts/AuthContext';
 import { db } from '@/firebase';
@@ -149,11 +150,23 @@ const EnquiryDetail = () => {
   const [savedEnquiries, setSavedEnquiries] = useState<string[]>([]);
   const [showPaymentSelector, setShowPaymentSelector] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string>('free');
+  // Poster's profile — powers the "Posted by" line (username, else #userXXXX)
+  const [posterProfile, setPosterProfile] = useState<any>(null);
 
   useEffect(() => {
     if (!id) return;
     loadEnquiryDetails();
   }, [id]);
+
+  // Load the poster's userProfiles doc for the "Posted by" line
+  useEffect(() => {
+    if (!enquiry?.userId) return;
+    let cancelled = false;
+    getDoc(doc(db, 'userProfiles', enquiry.userId)).then(snap => {
+      if (!cancelled && snap.exists()) setPosterProfile(snap.data());
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [enquiry?.userId]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -1092,6 +1105,11 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Posted by — poster's username only, else neutral #userXXXX (never a name/email-derived fallback) */}
+                  <p className="mt-4 sm:mt-5 mb-4 text-[11px] sm:text-xs font-medium text-gray-500 text-center">
+                    Posted by {posterProfile?.username?.trim() || shortUserId(enquiry.userId)}
+                  </p>
 
                   {/* Save & Share - solid black circular buttons, matching the listing detail page */}
                   <div className="flex justify-between items-center mt-8">

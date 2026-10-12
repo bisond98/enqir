@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { flushSync } from "react-dom";
 import Layout from "@/components/Layout";
+import { shortUserId } from "@/lib/userDisplayName";
 // Trigger Vercel deployment
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -12,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2, X, Tag, MapPin, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { shortUserId } from "@/lib/userDisplayName";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
 import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, orderBy, onSnapshot, updateDoc, deleteField } from "firebase/firestore";
@@ -869,7 +869,8 @@ const Profile = () => {
     return <LoadingAnimation message="Loading your profile" />;
   }
 
-  const Username = username.trim() || authUser?.displayName || "Username";
+  // No username set → neutral #userXXXX, never an email-derived name
+  const Username = username.trim() || shortUserId(authUser.uid);
 
   return (
     <Layout>
@@ -903,8 +904,8 @@ const Profile = () => {
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
               <div className="text-center">
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
+                  {/* Username already shows in the big heading above — only the verified shield lives here */}
                   <h2 className="text-[10px] sm:text-xs lg:text-sm font-bold text-white tracking-tight inline-flex items-center gap-2 sm:gap-3">
-                    {username.trim() || authUser.displayName || "User"}
                     {isProfileVerified && (
                       <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white" />
                     )}
@@ -931,7 +932,9 @@ const Profile = () => {
               <div className="flex gap-2">
                 <Input
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  // Usernames are letters/symbols only — digits are stripped as
+                  // they're typed (also covers paste).
+                  onChange={(e) => setUsername(e.target.value.replace(/[0-9]/g, ""))}
                   onBlur={() => {
                     if (isEditingUsername) {
                       handleUsernameSave();

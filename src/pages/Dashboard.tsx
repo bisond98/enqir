@@ -9,6 +9,7 @@ import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
 import { NotificationContext } from "../contexts/NotificationContext";
 import { cn } from "../lib/utils";
+import { profileDisplayName, trustedName } from "../lib/userDisplayName";
 import { db } from "../firebase";
 import { collection, query, where, doc, updateDoc, deleteDoc, orderBy, getDocs, getDoc, onSnapshot, limit, serverTimestamp, arrayRemove } from "firebase/firestore";
 import VerifiedUser from "../components/VerifiedUser";
@@ -1224,7 +1225,7 @@ const Dashboard = () => {
                     // Create notification for new chat message
                     createNotification('new_chat', {
                       title: '💬 New Message',
-                      message: `${lastMessage.senderName || 'Someone'}: ${(lastMessage.text || '').substring(0, 50)}${(lastMessage.text || '').length > 50 ? '...' : ''}`,
+                      message: `${trustedName(lastMessage.senderName) || 'Someone'}: ${(lastMessage.text || '').substring(0, 50)}${(lastMessage.text || '').length > 50 ? '...' : ''}`,
                       priority: 'medium',
                       actionUrl: `/enquiry/${chatData.enquiryId}/responses`,
                       actionText: 'Open Chat'
@@ -1798,7 +1799,7 @@ const Dashboard = () => {
                 <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
                     <h2 className="text-[10px] sm:text-xs lg:text-sm font-bold text-white tracking-tight inline-flex items-center gap-2 sm:gap-3 dashboard-header-no-emoji">
                     <VerifiedUser 
-                      name={userProfile?.fullName || ''}
+                      name={profileDisplayName(userProfile)}
                       isVerified={userProfile?.isProfileVerified || false}
                       className="text-[10px] sm:text-xs lg:text-sm font-bold text-white"
                     />

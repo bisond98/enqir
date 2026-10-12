@@ -98,9 +98,9 @@ function VoicePlayer({ src }: { src: string }) {
 
 export default function ListingChat() {
   const { id, buyerId } = useParams<{ id: string; buyerId: string }>();
-  const { user, savedFullName } = useAuth();
-  // Display name: saved profile name → clean displayName → #userXXXX (never email prefix)
-  const myName = displayNameForUser(user, savedFullName);
+  const { user, savedFullName, savedUsername } = useAuth();
+  // Display name: username → saved full name → clean displayName → #userXXXX (never email prefix)
+  const myName = displayNameForUser(user, savedFullName, savedUsername);
   const navigate = useNavigate();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);

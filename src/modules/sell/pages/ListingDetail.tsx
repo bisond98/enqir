@@ -27,7 +27,7 @@ import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import { friendlyError } from '@/utils/friendlyError';
 import { useContext } from 'react';
-import { displayNameForUser } from '@/lib/userDisplayName';
+import { displayNameForUser, shortUserId } from '@/lib/userDisplayName';
 import { NotificationContext } from '@/contexts/NotificationContext';
 
 
@@ -62,9 +62,9 @@ function formatPostedDate(dateString: any): string {
 export default function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, savedFullName } = useAuth();
-  // Display name: saved profile name → clean displayName → #userXXXX (never email prefix)
-  const myName = displayNameForUser(user, savedFullName);
+  const { user, savedFullName, savedUsername } = useAuth();
+  // Display name: username → saved full name → clean displayName → #userXXXX (never email prefix)
+  const myName = displayNameForUser(user, savedFullName, savedUsername);
   const notificationCtx = useContext(NotificationContext);
   const [listing, setListing] = useState<SellListing | null>(null);
   const [loading, setLoading] = useState(true);
@@ -196,7 +196,7 @@ export default function ListingDetail() {
         return;
       }
       const result = await processPayment(listing.id, user.uid, plan, {
-        name: user.displayName || user.email?.split('@')[0] || '',
+        name: displayNameForUser(user, savedFullName, savedUsername),
         email: user.email || '',
         contact: '',
       });
@@ -233,7 +233,7 @@ export default function ListingDetail() {
         try {
           await notificationCtx?.createNotificationForUser(listing.sellerId, 'call', {
             title: '🎯 New Interested Buyer on Your Listing!',
-            message: `${user.displayName || user.email?.split('@')[0] || 'A buyer'} is interested in "${listing.title}" — check Buyer Responses to chat or share your number.`,
+            message: `${myName} is interested in "${listing.title}" — check Buyer Responses to chat or share your number.`,
             priority: 'high',
             actionUrl: `/sell/listing/${listing.id}`,
             actionText: 'View Listing',
@@ -438,7 +438,7 @@ export default function ListingDetail() {
           user.uid,
           messagePlan,
           {
-            name: user.displayName || user.email?.split('@')[0] || '',
+            name: displayNameForUser(user, savedFullName, savedUsername),
             email: user.email || '',
             contact: '',
           }
@@ -517,7 +517,7 @@ export default function ListingDetail() {
         try {
           await notificationCtx?.createNotificationForUser(listing.sellerId, 'new_response', {
             title: '🎯 New Buyer Response on Your Listing!',
-            message: `${user.displayName || user.email?.split('@')[0] || 'A buyer'} responded to "${listing.title}"${offeredPrice.trim() ? ` with an offer of ₹${Number(offeredPrice).toLocaleString('en-IN')}` : ''}`,
+            message: `${myName} responded to "${listing.title}"${offeredPrice.trim() ? ` with an offer of ₹${Number(offeredPrice).toLocaleString('en-IN')}` : ''}`,
             priority: 'high',
             actionUrl: `/sell/listing/${listing.id}/chat/${user.uid}`,
             actionText: 'Open Chat',
@@ -827,6 +827,11 @@ export default function ListingDetail() {
                 <p className="text-[12px] text-black whitespace-pre-wrap leading-relaxed font-bold" style={{ color: '#000', WebkitTextStroke: '0.2px black', fontWeight: 800 }}>{listing.description}</p>
               </div>
             )}
+
+              {/* Posted by — seller's username only, else neutral #userXXXX (never a name/email-derived fallback) */}
+              <p className="w-full text-center text-[11px] sm:text-xs font-medium text-gray-500 mb-2">
+                Posted by {sellerProfile?.username?.trim() || shortUserId(listing.sellerId)}
+              </p>
 
               <div className="w-full flex items-center justify-between mt-8 mb-6 gap-4">
                 <button

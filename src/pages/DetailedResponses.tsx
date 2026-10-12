@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ArrowLeft, MessageSquare, Shield, ImageIcon, Crown, Lock, Eye, Star, Clock, User, CheckCircle, X, FileText } from "lucide-react";
 import Layout from "@/components/Layout";
+import { trustedName } from "@/lib/userDisplayName";
 import { getPrivacyProtectedName, isUserVerified } from "@/utils/privacy";
 import VerificationBadge from "@/components/VerificationBadge";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
@@ -333,7 +334,7 @@ const DetailedResponses = () => {
                           <div className="min-w-0 flex-1">
                             <h3 className="text-xs sm:text-sm font-semibold text-white truncate">{response.title}</h3>
                             <div className="flex items-center gap-1.5 mt-0.5">
-                              <span className="text-[9px] sm:text-[10px] text-gray-300 truncate">by {response.sellerName || 'Anonymous'}</span>
+                              <span className="text-[9px] sm:text-[10px] text-gray-300 truncate">by {trustedName(response.sellerName) || 'Anonymous'}</span>
                               {((response as any).isProfileVerified || (response as any).userVerified || response.isIdentityVerified) && (
                                 <div className="flex items-center space-x-0.5">
                                   <CheckCircle className="h-3 w-3 text-blue-600" />

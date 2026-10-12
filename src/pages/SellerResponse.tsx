@@ -261,7 +261,7 @@ const SellerResponse = () => {
   // Design-preview mode: /seller-response/:id?preview=success renders the success
   // screen without auth/payment (countdown frozen) — used only for styling previews
   const isPreviewSuccess = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('preview') === 'success';
-  const { user: authUser, isProfileVerified, profileVerificationStatus, savedFullName, savedPhone, loading: authLoading } = useAuth();
+  const { user: authUser, isProfileVerified, profileVerificationStatus, savedFullName, savedUsername, savedPhone, loading: authLoading } = useAuth();
 
   // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
   // number. Only fills an empty field, so restored drafts and user edits win.
@@ -276,8 +276,8 @@ const SellerResponse = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUser?.phoneNumber, savedPhone]);
-  // Display name: saved profile name → clean displayName → #userXXXX (never email prefix)
-  const myName = displayNameForUser(authUser, savedFullName);
+  // Display name: username → saved full name → clean displayName → #userXXXX (never email prefix)
+  const myName = displayNameForUser(authUser, savedFullName, savedUsername);
   // const { createNotification } = useNotifications();
 
   // Helper function to determine if user is verified
@@ -971,7 +971,7 @@ const SellerResponse = () => {
         authUser.uid,
         offerPlan,
         {
-          name: authUser.displayName || authUser.email?.split('@')[0] || '',
+          name: displayNameForUser(authUser, savedFullName, savedUsername),
           email: authUser.email || '',
           contact: '',
         }

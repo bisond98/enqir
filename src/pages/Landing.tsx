@@ -6,6 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import newLogo from "@/assets/new-logo.png";
 import { useAuth } from "@/contexts/AuthContext";
+import { trustedName } from "@/lib/userDisplayName";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import CountdownTimer from "@/components/CountdownTimer";
 import { useEffect, useState, useRef, useContext } from "react";
@@ -1395,7 +1396,7 @@ const Landing = () => {
                           // Create notification for new live response
                           createNotification('new_response', {
                             title: '🎯 New Response to Your Enquiry!',
-                            message: `"${responseData.sellerName || 'A seller'}" responded to "${enquiry.title}"`,
+                            message: `"${trustedName(responseData.sellerName) || 'A seller'}" responded to "${enquiry.title}"`,
                             priority: 'high',
                             actionUrl: `/enquiry/${enquiry.id}/responses-page`,
                             actionText: 'View Response'
@@ -1404,7 +1405,7 @@ const Landing = () => {
                           // Create notification for new pending response
                           createNotification('new_response', {
                             title: '📝 New Response Submitted!',
-                            message: `"${responseData.sellerName || 'A seller'}" submitted a response to "${enquiry.title}" (under review)`,
+                            message: `"${trustedName(responseData.sellerName) || 'A seller'}" submitted a response to "${enquiry.title}" (under review)`,
                             priority: 'medium',
                             actionUrl: `/enquiry/${enquiry.id}/responses-page`,
                             actionText: 'View Response'
@@ -1468,7 +1469,7 @@ const Landing = () => {
                     // Create notification for new chat message
                     createNotification('new_chat', {
                       title: '💬 New Message',
-                      message: `${lastMessage.senderName || 'Someone'}: ${(lastMessage.text || '').substring(0, 50)}${(lastMessage.text || '').length > 50 ? '...' : ''}`,
+                      message: `${trustedName(lastMessage.senderName) || 'Someone'}: ${(lastMessage.text || '').substring(0, 50)}${(lastMessage.text || '').length > 50 ? '...' : ''}`,
                       priority: 'medium',
                       actionUrl: `/enquiry/${chatData.enquiryId}/responses`,
                       actionText: 'Open Chat'

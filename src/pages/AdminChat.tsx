@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
+import { profileDisplayName, trustedName, shortUserId } from "@/lib/userDisplayName";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -277,7 +278,7 @@ export default function AdminChat() {
 
     try {
       const senderType = isAdmin ? 'admin' : 'user';
-      const senderName = isAdmin ? 'Admin' : (chatUser?.fullName || user.email || 'User');
+      const senderName = isAdmin ? 'Admin' : (profileDisplayName(chatUser) || shortUserId(user.uid));
       
       // Determine target user ID for the chat thread
       // If admin: chat with userId (target user)
@@ -379,7 +380,7 @@ export default function AdminChat() {
                       <>
                         <User className="h-5 w-5 text-white" />
                         <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white">
-                          Chat with {chatUser?.fullName || chatUser?.email || userId}
+                          Chat with {profileDisplayName(chatUser) || (userId === 'admin' ? 'Admin' : shortUserId(userId))}
                         </h3>
                       </>
                     ) : (
@@ -469,7 +470,7 @@ export default function AdminChat() {
                           {message.senderId !== user?.uid && message.senderName && message.senderName !== 'User' && (
                             <div className="mt-1.5 sm:mt-2">
                               <VerifiedUser 
-                                name={message.senderName}
+                                name={profileDisplayName(userProfiles[message.senderId]) || trustedName(message.senderName) || shortUserId(message.senderId)}
                                 isVerified={userProfiles[message.senderId]?.isProfileVerified || false}
                                 className="text-xs sm:text-sm"
                               />

@@ -5,6 +5,7 @@ import { X, CreditCard, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { PaymentPlan } from '@/config/paymentPlans';
 import { processPayment, savePaymentRecord, updateEnquiryPremiumStatus, updateUserPaymentPlan } from '@/services/paymentService';
 import { useAuth } from '@/contexts/AuthContext';
+import { displayNameForUser } from '@/lib/userDisplayName';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   isUpgrade = false,
   currentPlanPrice = 0
 }) => {
-  const { user } = useAuth();
+  const { user, savedFullName, savedUsername } = useAuth();
   const [paymentStep, setPaymentStep] = useState<'form' | 'processing' | 'success' | 'failed'>('form');
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState({
@@ -91,7 +92,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         planForPayment,
         {
           // Use user's info from Firebase auth - Razorpay will show its own card form
-          name: user?.displayName || user?.email?.split('@')[0] || '',
+          name: displayNameForUser(user, savedFullName, savedUsername),
           email: user?.email || '',
           contact: '', // Optional
         }
@@ -148,7 +149,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         selectedPlan,
         {
           // Use user's info from Firebase auth or form details
-          name: paymentDetails.name || user?.displayName || user?.email?.split('@')[0] || '',
+          name: paymentDetails.name || displayNameForUser(user, savedFullName, savedUsername),
           email: user?.email || '',
           contact: '', // Optional
         }

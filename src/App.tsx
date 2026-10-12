@@ -29,7 +29,7 @@ import { ThemeProvider } from "next-themes";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import StaleBundleRefresher from "./components/StaleBundleRefresher";
-import { LoadingAnimation } from "./components/LoadingAnimation";
+import RouteFallback from "./components/RouteFallback";
 import { UsageProvider } from "./contexts/UsageContext";
 import { ConditionalAuthProvider } from "./contexts/ConditionalAuthProvider";
 import { NotificationProvider } from "./contexts/NotificationContext";
@@ -139,6 +139,8 @@ if (typeof window !== 'undefined') {
     import("./pages/MyEnquiries").catch(() => {});
     import("./pages/EnquiryResponses").catch(() => {});
     import("./pages/EnquiryResponsesPage").catch(() => {});
+    // Map picker (Leaflet) — prefetched so opening a location picker is instant
+    import("./components/MapLocationPicker").catch(() => {});
   };
   if ('requestIdleCallback' in window) {
     (window as any).requestIdleCallback(prefetchCommonRoutes, { timeout: 10000 });
@@ -222,7 +224,7 @@ const App = () => {
                   <BrowserRouter>
                   <ScrollToTop />
                   <StaleBundleRefresher />
-                  <Suspense fallback={<LoadingAnimation message="Loading" showBackButton={false} />}>
+                  <Suspense fallback={<RouteFallback />}>
                   <PageTransitionFade>
                   <Routes>
                   <Route path="/" element={<ErrorBoundary><Landing /></ErrorBoundary>} />

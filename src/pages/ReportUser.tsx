@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
+import { profileDisplayName, shortUserId } from "@/lib/userDisplayName";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, X, CheckCircle } from "lucide-react";
@@ -70,12 +71,12 @@ export default function ReportUser() {
     
     try {
       // Get reported user's name
-      const reportedUserName = userName || reportedUser?.fullName || reportedUser?.email || userId;
+      const reportedUserName = userName || profileDisplayName(reportedUser) || shortUserId(userId);
       
       // Get reporter's name
       const reporterDoc = await getDoc(doc(db, 'userProfiles', user.uid));
       const reporterName = reporterDoc.exists() 
-        ? (reporterDoc.data().fullName || reporterDoc.data().email || user.uid)
+        ? (profileDisplayName(reporterDoc.data()) || shortUserId(user.uid))
         : user.uid;
 
       // Get enquiry title if available
@@ -176,7 +177,7 @@ export default function ReportUser() {
             <CardContent className="p-4 sm:p-6">
               <div className="mb-4">
                 <p className="text-[10px] sm:text-xs text-gray-700 mb-1">
-                  Reporting: <span className="font-semibold">{userName || reportedUser?.fullName || userId}</span>
+                  Reporting: <span className="font-semibold">{userName || profileDisplayName(reportedUser) || shortUserId(userId)}</span>
                 </p>
                 {enquiryId && (
                   <p className="text-[9px] sm:text-[10px] text-gray-500">

@@ -10,6 +10,7 @@ import VerifiedUser from "@/components/VerifiedUser";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
+import { displayNameForUser, profileDisplayName, trustedName, shortUserId } from "@/lib/userDisplayName";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
 import { collection, query, where, doc, getDoc, addDoc, orderBy, serverTimestamp, getDocs, limit, updateDoc, onSnapshot, deleteDoc, setDoc, arrayUnion, arrayRemove } from "firebase/firestore";
@@ -96,7 +97,9 @@ interface ChatMessage {
 }
 
 const EnquiryResponses = () => {
-  const { user } = useAuth();
+  const { user, savedFullName, savedUsername } = useAuth();
+  // This user's display name: username → saved full name → clean displayName → #userXXXX
+  const myName = displayNameForUser(user, savedFullName, savedUsername);
   const notificationContext = useContext(NotificationContext);
   const createNotification = notificationContext?.createNotification || (async () => {
     console.warn('NotificationContext not available');
@@ -610,7 +613,7 @@ const EnquiryResponses = () => {
         enquiryId: enquiryId,
         sellerId: selectedResponse.sellerId,
         senderId: user.uid,
-        senderName: userProfiles[user.uid]?.fullName || 'User',
+        senderName: myName,
         senderType: isSeller ? 'seller' : 'buyer',
         // Buyer id on every message so buyer-side real-time listeners can catch
         // seller replies (the buyer uid otherwise appears nowhere in the doc)
@@ -629,13 +632,13 @@ const EnquiryResponses = () => {
             'new_chat',
             {
               title: '💬 New Message',
-              message: `${userProfiles[user.uid]?.fullName || 'Someone'} sent you a message about "${enquiry?.title}"`,
+              message: `${myName} sent you a message about "${enquiry?.title}"`,
               priority: 'high',
               actionUrl: `/enquiry/${enquiryId}/responses?sellerId=${selectedResponse.sellerId}`,
               actionText: 'View Message',
               enquiryId: enquiryId,
               senderId: user.uid,
-              senderName: userProfiles[user.uid]?.fullName || 'Someone'
+              senderName: myName
             }
           );
           console.log('✅ Chat notification sent to recipient');
@@ -740,7 +743,7 @@ const EnquiryResponses = () => {
         enquiryId: enquiryId,
         sellerId: selectedResponse.sellerId,
         senderId: user.uid,
-        senderName: userProfiles[user.uid]?.fullName || 'User',
+        senderName: myName,
         senderType: 'seller',
         buyerId: enquiry?.userId,
         message: messageText,
@@ -757,13 +760,13 @@ const EnquiryResponses = () => {
             'new_chat',
             {
               title: '💬 New Message',
-              message: `${userProfiles[user.uid]?.fullName || 'Seller'} sent you a message about "${enquiry?.title}"`,
+              message: `${myName} sent you a message about "${enquiry?.title}"`,
               priority: 'high',
               actionUrl: `/enquiry/${enquiryId}/responses?sellerId=${selectedResponse.sellerId}`,
               actionText: 'View Message',
               enquiryId: enquiryId,
               senderId: user.uid,
-              senderName: userProfiles[user.uid]?.fullName || 'Seller'
+              senderName: myName
             }
           );
           console.log('✅ Chat notification sent to buyer');
@@ -824,7 +827,7 @@ const EnquiryResponses = () => {
     if (!selectedResponse || !enquiry || !user) return;
 
     const otherUserId = user.uid === enquiry.userId ? selectedResponse.sellerId : enquiry.userId;
-    const otherUserName = user.uid === enquiry.userId ? selectedResponse.sellerName : userProfiles[enquiry.userId]?.fullName || 'User';
+    const otherUserName = user.uid === enquiry.userId ? selectedResponse.sellerName : profileDisplayName(userProfiles[enquiry.userId], 'User');
 
     setUserToBlock({ id: otherUserId, name: otherUserName });
     setShowBlockUserConfirm(true);
@@ -894,7 +897,7 @@ const EnquiryResponses = () => {
     if (!user || !selectedResponse || !enquiry) return;
 
     const otherUserId = user.uid === enquiry.userId ? selectedResponse.sellerId : enquiry.userId;
-    const otherUserName = user.uid === enquiry.userId ? selectedResponse.sellerName : userProfiles[enquiry.userId]?.fullName || 'User';
+    const otherUserName = user.uid === enquiry.userId ? selectedResponse.sellerName : profileDisplayName(userProfiles[enquiry.userId], 'User');
 
     try {
       const userRef = doc(db, 'users', user.uid);
@@ -1478,13 +1481,13 @@ const EnquiryResponses = () => {
             'new_chat',
             {
               title: '📞 Incoming Call',
-              message: `${userProfiles[user.uid]?.fullName || 'Someone'} is calling you about "${enquiry.title}"`,
+              message: `${myName} is calling you about "${enquiry.title}"`,
               priority: 'urgent',
               actionUrl: `/enquiry/${enquiryId}/responses?sellerId=${selectedResponse.sellerId}`,
               actionText: 'Answer',
               enquiryId: enquiryId,
               callerId: user.uid,
-              callerName: userProfiles[user.uid]?.fullName || 'Someone'
+              callerName: myName
             }
           );
           console.log('✅ Incoming call notification sent to recipient');
@@ -2227,7 +2230,7 @@ const EnquiryResponses = () => {
         enquiryId: enquiryId,
         sellerId: selectedResponse.sellerId,
         senderId: user.uid,
-        senderName: userProfiles[user.uid]?.fullName || 'User',
+        senderName: myName,
         senderType: isSeller ? 'seller' : 'buyer',
         buyerId: isSeller ? enquiry?.userId : user.uid,
         message: `🎤 Voice message (${Math.floor(recordingTime / 60)}:${(recordingTime % 60).toString().padStart(2, '0')})`,
@@ -2911,8 +2914,8 @@ const EnquiryResponses = () => {
                             <span className="text-xs sm:text-sm text-white font-medium whitespace-nowrap ml-0.5 sm:ml-0">with</span>
                             <VerifiedUser 
                               name={user?.uid === enquiry?.userId ? 
-                                (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller') : 
-                                (userProfiles[enquiry?.userId]?.fullName || 'Buyer')
+                                (profileDisplayName(userProfiles[selectedResponse.sellerId], 'Seller')) : 
+                                (profileDisplayName(userProfiles[enquiry?.userId], 'Buyer'))
                               }
                               isVerified={user?.uid === enquiry?.userId ? 
                                 (userProfiles[selectedResponse.sellerId]?.isProfileVerified || false) : 
@@ -3003,8 +3006,8 @@ const EnquiryResponses = () => {
                                       ? selectedResponse.sellerId 
                                       : enquiry?.userId;
                                     const otherUserName = user.uid === enquiry?.userId
-                                      ? (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller')
-                                      : (userProfiles[enquiry?.userId]?.fullName || 'Buyer');
+                                      ? (profileDisplayName(userProfiles[selectedResponse.sellerId], 'Seller'))
+                                      : (profileDisplayName(userProfiles[enquiry?.userId], 'Buyer'));
                                     navigate(`/report-user/${otherUserId}?enquiryId=${enquiryId}&sellerId=${selectedResponse.sellerId}&userName=${encodeURIComponent(otherUserName)}`);
                                   }
                                 }}
@@ -3092,8 +3095,8 @@ const EnquiryResponses = () => {
                                       ? selectedResponse.sellerId 
                                       : enquiry?.userId;
                                     const otherUserName = user.uid === enquiry?.userId
-                                      ? (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller')
-                                      : (userProfiles[enquiry?.userId]?.fullName || 'Buyer');
+                                      ? (profileDisplayName(userProfiles[selectedResponse.sellerId], 'Seller'))
+                                      : (profileDisplayName(userProfiles[enquiry?.userId], 'Buyer'));
                                     navigate(`/report-user/${otherUserId}?enquiryId=${enquiryId}&sellerId=${selectedResponse.sellerId}&userName=${encodeURIComponent(otherUserName)}`);
                                   }
                                 }}
@@ -3539,7 +3542,7 @@ const EnquiryResponses = () => {
                               {message.senderId !== user?.uid && message.senderName && message.senderName !== 'User' && (
                                 <div className="mt-1.5 sm:mt-2">
                                   <VerifiedUser 
-                                    name={message.senderName}
+                                    name={profileDisplayName(userProfiles[message.senderId]) || trustedName(message.senderName) || shortUserId(message.senderId)}
                                     isVerified={userProfiles[message.senderId]?.isProfileVerified || false}
                                     className="text-xs sm:text-sm"
                                   />
@@ -4190,8 +4193,8 @@ const EnquiryResponses = () => {
               <p className="text-sm text-slate-600 mb-2">
                 {selectedResponse && enquiry && user && (
                   user.uid === enquiry.userId 
-                    ? (userProfiles[selectedResponse.sellerId]?.fullName || 'Seller')
-                    : (userProfiles[enquiry.userId]?.fullName || 'Buyer')
+                    ? (profileDisplayName(userProfiles[selectedResponse.sellerId], 'Seller'))
+                    : (profileDisplayName(userProfiles[enquiry.userId], 'Buyer'))
                 )}
               </p>
               {/* Call Duration / Timer */}

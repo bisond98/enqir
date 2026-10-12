@@ -18,7 +18,7 @@ import { friendlyError } from "@/utils/friendlyError";
 
 const Settings = () => {
   const { user } = useUsage();
-  const { user: authUser, deleteAccount, sendPasswordResetEmail, signOut } = useAuth();
+  const { user: authUser, deleteAccount, sendPasswordResetEmail, signOut, savedFullName, savedUsername } = useAuth();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
@@ -166,7 +166,7 @@ const Settings = () => {
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
         onConfirm={deleteAccount}
-        userName={user?.displayName || undefined}
+        userName={savedUsername || savedFullName || authUser?.displayName || undefined}
       />
 
       {/* Sign Out Confirmation Dialog */}
