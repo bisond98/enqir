@@ -24,6 +24,7 @@ import { fieldsForCategoryStep, isFieldHiddenForDetails } from '../categoryDetai
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { processPayment } from '@/services/paymentService';
 import { displayNameForUser } from '@/lib/userDisplayName';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
@@ -298,7 +299,7 @@ export default function CreateListing() {
   const [tags, setTags] = useState<string>('');
   const [details, setDetails] = useState<Record<string, string>>({ listingFor: 'Sale' }); // Real-estate deal type defaults to For Sale
   // Which real-estate capsule is selected (only one big capsule shows at a time)
-  const [estateType, setEstateType] = useState<'' | 'land' | 'built' | 'house' | 'other'>('');
+  const [estateType, setEstateType] = useState<'' | 'land' | 'built' | 'house' | 'flat' | 'other'>('');
   const [images, setImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgresses, setUploadProgresses] = useState<number[]>([]);
@@ -430,12 +431,9 @@ export default function CreateListing() {
   if (!user && authLoading) {
     return (
       <SellShell title="Sell">
-        <Card className="border-[0.5px] border-black rounded-xl bg-gradient-to-br from-white to-slate-50/50 shadow-[0_8px_0_0_rgba(0,0,0,0.25)] overflow-hidden">
-          <CardContent className="py-10 sm:py-14 flex flex-col items-center justify-center text-center gap-4">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-slate-200 border-t-blue-600" />
-            <p className="text-xs sm:text-sm text-slate-600 font-medium">Loading…</p>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-center min-h-[45vh]">
+          <LoadingAnimation message="Loading" showBackButton={false} compact />
+        </div>
       </SellShell>
     );
   }
@@ -1223,7 +1221,8 @@ export default function CreateListing() {
                   const TYPES: { key: string; label: string }[] = [
                     { key: 'land', label: 'Land / Plot' },
                     { key: 'built', label: 'Buildings / Commercial' },
-                    { key: 'house', label: 'House / Flat' },
+                    { key: 'house', label: 'House' },
+                    { key: 'flat', label: 'Flat' },
                     { key: 'other', label: 'Others' },
                   ];
                   const unit = details['landAreaUnit'] ?? 'Cents';
@@ -1233,50 +1232,45 @@ export default function CreateListing() {
                   const unitKey = estateType === 'land' ? 'landAreaUnit' : estateType === 'built' ? 'builtUpAreaUnit' : 'houseAreaUnit';
                   return (
                     <div className="space-y-2 pt-2">
-                      {/* Deal type toggle — For Sale / For Rent / For Lease (segmented). Selected one grows bigger, others shrink; LOCKED once a property type is chosen. */}
+                      {/* Deal type dropdown — For Sale / For Rent / For Lease; LOCKED once a property type is chosen. */}
                       <div className="flex justify-center mb-6">
-                        <div className="inline-flex items-center bg-white rounded-full p-1.5 gap-1 border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
-                          {(['Sale', 'Rent', 'Lease'] as const).map((dt) => (
-                            <button
-                              key={dt}
-                              type="button"
-                              disabled={!!estateType}
-                              onClick={() => { if (!estateType) setDetail('listingFor', dt); }}
-                              className={cn(
-                                'rounded-full font-black transition-all duration-300 whitespace-nowrap',
-                                details['listingFor'] === dt
-                                  ? 'px-12 sm:px-16 py-3 sm:py-3.5 text-base sm:text-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]'
-                                  : estateType
-                                    ? 'px-4 sm:px-5 py-2 sm:py-2.5 text-[10px] sm:text-xs text-black/50 cursor-not-allowed'
-                                    : 'px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm text-black hover:bg-gray-100'
-                              )}
-                            >
-                              {dt}
-                            </button>
-                          ))}
+                        <div className="relative w-full max-w-xs">
+                          <select
+                            value={details['listingFor'] ?? ''}
+                            disabled={!!estateType}
+                            onChange={(e) => { if (!estateType) setDetail('listingFor', e.target.value); }}
+                            className={cn(
+                              'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
+                              !details['listingFor'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black',
+                              !!estateType && 'opacity-60 cursor-not-allowed'
+                            )}
+                          >
+                            <option value="">Select listing type</option>
+                            {(['Sale', 'Rent', 'Lease'] as const).map((dt) => (
+                              <option key={dt} value={dt}>{dt === 'Sale' ? 'For Sale' : dt}</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                         </div>
                       </div>
-                      {/* Selection buttons — all 4 when nothing selected; selected one + Clear button when chosen */}
+                      {/* Property type dropdown — Land/Plot, Buildings/Commercial, House, Flat, Others */}
                       <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 self-start">
-                        {(estateType ? TYPES.filter(t => t.key === estateType) : TYPES).map((t) => (
-                          estateType === t.key ? (
-                            <span
-                              key={t.key}
-                              className="rounded-full border border-gray-300 bg-white text-black font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 py-1.5 inline-flex items-center justify-center text-center"
-                            >
-                              {t.label}
-                            </span>
-                          ) : (
-                            <button
-                              key={t.key}
-                              type="button"
-                              onClick={() => setEstateType(t.key as typeof estateType)}
-                              className="rounded-full border border-black/40 bg-white text-black hover:bg-black hover:text-white font-black text-xs sm:text-sm tracking-wide transition-all duration-200 whitespace-nowrap px-4 sm:px-6 py-2.5 sm:py-3 text-center shadow-[0_3px_0_0_rgba(0,0,0,0.15)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:shadow-none active:translate-y-[2px]"
-                            >
-                              {t.label}
-                            </button>
-                          )
-                        ))}
+                        <div className="relative w-full max-w-xs">
+                          <select
+                            value={estateType}
+                            onChange={(e) => setEstateType(e.target.value as typeof estateType)}
+                            className={cn(
+                              'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
+                              !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'
+                            )}
+                          >
+                            <option value="">Select property type</option>
+                            {TYPES.map((t) => (
+                              <option key={t.key} value={t.key}>{t.label}</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                        </div>
                         {estateType && (
                           <button
                             type="button"
@@ -1284,7 +1278,7 @@ export default function CreateListing() {
                               // Clear the selected type's saved data too
                               if (estateType === 'land') { setDetail('landAreaNum', ''); }
                               else if (estateType === 'built') { setDetail('builtUpAreaNum', ''); }
-                              else if (estateType === 'house') { setDetail('houseAreaNum', ''); setDetail('houseBhk', ''); }
+                              else if (estateType === 'house' || estateType === 'flat') { setDetail('houseAreaNum', ''); setDetail('houseBhk', ''); }
                               setEstateType('');
                             }}
                             className="h-9 sm:h-10 rounded-full border border-black bg-[#800020] hover:bg-[#6b0019] text-white font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 text-center transition-colors"
@@ -1301,7 +1295,7 @@ export default function CreateListing() {
                             inputMode="numeric"
                             value={areaVal}
                             onChange={(e) => setDetail(areaKey, e.target.value.replace(/[^0-9]/g, '').slice(0, 7))}
-                            placeholder={estateType === 'house' ? '1000 sqft' : estateType === 'built' ? '10000 sqft / 25 acres..' : '25 acres..'}
+                            placeholder={(estateType === 'house' || estateType === 'flat') ? '1000 sqft' : estateType === 'built' ? '10000 sqft / 25 acres..' : '25 acres..'}
                             style={{ outline: 'none' }}
                             className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)]"
                           />
@@ -1318,7 +1312,7 @@ export default function CreateListing() {
                               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                             </div>
                           )}
-                          {estateType === 'house' && (
+                          {(estateType === 'house' || estateType === 'flat') && (
                             <div className="relative flex-shrink-0">
                               <select
                                 value={details['houseBhk'] ?? ''}

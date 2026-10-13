@@ -9,6 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/firebase";
 import { doc, getDoc, setDoc, serverTimestamp, collection, query as fsQuery, where, getDocs, onSnapshot, orderBy } from "firebase/firestore";
 import { listMarketplace } from "@/modules/sell/services/sellDb";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 import type { SellListing } from "@/modules/sell/types";
 import { APP_CATEGORIES } from "@/constants/categories";
 import { toast } from "@/hooks/use-toast";
@@ -576,7 +577,9 @@ const MyLikes = () => {
                   <Heart className="h-5 w-5 text-red-500 fill-red-500" />
                 </div>
                 {feedLoading ? (
-                  <p className="text-xs sm:text-sm text-muted-foreground py-6 text-center">Loading posts…</p>
+                  <div className="flex justify-center py-6">
+                    <LoadingAnimation message="Loading posts" showBackButton={false} compact />
+                  </div>
                 ) : (
                   <div className="space-y-6">
                     {/* Listings */}

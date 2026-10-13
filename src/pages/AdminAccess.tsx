@@ -9,6 +9,7 @@ import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, Loader2, Shield } from 'lucide-react';
+import { LoadingAnimation } from '@/components/LoadingAnimation';
 
 const AdminAccess = () => {
   const { secretToken } = useParams();
@@ -150,28 +151,13 @@ const AdminAccess = () => {
 
   if (loading || status === 'checking') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="max-w-md w-full mx-4">
-          <CardContent className="p-8 text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-black mx-auto mb-4" />
-            <p className="text-gray-600 font-medium">Verifying access credentials...</p>
-          </CardContent>
-        </Card>
-      </div>
+      <LoadingAnimation message="Verifying access credentials" showBackButton={false} />
     );
   }
 
   if (status === 'signing-in') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="max-w-md w-full mx-4">
-          <CardContent className="p-8 text-center">
-            <Loader2 className="h-12 w-12 animate-spin text-black mx-auto mb-4" />
-            <p className="text-gray-600 font-medium">Creating admin session...</p>
-            <p className="text-sm text-gray-500 mt-2">This will only take a moment</p>
-          </CardContent>
-        </Card>
-      </div>
+      <LoadingAnimation message="Creating admin session — this will only take a moment" showBackButton={false} />
     );
   }
 

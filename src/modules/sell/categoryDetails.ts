@@ -125,6 +125,7 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   ],
   accommodations: [
     { key: 'accommodationType', label: 'Stay type', type: 'select', options: ACCOMMODATION_SUBTYPES.map(s => s.label), placeholder: 'Select stay type', step: 'title' },
+    { key: 'listingFor', label: 'Listing for', type: 'select', options: ['Rent', 'Sale', 'Lease'], placeholder: 'Select', step: 'title' },
     { key: 'genderPreference', label: 'Gender preference', type: 'select', options: ['Any', 'Male only', 'Female only', 'Mixed'], placeholder: 'Select gender preference', step: 'description' },
     { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Unfurnished', 'Semi-furnished', 'Fully furnished'], placeholder: 'Select furnishing', step: 'details' },
   ],
@@ -136,7 +137,6 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'otherArea', label: 'Others', type: 'land-area', options: ['Cents', 'Acre', 'Hectare', 'Sqft'], placeholder: 'e.g., 500', step: 'description' },
     { key: 'furnishing', label: 'Furnishing', type: 'select', options: ['Unfurnished', 'Semi-furnished', 'Fully furnished'], placeholder: 'Select furnishing', step: 'details' },
     { key: 'facing', label: 'Facing', type: 'select', options: ['East', 'West', 'North', 'South', 'North-East', 'North-West', 'South-East', 'South-West'], placeholder: 'Select facing', step: 'details' },
-    { key: 'listingFor', label: 'Listed for', type: 'select', options: ['Sale', 'Rent', 'Lease'], placeholder: 'Select listing type', step: 'price' },
   ],
   service: [
     { key: 'repairType', label: 'Service type', type: 'select', options: [...REPAIR_SERVICE_TYPES], placeholder: 'Select service type', step: 'title' },

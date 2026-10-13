@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Send, Shield, User, MessageSquare, CheckCircle, X } from "lucide-react";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { db } from "@/firebase";
 import { collection, query, where, onSnapshot, orderBy, addDoc, serverTimestamp, getDoc, doc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
@@ -337,9 +338,7 @@ export default function AdminChat() {
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <p>Loading chat...</p>
-        </div>
+        <LoadingAnimation message="Loading chat" showBackButton={false} />
       </Layout>
     );
   }

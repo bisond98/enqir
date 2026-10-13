@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 // 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
 
 import { MessageSquare, Clock, ArrowLeft } from "lucide-react";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 🛡️ PROTECTED: DO NOT REVERT - This file contains critical updates that must be preserved
 
 import { motion } from "framer-motion";
@@ -214,7 +215,9 @@ export default function AllChats() {
           </div>
 
           {loading ? (
-            <p className="text-sm text-gray-500">Loading chats…</p>
+            <div className="flex justify-center py-6">
+              <LoadingAnimation message="Loading chats" showBackButton={false} compact />
+            </div>
           ) : sortedChats.length === 0 ? (
             <Card className="border-2 border-black bg-gradient-to-br from-white to-gray-50 shadow-lg p-4 sm:p-6 text-center">
               <div className="flex flex-col items-center gap-2">

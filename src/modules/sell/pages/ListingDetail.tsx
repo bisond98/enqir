@@ -599,7 +599,7 @@ export default function ListingDetail() {
   }
 
   const detailsRec = (listing.details || {}) as Record<string, string>;
-  const showDealChip = ['real-estate', 'real-estate-services'].includes(listing.category) && !!detailsRec.listingFor;
+  const showDealChip = (['real-estate', 'real-estate-services', 'accommodations'].includes(listing.category || '') && !!detailsRec.listingFor);
 
   return (
     <SellShell title="For Sale">
@@ -710,7 +710,14 @@ export default function ListingDetail() {
               if (d.ram && !d.memory) parts.push(`${d.ram} RAM`);
               if (d.fuelType || d.fuel) parts.push((d.fuelType || d.fuel).toLowerCase());
               if (d.transmission) parts.push(d.transmission.toLowerCase());
-              const tail = ['service', 'services', 'jobs'].includes(listing.category || '') ? 'available' : 'for sale';
+              let tail = ['service', 'services', 'jobs'].includes(listing.category || '') ? 'available' : 'for sale';
+              if (listing.category === 'accommodations' && d.listingFor) {
+                const lf = d.listingFor.toLowerCase();
+                tail = lf === 'sale' ? 'for sale' : lf === 'rent' ? 'for rent' : lf === 'lease' ? 'for lease' : `for ${lf}`;
+              } else if (d.listingFor && ['real-estate', 'real-estate-services'].includes(listing.category || '')) {
+                const lf = d.listingFor.toLowerCase();
+                tail = lf === 'sale' ? 'for sale' : lf === 'rent' ? 'for rent' : lf === 'lease' ? 'for lease' : `for ${lf}`;
+              }
               const loc = listing.location ? ` in ${listing.location}` : '';
               const price = listing.price != null ? ` for ${listing.price.toLocaleString("en-IN", { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })}` : '';
               if (parts.length === 0 && !loc && !price) return null;

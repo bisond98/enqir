@@ -6,6 +6,7 @@ import { profileDisplayName, shortUserId } from "@/lib/userDisplayName";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, X, CheckCircle } from "lucide-react";
+import { LoadingAnimation } from "@/components/LoadingAnimation";
 import { db } from "@/firebase";
 import { doc, getDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
@@ -141,9 +142,7 @@ export default function ReportUser() {
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen flex items-center justify-center">
-          <p>Loading...</p>
-        </div>
+        <LoadingAnimation message="Loading" showBackButton={false} />
       </Layout>
     );
   }

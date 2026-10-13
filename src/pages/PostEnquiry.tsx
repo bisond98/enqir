@@ -380,24 +380,24 @@ export default function PostEnquiry() {
   const [aiGenerating, setAiGenerating] = useState(false);
 
   // Step 0 ("What are you looking for?") on mobile: when the keyboard shrinks
-  // the visual viewport, keep the title input clearly visible by scrolling it
+  // the visual viewport, keep the heading clearly visible by scrolling it
   // to the top of the visible area. Purely visual — no logic or flow changes.
   useEffect(() => {
     if (step !== 0) return;
     const vv = (window as any).visualViewport as VisualViewport | undefined;
-    const input = () => document.getElementById('enquiry-title');
+    const heading = () => document.getElementById('enquiry-step-heading');
     // One-frame delayed so the browser finishes its own refocus scroll first
     const reveal = () => {
       requestAnimationFrame(() => {
-        input()?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        heading()?.scrollIntoView({ block: 'start', behavior: 'smooth' });
       });
     };
-    // Initial load of this tab: show the input near the top right away
+    // Initial load of this tab: show the heading near the top right away
     reveal();
     if (!vv) return;
     let lastHeight = vv.height;
     const onResize = () => {
-      // Keyboard opening (viewport shrinks) or closing — re-reveal the input
+      // Keyboard opening (viewport shrinks) or closing — re-reveal the heading
       if (Math.abs(vv.height - lastHeight) > 40) {
         lastHeight = vv.height;
         reveal();
@@ -407,9 +407,6 @@ export default function PostEnquiry() {
     return () => vv.removeEventListener('resize', onResize);
   }, [step]);
 
-  // Step 0 ("What are you looking for?") on mobile: when the keyboard shrinks
-  // the visual viewport, keep the title input clearly visible by scrolling it
-  // to the top of the visible area. Purely visual — no logic or flow changes.
 
   // Scroll to ID verification card when verification is successful
   useEffect(() => {
@@ -2505,7 +2502,7 @@ export default function PostEnquiry() {
                         opacity="0.45"
                       />
                     </svg>
-                    <span className="relative inline-flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug text-center whitespace-nowrap">
+                    <span id="enquiry-step-heading" className="relative inline-flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug text-center whitespace-nowrap">
                       {STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}
                     </span>
                 </div>
