@@ -387,18 +387,45 @@ const Profile = () => {
     setConfirmingOtp(true);
     try {
       const result = await verifyPhoneOTP(code, verificationId);
-      if (result?.error) return;
-      if (authUser) {
-        await setDoc(doc(db, 'userProfiles', authUser.uid), {
-          userId: authUser.uid,
-          phone: phone.replace(/\D/g, ""),       // national digits, same shape the forms use
-          countryCode: countryCode,
-          phoneVerified: true,
-          updatedAt: serverTimestamp()
-        }, { merge: true });
+      if (result?.error) return;   // already toasted inside verifyPhoneOTP
+      // Firebase-level verification succeeded. Save to the profile in its own
+      // try so a Firestore hiccup can never masquerade as a failed OTP.
+      try {
+        if (authUser) {
+          await firestoreWrite(
+            setDoc(doc(db, 'userProfiles', authUser.uid), {
+              userId: authUser.uid,
+              phone: phone.replace(/\D/g, ""),       // national digits, same shape the forms use
+              countryCode: countryCode,
+              phoneVerified: true,
+              updatedAt: serverTimestamp()
+            }, { merge: true }),
+            "Phone verify profile write"
+          );
+        }
+      } catch (writeError) {
+        console.error('Phone verified but profile save failed:', writeError);
+        toast({
+          title: "Phone verified",
+          description: "Your number is verified, but saving it to your profile failed. It may not auto-fill in forms yet — please try again.",
+          variant: "destructive",
+        });
       }
+      // Pull the fresh user record so the linked number (and the hidden/verified
+      // UI state above) updates immediately instead of waiting for a token refresh.
+      await authUser?.reload().catch(() => {});
+      setOtpListeners(["", "", "", "", "", ""]);
       setOtpStage(false);
       setVerificationId(null);
+    } catch (error) {
+      // verifyPhoneOTP handles its own errors — this catches anything else
+      // (e.g. the reload above) so the spinner can never hang forever.
+      console.error('OTP confirm flow failed:', error);
+      toast({
+        title: "OTP verification failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setConfirmingOtp(false);
     }

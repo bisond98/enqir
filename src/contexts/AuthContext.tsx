@@ -88,7 +88,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setProfileVerificationStatus(profileData.verificationStatus || null);
           setSavedFullName(profileData.fullName || '');
           setSavedUsername(profileData.username || '');
-          setSavedPhone(profileData.phone || '');
+          // Forms expect an E.164 string ("+919747460245") for splitE164Phone.
+          // Older docs stored bare national digits ("9747460245"), which no
+          // dial-code prefix matched — so non-phone sign-ins never pre-filled.
+          const rawPhone = (profileData.phone || '').trim();
+          if (!rawPhone) {
+            setSavedPhone('');
+          } else if (rawPhone.startsWith('+')) {
+            setSavedPhone(rawPhone);
+          } else {
+            const digits = rawPhone.replace(/\D/g, '');
+            setSavedPhone(digits ? `${profileData.countryCode || '+91'}${digits}` : '');
+          }
         } else {
           // No profile found, setting defaults
           setIsProfileVerified(false);
@@ -900,6 +911,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: null };
     } catch (error: any) {
       const code = error?.code || '';
+      // Always log the raw code — friendly messages must never hide the cause.
+      console.error('❌ Phone OTP verify failed:', code || error, error);
       const isThrottled = code === 'auth/too-many-requests';
       const isWrongCode = code === 'auth/invalid-verification-code' || code === 'auth/code-expired';
       toast({
