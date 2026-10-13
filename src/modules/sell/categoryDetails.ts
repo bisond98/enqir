@@ -77,9 +77,12 @@ const YEARS = Array.from({ length: new Date().getFullYear() - 1989 }, (_, i) =>
 export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   car: [
     { key: 'brand', label: 'Brand', type: 'select', options: CAR_BRANDS, placeholder: 'Select brand', step: 'title' },
-    { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year', typeable: true, step: 'title' },
+    // Title step renders type:'select' as a native dropdown (the 2-option
+    // toggle only exists in the description step), so moving it here both
+    // converts transmission to a dropdown and places it under Brand.
+    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'title' },
+    { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year of manufacture', typeable: true, step: 'title' },
     { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'title' },
-    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
     { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },

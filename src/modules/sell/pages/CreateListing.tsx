@@ -1076,7 +1076,7 @@ export default function CreateListing() {
                     {fieldsForCategoryStep(category, 'title').map((f) => {
                       return (
                       <div key={f.key} className="relative w-[48%]" style={f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
-                        {f.key !== 'brand' && f.key !== 'storage' && f.key !== 'repairType' && (
+                        {f.key !== 'brand' && f.key !== 'storage' && f.key !== 'repairType' && f.key !== 'transmission' && !(category === 'car' && f.key === 'year') && (
                           <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
                         )}
                         {f.typeable ? (
@@ -1087,7 +1087,7 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
                             placeholder={f.placeholder ?? 'Type year'}
-                            className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
+                            className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white text-black placeholder:text-gray-900 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' ? 'pl-3 pr-3 placeholder:text-[8px] placeholder:tracking-tight' : 'pl-4 pr-4 placeholder:text-[11px]'}`}
                           />
                         ) : f.type === 'text' ? (
                           <Input
