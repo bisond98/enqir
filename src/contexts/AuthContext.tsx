@@ -914,7 +914,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Always log the raw code — friendly messages must never hide the cause.
       console.error('❌ Phone OTP verify failed:', code || error, error);
       const isThrottled = code === 'auth/too-many-requests';
-      const isWrongCode = code === 'auth/invalid-verification-code' || code === 'auth/code-expired';
+      // session-expired = the phone verification session (not the code) aged
+      // out — same user action: go back and request a fresh OTP.
+      const isWrongCode = code === 'auth/invalid-verification-code' || code === 'auth/code-expired' || code === 'auth/session-expired';
       toast({
         title: isThrottled ? 'Too many attempts' : 'OTP verification failed',
         description: isThrottled

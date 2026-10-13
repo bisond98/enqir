@@ -24,6 +24,8 @@ const FRIENDLY_MESSAGES: Array<{ match: RegExp; message: string }> = [
   { match: /operation-not-allowed|admin-restricted-operation/i, message: 'This sign-in method isn\'t available right now.' },
   { match: /expired-action-code|invalid-action-code/i, message: 'This link has expired or was already used. Please request a new one.' },
   { match: /missing-verification-?id|missing-verification-code/i, message: 'Something went wrong with verification. Please start again.' },
+  { match: /session-expired/i, message: 'Your verification session expired. Please request a new OTP and try again.' },
+  { match: /app-check/i, message: 'This device couldn\'t be verified right now. Please try again in a few minutes.' },
   { match: /credential-already-in-use|phone-number-already-in-use/i, message: 'This phone number is already linked to a different account. Please sign in with that account, or contact support to move it.' },
   { match: /provider-already-linked/i, message: 'This account already has a phone number linked to it.' },
   { match: /no-signed-in-user|user-null|no-current-user/i, message: 'Your session expired. Please sign in again and retry.' },
