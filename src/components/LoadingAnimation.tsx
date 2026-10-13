@@ -67,7 +67,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
               {/* User Character */}
               <g>
                 <circle cx="0" cy="-25" r="20" fill="none" stroke="#1F2937" strokeWidth="2.5">
-                  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-4; 0,0" dur="2s" repeatCount="indefinite"/>
+                  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-4; 0,0" dur="1s" repeatCount="indefinite"/>
                 </circle>
                 <circle cx="-8" cy="-32" r="3" fill="#1F2937"/>
                 <circle cx="8" cy="-32" r="3" fill="#1F2937"/>
@@ -78,15 +78,15 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
               {/* Enquiry Card appearing */}
               <g transform="translate(40, -10)">
                 <rect x="0" y="0" width="0" height="35" rx="4" fill="#F9FAFB" stroke="#1F2937" strokeWidth="2">
-                  <animate attributeName="width" values="0;50;50;50" dur="4s" repeatCount="indefinite" begin="0s"/>
+                  <animate attributeName="width" values="0;50;50;50" dur="2s" repeatCount="indefinite" begin="0s"/>
                 </rect>
                 <line x1="5" y1="8" x2="0" y2="8" stroke="#1F2937" strokeWidth="1.5" opacity="0">
-                  <animate attributeName="x2" values="0;40;40;40" dur="4s" repeatCount="indefinite" begin="0.5s"/>
-                  <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="0.5s"/>
+                  <animate attributeName="x2" values="0;40;40;40" dur="2s" repeatCount="indefinite" begin="0.25s"/>
+                  <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="0.25s"/>
                 </line>
                 <line x1="5" y1="18" x2="0" y2="18" stroke="#1F2937" strokeWidth="1.5" opacity="0">
-                  <animate attributeName="x2" values="0;35;35;35" dur="4s" repeatCount="indefinite" begin="0.8s"/>
-                  <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="0.8s"/>
+                  <animate attributeName="x2" values="0;35;35;35" dur="2s" repeatCount="indefinite" begin="0.4s"/>
+                  <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="0.4s"/>
                 </line>
               </g>
               
@@ -94,19 +94,19 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
               <circle cx="0" cy="-25" r="30" fill="none" stroke="#E5E7EB" strokeWidth="2"/>
               <circle cx="0" cy="-25" r="30" fill="none" stroke="#1F2937" strokeWidth="2" 
                 strokeDasharray="47 94" transform="rotate(-90 0 -25)" opacity="0">
-                <animateTransform attributeName="transform" type="rotate" values="-90 0 -25; 270 0 -25" dur="1.5s" repeatCount="indefinite" begin="0s"/>
-                <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="0s"/>
+                <animateTransform attributeName="transform" type="rotate" values="-90 0 -25; 270 0 -25" dur="0.75s" repeatCount="indefinite" begin="0s"/>
+                <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="0s"/>
               </circle>
             </g>
             
             {/* Arrow 1 - Animated */}
             <g transform="translate(170, 125)">
               <line x1="0" y1="0" x2="70" y2="0" stroke="#1F2937" strokeWidth="3" opacity="0">
-                <animate attributeName="stroke-dasharray" values="0,200;70,0;0,0" dur="1.5s" repeatCount="indefinite" begin="1.5s"/>
-                <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="1.5s"/>
+                <animate attributeName="stroke-dasharray" values="0,200;70,0;0,0" dur="0.75s" repeatCount="indefinite" begin="0.75s"/>
+                <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="0.75s"/>
               </line>
               <polygon points="75,0 62,-6 62,6" fill="#1F2937" opacity="0">
-                <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="1.5s"/>
+                <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="0.75s"/>
               </polygon>
             </g>
             
@@ -114,48 +114,48 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
             <g id="step2" transform="translate(260, 80)">
               {/* AI Box */}
               <rect x="-30" y="-30" width="60" height="60" rx="8" fill="none" stroke="#1F2937" strokeWidth="3" opacity="0">
-                <animateTransform attributeName="transform" type="scale" values="0.8;1;1;1" dur="4s" repeatCount="indefinite" begin="2s"/>
-                <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="2s"/>
+                <animateTransform attributeName="transform" type="scale" values="0.8;1;1;1" dur="2s" repeatCount="indefinite" begin="1s"/>
+                <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="1s"/>
               </rect>
               <rect x="-22" y="-22" width="44" height="44" fill="#F9FAFB" opacity="0">
-                <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="2s"/>
+                <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="1s"/>
               </rect>
               
               {/* Brain Nodes */}
               <circle cx="0" cy="-10" r="6" fill="#1F2937" opacity="0">
-                <animate attributeName="opacity" values="0;0.6;1;0.6;0" dur="4s" repeatCount="indefinite" begin="2.2s"/>
-                <animate attributeName="r" values="6;7;6" dur="1s" repeatCount="indefinite" begin="2.2s"/>
+                <animate attributeName="opacity" values="0;0.6;1;0.6;0" dur="2s" repeatCount="indefinite" begin="1.1s"/>
+                <animate attributeName="r" values="6;7;6" dur="0.5s" repeatCount="indefinite" begin="1.1s"/>
               </circle>
               <circle cx="-12" cy="0" r="5" fill="#1F2937" opacity="0">
-                <animate attributeName="opacity" values="0;0.6;1;0.6;0" dur="4s" repeatCount="indefinite" begin="2.4s"/>
-                <animate attributeName="r" values="5;6;5" dur="1s" repeatCount="indefinite" begin="2.4s"/>
+                <animate attributeName="opacity" values="0;0.6;1;0.6;0" dur="2s" repeatCount="indefinite" begin="1.2s"/>
+                <animate attributeName="r" values="5;6;5" dur="0.5s" repeatCount="indefinite" begin="1.2s"/>
               </circle>
               <circle cx="12" cy="0" r="5" fill="#1F2937" opacity="0">
-                <animate attributeName="opacity" values="0;0.6;1;0.6;0" dur="4s" repeatCount="indefinite" begin="2.6s"/>
-                <animate attributeName="r" values="5;6;5" dur="1s" repeatCount="indefinite" begin="2.6s"/>
+                <animate attributeName="opacity" values="0;0.6;1;0.6;0" dur="2s" repeatCount="indefinite" begin="1.3s"/>
+                <animate attributeName="r" values="5;6;5" dur="0.5s" repeatCount="indefinite" begin="1.3s"/>
               </circle>
               <circle cx="0" cy="10" r="6" fill="#1F2937" opacity="0">
-                <animate attributeName="opacity" values="0;0.6;1;0.6;0" dur="4s" repeatCount="indefinite" begin="2.8s"/>
-                <animate attributeName="r" values="6;7;6" dur="1s" repeatCount="indefinite" begin="2.8s"/>
+                <animate attributeName="opacity" values="0;0.6;1;0.6;0" dur="2s" repeatCount="indefinite" begin="1.4s"/>
+                <animate attributeName="r" values="6;7;6" dur="0.5s" repeatCount="indefinite" begin="1.4s"/>
               </circle>
               
               {/* Connecting lines */}
               <line x1="-12" y1="0" x2="0" y2="-10" stroke="#1F2937" strokeWidth="2" opacity="0">
-                <animate attributeName="opacity" values="0;0.5;0.5;0" dur="4s" repeatCount="indefinite" begin="2.5s"/>
+                <animate attributeName="opacity" values="0;0.5;0.5;0" dur="2s" repeatCount="indefinite" begin="1.25s"/>
               </line>
               <line x1="12" y1="0" x2="0" y2="-10" stroke="#1F2937" strokeWidth="2" opacity="0">
-                <animate attributeName="opacity" values="0;0.5;0.5;0" dur="4s" repeatCount="indefinite" begin="2.7s"/>
+                <animate attributeName="opacity" values="0;0.5;0.5;0" dur="2s" repeatCount="indefinite" begin="1.35s"/>
               </line>
             </g>
             
             {/* Arrow 2 */}
             <g transform="translate(330, 125)">
               <line x1="0" y1="0" x2="70" y2="0" stroke="#1F2937" strokeWidth="3" opacity="0">
-                <animate attributeName="stroke-dasharray" values="0,200;70,0;0,0" dur="1.5s" repeatCount="indefinite" begin="3.5s"/>
-                <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="3.5s"/>
+                <animate attributeName="stroke-dasharray" values="0,200;70,0;0,0" dur="0.75s" repeatCount="indefinite" begin="1.75s"/>
+                <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="1.75s"/>
               </line>
               <polygon points="75,0 62,-6 62,6" fill="#1F2937" opacity="0">
-                <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="3.5s"/>
+                <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="1.75s"/>
               </polygon>
             </g>
             
@@ -163,8 +163,8 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
             <g id="step3" transform="translate(420, 80)">
               <g transform="translate(-25, 0)" opacity="0">
                 <circle cx="0" cy="0" r="18" fill="none" stroke="#1F2937" strokeWidth="2.5">
-                  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-8; 0,0" dur="2s" repeatCount="indefinite" begin="4s"/>
-                  <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="4s"/>
+                  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-8; 0,0" dur="1s" repeatCount="indefinite" begin="4s"/>
+                  <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="4s"/>
                 </circle>
                 <circle cx="-6" cy="-6" r="2.5" fill="#1F2937"/>
                 <circle cx="6" cy="-6" r="2.5" fill="#1F2937"/>
@@ -172,8 +172,8 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
               </g>
               <g transform="translate(0, 0)" opacity="0">
                 <circle cx="0" cy="0" r="18" fill="none" stroke="#1F2937" strokeWidth="2.5">
-                  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-8; 0,0" dur="2s" repeatCount="indefinite" begin="4.3s"/>
-                  <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="4.3s"/>
+                  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-8; 0,0" dur="1s" repeatCount="indefinite" begin="2.15s"/>
+                  <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="2.15s"/>
                 </circle>
                 <circle cx="-6" cy="-6" r="2.5" fill="#1F2937"/>
                 <circle cx="6" cy="-6" r="2.5" fill="#1F2937"/>
@@ -181,8 +181,8 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
               </g>
               <g transform="translate(25, 0)" opacity="0">
                 <circle cx="0" cy="0" r="18" fill="none" stroke="#1F2937" strokeWidth="2.5">
-                  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-8; 0,0" dur="2s" repeatCount="indefinite" begin="4.6s"/>
-                  <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="4.6s"/>
+                  <animateTransform attributeName="transform" type="translate" values="0,0; 0,-8; 0,0" dur="1s" repeatCount="indefinite" begin="2.3s"/>
+                  <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="2.3s"/>
                 </circle>
                 <circle cx="-6" cy="-6" r="2.5" fill="#1F2937"/>
                 <circle cx="6" cy="-6" r="2.5" fill="#1F2937"/>
@@ -193,12 +193,12 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
             {/* Success Checkmark */}
             <g transform="translate(250, 180)" opacity="0">
               <circle cx="0" cy="0" r="25" fill="#1F2937" opacity="0.8">
-                <animate attributeName="opacity" values="0;0.8;0.8;0" dur="4s" repeatCount="indefinite" begin="6.5s"/>
-                <animate attributeName="r" values="25;28;25" dur="1.5s" repeatCount="indefinite" begin="6.5s"/>
+                <animate attributeName="opacity" values="0;0.8;0.8;0" dur="2s" repeatCount="indefinite" begin="3.25s"/>
+                <animate attributeName="r" values="25;28;25" dur="0.75s" repeatCount="indefinite" begin="3.25s"/>
               </circle>
               <path d="M-10,-3 L-3,8 L10,-8" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="6.5s"/>
-                <animateTransform attributeName="transform" type="scale" values="0;1;1;0" dur="4s" repeatCount="indefinite" begin="6.5s"/>
+                <animate attributeName="opacity" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="3.25s"/>
+                <animateTransform attributeName="transform" type="scale" values="0;1;1;0" dur="2s" repeatCount="indefinite" begin="3.25s"/>
               </path>
             </g>
             
@@ -206,7 +206,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
             <g transform="translate(100, 240)">
               <rect x="0" y="0" width="300" height="6" rx="3" fill="#E5E7EB"/>
               <rect x="0" y="0" width="0" height="6" rx="3" fill="#1F2937">
-                <animate attributeName="width" values="0;75;150;225;300;300" dur="8s" repeatCount="indefinite"/>
+                <animate attributeName="width" values="0;75;150;225;300;300" dur="4s" repeatCount="indefinite"/>
               </rect>
             </g>
           </svg>
@@ -220,7 +220,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
             {message}
             <motion.span 
               animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
               className="inline-block"
             >
               ...

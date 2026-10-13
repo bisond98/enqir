@@ -190,8 +190,8 @@ const Landing = () => {
         setDisplayedCategories(getRandomCategories());
         setTimeout(() => {
           setIsShufflingCategories(false);
-        }, 100);
-      }, 500); // Fade out duration
+        }, 80);
+      }, 300); // Fade out duration
     }, 20000); // 20 seconds
 
     return () => clearInterval(interval);
@@ -1120,8 +1120,8 @@ const Landing = () => {
       setIsShufflingSell(true);
       setTimeout(() => {
         setShuffledSellListings(getRandomThree(sellListings));
-        setTimeout(() => setIsShufflingSell(false), 100);
-      }, 500);
+        setTimeout(() => setIsShufflingSell(false), 80);
+      }, 300);
     }, 10000);
 
     return () => clearInterval(interval);
@@ -1223,7 +1223,7 @@ const Landing = () => {
         // Trigger shuffle animation - smooth fade out
         setIsShuffling(true);
         
-        // Wait for smooth fade out (500ms for smooth transition), then update cards
+        // Wait for fade out, then update cards (300ms — quick but seamless)
         setTimeout(() => {
           const shuffled = getRandomThree(currentLiveEnquiries);
           const uniqueShuffled = Array.from(
@@ -1235,8 +1235,8 @@ const Landing = () => {
           // Smooth fade in new cards (small delay for seamless transition)
           setTimeout(() => {
             setIsShuffling(false);
-          }, 100);
-        }, 500);
+          }, 80);
+        }, 300);
       } else if (currentLiveEnquiries.length === 1) {
         // Only one live enquiry, just combine with expired
         setShuffledEnquiries([...currentLiveEnquiries, ...currentExpiredEnquiries]);

@@ -737,8 +737,10 @@ export default function EnquiryWall() {
       }
     };
 
-    // Defer profile fetch by 2s to not compete with page render
-    const timeoutId = setTimeout(fetchUserProfiles, 2000);
+    // Defer profile fetch by 150ms — just long enough to clear the initial
+    // paint, so poster names/trust badges appear right after the cards
+    // instead of a full 2s later.
+    const timeoutId = setTimeout(fetchUserProfiles, 150);
 
     return () => {
       clearTimeout(timeoutId);
