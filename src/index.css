@@ -1485,6 +1485,38 @@
   }
 }
 
+/* Rotating search placeholder — new keyword rolls down from the top,
+   the previous one exits downward (like a vertical ticker). */
+@keyframes kwRollDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes kwRollOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.kw-roll-down {
+  animation: kwRollDown 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.kw-roll-out {
+  animation: kwRollOut 0.5s cubic-bezier(0.55, 0, 0.7, 0.2) both;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

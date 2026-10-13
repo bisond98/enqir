@@ -81,6 +81,9 @@ interface Enquiry {
   details?: { jobDirection?: string } | null;
 }
 
+// Rotating search-placeholder keywords — taken from the shared category list
+const SEARCH_KEYWORDS: string[] = APP_CATEGORIES.map((c) => c.label);
+
 export default function EnquiryWall() {
   const { user: authUser } = useAuth();
   const navigate = useNavigate();
@@ -103,6 +106,13 @@ export default function EnquiryWall() {
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [budgetMin, setBudgetMin] = useState('');
   const [budgetMax, setBudgetMax] = useState('');
+  // Rotating placeholder — cycles category keywords every 2s while the input is empty
+  const [searchPlaceholderIdx, setSearchPlaceholderIdx] = useState(0);
+  useEffect(() => {
+    if (searchTerm) return;
+    const t = setInterval(() => setSearchPlaceholderIdx((i) => i + 1), 2000);
+    return () => clearInterval(t);
+  }, [searchTerm]);
   const [catDropdownOpen, setCatDropdownOpen] = useState(false);
   const [pendingDistanceSort, setPendingDistanceSort] = useState<'nearest' | 'farthest' | null>(null);
   const [locationFilterQuery, setLocationFilterQuery] = useState('');
@@ -5776,7 +5786,7 @@ export default function EnquiryWall() {
                 <input
                   ref={searchInputRef}
                   type="text"
-                  placeholder='Search…'
+                  aria-label="Search enquiries"
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   onKeyDown={(e) => {
@@ -5820,9 +5830,10 @@ export default function EnquiryWall() {
                     paddingTop: '0.75rem',
                     paddingBottom: '0.75rem',
                     paddingLeft: '2.75rem', // More space for icon on mobile
-                    paddingRight: '4.5rem',
+                    paddingRight: '2.5rem',
                     WebkitAppearance: 'none',
                     WebkitTapHighlightColor: 'transparent',
+                    textAlign: 'center',
                     direction: 'ltr'
                   }}
                   disabled={isAISearching}
@@ -5830,8 +5841,21 @@ export default function EnquiryWall() {
                   {/* Soft glass sheen — keeps depth without the hard edge */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent rounded-[13px] pointer-events-none z-0" />
                 </div>
+                {/* Rotating placeholder — category keyword rolls down from the top every 2s */}
+                {!searchTerm && (
+                  <div className="absolute inset-0 z-40 overflow-hidden pointer-events-none rounded-[12px]" aria-hidden="true">
+                    {searchPlaceholderIdx > 0 && (
+                      <span key={`kw-out-${searchPlaceholderIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-gray-900">
+                        {`Search ${SEARCH_KEYWORDS[(searchPlaceholderIdx - 1 + SEARCH_KEYWORDS.length) % SEARCH_KEYWORDS.length]}…`}
+                      </span>
+                    )}
+                    <span key={`kw-in-${searchPlaceholderIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-gray-900">
+                      {`Search ${SEARCH_KEYWORDS[searchPlaceholderIdx % SEARCH_KEYWORDS.length]}…`}
+                    </span>
+                  </div>
+                )}
                 {isAISearching ? (
-                  <div className="absolute right-[4.5rem] sm:right-[5.25rem] top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
+                  <div className="absolute right-3 sm:right-3.5 top-1/2 z-10" style={{ transform: 'translateY(-50%)' }}>
                     <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
                   </div>
                 ) : (
@@ -5840,21 +5864,12 @@ export default function EnquiryWall() {
                       <button
                         type="button"
                         onClick={() => { setSearchTerm(''); }}
-                        className="absolute right-[3.4rem] sm:right-[4.1rem] top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-50"
+                        className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-50"
                         aria-label="Clear search"
                       >
                         <X className="h-4 w-4" />
                       </button>
                     ) : null}
-                    {/* Search submit — thumb-reachable black pill inside the bar (mobile-first) */}
-                    <button
-                      type="button"
-                      onClick={() => submitSearch(searchTerm)}
-                      className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 z-50 h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center bg-black text-white rounded-lg sm:rounded-xl border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[calc(-50%+2px)] transition-all touch-manipulation"
-                      aria-label="Search"
-                    >
-                      <Search className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={2.5} />
-                    </button>
                   </>
                 )}
                 

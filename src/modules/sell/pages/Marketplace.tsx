@@ -130,9 +130,23 @@ function formatPostedDate(dateString: any): string {
   }
 }
 
+// Rotating search-placeholder hints — the original NL example first, then category keywords
+const SEARCH_HINTS: string[] = [
+  'Search listings…',
+  'Search listings… or try "used car under 2 lakh"',
+  ...SELL_CATEGORIES.map((c) => `Search listings… or try "${c.label.toLowerCase()}"`),
+];
+
 export default function Marketplace() {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
+  // Rotating placeholder — cycles category hints every 2s while the input is empty
+  const [searchHintIdx, setSearchHintIdx] = useState(0);
+  useEffect(() => {
+    if (search) return;
+    const t = setInterval(() => setSearchHintIdx((i) => i + 1), 2000);
+    return () => clearInterval(t);
+  }, [search]);
   const [category, setCategory] = useState<string>('all');
   const [location, setLocation] = useState<string>('all');
   const [priceMin, setPriceMin] = useState('');
@@ -861,9 +875,22 @@ export default function Marketplace() {
               }
               load();
             }}
-            placeholder='Search listings… or try "used car under 2 lakh"'
-            className="relative pl-10 pr-[4.5rem] sm:pr-[5rem] min-h-[48px] h-[50px] sm:h-[54px] text-sm sm:text-base font-medium bg-white border-[1.5px] border-slate-200 rounded-[12px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus:outline-none focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:ring-offset-0 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-[11px] placeholder:text-gray-900 placeholder:font-semibold text-slate-900 text-left overflow-hidden"
+            aria-label="Search listings"
+            className="relative pl-10 pr-[4.5rem] sm:pr-[5rem] min-h-[48px] h-[50px] sm:h-[54px] text-sm sm:text-base font-medium bg-white border-[1.5px] border-slate-200 rounded-[12px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus:outline-none focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:ring-offset-0 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-[11px] placeholder:text-gray-900 placeholder:font-semibold text-slate-900 text-center overflow-hidden"
           />
+          {/* Rotating placeholder — category hints roll down from the top every 2s */}
+          {!search && (
+            <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-[12px]" aria-hidden="true">
+              {searchHintIdx > 0 && (
+                <span key={`hint-out-${searchHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-center pl-10 pr-12 sm:pr-14 leading-tight text-[11px] font-semibold text-gray-900">
+                  {SEARCH_HINTS[(searchHintIdx - 1 + SEARCH_HINTS.length) % SEARCH_HINTS.length]}
+                </span>
+              )}
+              <span key={`hint-in-${searchHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-center pl-10 pr-12 sm:pr-14 leading-tight text-[11px] font-semibold text-gray-900">
+                {SEARCH_HINTS[searchHintIdx % SEARCH_HINTS.length]}
+              </span>
+            </div>
+          )}
           {search && (
             <button onClick={() => { setSearch(''); }} className="absolute right-[3.4rem] sm:right-[3.9rem] top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-20" aria-label="Clear search">
               <X className="h-4 w-4" />

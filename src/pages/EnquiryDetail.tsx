@@ -656,6 +656,11 @@ const EnquiryDetail = () => {
     }).format(budget);
   };
 
+  // Job-category enquiries label the amount "Salary" instead of "Budget" (detail page only)
+  const isJobCatEnquiry = String(enquiry?.category || '').toLowerCase().includes('job')
+    || (enquiry?.categories || []).some(c => String(c).toLowerCase().includes('job'));
+  const budgetLabel = isJobCatEnquiry ? 'Salary' : 'Budget';
+
   // Helper function to filter admin notes - hide technical details
   const formatAdminNotes = (notes: string | undefined): string | null => {
     if (!notes) return null;
@@ -881,8 +886,10 @@ const EnquiryDetail = () => {
                       if (!d) return null;
                       const isSeeking = d.jobDirection === 'seeking';
                       const jobDir = d.jobDirection === 'hiring' ? 'Hiring' : d.jobDirection === 'seeking' ? 'Open To Work' : null;
+                      // Job-category "Hiring" renders as an oversized red badge directly under the title
+                      const isHiring = !isSeeking && jobDir === 'Hiring' && String(enquiry.category || '').toLowerCase().includes('job');
                       // Order matches the Post Enquiry preview: status first, then qualifications (Apply), then work details
-                      const jobChips: ({ label: string; value: string } | false)[] = isSeeking ? [
+                      const jobChips: ({ label: string; value: string; highlight?: boolean; big?: boolean } | false)[] = isSeeking ? [
                         jobDir && { label: 'Status', value: jobDir },
                         d.education && { label: 'Education', value: d.education },
                         d.stream && { label: 'Stream', value: d.stream },
@@ -891,7 +898,7 @@ const EnquiryDetail = () => {
                         d.jobType && { label: 'Job type', value: d.jobType },
                         d.workMode && { label: 'Work mode', value: d.workMode },
                       ] : [
-                        jobDir && { label: 'Job', value: jobDir },
+                        jobDir && { label: 'Job', value: jobDir, highlight: isHiring, big: isHiring },
                         d.experience && { label: 'Experience required', value: d.experience },
                         d.jobType && { label: 'Job type', value: d.jobType },
                         d.workMode && { label: 'Work mode', value: d.workMode },
@@ -902,7 +909,7 @@ const EnquiryDetail = () => {
                         : null;
                       const chips = [
                         ...jobChips,
-                        enquiry.budgetOpenToDiscussion && { label: 'Budget', value: 'Open to discussion', highlight: true },
+                        enquiry.budgetOpenToDiscussion && { label: budgetLabel, value: 'Open to discussion', highlight: true },
                         accommodationLabel && { label: 'Stay type', value: accommodationLabel, highlight: true },
                         d.genderPreference && ['male', 'female', 'other'].includes(String(d.genderPreference).toLowerCase()) && { label: null, value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : 'Other', highlight: true },
                         d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType, highlight: true },
@@ -922,7 +929,7 @@ const EnquiryDetail = () => {
                         (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
                         d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
                         d.repairType && { label: 'Service type', value: d.repairType, highlight: true },
-                      ].filter(Boolean) as { label: string; value: string; highlight?: boolean; icon?: string; logoUrl?: string | null }[];
+                      ].filter(Boolean) as { label: string; value: string; highlight?: boolean; big?: boolean; icon?: string; logoUrl?: string | null }[];
                       if (chips.length === 0) return null;
                       // Hand-drawn H-pattern gear shifter (manual gearbox)
                       const GearShifterIcon = ({ className = "" }: { className?: string }) => (
@@ -947,7 +954,11 @@ const EnquiryDetail = () => {
                       return (
                         <div className="flex flex-wrap justify-center gap-1.5 mt-3">
                           {chips.map((c) => (
-                            c.highlight && (c.label === 'Looking to' || c.label === 'Land / Plot') ? (
+                            c.big ? (
+                              <span key={c.label || c.value} className="inline-flex items-center justify-center text-sm sm:text-lg font-black font-chip uppercase tracking-wide text-white bg-red-600 border-2 border-red-600 rounded-xl px-4 py-2">
+                                {c.value}
+                              </span>
+                            ) : c.highlight && (c.label === 'Looking to' || c.label === 'Land / Plot') ? (
                               <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
                                 {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
                                 {c.value}
@@ -993,7 +1004,7 @@ const EnquiryDetail = () => {
                           <IndianRupee className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Budget</p>
+                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">{budgetLabel}</p>
                           <p className="text-base sm:text-base md:text-lg font-bold text-black break-words leading-tight">
                             {enquiry.budgetOpenToDiscussion ? (
                               <span className="inline-flex items-center gap-1.5">
