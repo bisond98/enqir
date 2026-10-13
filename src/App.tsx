@@ -121,11 +121,15 @@ const ListingDetail = lazy(() => import("./modules/sell/pages/ListingDetail"));
 const ListingChat = lazy(() => import("./modules/sell/pages/ListingChat"));
 const SellerDashboard = lazy(() => import("./modules/sell/pages/SellerDashboard"));
 
-// Warm the most-visited route chunks while the browser is idle, so the first
-// click on Dashboard / Enquiries / Post / My Chats / Marketplace feels instant
-// instead of spinner-then-load. Static specifiers (not string variables) so
-// Vite can resolve these to the real lazy chunks.
+// Warm the most-visited route chunks so the first click on Dashboard /
+// Enquiries / Post / My Chats / Marketplace feels instant instead of showing
+// the black route spinner. Static specifiers (not string variables) so Vite
+// can resolve these to the real lazy chunks.
 if (typeof window !== 'undefined') {
+  // Landing is the very first paint — start its chunk at module eval (before
+  // React mounts) so boot never flashes the route spinner at all.
+  import("./pages/Landing").catch(() => {});
+
   const prefetchCommonRoutes = () => {
     import("./pages/Dashboard").catch(() => {});
     import("./pages/EnquiryWall").catch(() => {});
@@ -139,14 +143,23 @@ if (typeof window !== 'undefined') {
     import("./pages/MyEnquiries").catch(() => {});
     import("./pages/EnquiryResponses").catch(() => {});
     import("./pages/EnquiryResponsesPage").catch(() => {});
+    import("./pages/MyLikes").catch(() => {});
+    import("./pages/Settings").catch(() => {});
+    import("./modules/sell/pages/CreateListing").catch(() => {});
+    import("./modules/sell/pages/ListingDetail").catch(() => {});
     // Map picker (Leaflet) — prefetched so opening a location picker is instant
     import("./components/MapLocationPicker").catch(() => {});
   };
+  // Idle with a SHORT timeout: the old 10s timeout meant the first
+  // navigation to any page often beat the prefetch and hit the spinner.
   if ('requestIdleCallback' in window) {
-    (window as any).requestIdleCallback(prefetchCommonRoutes, { timeout: 10000 });
+    (window as any).requestIdleCallback(prefetchCommonRoutes, { timeout: 2500 });
   } else {
-    setTimeout(prefetchCommonRoutes, 4000);
+    setTimeout(prefetchCommonRoutes, 400);
   }
+  // First tap/keypress almost always precedes navigation — warm on intent.
+  window.addEventListener('pointerdown', prefetchCommonRoutes, { once: true, passive: true });
+  window.addEventListener('keydown', prefetchCommonRoutes, { once: true });
 }
 // 🛡️ PROTECTED: ChatProvider - DO NOT REMOVE - Required for MyChats and AllChats
 import { ChatProvider } from "./contexts/ChatContext";
