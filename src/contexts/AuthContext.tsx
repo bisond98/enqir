@@ -921,7 +921,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           ? 'Too many verification attempts. Please wait a few minutes, then request a new OTP.'
           : isWrongCode
             ? 'That code isn\'t right or has expired. Please check the SMS and try again.'
-            : friendlyError(error),
+            // Custom fallback carries the raw code — if no friendly message
+            // matches, the toast itself names the cause (no devtools needed).
+            : friendlyError(error, `Something went wrong (code: ${code || 'none'}). Please try again.`),
         variant: 'destructive',
       });
       return { error };

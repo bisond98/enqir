@@ -417,13 +417,15 @@ const Profile = () => {
       setOtpListeners(["", "", "", "", "", ""]);
       setOtpStage(false);
       setVerificationId(null);
-    } catch (error) {
+    } catch (error: any) {
       // verifyPhoneOTP handles its own errors — this catches anything else
       // (e.g. the reload above) so the spinner can never hang forever.
+      // Distinct wording + code so this path is distinguishable from the
+      // verifyPhoneOTP toast if it ever fires.
       console.error('OTP confirm flow failed:', error);
       toast({
-        title: "OTP verification failed",
-        description: "Something went wrong. Please try again.",
+        title: "Verification failed after OTP",
+        description: `The code was checked, but a follow-up step failed (code: ${error?.code || 'none'}). Please try again.`,
         variant: "destructive",
       });
     } finally {

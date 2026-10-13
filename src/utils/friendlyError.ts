@@ -27,7 +27,9 @@ const FRIENDLY_MESSAGES: Array<{ match: RegExp; message: string }> = [
   { match: /credential-already-in-use|phone-number-already-in-use/i, message: 'This phone number is already linked to a different account. Please sign in with that account, or contact support to move it.' },
   { match: /provider-already-linked/i, message: 'This account already has a phone number linked to it.' },
   { match: /no-signed-in-user|user-null|no-current-user/i, message: 'Your session expired. Please sign in again and retry.' },
-  { match: /invalid-app-credential|app-not-authorized|unauthorized-domain|captcha-check-failed/i, message: 'Verification couldn\'t be confirmed. Please request a new OTP and try again.' },
+  { match: /app-credential|app-not-authorized|unauthorized-domain|captcha-check-failed/i, message: 'Verification couldn\'t be confirmed. Please request a new OTP and try again.' },
+  { match: /user-mismatch|invalid-verification-id|missing-tenant-id/i, message: 'That verification session looks invalid. Please request a new OTP and try again.' },
+  { match: /account-exists|account-exists-with-different-credential/i, message: 'An account already exists for this phone number with a different sign-in method. Please contact support.' },
 
   // Network / connectivity
   { match: /network-request-failed|network error|failed to fetch|fetch failed|offline|internet disconnected|err_internet/i, message: 'You seem to be offline. Check your internet connection and try again.' },
