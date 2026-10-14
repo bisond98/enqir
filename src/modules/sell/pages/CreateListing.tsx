@@ -28,6 +28,7 @@ import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { processPayment } from '@/services/paymentService';
 import { displayNameForUser } from '@/lib/userDisplayName';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
+import TimeLimitSelector from '@/components/TimeLimitSelector';
 import {
   AlignLeft,
   Armchair,
@@ -213,6 +214,12 @@ const STEPS = [
   { key: 'extras', label: 'Confirmation', description: 'Finish strong' },
 ] as const;
 
+// Categories whose listings support an optional auto-expire deadline shown on
+// the Condition step (step index 4). Everything downstream (sweep, marketplace
+// filter, detail-page countdown) is category-agnostic — it only reads the
+// `deadline` field on the doc, so adding a category here is all it takes.
+const DEADLINE_CATEGORIES = new Set(['food-beverage', 'jobs', 'agriculture-farming']);
+
 export default function CreateListing() {
   const { user, isProfileVerified, loading: authLoading, savedPhone, savedFullName, savedUsername } = useAuth();
   const navigate = useNavigate();
@@ -287,10 +294,17 @@ export default function CreateListing() {
   // Categories where New/Used condition makes no sense (properties, stays,
   // services, perishables & live animals) — hides the selector and chips
   const hideCondition = NO_CONDITION_CATEGORIES.has(category) || /-services$/.test(category);
+  // Deadline-enabled categories (DEADLINE_CATEGORIES) show the countdown
+  // timer on the Condition step (step index 4). Food and jobs hide the New/Used
+  // chips (food via NO_CONDITION_CATEGORIES, jobs via the explicit check in the
+  // step's JSX), so the timer is the step's only content; agriculture shows the
+  // chips above it. The deadline is always optional — the step is never
+  // blocked, so the seller can leave it unset and the listing still publishes.
+  const isDeadlineCategory = DEADLINE_CATEGORIES.has(category);
   // The Condition step (index 4) is skipped entirely when the primary category
   // is 'service' — New/Used makes no sense for services and the step has no
   // other fields for that category.
-  const skipDetailsStep = category === 'service';
+  const skipDetailsStep = category === 'service' && !isDeadlineCategory;
   const isSkippedStep = (s: number) => skipDetailsStep && s === 4;
   const [priceType, setPriceType] = useState<ListingPriceType>('fixed');
   const [price, setPrice] = useState<string>('');
@@ -365,6 +379,24 @@ export default function CreateListing() {
     }, 250);
   };
 
+  // Recover a deadline-category draft countdown from the saved draft so a seller
+  // returning to /sell/new after a sign-in redirect still sees their chosen
+  // countdown instead of a blank step. Deadline is intentionally kept out of
+  // the generic form-restore block above so an old countdown is never silently
+  // re-armed for a non-deadline draft.
+  useEffect(() => {
+    if (!isDeadlineCategory) return;
+    const draft = localStorage.getItem(STORAGE_KEY);
+    if (!draft) return;
+    try {
+      const d = JSON.parse(draft);
+      if (d.deadline) {
+        setDeadline(d.deadline instanceof Date ? d.deadline : new Date(d.deadline));
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDeadlineCategory]);
+
   const parsedTags = useMemo(() => {
     return tags
       .split(',')
@@ -386,8 +418,9 @@ export default function CreateListing() {
         if (d.location) setLocation(d.location);
         if (d.condition) setCondition(d.condition);
         if (d.priceType) setPriceType(d.priceType);
-        if (d.price) setPrice(d.price);
-        if (d.priceOption) setPriceOption(d.priceOption);
+      if (d.price) setPrice(d.price);
+      if (d.priceOption) setPriceOption(d.priceOption);
+      if (d.deadline) setDeadline(d.deadline instanceof Date ? d.deadline : new Date(d.deadline));
         // priceMin/priceMax & 'range' priceType intentionally NOT restored —
         // the price-range slider section was removed from the form.
         if (d.tags) setTags(d.tags);
@@ -395,7 +428,13 @@ export default function CreateListing() {
         if (d.estateType) setEstateType(d.estateType);
         if (d.images?.length) setImages(d.images);
       } catch {}
-      localStorage.removeItem(STORAGE_KEY);
+      // Deadline draft is intentionally left out of the auto-restore path: a
+      // food listing draft kept across a session should not silently re-arm an
+      // old countdown. Sellers set a new deadline on the step if they want one.
+      // Deadline draft is intentionally left out of the auto-restore path: a
+    // food listing draft kept across a session should not silently re-arm an
+    // old countdown. Sellers set a new deadline on the step if they want one.
+    localStorage.removeItem(STORAGE_KEY);
       // Scroll down to publish listing button after restoring
       setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -422,6 +461,10 @@ export default function CreateListing() {
   // component must run on every render, or React throws "Rendered more hooks
   // than during the previous render" when the auth listener fires.
   const [priceOption, setPriceOption] = useState<'' | 'discussion'>('');
+  // Deadline categories (DEADLINE_CATEGORIES): optional listing end time.
+  // Stored as a Firestore timestamp on the doc; used by the expiry logic and
+  // shown on the detail page as a reverse countdown.
+  const [deadline, setDeadline] = useState<Date | null>(null);
 
   // IMPORTANT: wait for Firebase to restore the persisted session before
   // deciding the user is signed out. On a fresh app open (or restored tab)
@@ -610,6 +653,8 @@ export default function CreateListing() {
         }
         return true;
       case 4:
+        // Deadline categories: the deadline is optional, so the step can
+        // always be advanced — the seller can leave it unset and still publish.
         return true;
       case 5:
         if (!validatePriceFields()) return false;
@@ -741,6 +786,8 @@ export default function CreateListing() {
         longitude: mapLocation?.longitude ?? null,
         mapAddress: mapLocation ?? null,
         condition: hideCondition ? ('' as ListingCondition) : condition,
+        // Deadline categories: optional auto-end deadline (saved as a Firestore timestamp).
+        ...(isDeadlineCategory && deadline ? { deadline } : {}),
         priceType: effectivePriceType,
         price: fixedPrice,
         priceMin: rangeMin,
@@ -1626,6 +1673,29 @@ export default function CreateListing() {
                   </div>
                 ))}
 
+                {/* Deadline categories: optional countdown. Food & jobs hide the New/Used chips above (food via NO_CONDITION_CATEGORIES, jobs via the explicit check), so the timer stands alone; agriculture keeps the chips. */}
+                {isDeadlineCategory && (
+                  <div className="space-y-2 border border-black rounded-2xl p-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.1)]">
+                    <Label className="text-[10px] font-bold text-black flex items-center gap-2">
+                      <Clock className="h-3.5 w-3.5" />
+                      {category === 'jobs' ? 'Deadline for applicants to apply (optional)' : 'Listing deadline (optional)'}
+                    </Label>
+                    <p className="text-[9px] text-gray-500">
+                      {category === 'jobs' ? 'Applications close after the countdown; the listing then leaves the marketplace.' : 'Your listing expires after the countdown.'}
+                    </p>
+                    <TimeLimitSelector value={deadline ?? undefined} onChange={setDeadline} />
+                    {deadline && (
+                      <button
+                        type="button"
+                        onClick={() => setDeadline(null)}
+                        className="text-[11px] font-bold text-red-600 underline underline-offset-2"
+                      >
+                        Clear deadline
+                      </button>
+                    )}
+                  </div>
+                )}
+
               </div>
             )}
 
@@ -1875,7 +1945,8 @@ export default function CreateListing() {
                 onClick={() => {
                   localStorage.setItem(STORAGE_KEY, JSON.stringify({
                     title, description, category, categories: selectedCats, location, condition,
-                    priceType, priceOption, price, priceMin, priceMax, tags, images, details, estateType
+                    priceType, priceOption, price, priceMin, priceMax, tags, images, details, estateType,
+                    deadline: isDeadlineCategory && deadline ? deadline.toISOString() : null
                   }));
                   navigate('/profile?returnTo=/sell/new');
                 }}

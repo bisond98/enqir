@@ -11,6 +11,7 @@ import {
   serverTimestamp,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 import type { SellListing, SellListingResponse } from '../types';
 
@@ -31,6 +32,35 @@ export async function createListing(sellerId: string, input: ListingCreateInput)
   };
   const ref = await addDoc(collection(db, LISTINGS_COLLECTION), payload);
   return ref.id;
+}
+
+/** Deadline categories (food / jobs / agriculture) only.
+ * Marks a live listing as expired if its deadline has passed.
+ * Returns true if a change was written.
+ */
+export async function expireOverdueListings() {
+  const snap = await getDocs(
+    query(collection(db, LISTINGS_COLLECTION), where('status', '==', 'live'), limit(500))
+  );
+  const nowMs = Date.now();
+  let changed = 0;
+  const batch = writeBatch(db);
+  for (const docSnap of snap.docs) {
+    const data = docSnap.data() as any;
+    const deadline = data?.deadline;
+    if (!deadline) continue;
+    const deadlineMs = deadline?.toMillis ? deadline.toMillis() : new Date(deadline).getTime();
+    if (!Number.isFinite(deadlineMs)) continue;
+    if (deadlineMs < nowMs) {
+      const ref = doc(db, LISTINGS_COLLECTION, docSnap.id);
+      batch.update(ref, { status: 'expired' });
+      changed++;
+    }
+  }
+  if (changed > 0) {
+    await batch.commit();
+  }
+  return changed;
 }
 
 export async function updateListing(listingId: string, patch: Partial<SellListing>) {
@@ -68,6 +98,16 @@ export async function listMarketplace(params: {
   const snap = await getDocs(q);
   let listings = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
 
+  // Hide deadline listings whose deadline has already passed — the
+  // background sweep may not have flipped their status yet. Only food listings
+  // carry a deadline, so this never affects any other category.
+  const nowMs = Date.now();
+  listings = listings.filter((l) => {
+    if (!l.deadline) return true;
+    const ms = l.deadline?.toMillis ? l.deadline.toMillis() : new Date(l.deadline).getTime();
+    return !Number.isFinite(ms) || ms > nowMs;
+  });
+
   // Keep latest listings first.
   listings = listings.sort((a, b) => {
     const aMs = a.createdAt?.toMillis?.() ?? 0;
@@ -102,7 +142,7 @@ export async function listMyListings(sellerId: string) {
   const snap = await getDocs(q);
   const listings = snap.docs
     .map((d) => ({ id: d.id, ...(d.data() as any) }))
-    .filter((l) => l.status === 'live' || l.status === 'draft');
+    .filter((l) => l.status === 'live' || l.status === 'draft' || l.status === 'expired');
   // Sort client-side to avoid needing a composite index
   return listings.sort((a, b) => {
     const aMs = a.updatedAt?.toMillis?.() ?? a.createdAt?.toMillis?.() ?? 0;

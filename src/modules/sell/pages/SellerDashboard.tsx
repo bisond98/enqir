@@ -258,10 +258,10 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                         <div className="flex items-start justify-between gap-2">
                           <h3 className="font-semibold text-[17px] text-gray-900 truncate leading-tight">{l.title}</h3>
                           <span className={`flex-shrink-0 flex items-center gap-1 text-[10px] font-semibold p-1 rounded-full ${
-                            l.status === 'live' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                            l.status === 'live' ? 'bg-emerald-100 text-emerald-700' : l.status === 'expired' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-500'
                           }`}>
-                            <span className={`w-2.5 h-2.5 rounded-full border border-black ${l.status === 'live' ? 'bg-emerald-500' : 'bg-gray-400'}`} />
-                            
+                            <span className={`w-2.5 h-2.5 rounded-full border border-black ${l.status === 'live' ? 'bg-emerald-500' : l.status === 'expired' ? 'bg-amber-500' : 'bg-gray-400'}`} />
+                            {l.status === 'expired' && 'Expired'}
                           </span>
                         </div>
                         <div className="flex items-center flex-wrap gap-1.5 mt-3">

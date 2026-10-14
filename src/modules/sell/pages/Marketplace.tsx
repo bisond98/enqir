@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
-import { listMarketplace } from '../services/sellDb';
+import { listMarketplace, expireOverdueListings } from '../services/sellDb';
 import { parseNLSearch, isNLSearchQuery, type NLFilters } from '../services/nlSearch';
 import type { SellListing } from '../types';
 import { MapPin, Tag, IndianRupee, ImageOff, Search, SlidersHorizontal, X, Map, Navigation, LayoutGrid, List, CheckCircle, Smartphone, Laptop, Sofa, Home, Shirt, Car, Wrench, Sprout, Palette, Gem, Baby, Briefcase, BookOpen, Music, Gamepad2, Utensils, Dumbbell, PawPrint, Camera, Building2, Scale,  Megaphone, Recycle, Stethoscope, Shield, Gift, Zap, Package, Truck, Plane, ShoppingBag, Hammer, Sparkles, Heart, User, Bookmark, Footprints } from 'lucide-react';
@@ -291,6 +291,14 @@ export default function Marketplace() {
     const watchdog = setTimeout(() => setLoading(false), 12000);
     return () => clearTimeout(watchdog);
   }, [search, category, location]);
+
+  // Background sweep: flip overdue deadline listings (food / jobs /
+  // agriculture) to 'expired'. Fire-and-forget — the client-side deadline
+  // filter in listMarketplace keeps buyers away from overdue listings even
+  // before the sweep lands.
+  useEffect(() => {
+    expireOverdueListings().catch(() => {});
+  }, []);
 
   // Live natural-language search: parse while typing and AUTO-APPLY (debounced) —
   // results progress as the sentence takes shape, no extra Apply click needed.

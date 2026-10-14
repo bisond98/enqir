@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, User, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, User, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck, Clock } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -57,6 +57,18 @@ function formatPostedDate(dateString: any): string {
   } catch {
     return '';
   }
+}
+
+/** Human-readable time left for a Food & Beverage listing deadline. */
+function formatRemaining(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(total / 86400);
+  const h = Math.floor((total % 86400) / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  if (d > 0) return `${d}d ${h}h ${m}m`;
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  return `${m}m ${s}s`;
 }
 
 export default function ListingDetail() {
@@ -150,6 +162,22 @@ export default function ListingDetail() {
   const isOwner = useMemo(() => !!user && !!listing && listing.sellerId === user.uid, [user, listing]);
   const chatUnlocked = useMemo(() => !!user && responses.some(r => r.buyerId === user.uid), [user, responses]);
   const [sellerProfile, setSellerProfile] = useState<any>(null);
+
+  // Food & Beverage deadline: parse once, then tick every second so the header
+  // can show a live reverse countdown while the listing is still active.
+  const deadlineMs = useMemo(() => {
+    const d: any = listing?.deadline;
+    if (!d) return null;
+    const ms = d?.toMillis ? d.toMillis() : new Date(d).getTime();
+    return Number.isFinite(ms) ? ms : null;
+  }, [listing]);
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    if (deadlineMs == null) return;
+    setNowMs(Date.now());
+    const t = setInterval(() => setNowMs(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, [deadlineMs]);
 
   // Call seller — premium feature integrated with Connect (same ₹10 payment unlocks both)
   const [callPaid, setCallPaid] = useState(false); // paid via call icon this session (connect unlock is per-response)
@@ -581,12 +609,23 @@ export default function ListingDetail() {
     );
   }
 
-  if (!listing || listing.status !== 'live') {
+  // A deadline listing whose deadline has passed is unavailable to
+  // buyers even if the background sweep hasn't flipped its status yet.
+  const deadlinePassed = deadlineMs != null && deadlineMs <= nowMs;
+
+  if (!listing || listing.status !== 'live' || deadlinePassed) {
+    const expired = !!listing && (deadlinePassed || listing.status === 'expired');
     return (
       <SellShell title="For Sale">
         <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)]">
           <CardContent className="py-16 text-center">
-            <p className="text-sm font-semibold text-gray-700">Listing not found or no longer available.</p>
+            <p className="text-sm font-semibold text-gray-700">
+              {expired
+                ? (isOwner
+                    ? "This listing's deadline has passed. Buyers can no longer see it — publish a new listing when you're ready."
+                    : "This listing's deadline has passed — it's no longer available.")
+                : 'Listing not found or no longer available.'}
+            </p>
             <Link to="/sell/marketplace">
               <Button className="mt-4 bg-black text-white border border-black font-black rounded-xl" variant="default">
                 Browse Marketplace
@@ -693,6 +732,12 @@ export default function ListingDetail() {
                   <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 shadow-[0_2px_0_0_rgba(0,0,0,0.2)] flex-shrink-0"><CheckCircle className="h-2.5 w-2.5 text-white" /></span>
                 )}
               </h2>
+              {deadlineMs != null && !deadlinePassed && (
+                <span className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-black text-black bg-red-50 border border-black rounded-full px-3 py-1 shadow-[0_2px_0_0_rgba(0,0,0,0.85)]">
+                  <Clock className="h-3 w-3 text-red-600" />
+                  Ends in {formatRemaining(deadlineMs - nowMs)}
+                </span>
+              )}
             </div>
 
             {/* One-line summary from details — e.g. "Used iPhone 12 128 GB for sale in Bengaluru" */}

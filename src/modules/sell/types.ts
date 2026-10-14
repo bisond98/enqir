@@ -26,8 +26,16 @@ export interface SellListing {
   mobileNumber?: string | null;
   createdAt?: any;
   updatedAt?: any;
-  status: 'live' | 'draft' | 'deleted';
+  status: 'live' | 'draft' | 'deleted' | 'expired';
+  /** Deadline categories (food / jobs / agriculture): optional listing end time after which the listing is expired (shown expired to the seller, hidden from marketplace). */
+  deadline?: any;
 }
+
+export type ListingCreateInput = Omit<SellListing, 'id' | 'sellerId' | 'createdAt' | 'updatedAt' | 'status'> & {
+  status?: SellListing['status'];
+  /** Deadline categories: optional end time after which the listing is expired. */
+  deadline?: any;
+};
 
 export interface SellListingResponse {
   id: string;
