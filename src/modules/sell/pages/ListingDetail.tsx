@@ -727,6 +727,11 @@ export default function ListingDetail() {
             {/* Title */}
             <div className="w-full text-center">
               <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight inline-flex items-center justify-center gap-2 flex-wrap">
+                {listing.category === 'jobs' && (
+                  <span className="inline-flex items-center bg-red-600 text-white text-[11px] sm:text-[13px] font-black font-chip uppercase tracking-wide px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_2px_0_0_rgba(0,0,0,0.25)]">
+                    Job
+                  </span>
+                )}
                 {listing.title}
                 {sellerProfile?.isProfileVerified && (
                   <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 shadow-[0_2px_0_0_rgba(0,0,0,0.2)] flex-shrink-0"><CheckCircle className="h-2.5 w-2.5 text-white" /></span>
@@ -735,7 +740,7 @@ export default function ListingDetail() {
               {deadlineMs != null && !deadlinePassed && (
                 <span className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-black text-black bg-red-50 border border-black rounded-full px-3 py-1 shadow-[0_2px_0_0_rgba(0,0,0,0.85)]">
                   <Clock className="h-3 w-3 text-red-600" />
-                  Ends in {formatRemaining(deadlineMs - nowMs)}
+                  Expires in {formatRemaining(deadlineMs - nowMs)}
                 </span>
               )}
             </div>
@@ -744,7 +749,7 @@ export default function ListingDetail() {
             {(() => {
               const d = (listing.details || {}) as Record<string, string>;
               const parts: string[] = [];
-              if (listing.condition) parts.push(listing.condition.toLowerCase());
+              if (listing.condition && listing.category !== 'jobs') parts.push(listing.condition.toLowerCase());
               const brandName = d.mobileBrand || d.brand;
               if (brandName) parts.push(brandName);
               const variant = d.variant || d.model;
@@ -810,7 +815,7 @@ export default function ListingDetail() {
                 <span className="bg-white text-black border-[0.5px] border-black/40 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
               )}
 
-              {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
+              {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services', 'jobs'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
                 <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                   {listing.condition}
                 </span>
@@ -839,6 +844,7 @@ export default function ListingDetail() {
                     sneakerBrand: 'Brand',
                     sneakerAudience: '',
                     sneakerSize: 'Size',
+                    salaryPeriod: 'Salary',
                   };
                   const entries = Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key));
                   return entries.map(([key, val], i) => {
@@ -876,7 +882,12 @@ export default function ListingDetail() {
             {/* Description */}
             {listing.description && (
               <div className="border-t border-gray-100 pt-5 mb-5 mt-3">
-                <p className="text-[12px] text-black whitespace-pre-wrap leading-relaxed font-bold" style={{ color: '#000', WebkitTextStroke: '0.2px black', fontWeight: 800 }}>{listing.description}</p>
+                <h3 className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.12em] text-gray-400 mb-2.5">
+                  Description
+                </h3>
+                <p className="text-[13px] sm:text-[14px] leading-[1.7] text-gray-800 font-medium whitespace-pre-wrap break-words">
+                  {listing.description}
+                </p>
               </div>
             )}
 
