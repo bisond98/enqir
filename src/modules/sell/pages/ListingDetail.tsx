@@ -774,8 +774,10 @@ export default function ListingDetail() {
               const sentence = `${parts.join(' ')} ${tail}${loc}${price}`.replace(/^\s*/, '');
               const capitalized = sentence.charAt(0).toUpperCase() + sentence.slice(1);
               return (
-                <div className="flex justify-center mt-2">
-                  <p className="text-xs sm:text-sm font-bold text-white bg-red-600 border border-black rounded-lg px-3 py-1.5 text-center">{capitalized}</p>
+                <div className="flex justify-center mt-3 px-0.5">
+                  <p className="w-full text-left text-[12px] sm:text-[13px] font-semibold text-white bg-red-600 border border-black/70 rounded-2xl px-4 py-2.5 leading-snug shadow-[0_3px_0_0_rgba(0,0,0,0.18)]">
+                    {capitalized}
+                  </p>
                 </div>
               );
             })()}
@@ -794,12 +796,12 @@ export default function ListingDetail() {
                       </span>
                     )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {d.houseBhk}
                       </span>
                     )}
@@ -812,15 +814,15 @@ export default function ListingDetail() {
                   <IndianRupee className="h-3.5 w-3.5 text-white" /> Open to discussion
                 </span>
               ) : (
-                <span className="bg-white text-black border-[0.5px] border-black/40 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+                <span className="bg-gray-100 text-black border-[0.5px] border-black/40 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
               )}
 
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services', 'jobs'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                   {listing.condition}
                 </span>
               )}
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <MapPin className="h-4 w-4 text-red-500" />{listing.location}
                 </span>
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
@@ -851,7 +853,7 @@ export default function ListingDetail() {
                     const label = key in detailLabels ? detailLabels[key] : '';
                     const brandLogo = key === 'sneakerBrand' ? getSneakerBrandLogoUrl(String(val)) : key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
-                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
                         {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
@@ -867,29 +869,25 @@ export default function ListingDetail() {
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                     {tag}
                   </span>
                 ))
               )}
               {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <Calendar className="h-3.5 w-3.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
-            </div>
-
-            {/* Description */}
-            {listing.description && (
-              <div className="border-t border-gray-100 pt-5 mb-5 mt-3">
-                <h3 className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.12em] text-gray-400 mb-2.5">
-                  Description
-                </h3>
-                <p className="text-[13px] sm:text-[14px] leading-[1.7] text-gray-800 font-medium whitespace-pre-wrap break-words">
+              {/* Description as a chip in the same row — short ones shrink to fit,
+                  long ones wrap inside the chip. */}
+              {listing.description && (
+                <span className="max-w-full inline-flex items-center gap-1.5 text-left text-[11px] font-bold font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed">
+                  <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide flex-shrink-0">Description:</span>
                   {listing.description}
-                </p>
-              </div>
-            )}
+                </span>
+              )}
+            </div>
 
               {/* Posted by — seller's profile pic (or person icon) beside username / #userXXXX — matches the enquiry detail page */}
               <div className="mt-10 sm:mt-12 mb-4 flex items-center justify-end gap-1.5 pr-1">
