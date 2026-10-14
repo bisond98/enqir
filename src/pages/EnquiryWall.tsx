@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
 import newLogo from "@/assets/new-logo.png";
-import { collection, query, where, getDocs, doc, updateDoc, getDoc, onSnapshot, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, updateDoc, getDoc, onSnapshot, orderBy, limit } from "firebase/firestore";
 import { db } from "@/firebase";
 import CountdownTimer from "@/components/CountdownTimer";
 import { AISearchService } from "@/services/ai/aiSearchService";
@@ -39,6 +39,7 @@ import { getEnquiryCoordinates } from "@/lib/enquiryCoordinates";
 import { sortByDistanceWithUnknownsAtBottom } from "@/lib/sortEnquiriesByDistance";
 import { haversineKm } from "@/lib/haversine";
 import { geocodeLocationText } from "@/lib/geocodeText";
+import { fetchProfilesByUids } from "@/lib/profileCache";
 import {
   clearSortReferenceLocation,
   loadSortReferenceLocation,
@@ -468,15 +469,26 @@ export default function EnquiryWall() {
   useEffect(() => {
     setLoading(true);
     
-    // 🚀 FIX: Fetch all enquiries - use query without orderBy first to avoid 100 document limit
-    // Firestore queries with orderBy may be limited to 100 documents
-    // We'll sort client-side to ensure we get ALL documents
+    // Primary: BOUNDED realtime listener — newest 400 enquiries, ordered by
+    // createdAt. The previous listener streamed the ENTIRE collection (no
+    // where/limit), so every open client re-downloaded and re-filtered
+    // everything on every write anywhere in the app — that cost grew with total
+    // data instead of what's on screen. Processing (status/deadline filtering,
+    // sorting) is unchanged; only the query is bounded now.
+    const enquiriesQueryBounded = query(
+      collection(db, "enquiries"),
+      orderBy("createdAt", "desc"),
+      limit(400)
+    );
+
+    // Legacy queries kept verbatim as automatic fallbacks — if the bounded
+    // query errors for any reason, behavior degrades to exactly what shipped
+    // before (never worse).
     const enquiriesQueryWithoutOrder = query(
       collection(db, "enquiries")
       // No orderBy - gets ALL documents without limit
     );
     
-    // Query with orderBy for fallback (if needed, but may be limited to 100)
     const enquiriesQueryWithOrder = query(
       collection(db, "enquiries"),
       orderBy("createdAt", "desc")
@@ -484,43 +496,36 @@ export default function EnquiryWall() {
     
     let unsubscribe: (() => void) | null = null;
     
-    // 🚀 FIX: Try without orderBy first to get ALL documents (no 100 limit)
-    const tryWithoutOrder = () => {
+    const attach = (q: any, onFail: () => void) => {
       if (unsubscribe) {
         unsubscribe();
         unsubscribe = null;
       }
       unsubscribe = onSnapshot(
-        enquiriesQueryWithoutOrder,
+        q,
         (snapshot) => {
           processEnquiries(snapshot);
         },
-        (error) => {
-          // Try with orderBy as fallback
-          tryWithOrder();
+        () => {
+          onFail();
         }
       );
     };
-    
-    // Fallback: Try with orderBy if query without orderBy fails
+
+    // Fallback 2: full collection ordered by createdAt (pre-existing behavior)
     const tryWithOrder = () => {
-      if (unsubscribe) {
-        unsubscribe();
-        unsubscribe = null;
-      }
-      unsubscribe = onSnapshot(
-        enquiriesQueryWithOrder,
-        (snapshot) => {
-          processEnquiries(snapshot);
-        },
-        (error: any) => {
-          setLoading(false);
-        }
-      );
+      attach(enquiriesQueryWithOrder, () => {
+        setLoading(false);
+      });
+    };
+
+    // Fallback 1: full collection, no orderBy (pre-existing behavior)
+    const tryWithoutOrder = () => {
+      attach(enquiriesQueryWithoutOrder, tryWithOrder);
     };
     
-    // Start with query without orderBy to get ALL documents
-    tryWithoutOrder();
+    // Start bounded, fall back to legacy chains on any query error
+    attach(enquiriesQueryBounded, tryWithoutOrder);
     
     // Process enquiries data
     const processEnquiries = (snapshot: any) => {
@@ -700,43 +705,12 @@ export default function EnquiryWall() {
 
     const fetchUserProfiles = async () => {
       try {
-        const profiles: {[key: string]: any} = {};
         const userIds = [...new Set(enquiries.map(enquiry => enquiry.userId))];
-        
-        // Batch fetch using Firestore 'in' queries (max 10 per query) — much fewer network requests
-        const batches: string[][] = [];
-        for (let i = 0; i < userIds.length; i += 10) {
-          batches.push(userIds.slice(i, i + 10));
-        }
-        
-        const batchPromises = batches.map(async (batch) => {
-          try {
-            const q = query(collection(db, 'userProfiles'), where('userId', 'in', batch));
-            const snapshot = await getDocs(q);
-            snapshot.forEach((docSnap) => {
-              const data = docSnap.data();
-              const uid = data.userId || docSnap.id;
-              if (uid) profiles[uid] = data;
-            });
-          } catch {
-            // Fallback: fetch individually only this batch
-            const fallbackPromises = batch.map(async (userId) => {
-              try {
-                let profileDoc = await getDoc(doc(db, 'userProfiles', userId));
-                if (!profileDoc.exists()) {
-                  profileDoc = await getDoc(doc(db, 'profiles', userId));
-                }
-                if (profileDoc.exists()) {
-                  profiles[userId] = profileDoc.data();
-                }
-              } catch { /* skip */ }
-            });
-            await Promise.all(fallbackPromises);
-          }
-        });
-        
-        await Promise.all(batchPromises);
-        
+
+        // Shared TTL cache: batched `in` queries (max 10 per query) with
+        // cross-page caching — repeat snapshots/pages skip Firestore entirely.
+        const profiles = await fetchProfilesByUids(userIds);
+
         if (isMounted) {
           setUserProfiles(profiles);
         }

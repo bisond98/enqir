@@ -11,7 +11,7 @@ import { NotificationContext } from "../contexts/NotificationContext";
 import { cn } from "../lib/utils";
 import { profileDisplayName, trustedName } from "../lib/userDisplayName";
 import { db } from "../firebase";
-import { collection, query, where, doc, updateDoc, deleteDoc, orderBy, getDocs, getDoc, onSnapshot, limit, serverTimestamp, arrayRemove } from "firebase/firestore";
+import { collection, query, where, doc, updateDoc, deleteDoc, orderBy, getDocs, getDoc, onSnapshot, limit, serverTimestamp, arrayRemove, documentId } from "firebase/firestore";
 import VerifiedUser from "../components/VerifiedUser";
 import { toast } from "../hooks/use-toast";
 import { useUsage } from "../contexts/UsageContext";
@@ -657,39 +657,55 @@ const Dashboard = () => {
       const enquiryDataMap: {[key: string]: Enquiry} = {};
       const deletedSet = new Set<string>();
       
-      // Combined fetch: check both existence and get data in one call per enquiry
-      await Promise.all(
-        enquiryIds.map(async (enquiryId) => {
-          try {
-            const enquiryDoc = await withTimeout(getDoc(doc(db, 'enquiries', enquiryId)), 8000, `Enquiry ${enquiryId} check`);
-            if (!enquiryDoc.exists()) {
-              deletedSet.add(enquiryId);
-              console.log('🔍 Dashboard: Enquiry deleted:', enquiryId);
-            } else {
-              const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
-              enquiryDataMap[enquiryId] = enquiryData;
-              // Log expiry check for debugging
-              if (enquiryData.deadline) {
-                const now = new Date();
-                let deadlineDate: Date;
-                if (enquiryData.deadline && typeof enquiryData.deadline === 'object' && 'toDate' in enquiryData.deadline) {
-                  deadlineDate = (enquiryData.deadline as any).toDate();
-                } else {
-                  deadlineDate = new Date(enquiryData.deadline);
-                }
-                const isExpired = deadlineDate.getTime() < now.getTime();
-                if (isExpired) {
-                  console.log('🔍 Dashboard: Found expired enquiry for response:', enquiryId, 'deadline:', deadlineDate);
-                }
+      // Combined fetch: check both existence and get data in BATCHED `in` queries
+      // (10 ids per query — Firestore's max) instead of one getDoc per enquiry.
+      // This was the page's worst N+1: 30 responses = 30 round trips before render.
+      await (async () => {
+        const idBatches: string[][] = [];
+        for (let i = 0; i < enquiryIds.length; i += 10) {
+          idBatches.push(enquiryIds.slice(i, i + 10));
+        }
+        // Returns true if the batched path handled everything (even partially);
+        // false = a batch query itself failed, so fall back to per-id reads below.
+        const runBatches = async () => {
+          await Promise.all(idBatches.map(async (batch) => {
+            const snap = await getDocs(query(collection(db, 'enquiries'), where(documentId(), 'in', batch)));
+            const found = new Set<string>();
+            snap.forEach((d) => {
+              found.add(d.id);
+              enquiryDataMap[d.id] = { id: d.id, ...d.data() } as Enquiry;
+            });
+            batch.forEach((id) => {
+              if (!found.has(id)) {
+                deletedSet.add(id);
+                console.log('🔍 Dashboard: Enquiry deleted:', id);
               }
-            }
-          } catch (error) {
-            console.error('Error fetching/checking enquiry:', enquiryId, error);
-            // If there's an error checking, assume it might be deleted
-            deletedSet.add(enquiryId);
-          }
-        })
-      );
+            });
+          }));
+        };
+        try {
+          await withTimeout(runBatches(), 8000, 'Enquiry batch check');
+        } catch (error) {
+          console.warn('Dashboard: batched enquiry check failed, falling back to per-id reads', error);
+          await Promise.all(
+            enquiryIds.filter((id) => !enquiryDataMap[id] && !deletedSet.has(id)).map(async (enquiryId) => {
+              try {
+                const enquiryDoc = await withTimeout(getDoc(doc(db, 'enquiries', enquiryId)), 8000, `Enquiry ${enquiryId} check`);
+                if (!enquiryDoc.exists()) {
+                  deletedSet.add(enquiryId);
+                  console.log('🔍 Dashboard: Enquiry deleted:', enquiryId);
+                } else {
+                  const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
+                  enquiryDataMap[enquiryId] = enquiryData;
+                }
+              } catch (err) {
+                console.error('Error fetching/checking enquiry:', enquiryId, err);
+                deletedSet.add(enquiryId);
+              }
+            })
+          );
+        }
+      })();
       
       setDeletedEnquiries(deletedSet);
       // Store buyers' enquiries (fetched for deletion/expiry checks) so the Call button can read their mobileNumber
@@ -936,24 +952,51 @@ const Dashboard = () => {
         const deletedSet = new Set<string>();
         
         // Check each enquiry to see if it exists and fetch data for expiration checks
+        // (batched `in` queries — 10 ids per query — instead of one getDoc each)
         const enquiryDataMap: {[key: string]: Enquiry} = {};
-        Promise.all(
-          enquiryIds.map(async (enquiryId) => {
-            try {
-              const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
-              if (!enquiryDoc.exists()) {
-                deletedSet.add(enquiryId);
-                console.log('🔍 Dashboard: Enquiry deleted (realtime):', enquiryId);
-              } else {
-                // Store enquiry data for expiration checks
-                enquiryDataMap[enquiryId] = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
-              }
-            } catch (error) {
-              console.error('Error checking enquiry:', enquiryId, error);
-              deletedSet.add(enquiryId);
-            }
-          })
-        ).then(() => {
+        (async () => {
+          const idBatches: string[][] = [];
+          for (let i = 0; i < enquiryIds.length; i += 10) {
+            idBatches.push(enquiryIds.slice(i, i + 10));
+          }
+          const runBatches = async () => {
+            await Promise.all(idBatches.map(async (batch) => {
+              const snap = await getDocs(query(collection(db, 'enquiries'), where(documentId(), 'in', batch)));
+              const found = new Set<string>();
+              snap.forEach((d) => {
+                found.add(d.id);
+                enquiryDataMap[d.id] = { id: d.id, ...d.data() } as Enquiry;
+              });
+              batch.forEach((id) => {
+                if (!found.has(id)) {
+                  deletedSet.add(id);
+                  console.log('🔍 Dashboard: Enquiry deleted (realtime):', id);
+                }
+              });
+            }));
+          };
+          try {
+            await runBatches();
+          } catch (error) {
+            console.warn('Dashboard: realtime batched check failed, falling back to per-id reads', error);
+            await Promise.all(
+              enquiryIds.filter((id) => !enquiryDataMap[id] && !deletedSet.has(id)).map(async (enquiryId) => {
+                try {
+                  const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+                  if (!enquiryDoc.exists()) {
+                    deletedSet.add(enquiryId);
+                    console.log('🔍 Dashboard: Enquiry deleted (realtime):', enquiryId);
+                  } else {
+                    enquiryDataMap[enquiryId] = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
+                  }
+                } catch (error) {
+                  console.error('Error checking enquiry:', enquiryId, error);
+                  deletedSet.add(enquiryId);
+                }
+              })
+            );
+          }
+        })().then(() => {
           setDeletedEnquiries(deletedSet);
           // Store buyers' enquiries (fetched for deletion/expiry checks) so the Call button can read their mobileNumber
           setRespondedEnquiriesById(enquiryDataMap);

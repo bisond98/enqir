@@ -19,6 +19,7 @@ import { loadNearestRadiusKm, saveNearestRadiusKm } from '@/lib/nearestRadiusSto
 import { geocodeLocationText } from '@/lib/geocodeText';
 import { db } from '@/firebase';
 import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { fetchProfilesByUids } from '@/lib/profileCache';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 
@@ -232,15 +233,11 @@ export default function Marketplace() {
 
   useEffect(() => {
     if (listings.length === 0) return;
-    const uniqueIds = Array.from(new Set(listings.map(l => l.sellerId).filter(Boolean)));
+    const uniqueIds = Array.from(new Set(listings.map(l => l.sellerId).filter(Boolean))) as string[];
     const fetchProfiles = async () => {
-      const profiles: Record<string, any> = {};
-      await Promise.all(uniqueIds.map(async (id) => {
-        try {
-          const snap = await getDoc(doc(db, 'userProfiles', id));
-          if (snap.exists()) profiles[id] = snap.data();
-        } catch {}
-      }));
+      // Shared TTL cache — repeated loads / silent refreshes skip Firestore for
+      // sellers we've already resolved, instead of a fresh getDoc per seller.
+      const profiles = await fetchProfilesByUids(uniqueIds);
       setSellerProfiles(profiles);
     };
     fetchProfiles();
@@ -275,13 +272,44 @@ export default function Marketplace() {
         location: location === 'all' ? undefined : location,
       });
       setListings(data);
+      return true;
     } catch (err: any) {
       console.error('Marketplace load error:', err);
       setError(err?.message || 'Failed to load listings');
+      return false;
     } finally {
       setLoading(false);
     }
   }, [search, category, location]);
+
+  // Silent refresh: keep listings current without the spinner/flicker of a
+  // full reload — refresh when the tab regains focus/visibility and every 60s
+  // while visible. Reuses the exact same load path, so filters/search are
+  // preserved and no state is reset.
+  const loadRef = useRef(load);
+  useEffect(() => { loadRef.current = load; }, [load]);
+  const loadInFlightRef = useRef(false);
+  useEffect(() => {
+    const silentRefresh = async () => {
+      if (document.hidden || loadInFlightRef.current) return;
+      loadInFlightRef.current = true;
+      try {
+        await loadRef.current();
+      } finally {
+        loadInFlightRef.current = false;
+      }
+    };
+    const onFocus = () => { if (!document.hidden) silentRefresh(); };
+    const onVisibility = () => { if (!document.hidden) silentRefresh(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+    const interval = setInterval(silentRefresh, 60000);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     setPage(0);

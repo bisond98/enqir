@@ -34,11 +34,23 @@ export async function createListing(sellerId: string, input: ListingCreateInput)
   return ref.id;
 }
 
+// The deadline sweep used to run on every Marketplace mount from every
+// visitor: a 500-doc read + a batch write each time. It's now rate-limited to
+// once per session (10 min), which is more than enough to flip overdue
+// listings — and the client-side deadline filter in listMarketplace already
+// hides them before any sweep lands.
+let lastSweepAt = 0;
+const SWEEP_MIN_INTERVAL_MS = 10 * 60 * 1000;
+
 /** Deadline categories (food / jobs / agriculture) only.
  * Marks a live listing as expired if its deadline has passed.
  * Returns true if a change was written.
  */
 export async function expireOverdueListings() {
+  if (Date.now() - lastSweepAt < SWEEP_MIN_INTERVAL_MS) {
+    return 0;
+  }
+  lastSweepAt = Date.now();
   const snap = await getDocs(
     query(collection(db, LISTINGS_COLLECTION), where('status', '==', 'live'), limit(500))
   );
@@ -91,10 +103,17 @@ export async function listMarketplace(params: {
   location?: string;
   pageSize?: number;
 }) {
+  // Wider fetch window than the old 50: category/location/search filters are
+  // applied client-side below (kept as-is to avoid requiring new composite
+  // indexes), so a 50-doc window meant filters were often applied to an
+  // arbitrary slice and returned nothing. 300 is a bounded, index-free read
+  // that makes filtering reliably find matches. pageSize still caps the final
+  // page the caller renders.
   const pageSize = params.pageSize ?? 50;
+  const fetchLimit = Math.max(pageSize, 300);
 
   // Query only by status to avoid requiring composite indexes; sort/filter client-side.
-  const q = query(collection(db, LISTINGS_COLLECTION), where('status', '==', 'live'), limit(pageSize));
+  const q = query(collection(db, LISTINGS_COLLECTION), where('status', '==', 'live'), limit(fetchLimit));
   const snap = await getDocs(q);
   let listings = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
 
