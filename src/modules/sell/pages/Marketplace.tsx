@@ -758,7 +758,7 @@ export default function Marketplace() {
         <div className="flex gap-2">
           <div className="flex-1">
             <Select value={category} onValueChange={(v) => { setCategory(v); }}>
-              <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden font-bold touch-manipulation">
+              <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 overflow-hidden font-bold touch-manipulation">
                 <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
@@ -778,7 +778,7 @@ export default function Marketplace() {
           <div className="flex-1 relative">
             <button
               onClick={() => setLocPopupOpen(!locPopupOpen)}
-              className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
+              className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
             >
               <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0" />
               <span className="flex-1 text-center truncate text-white font-bold">
@@ -893,7 +893,7 @@ export default function Marketplace() {
 
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none z-10" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black pointer-events-none z-10" strokeWidth={3} />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -912,17 +912,17 @@ export default function Marketplace() {
               load();
             }}
             aria-label="Search listings"
-            className="relative pl-10 pr-[4.5rem] sm:pr-[5rem] min-h-[48px] h-[50px] sm:h-[54px] text-sm sm:text-base font-medium bg-white border-[1.5px] border-slate-200 rounded-[12px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus:outline-none focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:ring-offset-0 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-[11px] placeholder:text-gray-900 placeholder:font-semibold text-slate-900 text-center overflow-hidden"
+            className="relative pl-10 pr-[4.5rem] sm:pr-[5rem] min-h-[48px] h-[50px] sm:h-[54px] text-sm sm:text-base font-medium bg-white border-[1.5px] border-slate-200 rounded-[12px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus:outline-none focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:ring-offset-0 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-[11px] placeholder:text-gray-400 placeholder:font-semibold text-slate-900 text-left overflow-hidden"
           />
           {/* Rotating placeholder — category hints roll down from the top every 2s */}
           {!search && (
             <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-[12px]" aria-hidden="true">
               {searchHintIdx > 0 && (
-                <span key={`hint-out-${searchHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-center pl-10 pr-12 sm:pr-14 leading-tight text-[11px] font-semibold text-gray-900">
+                <span key={`hint-out-${searchHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-10 pr-12 sm:pr-14 leading-tight text-[11px] font-semibold text-gray-400">
                   {SEARCH_HINTS[(searchHintIdx - 1 + SEARCH_HINTS.length) % SEARCH_HINTS.length]}
                 </span>
               )}
-              <span key={`hint-in-${searchHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-center pl-10 pr-12 sm:pr-14 leading-tight text-[11px] font-semibold text-gray-900">
+              <span key={`hint-in-${searchHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-10 pr-12 sm:pr-14 leading-tight text-[11px] font-semibold text-gray-400">
                 {SEARCH_HINTS[searchHintIdx % SEARCH_HINTS.length]}
               </span>
             </div>
@@ -999,7 +999,7 @@ export default function Marketplace() {
             </button>
           )}
           {/* View Toggle */}
-          <div className="flex h-[50px] sm:h-[54px] border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] flex-shrink-0">
+          <div className="flex h-[50px] sm:h-[54px] border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] flex-shrink-0">
             <button
               onClick={() => { setViewMode('list'); setPage(0); }}
               className={`h-full px-3.5 flex items-center justify-center transition-all touch-manipulation ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
@@ -1015,7 +1015,7 @@ export default function Marketplace() {
           </div>
           {/* Search button — original flex-1 position, restyled only */}
           <button
-            className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none disabled:!opacity-50 disabled:!translate-y-0 disabled:active:!translate-y-0 disabled:active:!shadow-[0_5px_0_0_rgba(0,0,0,0.85)]"
+            className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 !transform touch-manipulation select-none disabled:!opacity-50 disabled:!translate-y-0 disabled:active:!translate-y-0 disabled:active:!shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]"
             onClick={() => load()}
             disabled={!canSearch || loading}
           >
