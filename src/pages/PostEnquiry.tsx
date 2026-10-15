@@ -61,6 +61,18 @@ const STEPS = [
   { key: 'extras', label: 'Photos & Verify', description: 'Finish strong' },
 ] as const;
 
+// Rotating "What are you looking for?" placeholder hints — question lines that fit
+// the title tab, rolled down by the same kw-roll-down/kw-roll-out animations as the
+// marketplace search bar
+const NEED_HINTS: string[] = [
+  'What do you need?…',
+  'What would you like to buy?',
+  'What would you like to have?',
+  'What would you like to experience?',
+  'What are you looking for?',
+  'What do you want to find today?',
+];
+
 // Job-related categories show "Salary Expected" instead of "Budget"
 const isJobEnquiry = (cats: string[], legacy?: string) =>
   [...cats, legacy ?? ''].some((c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job')));
@@ -202,6 +214,13 @@ export default function PostEnquiry() {
   const [catSearch, setCatSearch] = useState('');
   const CATS_PER_PAGE = 10;
   const [title, setTitle] = useState("");
+  // Rotating title placeholder — cycles question lines every 3s while the input is empty
+  const [titleHintIdx, setTitleHintIdx] = useState(0);
+  useEffect(() => {
+    if (title) return;
+    const t = setInterval(() => setTitleHintIdx((i) => i + 1), 3000);
+    return () => clearInterval(t);
+  }, [title]);
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -234,7 +253,7 @@ export default function PostEnquiry() {
   // Real-estate capsule details (land/buildings/house/other) — number + unit per capsule
   const [estateDetails, setEstateDetails] = useState<{ landArea: string; landUnit: string; builtUpArea: string; builtUpUnit: string; houseArea: string; houseUnit: string; houseBhk: string }>({ landArea: '', landUnit: 'Cents', builtUpArea: '', builtUpUnit: 'Sqft', houseArea: '', houseUnit: 'Sqft', houseBhk: '' });
   // Which real-estate capsule is selected (only one big capsule shows at a time)
-  const [estateType, setEstateType] = useState<'land' | 'built' | 'house' | 'other' | ''>('');
+  const [estateType, setEstateType] = useState<'land' | 'built' | 'house' | 'flat' | 'other' | ''>('');
   // Real-estate deal type: Buy / Rent / Lease
   const [estateDealType, setEstateDealType] = useState<'' | 'Buy' | 'Rent' | 'Lease'>('Buy');
   // Accommodations: subtype + gender preference (shared-living subtypes only)
@@ -490,7 +509,7 @@ export default function PostEnquiry() {
         const d = JSON.parse(draft);
         if (d.title) setTitle(d.title);
         if (d.description) setDescription(d.description);
-        if (d.selectedCategories) setSelectedCategories(d.selectedCategories);
+        if (d.selectedCategories) setSelectedCategories(d.selectedCategories.slice(0, 1));
         if (d.budget) setBudget(d.budget);
         if (d.budgetOpenToDiscussion) setBudgetOpenToDiscussion(true);
         if (d.location) setLocation(d.location);
@@ -1508,7 +1527,7 @@ export default function PostEnquiry() {
   // previous render" the moment the auth listener fires.
 
   // Categories — shared unified list, identical to the Sell form
-  // (Main categories on top, max 3 can be selected below).
+  // (Main categories on top, one category can be selected below).
   let categories = APP_CATEGORIES;
   
   // Category icon mapping
@@ -1601,20 +1620,15 @@ export default function PostEnquiry() {
 
   const remainingEnquiries = getRemainingEnquiries();
 
-  // Handle multiple category selection (max 3)
-  // Accommodations and Real Estate are mutually exclusive — selecting one
-  // removes the other (they overlap in meaning and have conflicting detail fields).
+  // Handle category selection — only ONE category can be selected at a time
+  // (tapping another category replaces the current one; tapping the selected
+  // one deselects it).
   const handleCategoryToggle = (categoryValue: string) => {
     setSelectedCategories(prev => {
       if (prev.includes(categoryValue)) {
         return prev.filter(cat => cat !== categoryValue);
       }
-      let next = prev.length < 3 ? [...prev, categoryValue] : prev;
-      if (next.includes(categoryValue)) {
-        if (categoryValue === 'accommodations') next = next.filter(cat => cat !== 'real-estate' && cat !== 'real-estate-services');
-        else if (categoryValue === 'real-estate' || categoryValue === 'real-estate-services') next = next.filter(cat => cat !== 'accommodations');
-      }
-      return next;
+      return [categoryValue];
     });
   };
 
@@ -2517,15 +2531,30 @@ export default function PostEnquiry() {
                       {/* Single quiet line-art doodle — buyer seeking */}
                       <BuyerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
                       <p className="text-[8px] font-bold text-black text-left tracking-wide">Need</p>
+                      <div className="relative">
                       <Input
                         id="enquiry-title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="What do you need?…"
+                        placeholder=""
                         className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
                         maxLength={50}
                         autoFocus
                       />
+                      {/* Rotating placeholder — dull question lines roll down inside the input box every 3s */}
+                      {!title && (
+                        <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-[12px]" aria-hidden="true">
+                          {titleHintIdx > 0 && (
+                            <span key={`need-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                              {NEED_HINTS[(titleHintIdx - 1 + NEED_HINTS.length) % NEED_HINTS.length]}
+                            </span>
+                          )}
+                          <span key={`need-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                            {NEED_HINTS[titleHintIdx % NEED_HINTS.length]}
+                          </span>
+                        </div>
+                      )}
+                      </div>
 
                     </div>
                   )}
@@ -2574,7 +2603,7 @@ export default function PostEnquiry() {
                           {pagedCategories.map((cat) => {
                             const Icon = categoryIcons[cat.value] ?? LayoutGrid;
                             const selected = selectedCategories.includes(cat.value);
-                            const isDisabled = !selected && selectedCategories.length >= 3;
+                            const isDisabled = false;
                             return (
                               <button
                                 key={cat.value}
@@ -2610,7 +2639,7 @@ export default function PostEnquiry() {
                               {(() => {
                                 const Icon = categoryIcons['other'] ?? LayoutGrid;
                                 const selected = selectedCategories.includes('other');
-                                const isDisabled = !selected && selectedCategories.length >= 3;
+                                const isDisabled = false;
                                 return (
                                   <button
                                     type="button"
@@ -3102,85 +3131,71 @@ export default function PostEnquiry() {
                         const BUILT_UNITS = ['Sqft'];
                         const HOUSE_UNITS = ['Sqft'];
                         const BHK_OPTIONS = ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4 BHK', '4+ BHK'];
-                        const TYPES: { key: 'land' | 'built' | 'house' | 'other'; label: string }[] = [
+                        const TYPES: { key: 'land' | 'built' | 'house' | 'flat' | 'other'; label: string }[] = [
                           { key: 'land', label: 'Land / Plot' },
                           { key: 'built', label: 'Buildings / Commercial' },
-                          { key: 'house', label: 'House / Flat' },
+                          { key: 'house', label: 'House' },
+                          { key: 'flat', label: 'Flat' },
                           { key: 'other', label: 'Others' },
                         ];
                         const unit = estateDetails.landUnit;
                         const units = LAND_UNITS;
                         const areaVal = estateType === 'land' ? estateDetails.landArea : estateType === 'built' ? estateDetails.builtUpArea : estateDetails.houseArea;
-                        const setArea = (val: string) => setEstateDetails(v => ({ ...v, landArea: estateType === 'land' ? val : v.landArea, builtUpArea: estateType === 'built' ? val : v.builtUpArea, houseArea: estateType === 'house' ? val : v.houseArea }));
-                        const setUnit = (val: string) => setEstateDetails(v => ({ ...v, landUnit: estateType === 'land' ? val : v.landUnit, builtUpUnit: estateType === 'built' ? val : v.builtUpUnit, houseUnit: estateType === 'house' ? val : v.houseUnit }));
-                        const pickType = (key: 'land' | 'built' | 'house' | 'other') => {
-                          if (estateType === key) { setEstateType(''); return; } // tap again to collapse
-                          setEstateType(key);
-                        };
+                        const setArea = (val: string) => setEstateDetails(v => ({ ...v, landArea: estateType === 'land' ? val : v.landArea, builtUpArea: estateType === 'built' ? val : v.builtUpArea, houseArea: estateType === 'house' || estateType === 'flat' ? val : v.houseArea }));
+                        const setUnit = (val: string) => setEstateDetails(v => ({ ...v, landUnit: estateType === 'land' ? val : v.landUnit, builtUpUnit: estateType === 'built' ? val : v.builtUpUnit, houseUnit: estateType === 'house' || estateType === 'flat' ? val : v.houseUnit }));
                         return (
                           <div className="mb-6 space-y-2">
-                            {/* Deal type toggle — Buy / Rent / Lease (segmented). Selected one grows bigger, others shrink; LOCKED once a property type is chosen. */}
+                            {/* Deal type dropdown — Buy / Rent / Lease; LOCKED once a property type is chosen (matches the sell form's dropdown). */}
                             <div className="flex justify-center mb-6">
-                              <div className="inline-flex items-center bg-white rounded-full p-1.5 gap-1 border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
-                                {(['Buy', 'Rent', 'Lease'] as const).map((dt) => (
-                                  <button
-                                    key={dt}
-                                    type="button"
-                                    disabled={!!estateType}
-                                    onClick={() => { if (!estateType) setEstateDealType(estateDealType === dt ? '' : dt); }}
-                                    className={cn(
-                                      'rounded-full font-black transition-all duration-300 whitespace-nowrap',
-                                      estateDealType === dt
-                                        ? 'px-12 sm:px-16 py-3 sm:py-3.5 text-base sm:text-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]'
-                                        : estateType
-                                          ? 'px-4 sm:px-5 py-2 sm:py-2.5 text-[10px] sm:text-xs text-black/50 cursor-not-allowed'
-                                          : 'px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm text-black hover:bg-gray-100'
-                                    )}
-                                  >
-                                    {dt}
-                                  </button>
-                                ))}
+                              <div className="relative w-full max-w-xs">
+                                <select
+                                  value={estateDealType}
+                                  disabled={!!estateType}
+                                  onChange={(e) => { if (!estateType) setEstateDealType(e.target.value as typeof estateDealType); }}
+                                  className={cn(
+                                    'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
+                                    !estateDealType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black',
+                                    !!estateType && 'opacity-60 cursor-not-allowed'
+                                  )}
+                                >
+                                  <option value="" disabled hidden>Select deal type</option>
+                                  {(['Buy', 'Rent', 'Lease'] as const).map((dt) => (
+                                    <option key={dt} value={dt}>{dt}</option>
+                                  ))}
+                                  <option value="">Cancel</option>
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                               </div>
                             </div>
-                            {/* Selection buttons — all 4 when nothing selected; selected one + Clear button when chosen */}
-                            {(!estateType ? (
-                              <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 self-start">
-                                {TYPES.map((t) => (
-                                  <button
-                                    key={t.key}
-                                    type="button"
-                                    onClick={() => setEstateType(t.key)}
-                                    className="rounded-full border border-black/40 bg-white text-black hover:bg-black hover:text-white font-black text-xs sm:text-sm tracking-wide transition-all duration-200 whitespace-nowrap px-4 sm:px-6 py-2.5 sm:py-3 text-center shadow-[0_3px_0_0_rgba(0,0,0,0.15)] hover:shadow-[0_2px_0_0_rgba(0,0,0,0.15)] active:shadow-none active:translate-y-[2px]"
-                                  >
-                                    {t.label}
-                                  </button>
-                                ))}
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                {TYPES.filter(t => t.key === estateType).map((t) => (
-                                  <span
-                                    key={t.key}
-                                    className="rounded-full border border-gray-300 bg-white text-black font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 py-1.5 inline-flex items-center justify-center text-center"
-                                  >
-                                    {t.label}
-                                  </span>
-                                ))}
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    // Clear the selected type's saved data too
-                                    if (estateType === 'land') setEstateDetails(v => ({ ...v, landArea: '' }));
-                                    else if (estateType === 'built') setEstateDetails(v => ({ ...v, builtUpArea: '' }));
-                                    else if (estateType === 'house') setEstateDetails(v => ({ ...v, houseArea: '', houseBhk: '' }));
-                                    setEstateType('');
+                            {/* Property type dropdown — Land / Plot, Buildings / Commercial, House / Flat, Others (matches the sell form's dropdown). */}
+                            <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 self-start">
+                              <div className="relative w-full max-w-xs">
+                                <select
+                                  value={estateType}
+                                  onChange={(e) => {
+                                    const next = e.target.value as typeof estateType;
+                                    if (!next) {
+                                      // Clearing the dropdown resets the selected type's saved data (same as the old Clear button)
+                                      if (estateType === 'land') setEstateDetails(v => ({ ...v, landArea: '' }));
+                                      else if (estateType === 'built') setEstateDetails(v => ({ ...v, builtUpArea: '' }));
+                                      else if (estateType === 'house' || estateType === 'flat') setEstateDetails(v => ({ ...v, houseArea: '', houseBhk: '' }));
+                                    }
+                                    setEstateType(next);
                                   }}
-                                  className="h-9 sm:h-10 rounded-full border border-black bg-[#800020] hover:bg-[#6b0019] text-white font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 text-center transition-colors"
+                                  className={cn(
+                                    'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
+                                    !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'
+                                  )}
                                 >
-                                  ✕ Clear
-                                </button>
+                                  <option value="" disabled hidden>Select property type</option>
+                                  {TYPES.map((t) => (
+                                    <option key={t.key} value={t.key}>{t.label}</option>
+                                  ))}
+                                  <option value="">Cancel</option>
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                               </div>
-                            ))}
+                            </div>
                             {/* Two separate capsules — number input + unit dropdown (only for non-Other types) */}
                             {estateType && estateType !== 'other' && (
                               <div className="flex items-stretch gap-2">
@@ -3189,7 +3204,7 @@ export default function PostEnquiry() {
                                   inputMode="numeric"
                                   value={areaVal}
                                   onChange={(e) => setArea(e.target.value.replace(/[^0-9]/g, '').slice(0, 7))}
-                                  placeholder={estateType === 'house' ? '1000 sqft' : estateType === 'built' ? '10000 sqft / 25 acres..' : '25 acres..'}
+                                  placeholder={(estateType === 'house' || estateType === 'flat') ? '1000 sqft' : estateType === 'built' ? '10000 sqft / 25 acres..' : '25 acres..'}
                                   style={{ outline: 'none' }}
                                   className="flex-1 min-w-0 h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-sm sm:text-base font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 px-3 placeholder:text-[10px] placeholder:text-slate-400 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)]"
                                 />
@@ -3206,7 +3221,7 @@ export default function PostEnquiry() {
                                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                                   </div>
                                 )}
-                                {estateType === 'house' && (
+                                {(estateType === 'house' || estateType === 'flat') && (
                                   <div className="relative flex-shrink-0">
                                     <select
                                       value={estateDetails.houseBhk}

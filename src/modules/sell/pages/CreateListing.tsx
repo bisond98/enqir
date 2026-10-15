@@ -220,6 +220,21 @@ const STEPS = [
 // `deadline` field on the doc, so adding a category here is all it takes.
 const DEADLINE_CATEGORIES = new Set(['food-beverage', 'jobs', 'agriculture-farming']);
 
+// Rotating listing-title placeholder hints — real product examples across categories,
+// rolled down by the same kw-roll-down/kw-roll-out animations as the marketplace search bar
+const TITLE_HINTS: string[] = [
+  'e.g., iPhone 13 Pro 128 GB Black',
+  'e.g., 1 acre farming land',
+  'e.g., Diesel Royal Enfield 350',
+  'e.g., 2012 Toyota Innova Crysta',
+  'e.g., MacBook Air M2 256 GB',
+  'e.g., 3 BHK flat for rent',
+  'e.g., Teak wood double bed',
+  'e.g., Samsung 55" 4K smart TV',
+  'e.g., 22K gold necklace set',
+  'e.g., Hero Splendor 2019 model',
+];
+
 export default function CreateListing() {
   const { user, isProfileVerified, loading: authLoading, savedPhone, savedFullName, savedUsername } = useAuth();
   const navigate = useNavigate();
@@ -239,22 +254,23 @@ export default function CreateListing() {
   const [catPage, setCatPage] = useState(0);
   const CATS_PER_PAGE = 10;
   const [title, setTitle] = useState('');
+  // Rotating title placeholder — cycles product examples every 3s while the input is empty
+  const [titleHintIdx, setTitleHintIdx] = useState(0);
+  useEffect(() => {
+    if (title) return;
+    const t = setInterval(() => setTitleHintIdx((i) => i + 1), 3000);
+    return () => clearInterval(t);
+  }, [title]);
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<string>('other');
   const [selectedCats, setSelectedCats] = useState<string[]>([]);
 
-  // Max 3 categories — primary (first selected) drives category details,
-  // all selected are stored in `categories` for matching/search.
-  // Accommodations and Real Estate are mutually exclusive — selecting one
-  // removes the other (they overlap in meaning and have conflicting detail fields).
+  // Single category selection — the selected category drives category details
+  // and is stored in `categories` for matching/search.
   const toggleCat = (v: string) => {
     setSelectedCats((prev) => {
       if (prev.includes(v)) return prev.filter((x) => x !== v);
-      if (prev.length >= 3) return prev; // cap at 3
-      let next = [...prev, v];
-      if (v === 'accommodations') next = next.filter((x) => x !== 'real-estate' && x !== 'real-estate-services');
-      else if (v === 'real-estate' || v === 'real-estate-services') next = next.filter((x) => x !== 'accommodations');
-      return next;
+      return [v]; // only one category can be selected at a time
     });
   };
   useEffect(() => {
@@ -991,8 +1007,7 @@ export default function CreateListing() {
 
                   {/* Max-3 hint */}
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-[9px] sm:text-[10px] font-bold text-black">Choose up to 3 categories to best match</p>
-                    <span className={`text-[9px] sm:text-[10px] font-semibold px-2.5 py-1 rounded-full border ${selectedCats.length >= 3 ? 'bg-black text-white border-black' : 'bg-white text-black border-black/20'}`}>{selectedCats.length}/3</span>
+                    <p className="text-[9px] sm:text-[10px] font-bold text-black">Choose a category to best match</p>
                   </div>
 
                   {/* Category grid */}
@@ -1000,7 +1015,7 @@ export default function CreateListing() {
                     {paginatedCats.map((c) => {
                       const Icon = CATEGORY_ICON[c.value] ?? LayoutGrid;
                       const selected = selectedCats.includes(c.value);
-                      const disabled = !selected && selectedCats.length >= 3;
+                      const disabled = false;
                       return (
                         <button
                           key={c.value}
@@ -1043,7 +1058,6 @@ export default function CreateListing() {
                             <button
                               type="button"
                               onClick={() => toggleCat('other')}
-                              disabled={!selected && selectedCats.length >= 3}
                               className={cn(
                                 'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
                                 selected
@@ -1099,6 +1113,7 @@ export default function CreateListing() {
                 <Label htmlFor="listing-title" className="text-[9px] sm:text-[10px] font-bold text-black">
                   Listing title
                 </Label>
+                <div className="relative">
                 <Input
                   id="listing-title"
                   value={title}
@@ -1113,11 +1128,25 @@ export default function CreateListing() {
                       setDetail('repairType', match ?? details['repairType'] ?? '');
                     }
                   }}
-                  placeholder={(category === 'car' || category === 'vehicles') ? 'e.g., Innova, Scorpio' : 'e.g., iPhone 13 Pro 128GB — excellent condition'}
+                  placeholder=""
                   className="rounded-2xl h-12 sm:h-14 text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                   maxLength={30}
                   autoFocus
                 />
+                {/* Rotating placeholder — dull product examples roll down inside the input box every 3s */}
+                {!title && (
+                  <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-2xl" aria-hidden="true">
+                    {titleHintIdx > 0 && (
+                      <span key={`title-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                        {TITLE_HINTS[(titleHintIdx - 1 + TITLE_HINTS.length) % TITLE_HINTS.length]}
+                      </span>
+                    )}
+                    <span key={`title-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                      {TITLE_HINTS[titleHintIdx % TITLE_HINTS.length]}
+                    </span>
+                  </div>
+                )}
+                </div>
                 {fieldsForCategoryStep(category, 'title').length > 0 && (
                   <div className="flex flex-wrap items-center justify-end gap-3 -mt-1 mb-5">
                     {fieldsForCategoryStep(category, 'title').map((f) => {
@@ -1292,10 +1321,11 @@ export default function CreateListing() {
                               !!estateType && 'opacity-60 cursor-not-allowed'
                             )}
                           >
-                            <option value="">Select listing type</option>
+                            <option value="" disabled hidden>Select listing type</option>
                             {(['Sale', 'Rent', 'Lease'] as const).map((dt) => (
                               <option key={dt} value={dt}>{dt === 'Sale' ? 'For Sale' : dt}</option>
                             ))}
+                            <option value="">Cancel</option>
                           </select>
                           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                         </div>
@@ -1305,34 +1335,29 @@ export default function CreateListing() {
                         <div className="relative w-full max-w-xs">
                           <select
                             value={estateType}
-                            onChange={(e) => setEstateType(e.target.value as typeof estateType)}
+                            onChange={(e) => {
+                              const next = e.target.value as typeof estateType;
+                              // Auto-clear the previous type's saved data when the selection changes (replaces the old ✕ Clear button)
+                              if (next !== estateType) {
+                                if (estateType === 'land') { setDetail('landAreaNum', ''); }
+                                else if (estateType === 'built') { setDetail('builtUpAreaNum', ''); }
+                                else if (estateType === 'house' || estateType === 'flat') { setDetail('houseAreaNum', ''); setDetail('houseBhk', ''); }
+                              }
+                              setEstateType(next);
+                            }}
                             className={cn(
                               'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
                               !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'
                             )}
                           >
-                            <option value="">Select property type</option>
+                            <option value="" disabled hidden>Select property type</option>
                             {TYPES.map((t) => (
                               <option key={t.key} value={t.key}>{t.label}</option>
                             ))}
+                            <option value="">Cancel</option>
                           </select>
                           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                         </div>
-                        {estateType && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              // Clear the selected type's saved data too
-                              if (estateType === 'land') { setDetail('landAreaNum', ''); }
-                              else if (estateType === 'built') { setDetail('builtUpAreaNum', ''); }
-                              else if (estateType === 'house' || estateType === 'flat') { setDetail('houseAreaNum', ''); setDetail('houseBhk', ''); }
-                              setEstateType('');
-                            }}
-                            className="h-9 sm:h-10 rounded-full border border-black bg-[#800020] hover:bg-[#6b0019] text-white font-bold text-[10px] sm:text-[11px] tracking-wide whitespace-nowrap px-3 text-center transition-colors"
-                          >
-                            ✕ Clear
-                          </button>
-                        )}
                       </div>
                       {/* Two separate capsules — number input + unit dropdown (only for non-Other types) */}
                       {estateType && estateType !== 'other' && (
