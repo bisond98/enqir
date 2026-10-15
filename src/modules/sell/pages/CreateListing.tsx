@@ -2063,13 +2063,13 @@ export default function CreateListing() {
               variant="outline"
               onClick={goBack}
               disabled={step === 0}
-              className="!bg-gradient-to-b !from-gray-100 !to-gray-200 hover:!from-gray-100 hover:!to-gray-200 !text-gray-900 !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0"
+              className="!bg-gradient-to-b !from-gray-100 !to-gray-200 hover:!from-gray-100 hover:!to-gray-200 !text-gray-900 !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] hover:!shadow-[0_3px_0_0_rgba(0,0,0,0.5),0_5px_8px_rgba(0,0,0,0.15)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0"
             >
               <ChevronLeft className="h-4 w-4 relative z-10" />
               <span className="relative z-10">Back</span>
             </Button>
             {step < totalSteps - 1 ? (
-              <Button type="button" onClick={goNext} className="!bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none">
+              <Button type="button" onClick={goNext} className="!bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] hover:!shadow-[0_3px_0_0_rgba(0,0,0,0.5),0_5px_8px_rgba(0,0,0,0.15)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none">
                 <span className="relative z-10">Next</span>
                 <ChevronRight className="h-4 w-4 relative z-10" />
               </Button>

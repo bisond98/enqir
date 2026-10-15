@@ -680,8 +680,12 @@ export default function EnquiryWall() {
       }
     };
     
-    // 🚀 FIX: Start with query without orderBy to get ALL documents (no 100 limit)
-    tryWithoutOrder();
+    // (Legacy `tryWithoutOrder()` used to be re-invoked here, which
+    //  immediately unsubscribed the bounded listener above and re-attached the
+    //  full unbounded collection — defeating the whole optimization and making
+    //  the first snapshot slow enough to trip the 12s watchdog. The bounded
+    //  query is now the one and only primary; the legacy chain below still
+    //  engages automatically if it ever errors.)
 
     // ⏱️ Watchdog: if no snapshot arrives within 12s (stuck long-poll, blocked
     // network, or corrupted IndexedDB cache), stop the spinner instead of
@@ -5322,14 +5326,14 @@ export default function EnquiryWall() {
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
 {/* Buy / Sell / Filter row - marketplace style */}
             <div className="sm:hidden grid grid-cols-3 gap-3">
-              <button className="w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none">
+              <button className="w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[2px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] touch-manipulation select-none">
                 <span className="relative z-10">Sell</span>
               </button>
-              <button onClick={() => setFilterPanelOpen(v => !v)} className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] flex items-center justify-center gap-1 touch-manipulation select-none ${filterPanelOpen ? '!bg-blue-600 hover:!bg-blue-700 !text-white' : '!bg-white hover:!bg-gray-50 !text-black'} !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]`}>
+              <button onClick={() => setFilterPanelOpen(v => !v)} className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[2px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] flex items-center justify-center gap-1 touch-manipulation select-none ${filterPanelOpen ? '!bg-blue-600 hover:!bg-blue-700 !text-white' : '!bg-white hover:!bg-gray-50 !text-black'} !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]`}>
                 <SlidersHorizontal className="h-4 w-4 relative z-10" />
                 <span className="relative z-10">Filter</span>
               </button>
-              <div className="flex h-[50px] !rounded-2xl overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] border-[1.5px] border-black">
+              <div className="flex h-[50px] !rounded-2xl overflow-hidden !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] border-[1.5px] border-black">
                 <button
                   onClick={() => { setViewMode('list'); }}
                   aria-label="List view"
@@ -5347,9 +5351,9 @@ export default function EnquiryWall() {
               </div>
             </div>
             <div className="hidden sm:flex items-center justify-end gap-2">
-              <button className="px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black bg-blue-600 hover:bg-blue-700 text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none">Sell</button>
-              <button onClick={() => setFilterPanelOpen(v => !v)} className={`px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black transition-all !duration-150 flex items-center gap-1.5 touch-manipulation select-none ${filterPanelOpen ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-50 text-black'} !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px]`}><SlidersHorizontal className="h-4 w-4" />Filter</button>
-              <div className="flex h-[50px] !rounded-2xl overflow-hidden !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] border-[1.5px] border-black">
+              <button className="px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black bg-blue-600 hover:bg-blue-700 text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] transition-all !duration-150 touch-manipulation select-none">Sell</button>
+              <button onClick={() => setFilterPanelOpen(v => !v)} className={`px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black transition-all !duration-150 flex items-center gap-1.5 touch-manipulation select-none ${filterPanelOpen ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-50 text-black'} !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px]`}><SlidersHorizontal className="h-4 w-4" />Filter</button>
+              <div className="flex h-[50px] !rounded-2xl overflow-hidden !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] border-[1.5px] border-black">
                 <button
                   onClick={() => { setViewMode('list'); }}
                   aria-label="List view"
@@ -5518,7 +5522,7 @@ export default function EnquiryWall() {
                     setShowSuggestions(false);
                   }
                 }}>
-                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
+                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
                     <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
@@ -5533,7 +5537,7 @@ export default function EnquiryWall() {
               <div className="flex-1 relative">
                 <button
                   onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
+                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
                 >
                   <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0 relative z-10" />
                   <span className="flex-1 text-center truncate text-white font-bold relative z-10">
@@ -5755,7 +5759,7 @@ export default function EnquiryWall() {
 
             <div className="max-w-2xl mx-auto w-full">
               <div className="relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-pal-blue z-20 pointer-events-none" style={{ transform: 'translateY(-50%)' }} />
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black z-20 pointer-events-none" strokeWidth={3} style={{ transform: 'translateY(-50%)' }} />
                 <div className="relative">
                 <input
                   ref={searchInputRef}
@@ -5797,7 +5801,7 @@ export default function EnquiryWall() {
                       }, 150);
                     }
                   }}
-                    className="w-full min-h-[48px] pl-11 sm:pl-12 pr-[4.5rem] sm:pr-[5.25rem] py-3.5 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus:outline-none focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:ring-offset-0 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-[11px] placeholder:text-gray-900 placeholder:font-semibold text-slate-900 text-left leading-tight sm:leading-normal relative z-10"
+                    className="w-full min-h-[48px] pl-11 sm:pl-12 pr-[4.5rem] sm:pr-[5.25rem] py-3.5 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 rounded-[12px] bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus:outline-none focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:ring-offset-0 hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-[11px] placeholder:text-gray-400 placeholder:font-semibold text-slate-900 text-left leading-tight sm:leading-normal relative z-10"
                   style={{ 
                     fontSize: '16px', // Prevents zoom on iOS
                     lineHeight: '1.5',
@@ -5807,7 +5811,6 @@ export default function EnquiryWall() {
                     paddingRight: '2.5rem',
                     WebkitAppearance: 'none',
                     WebkitTapHighlightColor: 'transparent',
-                    textAlign: 'center',
                     direction: 'ltr'
                   }}
                   disabled={isAISearching}
@@ -5819,11 +5822,11 @@ export default function EnquiryWall() {
                 {!searchTerm && (
                   <div className="absolute inset-0 z-40 overflow-hidden pointer-events-none rounded-[12px]" aria-hidden="true">
                     {searchPlaceholderIdx > 0 && (
-                      <span key={`kw-out-${searchPlaceholderIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-gray-900">
+                      <span key={`kw-out-${searchPlaceholderIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-11 text-[11px] font-semibold text-gray-400">
                         {`Search ${SEARCH_KEYWORDS[(searchPlaceholderIdx - 1 + SEARCH_KEYWORDS.length) % SEARCH_KEYWORDS.length]}…`}
                       </span>
                     )}
-                    <span key={`kw-in-${searchPlaceholderIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-center text-[11px] font-semibold text-gray-900">
+                    <span key={`kw-in-${searchPlaceholderIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-11 text-[11px] font-semibold text-gray-400">
                       {`Search ${SEARCH_KEYWORDS[searchPlaceholderIdx % SEARCH_KEYWORDS.length]}…`}
                     </span>
                   </div>
@@ -5968,7 +5971,7 @@ export default function EnquiryWall() {
                 </button>
               )}
               <button
-                className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none !relative !overflow-hidden group"
+                className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 !transform touch-manipulation select-none !relative !overflow-hidden group"
                 onClick={() => {
                   submitSearch(searchTerm);
                 }}
@@ -6781,7 +6784,7 @@ export default function EnquiryWall() {
                                 )
                               ) : (
                                 <Link to="/signin" className="w-full sm:w-auto block">
-                                  <Button className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
+                                  <Button className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
                                     {/* Top highlight overlay — same as Connect button */}
                                     <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
                                     {/* Shine sweep on hover — same as Connect button */}
@@ -6850,7 +6853,7 @@ export default function EnquiryWall() {
                               )
                             ) : (
                               <Link to="/signin" className="w-full block">
-                                <Button className="w-full h-9 text-[9px] font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
+                                <Button className="w-full h-9 text-[9px] font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
                                   {/* Top highlight overlay — same as Connect button */}
                                   <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
                                   {/* Shine sweep on hover — same as Connect button */}
@@ -6895,7 +6898,7 @@ export default function EnquiryWall() {
                               )
                             ) : (
                               <Link to="/signin">
-                                <Button className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
+                                <Button className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
                                   {/* Top highlight overlay — same as Connect button */}
                                   <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
                                   {/* Shine sweep on hover — same as Connect button */}
