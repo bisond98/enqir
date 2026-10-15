@@ -796,12 +796,12 @@ export default function ListingDetail() {
                       </span>
                     )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {d.houseBhk}
                       </span>
                     )}
@@ -814,15 +814,15 @@ export default function ListingDetail() {
                   <IndianRupee className="h-3.5 w-3.5 text-white" /> Open to discussion
                 </span>
               ) : (
-                <span className="bg-gray-100 text-black border-[0.5px] border-black/40 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+                <span className="bg-white text-black border-[0.5px] border-black/40 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
               )}
 
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services', 'jobs'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                   {listing.condition}
                 </span>
               )}
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <MapPin className="h-4 w-4 text-red-500" />{listing.location}
                 </span>
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
@@ -853,7 +853,7 @@ export default function ListingDetail() {
                     const label = key in detailLabels ? detailLabels[key] : '';
                     const brandLogo = key === 'sneakerBrand' ? getSneakerBrandLogoUrl(String(val)) : key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
-                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
                         {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
@@ -869,21 +869,21 @@ export default function ListingDetail() {
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                     {tag}
                   </span>
                 ))
               )}
               {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <Calendar className="h-3.5 w-3.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
               {/* Description as a chip in the same row — short ones shrink to fit,
                   long ones wrap inside the chip. */}
               {listing.description && (
-                <span className="max-w-full inline-flex items-center gap-1.5 text-left text-[11px] font-bold font-chip bg-gray-100 text-black border-[0.5px] border-black/40 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed">
-                  <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide flex-shrink-0">Description:</span>
+                <span className="max-w-full inline-flex flex-col items-center gap-0.5 text-left text-[11px] font-bold font-chip bg-white text-black border-[0.5px] border-black/40 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed">
+                  <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide flex-shrink-0 text-center">Description:</span>
                   {listing.description}
                 </span>
               )}
@@ -1121,9 +1121,9 @@ function MessageSellerInline({
   sending, user, submitResponse, navigate, listingId, callButton, formatRecordingTime,
 }: any) {
   return (
-    <div className="mt-4 pt-16 sm:pt-20 space-y-4">
-      {/* Divider — tiny app icons (AI, matching, trust, payments, actions) */}
-      <div className="mb-24 sm:mb-28 flex justify-center" aria-hidden="true">
+    <div className="mt-4 pt-10 sm:pt-12 space-y-4">
+      {/* Divider — tiny app icons, hidden from view (invisible) so the layout keeps its spacing */}
+      <div className="mb-2 sm:mb-3 flex justify-center invisible" aria-hidden="true">
         {Array.from({ length: 2 }).flatMap((_, rep) =>
           [Sparkles, CheckCircle, BadgeCheck, IndianRupee, MessageSquare, MessageCircle, Phone, MapPin, Calendar, Fuel, Bookmark, Flag, UserCircle].map((Icon, i) => (
             <Icon
@@ -1138,10 +1138,15 @@ function MessageSellerInline({
       </div>
       {/* Inputs & content stay inset from the card borders */}
       <div className="space-y-5">
-      <h3 className="text-sm font-black text-black flex items-center justify-center gap-1.5 mb-2">
-        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-600"><MessageSquare className="h-3.5 w-3.5 text-white" /></span>
-        Connect Seller
-      </h3>
+      <div className="text-center mb-1 sm:mb-2">
+        <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
+          <span className="flex items-center justify-center gap-2 sm:gap-3">
+            <span className="inline-flex items-center justify-center w-8 h-8 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-green-600 shrink-0"><MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" /></span>
+            Connect
+          </span>
+          <span className="block">Seller</span>
+        </h3>
+      </div>
       <div>
         <Label className="text-[7px] font-semibold text-gray-500 uppercase mb-1.5 block">Your Price (optional)</Label>
         <div className="relative">
