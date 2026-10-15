@@ -914,13 +914,13 @@ const MyEnquiries = () => {
                           }}
                         >
                           {isExpired ? (
-                            <button disabled className="flex-shrink-0 lg:flex-1 !border-[1.5px] !border-black text-gray-400 !bg-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 relative overflow-hidden touch-manipulation select-none">
+                            <button disabled className="flex-shrink-0 lg:flex-1 !border-[1.5px] !border-black text-gray-400 !bg-white text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 font-black !rounded-2xl !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 relative overflow-hidden touch-manipulation select-none">
                               <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10" />
                               <span className="whitespace-nowrap relative z-10">View Details</span>
                             </button>
                           ) : (
                             <Link to={`/enquiry/${enquiry.id}`} className="w-full sm:flex-shrink-0 lg:flex-1 group/btn">
-                              <button className="w-full sm:flex-shrink-0 lg:w-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] relative overflow-hidden touch-manipulation select-none">
+                              <button className="w-full sm:flex-shrink-0 lg:w-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] relative overflow-hidden touch-manipulation select-none">
                                 <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10 text-blue-500 fill-blue-500 stroke-black stroke-2" />
                                 <span className="whitespace-nowrap tracking-tight relative z-10">View Details</span>
                               </button>
@@ -929,7 +929,7 @@ const MyEnquiries = () => {
                           
                           <button 
                             disabled={isExpired}
-                            className="w-full sm:flex-shrink-0 lg:flex-1 !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses touch-manipulation select-none"
+                            className="w-full sm:flex-shrink-0 lg:flex-1 !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/responses touch-manipulation select-none"
                             onClick={() => {
                               if (!isExpired) {
                                 navigate(`/enquiry/${enquiry.id}/responses-page`);
@@ -957,7 +957,7 @@ const MyEnquiries = () => {
                           
                           {enquiry.status === 'live' && !isExpired && (
                             <Link to={`/enquiry/${enquiry.id}/responses`} className="w-full sm:flex-shrink-0 lg:flex-1 group/chats">
-                              <button className="w-full sm:flex-shrink-0 lg:w-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] relative overflow-hidden touch-manipulation select-none">
+                              <button className="w-full sm:flex-shrink-0 lg:w-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 text-black font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] relative overflow-hidden touch-manipulation select-none">
                                 <MessageCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10 text-green-500 fill-green-500 stroke-black stroke-2" />
                                 <span className="whitespace-nowrap tracking-tight relative z-10">View Chats</span>
                               </button>
@@ -971,7 +971,7 @@ const MyEnquiries = () => {
                               }
                             }}
                             disabled={isExpired}
-                            className="w-full sm:flex-shrink-0 lg:flex-1 !border-[1.5px] !border-black !bg-red-500 hover:!bg-red-600 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete touch-manipulation select-none"
+                            className="w-full sm:flex-shrink-0 lg:flex-1 !border-[1.5px] !border-black !bg-red-500 hover:!bg-red-600 text-white font-black text-[10px] sm:text-xs lg:text-[10px] xl:text-xs py-1.5 sm:py-2 px-2.5 sm:px-3 lg:px-3.5 !rounded-2xl flex items-center justify-center gap-1 sm:gap-1.5 !transition-all !duration-150 !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group/delete touch-manipulation select-none"
                           >
                             <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 flex-shrink-0 relative z-10 text-white fill-white stroke-black stroke-2" />
                             <span className="hidden sm:inline whitespace-nowrap tracking-tight relative z-10">Delete Enquiry</span>

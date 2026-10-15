@@ -399,16 +399,17 @@ export default function PostEnquiry() {
   const [aiGenerating, setAiGenerating] = useState(false);
 
   // Step 0 ("What are you looking for?") on mobile: when the keyboard shrinks
-  // the visual viewport, keep the heading clearly visible by scrolling it
-  // to the top of the visible area. Purely visual — no logic or flow changes.
+  // the visual viewport, keep the magnifier step icon AND the heading clearly
+  // visible — scroll the icon block (#step-top) to the top instead of the
+  // heading alone, which hid the icon above it. Purely visual.
   useEffect(() => {
     if (step !== 0) return;
     const vv = (window as any).visualViewport as VisualViewport | undefined;
-    const heading = () => document.getElementById('enquiry-step-heading');
+    const anchor = () => document.getElementById('step-top');
     // One-frame delayed so the browser finishes its own refocus scroll first
     const reveal = () => {
       requestAnimationFrame(() => {
-        heading()?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        anchor()?.scrollIntoView({ block: 'start', behavior: 'smooth' });
       });
     };
     // Initial load of this tab: show the heading near the top right away
@@ -2458,7 +2459,7 @@ export default function PostEnquiry() {
 
               <CardContent className="pt-6 sm:pt-8 pb-6 flex flex-col">
                 {/* Step Icon */}
-                <div id="step-top">
+                <div id="step-top" className="scroll-mt-3">
                   <div className="mx-auto mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-black bg-black text-white">
                     {step === 0 ? <Search className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
                      step === 1 ? <LayoutGrid className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
