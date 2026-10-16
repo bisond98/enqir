@@ -21,6 +21,7 @@ import { MapLocationPickerLazy as MapLocationPicker } from '@/components/MapLoca
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep, isFieldHiddenForDetails } from '../categoryDetails';
+import { CleaningTypeMultiSelect } from '@/components/CleaningTypeMultiSelect';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
@@ -1405,13 +1406,20 @@ export default function CreateListing() {
                 })()}
                 {!['real-estate', 'real-estate-services'].includes(category) && fieldsForCategoryStep(category, 'description').length > 0 && (
                   <div className="space-y-3 pt-2">
+                    {/* Cleaning types — multi-select (cleaning-services category), fills the description */}
+                    {category === 'cleaning-services' && (
+                      <CleaningTypeMultiSelect
+                        value={details['cleaningTypes'] ? details['cleaningTypes'].split(', ') : []}
+                        onChange={(next) => setDetail('cleaningTypes', next.join(', '))}
+                      />
+                    )}
                     {/* Creative toggle-style fields (e.g., transmission) — shown above the description */}
                     {(() => {
                       // Sneaker brand/audience/size are rendered by the custom
                       // Post-Enquiry-style block above, not by the generic fields.
                       const descFields = fieldsForCategoryStep(category, 'description')
                         .filter((f) => !isFieldHiddenForDetails(f, details))
-                        .filter((f) => !['sneakerBrand', 'sneakerAudience', 'sneakerSize'].includes(f.key));
+                        .filter((f) => !['sneakerBrand', 'sneakerAudience', 'sneakerSize', 'cleaningTypes'].includes(f.key));
                       const toggleFields = descFields.filter((f) => (f.options?.length ?? 0) === 2);
                       const selectFields = descFields.filter((f) => (f.options?.length ?? 0) !== 2);
                       return (

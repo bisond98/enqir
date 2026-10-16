@@ -174,6 +174,34 @@ export const REPAIR_SERVICE_TYPES = [
   'Other',
 ] as const;
 
+// Cleaning types offered as the subtype dropdown when Cleaning Services is
+// the chosen category (Post Enquiry + Sell form). Stored on the document as
+// `cleaningTypes` — a comma-joined label string, exactly like repairType.
+export const CLEANING_SERVICE_TYPES: string[] = [
+  // Homes & interiors
+  'House & deep cleaning',
+  'Kitchen cleaning',
+  'Bathroom & toilet cleaning',
+  'Sofa shampooing & cleaning',
+  'Carpet & rug cleaning',
+  'Mattress cleaning',
+  'Curtain & blinds cleaning',
+  'Glass & window cleaning',
+  'Floor scrubbing & polishing',
+  'Wall & facade cleaning',
+  'Chimney & exhaust cleaning',
+  // Tanks & drains
+  'Water tank cleaning (overhead & underground)',
+  'Septic tank cleaning',
+  'Drain & pipeline cleaning',
+  'Terrace / roof cleaning',
+  // Commercial & other
+  'Office & commercial space cleaning',
+  'Construction & post-renovation cleaning',
+  'Sanitization & disinfection',
+  'Housekeeping & maid service',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
@@ -239,7 +267,13 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   'fitness-gym-equipment': ['dumbbell', 'dumbbells', 'treadmill', 'gym setup', 'weights', 'barbell', 'exercise cycle', 'gym equipment'],
   'education-training': ['tuition', 'tuitions', 'tutor', 'classes', 'coaching', 'coaching centre', 'spoken english', 'training institute', 'study abroad'],
   'tutoring-lessons': ['tuition', 'tutor', 'classes', 'coaching', 'home tuition', 'online classes', 'spoken english', 'music teacher'],
-  'cleaning-services': ['maid', 'house cleaning', 'housekeeping', 'deep cleaning', 'sofa cleaning', 'pest control'],
+  'cleaning-services': [
+    'maid', 'house cleaning', 'housekeeping', 'deep cleaning', 'sofa cleaning', 'pest control',
+    // Every dropdown option is a search keyword: typing any cleaning type
+    // ("septic tank cleaning", "floor polishing", …) finds Cleaning Services
+    // so it can lead the results, followed by Service.
+    ...CLEANING_SERVICE_TYPES.filter(t => t !== 'Other').map(t => t.toLowerCase()),
+  ],
   'construction-renovation': ['builder', 'contractor', 'renovation', 'interior work', 'painting', 'civil work'],
   'events-entertainment': ['birthday', 'party', 'event management', 'stage', 'decorator', 'anchor', 'band'],
   'wedding-events': ['marriage', 'wedding hall', 'catering', 'wedding photographer', 'bridal makeup', 'mehndi'],
@@ -298,6 +332,13 @@ function boundedLevenshtein(a: string, b: string, max: number): number {
   return prev[b.length];
 }
 
+/** Lowercase and collapse punctuation (&, -, /, parentheses) to single
+ *  spaces so phrase matching ignores formatting: "House & deep cleaning"
+ *  === "house deep cleaning". */
+function normalizeWords(s: string): string {
+  return s.toLowerCase().replace(/\(.*?\)/g, ' ').replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 /** Match strength for a query against a category's label / value / synonyms.
  * Lower is better: 0 = whole-word match on the label ("car" → Car),
  * 1 = whole-word match on value or a synonym, 2 = query starts the word
@@ -311,6 +352,11 @@ function matchStrength(c: AppCategory, q: string): number {
     ...(CATEGORY_SEARCH_SYNONYMS[c.value] ?? []),
   ];
   const otherWords = synStrings.flatMap(s => s.toLowerCase().split(/[^a-z0-9]+/)).filter(Boolean);
+  // Normalized copies so "Construction & post-renovation cleaning" matches
+  // "construction post renovation cleaning" (typed hyphens/& count as spaces).
+  const qNorm = normalizeWords(q);
+  const labelNorm = normalizeWords(labelLower);
+  const normSyn = synStrings.map(normalizeWords);
 
   if (labelWords.includes(q)) return 0;
   // Exact whole-word label hit ranks best, then a label word starting with
@@ -322,14 +368,40 @@ function matchStrength(c: AppCategory, q: string): number {
   if (otherWords.includes(q)) return 2;
   // Multi-word synonyms/phrases: "four wheeler" should match the full phrase,
   // not just its individual words.
-  if (q.includes(' ') && synStrings.some(s => s.toLowerCase().includes(q))) return 3;
-  if (q.includes(' ') && labelLower.includes(q)) return 1;
+  if (qNorm.includes(' ')) {
+    // Phrase matches carry a specificity tie-break: the shortest synonym
+    // containing the query wins ties, so "tank cleaning" resolves to Cleaning
+    // Services' "water tank cleaning" rather than Service's longer repair
+    // phrase "septic / sewage tank cleaning".
+    let phraseLen = Infinity;
+    for (const s of normSyn) if (s.includes(qNorm)) phraseLen = Math.min(phraseLen, s.length);
+    if (phraseLen < Infinity) return 3 + Math.min(phraseLen, 999) / 1000;
+    if (labelNorm.includes(qNorm)) return 1;
+  }
 
   // Prefix matching from 3 letters on labels (so "agr" finds Agriculture),
   // but synonyms need 4+ letters (so "car" doesn't match "care"/"carpenter").
   if (q.length >= 4 && otherWords.some(w => w.startsWith(q))) return 4;
+  // All query words present in this category's vocabulary, in any order —
+  // catches partial phrases like "floor polishing" or "post renovation
+  // cleaning" without weakening any of the single-word rankings above.
+  if (qNorm.includes(' ')) {
+    const qWords = qNorm.split(' ').filter(w => w.length >= 3);
+    const bag = new Set([...labelWords, ...otherWords]);
+    if (qWords.length > 0 && qWords.every(w => bag.has(w))) return 5;
+  }
   return -1;
 }
+
+// Service-type categories that lead category-search results when the query
+// does not directly match a non-service category ("water tank cleaning",
+// "carpenter"). This order is the order users see them in the dropdown.
+export const SERVICE_PRIORITY_CATEGORIES: string[] = [
+  'service',
+  'musical-services',
+  'real-estate-services',
+  'cleaning-services',
+];
 
 /**
  * Filter categories by a search query, matching label, value, and synonyms.
@@ -352,15 +424,14 @@ export function filterCategoriesBySearch<T extends AppCategory>(categories: T[],
   }
   scored.sort((a, b) => a.s - b.s);
   const direct = scored.map(x => x.c);
-  if (direct.length >= minResults) return direct;
 
   const chosen = new Set(direct.map(c => c.value));
-  const result = [...direct];
+  let result: T[] = [...direct];
 
   // Tier 2: fuzzy near-matches (typos / close spellings), only for queries of
   // 4+ chars, and only against words of 5+ chars so short words like "tax"
   // or "shop" don't fuzzy-match unrelated queries ("taxi", "shoe").
-  if (q.length >= 4) {
+  if (result.length < minResults && q.length >= 4) {
     const threshold = Math.min(2, Math.floor(q.length / 4));
     const wordsOf = (c: AppCategory): string[] => {
       const words = c.label.toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length >= 5);
@@ -393,6 +464,27 @@ export function filterCategoriesBySearch<T extends AppCategory>(categories: T[],
       chosen.add(main.value);
       result.push(main);
     }
+  }
+
+  // Service-type queries ("water tank cleaning", "carpenter") never name a
+  // product category directly. When only service-group categories matched —
+  // or nothing matched at all — lead the dropdown with the service categories
+  // in canonical order: Service, Musical Services, Real Estate Services,
+  // Cleaning Services. Product queries ("mobile", "shoes") match a non-service
+  // category directly and keep their natural ranking untouched.
+  const priorityValues = new Set<string>(SERVICE_PRIORITY_CATEGORIES);
+  const hasNonServiceDirect = scored.some(x => !priorityValues.has(x.c.value));
+  if (!hasNonServiceDirect) {
+    const priority = SERVICE_PRIORITY_CATEGORIES
+      .map(v => categories.find(c => c.value === v))
+      .filter((c): c is T => Boolean(c));
+    // Service-group members already in the results keep their matched order
+    // (so "cleaning" still leads with Cleaning Services), then the rest of the
+    // group in canonical order, then everything else below them.
+    const groupInResult = result.filter(c => priorityValues.has(c.value));
+    const groupPresent = new Set(groupInResult.map(c => c.value));
+    const groupMissing = priority.filter(c => !groupPresent.has(c.value));
+    result = [...groupInResult, ...groupMissing, ...result.filter(c => !priorityValues.has(c.value))];
   }
   return result;
 }

@@ -4,7 +4,7 @@
 // Values are stored as a flat `details` map on the listing document.
 
 import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS } from './categoryBrands';
-import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
+import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES } from '@/constants/categories';
 
 // Sneaker sizes — US and UK scales. Adults get the full run; Kids get the
 // children's range. 'Other' always last so users can enter odd sizes.
@@ -145,6 +145,9 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'repairType', label: 'Service type', type: 'select', options: [...REPAIR_SERVICE_TYPES], placeholder: 'Select service type', step: 'title' },
     { key: 'serviceMode', label: 'Service mode', type: 'select', options: ['At my location', 'Pick up & fix', 'Anywhere'], placeholder: 'Select service mode', step: 'description' },
     { key: 'experience', label: 'Experience', type: 'select', options: ['Fresher', '1-3 years', '3-5 years', '5-10 years', '10+ years'], placeholder: 'Select experience', step: 'details' },
+  ],
+  'cleaning-services': [
+    { key: 'cleaningTypes', label: 'Cleaning types', type: 'select', options: [...CLEANING_SERVICE_TYPES], placeholder: 'Select cleaning types', step: 'description' },
   ],
   sneakers: [
     { key: 'sneakerBrand', label: 'Brand', type: 'select', options: SNEAKER_BRANDS, placeholder: 'Select brand', step: 'description' },

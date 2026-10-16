@@ -847,6 +847,7 @@ export default function ListingDetail() {
                     sneakerAudience: '',
                     sneakerSize: 'Size',
                     salaryPeriod: 'Salary',
+                    cleaningTypes: 'Cleaning',
                   };
                   const entries = Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key));
                   return entries.map(([key, val], i) => {

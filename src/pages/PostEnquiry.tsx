@@ -10,6 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { MapLocationPickerLazy as MapLocationPicker } from "@/components/MapLocationPickerLazy";
+import { CleaningTypeMultiSelect } from "@/components/CleaningTypeMultiSelect";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints } from "lucide-react";
@@ -264,6 +265,9 @@ export default function PostEnquiry() {
   const isAccommodationEnquiry = (cats: string[], legacy?: string) =>
     [...cats, legacy ?? ''].some((c) => c && c.toLowerCase().includes('accommodation'));
   const isAccom = isAccommodationEnquiry(selectedCategories, category);
+  // Cleaning services: which cleaning types (cleaning-services category, multi-select)
+  const [cleaningTypes, setCleaningTypes] = useState<string[]>([]);
+  const isCleaning = selectedCategories.includes('cleaning-services') || category === 'cleaning-services';
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   // PRO PLAN - KEPT FOR FUTURE UPDATES
@@ -527,6 +531,7 @@ export default function PostEnquiry() {
         if (d.accommodationType) setAccommodationType(d.accommodationType);
         if (d.accommodationGender) setAccommodationGender(d.accommodationGender);
         if (d.repairType) setRepairType(d.repairType);
+        if (Array.isArray(d.cleaningTypes)) setCleaningTypes(d.cleaningTypes);
         if (d.sneakerAudience) setSneakerAudience(d.sneakerAudience);
         if (d.sneakerSize) setSneakerSize(d.sneakerSize);
         if (d.referenceImageUrls) setReferenceImageUrls(d.referenceImageUrls);
@@ -919,6 +924,7 @@ export default function PostEnquiry() {
             ...(accommodationType && { accommodationType }),
             ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
             ...(repairType && { repairType }),
+            ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
             ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
             ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
             ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
@@ -1083,6 +1089,7 @@ export default function PostEnquiry() {
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(repairType && { repairType }),
+          ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
             ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
             ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
@@ -1255,6 +1262,7 @@ export default function PostEnquiry() {
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(repairType && { repairType }),
+          ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
               ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
               ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
@@ -1971,6 +1979,7 @@ export default function PostEnquiry() {
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(repairType && { repairType }),
+          ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
           ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
           ...(estateDetails.houseArea.trim() && { houseArea: `${estateDetails.houseArea.trim()} ${estateDetails.houseUnit}` }),
@@ -2855,6 +2864,15 @@ export default function PostEnquiry() {
                           )}
                         </div>
                       )}
+                      {/* Cleaning services — multi-select cleaning types (cleaning-services category) */}
+                      {isCleaning && (
+                        <div className="mb-4">
+                          <CleaningTypeMultiSelect
+                            value={cleaningTypes}
+                            onChange={setCleaningTypes}
+                          />
+                        </div>
+                      )}
                       {/* Repair services — service-type dropdown above the description (repair-services / service category) */}
                       {(selectedCategories.includes('service') || category === 'service') && (() => {
                         const REPAIR_TYPES = REPAIR_SERVICE_TYPES;
@@ -3516,7 +3534,7 @@ export default function PostEnquiry() {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
                                 title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
-                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender, sneakerBrand, sneakerAudience, sneakerSize
+                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
                               }));
                               navigate('/profile?returnTo=/post-enquiry');
                             }}
@@ -3699,6 +3717,15 @@ export default function PostEnquiry() {
                                 return genderPrefix && genderPrefix !== 'Any' ? `${genderPrefix} ${subtypeLabel}` : subtypeLabel;
                               })()}
                             </p>
+                          </div>
+                        )}
+                        {/* Cleaning type row — selected cleaning services subtypes */}
+                        {isCleaning && cleaningTypes.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <div className="w-16 flex-shrink-0">
+                              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">Cleaning</span>
+                            </div>
+                            <p className="text-xs font-bold text-black leading-relaxed">{cleaningTypes.join(', ')}</p>
                           </div>
                         )}
                         {/* Category row */}
