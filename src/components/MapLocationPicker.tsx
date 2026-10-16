@@ -134,6 +134,14 @@ export function MapLocationPicker({
   // Lets the async permission pre-check invoke the current attempt's denial
   // handler (the handler locals don't exist yet when the query is issued).
   const showPermissionDeniedRef = useRef<(() => void) | null>(null);
+  // Cleans up an in-flight "Use my location" attempt (timers + GPS watcher)
+  // and marks it finished so queued callbacks become no-ops.
+  const geoCleanupRef = useRef<(() => void) | null>(null);
+  const cancelGeoAttempt = useCallback(() => {
+    geoCleanupRef.current?.();
+    geoCleanupRef.current = null;
+    setGeoLoading(false);
+  }, []);
   // Lets the precision-upgrade watcher skip auto-confirm when the user has
   // already closed the picker (manually confirmed or cancelled).
   const openRef = useRef(open);
@@ -191,6 +199,7 @@ export function MapLocationPicker({
   }, [placeQuery, open]);
 
   const handlePickPlace = useCallback((r: PlaceSearchResult) => {
+    cancelGeoAttempt(); // the user chose a place - stop the GPS attempt
     setPosition([r.lat, r.lng]);
     setError(null);
     setPlaceOpen(false);
@@ -205,6 +214,8 @@ export function MapLocationPicker({
 
   useEffect(() => {
     if (!open) {
+      geoCleanupRef.current?.();
+      geoCleanupRef.current = null;
       setError(null);
       setConfirming(false);
       setGeoError(null);
@@ -225,11 +236,13 @@ export function MapLocationPicker({
   );
 
   const onMapClick = useCallback((lat: number, lng: number) => {
+    cancelGeoAttempt(); // the user picked a point - stop the GPS attempt
     setPosition([lat, lng]);
     setError(null);
   }, []);
 
   const onMarkerDragEnd = useCallback((e: L.LeafletEvent) => {
+    cancelGeoAttempt(); // the user moved the pin - stop the GPS attempt
     const m = e.target as L.Marker;
     const ll = m.getLatLng();
     setPosition([ll.lat, ll.lng]);
@@ -289,6 +302,9 @@ export function MapLocationPicker({
   }, []);
 
   const handleUseMyLocation = useCallback(() => {
+    // Cancel any attempt still in flight from a previous click.
+    geoCleanupRef.current?.();
+    geoCleanupRef.current = null;
     setGeoError(null);
     setError(null);
 
@@ -313,38 +329,34 @@ export function MapLocationPicker({
       navigator.permissions
         .query({ name: "geolocation" as PermissionName })
         .then((status) => {
-          if (status.state === "denied" && !settledRef.current) {
+          if (status.state === "denied") {
             showPermissionDeniedRef.current?.();
           }
         })
         .catch(() => {}); // Safari may not support this query — ignore
     }
 
-    // IMPORTANT: the browser's geolocation can hang FOREVER on some machines
-    // (e.g. macOS with Location Services disabled) — neither success nor the
-    // error callback ever fires, and even the `timeout` option is ignored.
-    // So we never rely on geolocation callbacks alone: we race them against
-    // our own watchdog timers and an IP-based lookup running in parallel,
-    // and guarantee a decision within a few seconds no matter what.
-    let settled = false;
-    let upgraded = false;
-    let gpsAnswered = false;
+    // ---- Attempt state -----------------------------------------------------
+    // `finished` means this attempt is over: a street-level fix was confirmed,
+    // permission was denied, nothing was found, or the user took over (map tap
+    // / drag / search cancels us). Coarse results NEVER set it - they only
+    // place a provisional pin, so a later precise fix can still take over and
+    // auto-confirm. This is the core fix: the old code committed the FIRST
+    // answer (often a village-level network/IP guess) as "your location".
+    let finished = false;
     let gpsErrorCode = 0;
     let watchId: number | null = null;
     let best: { lat: number; lng: number; accuracy: number } | null = null;
-    // Refs so the async permission pre-check (which runs before these locals
-    // exist in its closure timeline) can always see the latest state.
-    const settledRef = { current: false };
-    const settle = () => { settled = true; settledRef.current = true; };
+    let approximatePlaced = false;
 
-    const finish = async (lat: number, lng: number) => {
-      if (settled) return;
-      settle();
-      setPosition([lat, lng]);
-      setCenterTarget({ lat, lng, nonce: Date.now() });
-      setGeoLoading(false);
-      await doConfirmRef.current([lat, lng]);
-    };
+    // Only fixes at or below this accuracy (metres) are auto-confirmed.
+    const PRECISION_MAX_ACCURACY = 50;
+
+    // Declared up-front so cleanup can always clear them.
+    let tEarly: ReturnType<typeof setTimeout> | undefined;
+    let tFail: ReturnType<typeof setTimeout> | undefined;
+    let t2: ReturnType<typeof setTimeout> | undefined;
+    let tWatchEnd: ReturnType<typeof setTimeout> | undefined;
 
     const stopWatch = () => {
       if (watchId !== null && navigator.geolocation) {
@@ -353,88 +365,140 @@ export function MapLocationPicker({
       }
     };
 
-    // Coarse fallback (network Wi-Fi fix or IP approximation): NEVER auto-
-    // confirm — a city-level guess committed silently as "your location" is
-    // worse than no location. Drop an approximate pin, keep the picker open,
-    // and keep LISTENING for a precise fix in the background: as soon as one
-    // lands (GPS often needs a few extra seconds after a cold start), the pin
-    // is upgraded and the location auto-confirms.
-    const settleCoarse = (lat: number, lng: number) => {
-      if (settled) return;
-      settle();
-      clearTimeout(t2);
+    const clearTimers = () => {
+      clearTimeout(tEarly);
       clearTimeout(tFail);
+      clearTimeout(t2);
+      clearTimeout(tWatchEnd);
+    };
+
+    // Ends the attempt for good - queued GPS callbacks after this are no-ops.
+    const cleanup = () => {
+      finished = true;
+      clearTimers();
+      stopWatch();
+      if (geoCleanupRef.current === cleanup) geoCleanupRef.current = null;
+    };
+
+    // Final commit - reached ONLY by street-level (precise) fixes.
+    const commit = (lat: number, lng: number) => {
+      if (finished) return;
+      if (!openRef.current) { cleanup(); return; } // user already closed us
+      finished = true;
+      cleanup();
       setPosition([lat, lng]);
       setCenterTarget({ lat, lng, nonce: Date.now() });
       setGeoLoading(false);
-      setGeoError("Approximate location placed — searching for your precise GPS position… The pin will jump to your exact spot automatically, or drag it / search to adjust.");
-      startPrecisionWatch();
+      setGeoError(null);
+      void doConfirmRef.current([lat, lng]);
     };
 
-    // Background listener for a precise fix AFTER the approximate pin is set.
-    // Runs up to 30s; upgrades + auto-confirms once the fix is street-level.
+    // Background listener for a precise fix. Started immediately on click (not
+    // only after a fallback) so the pin upgrades the moment GPS locks, and
+    // auto-confirms once the fix is street-level.
     const startPrecisionWatch = () => {
-      if (watchId !== null || !navigator.geolocation) return;
+      if (watchId !== null || finished || !navigator.geolocation) return;
       watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const c = pos.coords;
-          if (upgraded || !Number.isFinite(c.latitude) || !Number.isFinite(c.longitude)) return;
-          if (c.accuracy <= 100) {
-            upgraded = true;
-            stopWatch();
-            if (!openRef.current) return; // user already closed the picker
-            setPosition([c.latitude, c.longitude]);
-            setCenterTarget({ lat: c.latitude, lng: c.longitude, nonce: Date.now() });
-            setGeoError(null);
-            setGeoLoading(false);
-            doConfirmRef.current([c.latitude, c.longitude]);
+          if (finished || !Number.isFinite(c.latitude) || !Number.isFinite(c.longitude)) return;
+          const acc = Number.isFinite(c.accuracy) ? c.accuracy : Number.MAX_SAFE_INTEGER;
+          if (acc <= PRECISION_MAX_ACCURACY) {
+            commit(c.latitude, c.longitude);
+            return;
+          }
+          // Better, but still coarse: hold as provisional; if the approximate
+          // pin is showing, glide it toward the better fix.
+          if (!best || acc < best.accuracy) {
+            best = { lat: c.latitude, lng: c.longitude, accuracy: acc };
+            if (approximatePlaced) {
+              setPosition([best.lat, best.lng]);
+              setCenterTarget({ lat: best.lat, lng: best.lng, nonce: Date.now() });
+            }
           }
         },
         () => {},
         { enableHighAccuracy: true, timeout: 30_000, maximumAge: 0 }
       );
-      // Safety: stop listening after 30s regardless.
-      tWatchEnd = setTimeout(stopWatch, 30_000);
-    };
-
-    const recordCoarse = (lat: number, lng: number, accuracy: number) => {
-      if (settled) return;
-      // Coarse fixes (Wi-Fi triangulation, IP lookup) are only HELD as
-      // provisional results — never confirmed on arrival. A network fix can
-      // claim 30m accuracy yet be off by streets, and an IP fix is city-level;
-      // confirming them instantly would beat the slower-but-precise GPS fix.
-      // They are used only if GPS never answers (see watchdogs below).
-      if (!best || accuracy < best.accuracy) {
-        best = { lat, lng, accuracy };
+      if (tWatchEnd === undefined) {
+        tWatchEnd = setTimeout(() => {
+          stopWatch();
+          if (!finished && approximatePlaced) {
+            setGeoError('Approximate location - drag the pin to fine-tune it, then tap "Use this location".');
+          }
+        }, 30_000);
       }
     };
 
-    const showPermissionDenied = () => {
-      if (settled) return;
-      settle();
-      clearTimeout(t2);
+    // Coarse results are only HELD as provisional, never confirmed on arrival:
+    // a network fix can claim 30 m yet be streets off; an IP fix is city-level.
+    const recordCoarse = (lat: number, lng: number, accuracy: number) => {
+      if (finished) return;
+      if (!best || accuracy < best.accuracy) best = { lat, lng, accuracy };
+    };
+
+    // Last resort: an approximate pin - kept OPEN and upgradeable, never
+    // silently committed as "your location".
+    const placeApproximate = () => {
+      if (finished || approximatePlaced || !best) return;
+      approximatePlaced = true;
+      clearTimeout(tEarly);
       clearTimeout(tFail);
-      stopWatch();
+      setPosition([best.lat, best.lng]);
+      setCenterTarget({ lat: best.lat, lng: best.lng, nonce: Date.now() });
+      setGeoLoading(false);
+      setGeoError(
+        'Approximate location placed - still searching for a precise GPS fix. The pin will snap to your exact spot automatically. You can also drag it, then tap "Use this location".'
+      );
+      startPrecisionWatch();
+    };
+
+    const showPermissionDenied = () => {
+      if (finished) return;
+      cleanup();
       setGeoLoading(false);
       setGeoError(geolocationErrorMessage(1, ""));
     };
-    // The async permission pre-check above runs before these timer variables
-    // are initialised, so expose the handler through a ref it can read safely.
     showPermissionDeniedRef.current = showPermissionDenied;
+    geoCleanupRef.current = cleanup;
 
-    // Source 1: GPS — the accurate fix. Wins the moment it lands.
+    startPrecisionWatch();
+
+    // Fallback schedule:
+    //   8s - drop an approximate pin if we only have a coarse answer so far
+    //        (still upgradeable, NOT confirmed)
+    //  16s - absolute deadline (geolocation can hang entirely on some
+    //        machines): approximate pin if we have one, real error otherwise
+    tEarly = setTimeout(placeApproximate, 8_000);
+    t2 = setTimeout(() => {
+      if (finished) return;
+      if (best) { placeApproximate(); return; }
+      finished = true;
+      cleanup();
+      setGeoLoading(false);
+      setGeoError(
+        gpsErrorCode
+          ? geolocationErrorMessage(gpsErrorCode, "Could not determine your location. Check your connection, or pick a point on the map.")
+          : "Could not determine your location. Check your connection, or pick a point on the map."
+      );
+    }, 16_000);
+
+    // Source 1: GPS - the accurate fix. Confirmed ONLY when street-level; a
+    // coarse first answer is held as provisional instead of being committed.
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          gpsAnswered = true;
-          if (settled) return;
+          if (finished) return;
           const c = pos.coords;
-          if (Number.isFinite(c.latitude) && Number.isFinite(c.longitude)) {
-            finish(c.latitude, c.longitude);
+          if (!Number.isFinite(c.latitude) || !Number.isFinite(c.longitude)) return;
+          const acc = Number.isFinite(c.accuracy) ? c.accuracy : Number.MAX_SAFE_INTEGER;
+          if (acc <= PRECISION_MAX_ACCURACY) {
+            commit(c.latitude, c.longitude);
+          } else {
+            recordCoarse(c.latitude, c.longitude, acc);
           }
         },
         (err) => {
-          gpsAnswered = true;
           gpsErrorCode = err.code;
           if (err.code === 1) {
             // Permission denied: every other source will be denied too, and an
@@ -442,27 +506,19 @@ export function MapLocationPicker({
             showPermissionDenied();
             return;
           }
-          // GPS failed (unavailable / timeout). Give the pending network fix a
-          // grace window, then drop an APPROXIMATE pin (never auto-confirmed)
-          // from the best provisional result and keep listening for GPS.
-          tFail = setTimeout(() => {
-            if (!settled && best) settleCoarse(best.lat, best.lng);
-            else if (!settled) {
-              settle();
-              setGeoLoading(false);
-              setGeoError(geolocationErrorMessage(gpsErrorCode, ""));
-            }
-          }, 6_000);
+          // GPS unavailable/timeout: if the network/IP fix already answered,
+          // show an approximate pin quickly instead of spinning for 16s.
+          tFail = setTimeout(() => { if (!finished && best) placeApproximate(); }, 3_000);
         },
         { enableHighAccuracy: true, timeout: 15_000, maximumAge: 0 }
       );
 
-      // Source 2: network location — fast, coarse; held as a provisional result.
+      // Source 2: network location - fast, coarse; held as a provisional result.
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const c = pos.coords;
           if (Number.isFinite(c.latitude) && Number.isFinite(c.longitude)) {
-            recordCoarse(c.latitude, c.longitude, c.accuracy);
+            recordCoarse(c.latitude, c.longitude, Number.isFinite(c.accuracy) ? c.accuracy : 800);
           }
         },
         () => {},
@@ -470,46 +526,15 @@ export function MapLocationPicker({
       );
     }
 
-    // Source 3: IP-based location — always available, city-level accuracy.
-    // Runs in parallel from the start so its result is ready when needed.
-    // Held as the LOWEST-priority provisional result: only used if neither GPS
-    // nor the network fix ever answers.
+    // Source 3: IP-based location - always available, city/village-level
+    // accuracy. Lowest-priority provisional result: only ever used to place an
+    // approximate pin if nothing better answers; never confirmed on its own.
     (async () => {
       const loc = await ipLocate();
-      if (settled) return;
+      if (finished) return;
       if (loc) recordCoarse(loc.lat, loc.lng, 20_000);
     })();
 
-    // Watchdog 1: settled by the GPS error callback (tFail grace window) — see below.
-    let tFail: ReturnType<typeof setTimeout> | undefined;
-    let tWatchEnd: ReturnType<typeof setTimeout> | undefined;
-
-    // Watchdog 2: absolute deadline — GPS gets its full 15s (its own timeout)
-    // plus 1s of slack before we take over. NEVER settle for a coarse fix
-    // (network Wi-Fi / IP) while GPS is still pending: a GPS cold start can
-    // legitimately take 8–15s, and stealing its slot with a city-level guess
-    // puts the pin in the wrong place. This watchdog only covers the case
-    // where geolocation HANGS entirely (no callback ever fires).
-    const t2 = setTimeout(() => {
-      if (settled) return;
-      if (best) {
-        // Geolocation hung entirely — drop an approximate pin instead of
-        // silently committing a guess as the confirmed location.
-        settleCoarse(best.lat, best.lng);
-      } else {
-        settle();
-        setGeoLoading(false);
-        // Surface the real geolocation error when we have one (e.g. permission
-        // denied) instead of a vague "check your connection" message.
-        setGeoError(
-          gpsErrorCode
-            ? geolocationErrorMessage(gpsErrorCode, "Could not determine your location. Check your connection, or pick a point on the map.")
-            : "Could not determine your location. Check your connection, or pick a point on the map."
-        );
-      }
-    }, 16_000);
-
-    return () => { clearTimeout(t2); clearTimeout(tFail); clearTimeout(tWatchEnd); stopWatch(); };
   }, [ipLocate]);
   const autoLocateFiredRef = useRef(false);
   useEffect(() => {

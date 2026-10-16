@@ -20,17 +20,59 @@ const TTL_MS = 5 * 60 * 1000;
 const cache = new Map<string, { data: any; at: number }>();
 const inflight = new Map<string, Promise<any>>();
 
+// sessionStorage mirror of the same entries — survives the full-page reloads
+// triggered by sign-out (`window.location.href = '/'`) and stale-chunk
+// recovery, so re-entering the app repaints names/trust badges instantly
+// instead of re-fetching them. Same TTL, same values, purely additive; every
+// access is try/catch-guarded (private mode, quota).
+const SS_PREFIX = 'enqir_profile_v1:';
+
+function ssRead(uid: string): { data: any; at: number } | null {
+  try {
+    const raw = sessionStorage.getItem(SS_PREFIX + uid);
+    if (!raw) return null;
+    const entry = JSON.parse(raw);
+    if (!entry || typeof entry.at !== 'number') return null;
+    if (Date.now() - entry.at >= TTL_MS) {
+      sessionStorage.removeItem(SS_PREFIX + uid);
+      return null;
+    }
+    return entry as { data: any; at: number };
+  } catch {
+    return null;
+  }
+}
+
+function ssWrite(uid: string, entry: { data: any; at: number }) {
+  try {
+    sessionStorage.setItem(SS_PREFIX + uid, JSON.stringify(entry));
+  } catch {
+    /* private mode or quota — memory tier still works */
+  }
+}
+
 /** Synchronous cache hit (or null). Use to render instantly while fetching. */
 export function getCachedProfile(uid: string): any | null {
   const entry = cache.get(uid);
-  return entry && Date.now() - entry.at < TTL_MS ? entry.data : null;
+  if (entry && Date.now() - entry.at < TTL_MS) return entry.data;
+  // Memory tier missed (fresh page load) — promote the persisted entry.
+  const persisted = ssRead(uid);
+  if (persisted) {
+    cache.set(uid, persisted);
+    return persisted.data;
+  }
+  return null;
 }
 
 /** Insert profiles into the cache (e.g. from a page that already fetched them). */
 export function primeProfiles(profiles: ProfileMap) {
   const at = Date.now();
   Object.entries(profiles).forEach(([uid, data]) => {
-    if (uid) cache.set(uid, { data: data ?? null, at });
+    if (uid) {
+      const entry = { data: data ?? null, at };
+      cache.set(uid, entry);
+      ssWrite(uid, entry);
+    }
   });
 }
 
@@ -41,7 +83,9 @@ export async function fetchProfileByUid(uid: string): Promise<any | null> {
   try {
     const snap = await getDoc(doc(db, 'userProfiles', uid));
     const data = snap.exists() ? snap.data() : null;
-    cache.set(uid, { data, at: Date.now() });
+    const entry = { data, at: Date.now() };
+    cache.set(uid, entry);
+    ssWrite(uid, entry);
     return data;
   } catch {
     return null;
@@ -99,8 +143,18 @@ export async function fetchProfilesByUids(uids: string[]): Promise<ProfileMap> {
     if (!uid || seen.has(uid)) continue;
     seen.add(uid);
     const entry = cache.get(uid);
-    if (entry && now - entry.at < TTL_MS) out[uid] = entry.data;
-    else missing.push(uid);
+    if (entry && now - entry.at < TTL_MS) {
+      out[uid] = entry.data;
+    } else {
+      // Promote from the persisted tier before treating the uid as missing.
+      const persisted = ssRead(uid);
+      if (persisted) {
+        cache.set(uid, persisted);
+        out[uid] = persisted.data;
+      } else {
+        missing.push(uid);
+      }
+    }
   }
   if (missing.length === 0) return out;
 

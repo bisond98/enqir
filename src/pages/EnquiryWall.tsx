@@ -17,7 +17,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown, ArrowUpDown, Sparkles } from "lucide-react";
+import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown, ArrowUpDown, Sparkles, Loader2, WifiOff } from "lucide-react";
 import { parseNLSearch, isNLSearchQuery, type NLFilters } from "@/modules/sell/services/nlSearch";
 import {
   DropdownMenu,
@@ -94,6 +94,11 @@ export default function EnquiryWall() {
   // DO NOT MODIFY - This count must match Landing.tsx exactly
   const [liveEnquiriesCount, setLiveEnquiriesCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  // First-snapshot tracking: the 12s watchdog below stops the spinner even if
+  // no data has arrived yet — these let the UI show a truthful "still loading"
+  // / "slow connection" state instead of the fake "No enquiries found".
+  const [firstSnapshotArrived, setFirstSnapshotArrived] = useState(false);
+  const [fetchStalled, setFetchStalled] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -468,6 +473,8 @@ export default function EnquiryWall() {
   // Load enquiries with real-time updates (with error handling)
   useEffect(() => {
     setLoading(true);
+    setFirstSnapshotArrived(false);
+    setFetchStalled(false);
     
     // Primary: BOUNDED realtime listener — newest 400 enquiries, ordered by
     // createdAt. The previous listener streamed the ENTIRE collection (no
@@ -673,6 +680,7 @@ export default function EnquiryWall() {
         );
         
         setEnquiries(uniqueEnquiries);
+        setFirstSnapshotArrived(true);
         setLoading(false);
       } catch (error) {
         console.error("❌ EnquiryWall: Error processing enquiries:", error);
@@ -692,6 +700,7 @@ export default function EnquiryWall() {
     // spinning forever. A live onSnapshot still swaps results in when it lands.
     const watchdog = setTimeout(() => {
       setLoading((prev) => (prev ? false : prev));
+      setFetchStalled(true);
     }, 12000);
 
     // Cleanup subscription on unmount
@@ -6937,6 +6946,33 @@ export default function EnquiryWall() {
             )}
             </>
           ) : (
+            !firstSnapshotArrived ? (
+              /* First snapshot hasn't landed yet — a truthful "still loading" /
+                 "slow connection" state instead of the fake empty the 12s
+                 watchdog used to reveal. Purely presentational. */
+              <div className="text-center py-16">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  {fetchStalled ? (
+                    <WifiOff className="h-8 w-8 text-gray-400" />
+                  ) : (
+                    <Loader2 className="h-8 w-8 text-gray-400 animate-spin" />
+                  )}
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {fetchStalled ? "Slow connection" : "Loading enquiries..."}
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  {fetchStalled
+                    ? "Enquiries are taking longer than usual to arrive"
+                    : "Fetching the latest live enquiries"}
+                </p>
+                {fetchStalled && (
+                  <Button variant="outline" onClick={() => window.location.reload()}>
+                    Try again
+                  </Button>
+                )}
+              </div>
+            ) : (
             <div className="text-center py-16">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <FileText className="h-8 w-8 text-gray-400" />
@@ -6963,6 +6999,7 @@ export default function EnquiryWall() {
                 </Button>
               )}
             </div>
+            )
           )}
         </div>
       </div>
