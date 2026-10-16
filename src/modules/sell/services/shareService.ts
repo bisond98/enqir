@@ -1,5 +1,5 @@
 import type { SellListing } from '../types';
-import { shareToTarget } from '@/lib/socialShare';
+import { shareToTarget, tryShareWithImage } from '@/lib/socialShare';
 
 /**
  * Show only the state (e.g. "Kerala") of a location in shares — never the
@@ -213,6 +213,8 @@ export async function shareListing(
 ): Promise<{ success: boolean; message: string }> {
   const aiMessage = generateShareMessage(listing);
   const url = getListingUrl(listing.id);
+  // First uploaded photo (if any) rides along with WhatsApp shares
+  const imageUrl = listing.images && listing.images.length > 0 ? listing.images[0] : undefined;
   
   try {
     switch (platform) {
@@ -220,13 +222,20 @@ export async function shareListing(
       case 'instagram_dm':
       case 'instagram_story':
       case 'email': {
-        const result = await shareToTarget(platform, { title: listing.title, text: aiMessage, url });
+        const result = await shareToTarget(platform, { title: listing.title, text: aiMessage, url, imageUrl });
         return result;
       }
       
-      case 'whatsapp':
+      case 'whatsapp': {
+        // Phone: attach the first uploaded photo via the native share sheet
+        // (the only web path that truly attaches an image to WhatsApp).
+        // Desktop falls back to today's wa.me text link.
+        const img = await tryShareWithImage({ title: listing.title, text: aiMessage, url, imageUrl });
+        if (img === 'shared') return { success: true, message: 'Shared with photo!' };
+        if (img === 'cancelled') return { success: true, message: 'Share cancelled' };
         shareToWhatsApp(aiMessage, url);
         return { success: true, message: 'Opening WhatsApp...' };
+      }
       
       case 'twitter':
         shareToTwitter(aiMessage, url);

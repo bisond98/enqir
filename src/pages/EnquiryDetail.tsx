@@ -1174,6 +1174,7 @@ const EnquiryDetail = () => {
                       title={enquiry.title}
                       text={buildEnquiryShareText(enquiry, `${window.location.origin}/enquiry/${enquiry.id}`)}
                       url={`${window.location.origin}/enquiry/${enquiry.id}`}
+                      imageUrl={enquiry.referenceImages?.[0]}
                     />
                   )}
 

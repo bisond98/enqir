@@ -24,6 +24,39 @@ export interface SocialShareContent {
   /** Full share text — should already include the link/URL. */
   text: string;
   url: string;
+  /** First uploaded photo (enquiry reference image / listing image), if any. */
+  imageUrl?: string;
+}
+
+export type ImageShareOutcome = 'shared' | 'cancelled' | 'fallback';
+
+/**
+ * Attach the uploaded photo to the phone's native share sheet (Web Share API
+ * Level 2) — the only web path that truly attaches an image to WhatsApp /
+ * Instagram. Returns 'shared' when the photo went out, 'cancelled' when the
+ * user dismissed the sheet, and 'fallback' when unsupported/failed so
+ * callers keep the existing text-only flow.
+ */
+export async function tryShareWithImage(content: SocialShareContent): Promise<ImageShareOutcome> {
+  if (!content.imageUrl) return 'fallback';
+  if (typeof navigator === 'undefined' || !navigator.share || !('canShare' in navigator)) return 'fallback';
+  try {
+    const resp = await fetch(content.imageUrl);
+    if (!resp.ok) return 'fallback';
+    const blob = await resp.blob();
+    if (!blob.type || !blob.type.startsWith('image/')) return 'fallback';
+    const ext = (blob.type.split('/')[1] || 'jpeg').split('+')[0];
+    const file = new File([blob], `enqir-photo.${ext}`, { type: blob.type });
+    if (!navigator.canShare({ files: [file] })) return 'fallback';
+    const caption = content.text.includes(content.url)
+      ? content.text
+      : `${content.text}\n${content.url}`;
+    await navigator.share({ files: [file], title: content.title, text: caption });
+    return 'shared';
+  } catch (err: any) {
+    if (err?.name === 'AbortError') return 'cancelled'; // user dismissed the sheet
+    return 'fallback';
+  }
 }
 
 export interface ShareResult {
@@ -90,11 +123,21 @@ export async function shareToTarget(
 
   switch (target) {
     case 'whatsapp': {
+      // Phone: attach the uploaded photo via the native share sheet (the only
+      // way a website can truly send an image to WhatsApp). Desktop and
+      // unsupported browsers fall back to the wa.me text link.
+      const img = await tryShareWithImage(content);
+      if (img === 'shared') return { success: true, message: 'Shared with photo!' };
+      if (img === 'cancelled') return { success: true, message: 'Share cancelled' };
       openUrl(`https://wa.me/?text=${encodeURIComponent(fullText)}`);
       return { success: true, message: 'Opening WhatsApp…' };
     }
 
     case 'whatsapp_status': {
+      // Phone: the native sheet attaches the photo — ready for Status / Story.
+      const img = await tryShareWithImage(content);
+      if (img === 'shared') return { success: true, message: 'Shared with photo!' };
+      if (img === 'cancelled') return { success: true, message: 'Share cancelled' };
       // Mobile: native sheet offers "WhatsApp Status" when the app is installed.
       if (isMobileDevice() && navigator.share) {
         const shared = await openNativeShareSheet(content);

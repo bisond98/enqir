@@ -14,6 +14,8 @@ interface ShareMenuProps {
   title: string;
   text: string;
   url: string;
+  /** First uploaded photo (enquiry reference image), if any — attached on phones. */
+  imageUrl?: string;
   /** Optional callback fired after the user picks any target (e.g. to bump a share counter). */
   onShared?: () => void;
 }
@@ -23,7 +25,7 @@ interface ShareMenuProps {
  * Instagram DM and Instagram Story targets, matching the listing
  * ShareButton's physical-button menu style.
  */
-export default function ShareMenu({ open, onClose, anchorRef, title, text, url, onShared }: ShareMenuProps) {
+export default function ShareMenu({ open, onClose, anchorRef, title, text, url, imageUrl, onShared }: ShareMenuProps) {
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
@@ -82,7 +84,7 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
     onClose();
     onShared?.();
     setTimeout(async () => {
-      const result = await shareToTarget(target, { title, text, url });
+      const result = await shareToTarget(target, { title, text, url, imageUrl });
       if (result.success) {
         toast({ title: 'Share', description: result.message });
         if (target === 'copy') {

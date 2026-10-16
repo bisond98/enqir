@@ -3446,6 +3446,7 @@ const Landing = () => {
           title={shareMenuEnquiry.title}
           text={buildEnquiryShareText(shareMenuEnquiry, `${window.location.origin}/respond/${shareMenuEnquiry.id}`)}
           url={`${window.location.origin}/respond/${shareMenuEnquiry.id}`}
+          imageUrl={(shareMenuEnquiry.referenceImages || shareMenuEnquiry.imageUrls || [])[0]}
           onShared={() => {
             // Keep the existing share-count behavior from the old direct-share flow
             const enquiryRef = doc(db, 'enquiries', shareMenuEnquiry.id);
