@@ -13,7 +13,7 @@ import { MapLocationPickerLazy as MapLocationPicker } from "@/components/MapLoca
 import { CleaningTypeMultiSelect } from "@/components/CleaningTypeMultiSelect";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints, Globe } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -3308,38 +3308,10 @@ export default function PostEnquiry() {
                     </div>
                   )}
 
-                  {/* Step 3: Location */}
+                  {/* Step 3: Location — map-pin only; the search bar above
+                      "Where do you want it?" was removed per request */}
                   {step === 3 && (
                     <div className="max-w-xl mx-auto w-full space-y-3">
-                      <div className="relative">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                          <MapPin className="h-5 w-5 text-red-500" />
-                        </div>
-                        <Input
-                          value={location}
-                          onChange={handleLocationChange}
-                          onFocus={() => setShowLocationSuggestions(true)}
-                          onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
-                          placeholder="Search location..."
-                          className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-10 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
-                          style={{ fontSize: '14px' }}
-                        />
-                        {showLocationSuggestions && locationSuggestions.length > 0 && (
-                          <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
-                            {locationSuggestions.map((suggestion, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                onClick={() => selectLocation(suggestion)}
-                                className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150 border-b border-slate-100 last:border-b-0"
-                              >
-                                <span className="text-slate-800">{suggestion}</span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
                       {/* Pin precise location on a map */}
                       <button
                         type="button"
@@ -3350,11 +3322,15 @@ export default function PostEnquiry() {
                           <MapPin className="h-4 w-4 text-white" />
                         </div>
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <p className="font-chip text-xs sm:text-[13px] font-semibold text-black tracking-tight">Where do you want it?</p>
+                          <p className="font-chip text-xs sm:text-[13px] font-semibold text-black tracking-tight">click here</p>
                         </div>
                         {mapLocation && (
                           <Check className="h-5 w-5 text-green-800 flex-shrink-0" />
                         )}
+                        {/* Globe counterpart on the right edge — same size as the red location circle */}
+                        <div className="ml-auto w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                          <Globe className="h-4 w-4 text-white" />
+                        </div>
                       </button>
 
                       <MapLocationPicker

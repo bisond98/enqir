@@ -108,6 +108,7 @@ import {
   Footprints,
   Pen,
   Loader2,
+  Globe,
 } from 'lucide-react';
 
 // H-pattern stick-shift (manual gearbox) icon
@@ -1533,79 +1534,8 @@ export default function CreateListing() {
 
             {step === 3 && (
               <div className="max-w-xl mx-auto w-full space-y-3">
-                <div className="relative">
-                  <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                    <MapPin className="h-5 w-5 text-red-500 fill-red-500" />
-                  </div>
-                  <Input
-                    id="listing-location"
-                    value={locationSearch}
-                    onChange={(e) => {
-                      setLocationSearch(e.target.value);
-                      setLocationDropdownOpen(true);
-                      if (e.target.value === '') setLocation('');
-                    }}
-                    onFocus={() => setLocationDropdownOpen(true)}
-                    onBlur={() => setTimeout(() => setLocationDropdownOpen(false), 200)}
-                    placeholder="Search location (required)..."
-                    className="rounded-2xl h-12 sm:h-14 text-sm border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-10 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
-                    style={{ fontSize: '14px' }}
-                  />
-                  {locationDropdownOpen && locationSearch.length === 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
-                      {SELL_LOCATIONS.filter(loc => loc !== 'Other').map((loc) => (
-                        <button
-                          key={loc}
-                          type="button"
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            setLocation(loc);
-                            setLocationSearch(loc);
-                            setLocationDropdownOpen(false);
-                          }}
-                          className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150 border-b border-slate-100 last:border-b-0"
-                        >
-                          <span className="text-slate-800">{loc}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  {locationDropdownOpen && locationSearch.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-xl shadow-xl max-h-56 overflow-y-auto">
-                      {SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).length > 0 ? (
-                        SELL_LOCATIONS.filter(loc => loc.toLowerCase().includes(locationSearch.toLowerCase())).map((loc) => (
-                          <button
-                            key={loc}
-                            type="button"
-                            onMouseDown={(e) => {
-                              e.preventDefault();
-                              setLocation(loc);
-                              setLocationSearch(loc);
-                              setLocationDropdownOpen(false);
-                            }}
-                            className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150 border-b border-slate-100 last:border-b-0"
-                          >
-                            <span className="text-slate-800">{loc}</span>
-                          </button>
-                        ))
-                      ) : (
-                        <button
-                          type="button"
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                            setLocation(locationSearch);
-                            setLocationDropdownOpen(false);
-                          }}
-                          className="w-full px-4 py-3 text-left hover:bg-blue-50 focus:bg-blue-50 focus:outline-none text-sm sm:text-base font-medium transition-colors duration-150"
-                        >
-                          <span className="text-slate-800">{locationSearch}</span>
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Pin precise location on a map */}
+                {/* Pin precise location on a map — the search bar above
+                    "Where is it?" was removed per request */}
                 <button
                   type="button"
                   onClick={() => setMapPickerOpen(true)}
@@ -1615,11 +1545,15 @@ export default function CreateListing() {
                     <MapPin className="h-4 w-4 text-white" />
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <p className="font-chip text-xs sm:text-[13px] font-semibold text-black tracking-tight">Where is it?</p>
+                    <p className="font-chip text-xs sm:text-[13px] font-semibold text-black tracking-tight">click here</p>
                   </div>
                   {mapLocation && (
                     <Check className="h-5 w-5 text-green-800 flex-shrink-0" />
                   )}
+                  {/* Globe counterpart on the right edge — same size as the red location circle */}
+                  <div className="ml-auto w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                    <Globe className="h-4 w-4 text-white" />
+                  </div>
                 </button>
 
                 <MapLocationPicker
