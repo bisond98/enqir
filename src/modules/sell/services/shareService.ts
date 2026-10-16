@@ -156,6 +156,9 @@ export function generateShareMessage(listing: SellListing): string {
     message = `❗️ FOR SALE — ${message}`;
   }
 
+  // Enqir marketplace branding — appears at the end of shared text
+  message = `${message}\nEnqir.in - AI-powered demand-driven marketplace`;
+
   return message;
 }
 

@@ -273,5 +273,8 @@ export const buildEnquiryShareText = (enquiry: ShareableEnquiry, url: string): s
   }
   parts.push(url);
 
+  // Enqir marketplace branding — appears at the end of shared text
+  parts.push('Enqir.in - AI-powered demand-driven marketplace');
+
   return parts.join('\n');
 };
