@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, User, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck, Clock } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, User, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck, Clock, MoreHorizontal } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -85,6 +85,25 @@ export default function ListingDetail() {
   const [offeredPrice, setOfferedPrice] = useState('');
   const [sending, setSending] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // Overflow (⋯) menu — holds Save & Flag under the share button
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const moreBtnRef = useRef<HTMLButtonElement>(null);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      const t = e.target as Node;
+      if (moreBtnRef.current?.contains(t) || moreMenuRef.current?.contains(t)) return;
+      setMoreMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('touchstart', onDown);
+    };
+  }, [moreMenuOpen]);
 
   // Load initial saved state and toggle saved listings in profiles.savedListings (same pattern as savedEnquiries)
   useEffect(() => {
@@ -905,30 +924,46 @@ export default function ListingDetail() {
               </div>
 
               <div className="w-full flex items-center justify-between mt-8 mb-6 gap-4">
-                <button
-                  onClick={toggleSave}
-                  aria-label={saved ? 'Remove from saved' : 'Save listing'}
-                  className={`w-8 h-8 rounded-full border border-black flex items-center justify-center transition-all active:scale-95 ${saved ? 'bg-black text-white' : 'bg-black text-white hover:bg-gray-800'}`}
-                >
-                  <Bookmark className={`h-4 w-4 ${saved ? 'fill-white text-white' : 'text-white'}`} />
-                </button>
-                {!isOwner && listing?.sellerId && (
-                  <button
-                    onClick={() => navigate(`/report-user/${listing.sellerId}?listingId=${listing.id}`)}
-                    aria-label="Report listing"
-                    title="Report"
-                    className="w-8 h-8 rounded-full border border-black bg-black flex items-center justify-center text-white hover:bg-gray-800 transition-all active:scale-95"
-                  >
-                    <Flag className="h-4 w-4" />
-                  </button>
-                )}
                 {isOwner && (
                   <span className="inline-flex items-center gap-1 text-[9px] font-black text-white bg-blue-600 border border-black rounded-full px-3 py-1">
                     <BadgeCheck className="h-3 w-3 text-white" />
                     Your Listing
                   </span>
                 )}
-                <ShareButton listing={listing} className="[&>svg]:!text-white !w-8 !h-8 !rounded-full !border !border-black !bg-black flex items-center justify-center !p-0 hover:!bg-gray-800" />
+                <div className="flex flex-col items-end gap-2.5 ml-auto">
+                  <ShareButton listing={listing} className="[&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!text-black !text-black hover:!bg-transparent" />
+                  <button
+                    ref={moreBtnRef}
+                    onClick={() => setMoreMenuOpen(o => !o)}
+                    aria-label="More actions"
+                    aria-expanded={moreMenuOpen}
+                    title="More"
+                    className="p-1 -mr-1 flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
+                  >
+                    <MoreHorizontal className="h-5 w-5" />
+                  </button>
+                  {moreMenuOpen && (
+                    <div ref={moreMenuRef} className="w-48 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden py-1">
+                      <button
+                        onClick={() => { toggleSave(); setMoreMenuOpen(false); }}
+                        aria-label={saved ? 'Remove from saved' : 'Save listing'}
+                        className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black hover:bg-gray-50 border-b border-slate-200 transition-colors min-h-[44px]"
+                      >
+                        <Bookmark className={`h-4 w-4 flex-shrink-0 ${saved ? 'fill-black' : ''}`} />
+                        {saved ? 'Remove from saved' : 'Save listing'}
+                      </button>
+                      {!isOwner && listing?.sellerId && (
+                        <button
+                          onClick={() => { setMoreMenuOpen(false); navigate(`/report-user/${listing.sellerId}?listingId=${listing.id}`); }}
+                          className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black hover:bg-gray-50 transition-colors min-h-[44px]"
+                        >
+                          <Flag className="h-4 w-4 flex-shrink-0 text-red-600" />
+                          Flag / Report
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
               {/* Message Seller — integrated inside the main card (not for the owner) */}
               {!isOwner && (chatUnlocked ? (

@@ -32,7 +32,8 @@ import {
   Bot,
   Zap,
   ShieldCheck,
-  Users
+  Users,
+  MoreHorizontal
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { shortUserId } from '@/lib/userDisplayName';
@@ -447,6 +448,25 @@ const EnquiryDetail = () => {
 
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const shareBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Overflow (⋯) menu — holds Save & Flag under the share button
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const moreBtnRef = useRef<HTMLButtonElement>(null);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      const t = e.target as Node;
+      if (moreBtnRef.current?.contains(t) || moreMenuRef.current?.contains(t)) return;
+      setMoreMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('touchstart', onDown);
+    };
+  }, [moreMenuOpen]);
 
   const openShareMenu = async () => {
     if (!enquiry) return;
@@ -1134,35 +1154,47 @@ const EnquiryDetail = () => {
                     </p>
                   </div>
 
-                  {/* Save & Share - solid black circular buttons, matching the listing detail page */}
-                  <div className="flex justify-between items-center mt-14 sm:mt-16">
-                    <button
-                      onClick={handleSave}
-                      aria-label={savedEnquiries.includes(enquiry.id) ? 'Remove from saved' : 'Save enquiry'}
-                      title={savedEnquiries.includes(enquiry.id) ? 'Saved' : 'Save'}
-                      className="w-8 h-8 rounded-full border border-black bg-black text-white flex items-center justify-center hover:bg-gray-800 transition-all active:scale-95"
-                    >
-                      <Bookmark className={`h-4 w-4 ${savedEnquiries.includes(enquiry.id) ? 'fill-white text-white' : 'text-white'}`} />
-                    </button>
-                    {user && enquiry.userId !== user.uid && (
-                      <button
-                        onClick={() => navigate(`/report-user/${enquiry.userId}?enquiryId=${enquiry.id}`)}
-                        aria-label="Report enquiry"
-                        title="Report"
-                        className="w-8 h-8 rounded-full border border-black bg-black flex items-center justify-center text-white hover:bg-gray-800 transition-all active:scale-95"
-                      >
-                        <Flag className="h-4 w-4" />
-                      </button>
-                    )}
+                  {/* Share with ⋯ overflow beneath — Save & Flag live inside the popup */}
+                  <div className="mt-14 sm:mt-16 flex flex-col items-end gap-2.5">
                     <button
                       ref={shareBtnRef}
                       onClick={openShareMenu}
                       aria-label="Share enquiry"
                       title="Share"
-                      className="w-8 h-8 rounded-full border border-black bg-black flex items-center justify-center text-white hover:bg-gray-800 transition-all active:scale-95"
+                      className="p-1 flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
                     >
-                      <Share2 className="h-4 w-4" />
+                      <Share2 className="h-5 w-5" />
                     </button>
+                    <button
+                      ref={moreBtnRef}
+                      onClick={() => setMoreMenuOpen(o => !o)}
+                      aria-label="More actions"
+                      aria-expanded={moreMenuOpen}
+                      title="More"
+                      className="p-1 -mr-1 flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
+                    >
+                      <MoreHorizontal className="h-5 w-5" />
+                    </button>
+                    {moreMenuOpen && (
+                      <div ref={moreMenuRef} className="w-48 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden py-1">
+                        <button
+                          onClick={() => { handleSave(); setMoreMenuOpen(false); }}
+                          className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black hover:bg-gray-50 border-b border-slate-200 transition-colors min-h-[44px]"
+                        >
+                          <Bookmark className={`h-4 w-4 flex-shrink-0 ${savedEnquiries.includes(enquiry.id) ? 'fill-black' : ''}`} />
+                          {savedEnquiries.includes(enquiry.id) ? 'Remove from saved' : 'Save enquiry'}
+                        </button>
+                        {user && enquiry.userId !== user.uid && (
+                          <button
+                            onClick={() => { setMoreMenuOpen(false); navigate(`/report-user/${enquiry.userId}?enquiryId=${enquiry.id}`); }}
+                            className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black hover:bg-gray-50 transition-colors min-h-[44px]"
+                          >
+                            <Flag className="h-4 w-4 flex-shrink-0 text-red-600" />
+                            Flag / Report
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Social share targets — WhatsApp, WhatsApp Status, Instagram DM & Story */}

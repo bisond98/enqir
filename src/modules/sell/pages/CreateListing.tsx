@@ -2007,12 +2007,12 @@ export default function CreateListing() {
               onClick={goBack}
               disabled={step === 0}
               aria-label="Back"
-              className={`!p-0 ${step === totalSteps - 1 ? '!w-12 !h-12 sm:!w-14 sm:!h-14' : '!w-16 !h-16 sm:!w-20 sm:!h-20'} !rounded-full !bg-white hover:!bg-gray-50 ${step === 0 ? '!text-gray-400' : '!text-gray-900'} !border !border-black relative transition-all !duration-200 !shadow-[0_3px_8px_rgba(0,0,0,0.15)] hover:!shadow-[0_4px_12px_rgba(0,0,0,0.2)] active:!shadow-[0_1px_4px_rgba(0,0,0,0.12)] active:!translate-y-[2px] flex items-center justify-center flex-shrink-0 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0`}
+              className={`!p-0 ${step === totalSteps - 1 ? '!w-12 !h-12 sm:!w-14 sm:!h-14' : '!w-16 !h-16 sm:!w-20 sm:!h-20'} !rounded-full !bg-gradient-to-b !from-white !via-gray-50 !to-gray-200 hover:!via-gray-100 hover:!to-gray-300 ${step === 0 ? '!text-gray-400' : '!text-gray-900'} !border !border-black relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!scale-100`}
             >
               <ChevronLeft className={`${step === totalSteps - 1 ? '!h-5 !w-5 sm:!h-6 sm:!w-6' : '!h-7 !w-7 sm:!h-9 sm:!w-9'} relative z-10`} />
             </Button>
             {step < totalSteps - 1 ? (
-              <Button type="button" onClick={goNext} aria-label="Next" className="!p-0 !w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-full !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !border !border-black relative transition-all !duration-200 !shadow-[0_3px_8px_rgba(0,0,0,0.15)] hover:!shadow-[0_4px_12px_rgba(0,0,0,0.2)] active:!shadow-[0_1px_4px_rgba(0,0,0,0.12)] active:!translate-y-[2px] flex items-center justify-center flex-shrink-0 touch-manipulation select-none">
+              <Button type="button" onClick={goNext} aria-label="Next" className="!p-0 !w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-full !bg-gradient-to-b !from-blue-400 !via-blue-500 !to-blue-700 hover:!from-blue-300 hover:!via-blue-400 hover:!to-blue-600 !text-white !border !border-black relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none">
                 <ChevronRight className="!h-7 !w-7 sm:!h-9 sm:!w-9 relative z-10" />
               </Button>
             ) : (
