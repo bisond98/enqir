@@ -1541,17 +1541,18 @@ export default function CreateListing() {
                   onClick={() => setMapPickerOpen(true)}
                   className="w-full flex items-center gap-3 !rounded-2xl !border-[1.5px] !border-black bg-white hover:!bg-gray-50 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
                 >
-                  <div className="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <div className="relative z-10 w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                     <MapPin className="h-4 w-4 text-white" />
                   </div>
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <p className="font-chip text-xs sm:text-[13px] font-semibold text-black tracking-tight">click here</p>
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+                    <p className="w-full px-2 font-chip text-xs sm:text-[13px] font-semibold text-black tracking-tight truncate text-center">
+                      {mapLocation
+                        ? ([mapLocation.city, mapLocation.state].filter(Boolean).join(', ') || mapLocation.formatted_address || `${mapLocation.latitude.toFixed(4)}, ${mapLocation.longitude.toFixed(4)}`)
+                        : 'click here'}
+                    </p>
                   </div>
-                  {mapLocation && (
-                    <Check className="h-5 w-5 text-green-800 flex-shrink-0" />
-                  )}
                   {/* Globe counterpart on the right edge — same size as the red location circle */}
-                  <div className="ml-auto w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
+                  <div className="relative z-10 ml-auto w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                     <Globe className="h-4 w-4 text-white" />
                   </div>
                 </button>
@@ -1999,24 +2000,23 @@ export default function CreateListing() {
               </div>
             </div>
           )}
-          <div className="mt-2 flex flex-col-reverse sm:flex-row gap-3 sm:justify-between sm:items-center pt-2 border-t border-slate-100">
+          <div className="mt-2 flex items-center justify-center gap-4 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
               onClick={goBack}
               disabled={step === 0}
-              className="!bg-gradient-to-b !from-gray-100 !to-gray-200 hover:!from-gray-100 hover:!to-gray-200 !text-gray-900 !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] hover:!shadow-[0_3px_0_0_rgba(0,0,0,0.5),0_5px_8px_rgba(0,0,0,0.15)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0"
+              aria-label="Back"
+              className={`!p-0 ${step === totalSteps - 1 ? '!w-12 !h-12 sm:!w-14 sm:!h-14' : '!w-16 !h-16 sm:!w-20 sm:!h-20'} !rounded-full !bg-white hover:!bg-gray-50 ${step === 0 ? '!text-gray-400' : '!text-gray-900'} !border !border-black relative transition-all !duration-200 !shadow-[0_3px_8px_rgba(0,0,0,0.15)] hover:!shadow-[0_4px_12px_rgba(0,0,0,0.2)] active:!shadow-[0_1px_4px_rgba(0,0,0,0.12)] active:!translate-y-[2px] flex items-center justify-center flex-shrink-0 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0`}
             >
-              <ChevronLeft className="h-4 w-4 relative z-10" />
-              <span className="relative z-10">Back</span>
+              <ChevronLeft className={`${step === totalSteps - 1 ? '!h-5 !w-5 sm:!h-6 sm:!w-6' : '!h-7 !w-7 sm:!h-9 sm:!w-9'} relative z-10`} />
             </Button>
             {step < totalSteps - 1 ? (
-              <Button type="button" onClick={goNext} className="!bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative transition-all !duration-200 !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] hover:!shadow-[0_3px_0_0_rgba(0,0,0,0.5),0_5px_8px_rgba(0,0,0,0.15)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] font-bold !text-base sm:!text-lg h-14 sm:h-16 px-6 flex items-center gap-1 touch-manipulation select-none">
-                <span className="relative z-10">Next</span>
-                <ChevronRight className="h-4 w-4 relative z-10" />
+              <Button type="button" onClick={goNext} aria-label="Next" className="!p-0 !w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-full !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !border !border-black relative transition-all !duration-200 !shadow-[0_3px_8px_rgba(0,0,0,0.15)] hover:!shadow-[0_4px_12px_rgba(0,0,0,0.2)] active:!shadow-[0_1px_4px_rgba(0,0,0,0.12)] active:!translate-y-[2px] flex items-center justify-center flex-shrink-0 touch-manipulation select-none">
+                <ChevronRight className="!h-7 !w-7 sm:!h-9 sm:!w-9 relative z-10" />
               </Button>
             ) : (
-              <div className="w-full">
+              <div className="flex-1 min-w-0">
                 <Button
                   type="button"
                   onClick={publish}
@@ -2025,12 +2025,14 @@ export default function CreateListing() {
                 >
                   <span className="relative z-10">{publishing ? 'Selling…' : 'Sell'}</span>
                 </Button>
-                <p className="text-[6px] sm:text-[7px] text-center text-slate-400 font-medium mt-2">
-                  We do not offer anything for free to make you the product.
-                </p>
               </div>
             )}
           </div>
+          {step === totalSteps - 1 && (
+            <p className="text-[6px] sm:text-[7px] text-center text-slate-400 font-medium mt-2">
+              We do not offer anything for free to make you the product.
+            </p>
+          )}
         </CardContent>
       </Card>
     </SellShell>

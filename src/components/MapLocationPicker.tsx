@@ -619,7 +619,7 @@ export function MapLocationPicker({
             onFocus={() => { if (placeResults.length > 0) setPlaceOpen(true); }}
             placeholder="Search for a place (e.g., MVP Colony, Visakhapatnam)…"
             autoComplete="off"
-            className="w-full h-12 sm:h-14 pl-10 pr-9 rounded-2xl border-2 border-black bg-white text-base font-black text-black placeholder:text-[10px] sm:placeholder:text-xs placeholder:font-medium placeholder:text-gray-400 focus:outline-none focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] focus:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] !transition-all !duration-200 !transform focus:!scale-[0.98]"
+            className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full pl-10 pr-9 text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus:outline-none focus-visible:outline-none focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
           />
           {placeQuery && (
             <button
@@ -691,10 +691,10 @@ export function MapLocationPicker({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="bottom"
-          className="!z-[70] h-[92vh] max-h-[92vh] rounded-t-2xl border-t-2 border-black p-3 sm:p-5 flex flex-col gap-2 overflow-hidden pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
+          className="!z-[70] h-[92vh] max-h-[92vh] rounded-t-2xl border-t-2 border-black p-3 sm:p-5 flex flex-col gap-2 overflow-hidden pb-[calc(0.75rem+env(safe-area-inset-bottom))] [&>button:last-child]:!top-0 [&>button:last-child]:!right-2"
         >
           <SheetHeader className="text-left space-y-1 pr-8">
-            <SheetTitle className="text-base font-black tracking-tight">{title}</SheetTitle>
+            <SheetTitle className="text-base font-semibold tracking-tight text-gray-900">{title}</SheetTitle>
             <SheetDescription className="sr-only">
               Use my location or pick a point on the map, then confirm.
             </SheetDescription>
@@ -708,9 +708,9 @@ export function MapLocationPicker({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl w-[calc(100%-2rem)] sm:w-full border-2 border-black rounded-2xl p-4 sm:p-6 gap-3">
+      <DialogContent className="max-w-2xl w-[calc(100%-2rem)] sm:w-full border-2 border-black rounded-2xl p-4 sm:p-6 gap-3 [&>button:last-child]:!top-0 [&>button:last-child]:!right-2">
         <DialogHeader>
-          <DialogTitle className="text-lg font-black">{title}</DialogTitle>
+          <DialogTitle className="text-lg font-semibold tracking-tight">{title}</DialogTitle>
           <DialogDescription className="sr-only">
             Use my location or pick a point on the map, then confirm.
           </DialogDescription>
