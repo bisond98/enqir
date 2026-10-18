@@ -402,13 +402,13 @@ export default function PostEnquiry() {
 
   const [aiGenerating, setAiGenerating] = useState(false);
 
-  // Step 0 ("What are you looking for?") on mobile: when the keyboard shrinks
-  // the visual viewport, keep the magnifier step icon AND the heading clearly
-  // visible — scroll the icon block (#step-top) to the top instead of the
-  // heading alone, which hid the icon above it. Purely visual.
+  // Mobile only: reveal the current tab's step header (#step-top) whenever the
+  // form loads or the user moves to another tab, and re-reveal it when the
+  // on-screen keyboard shrinks the visual viewport — so the heading, input and
+  // nav buttons stay in view like the reference screenshot. Desktop keeps its
+  // own scroll behavior via scrollToInput().
   useEffect(() => {
-    if (step !== 0) return;
-    const vv = (window as any).visualViewport as VisualViewport | undefined;
+    if (typeof window === 'undefined' || window.innerWidth >= 640) return;
     const anchor = () => document.getElementById('step-top');
     // One-frame delayed so the browser finishes its own refocus scroll first
     const reveal = () => {
@@ -416,8 +416,9 @@ export default function PostEnquiry() {
         anchor()?.scrollIntoView({ block: 'start', behavior: 'smooth' });
       });
     };
-    // Initial load of this tab: show the heading near the top right away
+    // Initial load of this tab (or tab change): show the heading near the top right away
     reveal();
+    const vv = (window as any).visualViewport as VisualViewport | undefined;
     if (!vv) return;
     let lastHeight = vv.height;
     const onResize = () => {
@@ -549,8 +550,10 @@ export default function PostEnquiry() {
     }
   }, []);
 
-  // Scroll to top on step change
+  // Scroll to top on step change — desktop only; on mobile the reveal effect
+  // above owns tab-change scrolling so the two don't fight each other.
   const scrollToInput = () => {
+    if (window.innerWidth < 640) return;
     requestAnimationFrame(() => {
       const el = document.getElementById('step-top');
       if (el) {
