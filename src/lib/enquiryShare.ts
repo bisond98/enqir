@@ -264,9 +264,6 @@ export const buildEnquiryShareText = (enquiry: ShareableEnquiry, url: string): s
   else if (isAccommodationEnquiry(enquiry)) cta = 'Have a place like this? Respond here 👇';
   parts.push(cta);
 
-  // Enqir marketplace branding — appears at the very top of shared text, above the image
-  parts.unshift('Enqir.in - AI-powered demand-driven marketplace');
-
   // Gender preference is important context for shared stays — mention it
   if (isAccommodationEnquiry(enquiry)) {
     const gp = enquiry.details?.genderPreference;
