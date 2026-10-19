@@ -319,10 +319,11 @@ export default function CreateListing() {
   // chips above it. The deadline is always optional — the step is never
   // blocked, so the seller can leave it unset and the listing still publishes.
   const isDeadlineCategory = DEADLINE_CATEGORIES.has(category);
-  // The Condition step (index 4) is skipped entirely when the primary category
-  // is 'service' — New/Used makes no sense for services and the step has no
-  // other fields for that category.
-  const skipDetailsStep = category === 'service' && !isDeadlineCategory;
+  // The Condition step (index 4) is skipped entirely for service categories
+  // — Service, Musical Services, Real Estate Services, Cleaning Services
+  // (New/Used makes no sense there and the step has no other fields for them).
+  const CONDITION_SKIP_CATEGORIES = ['service', 'musical-services', 'real-estate-services', 'cleaning-services'];
+  const skipDetailsStep = CONDITION_SKIP_CATEGORIES.includes(category) && !isDeadlineCategory;
   const isSkippedStep = (s: number) => skipDetailsStep && s === 4;
   const [priceType, setPriceType] = useState<ListingPriceType>('fixed');
   const [price, setPrice] = useState<string>('');
@@ -2000,19 +2001,22 @@ export default function CreateListing() {
               </div>
             </div>
           )}
-          <div className="mt-2 flex items-center justify-center gap-4 pt-2 border-t border-slate-100">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={goBack}
-              disabled={step === 0}
-              aria-label="Back"
-              className={`!p-0 ${step === totalSteps - 1 ? '!w-12 !h-12 sm:!w-14 sm:!h-14' : '!w-16 !h-16 sm:!w-20 sm:!h-20'} !rounded-full !bg-gradient-to-b !from-white !via-gray-50 !to-gray-200 hover:!via-gray-100 hover:!to-gray-300 ${step === 0 ? '!text-gray-400' : '!text-gray-900'} !border !border-black relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!scale-100`}
-            >
-              <ChevronLeft className={`${step === totalSteps - 1 ? '!h-5 !w-5 sm:!h-6 sm:!w-6' : '!h-7 !w-7 sm:!h-9 sm:!w-9'} relative z-10`} />
-            </Button>
+          {/* Nav — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
+          <div className={`mt-2 flex items-center gap-4 pt-2 border-t border-slate-100 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
+            {/* Back circle — hidden entirely on the first tab (was a dead, disabled button there) */}
+            {step > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={goBack}
+                aria-label="Back"
+                className={`!p-0 ${step === totalSteps - 1 ? '!w-12 !h-12 sm:!w-14 sm:!h-14' : '!w-16 !h-16 sm:!w-20 sm:!h-20'} !rounded-full !bg-gradient-to-b !from-white !via-gray-50 !to-gray-200 hover:!via-gray-100 hover:!to-gray-300 !text-gray-900 !border !border-black relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none`}
+              >
+                <ChevronLeft className={`${step === totalSteps - 1 ? '!h-5 !w-5 sm:!h-6 sm:!w-6' : '!h-7 !w-7 sm:!h-9 sm:!w-9'} relative z-10`} />
+              </Button>
+            )}
             {step < totalSteps - 1 ? (
-              <Button type="button" onClick={goNext} aria-label="Next" className="!p-0 !w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-full !bg-gradient-to-b !from-blue-400 !via-blue-500 !to-blue-700 hover:!from-blue-300 hover:!via-blue-400 hover:!to-blue-600 !text-white !border !border-black relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none">
+              <Button type="button" onClick={goNext} aria-label="Next" className="!p-0 !w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-full !bg-gradient-to-r !from-pal-blue !to-blue-600 hover:!from-blue-500 hover:!to-blue-700 !text-white !border !border-black relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none">
                 <ChevronRight className="!h-7 !w-7 sm:!h-9 sm:!w-9 relative z-10" />
               </Button>
             ) : (
