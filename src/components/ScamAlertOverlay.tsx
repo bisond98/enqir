@@ -16,8 +16,8 @@ const SCAM_ALERT_IMG = "/scam-alert.png";
 
 /**
  * Scam-alert caution overlay — shown before Call/Chat (and after successful
- * response submission). Exact replica of the OTP sign-in page header (brush
- * swash + Enqir wordmark) above the scam alert image, red X close, 10s
+ * response submission). Poster image only (brand heading removed), red X
+ * close, 10s
  * auto-dismiss with a smooth left-to-right black progress bar that freezes
  * while pressed, tap-outside close, and per-key dont-show-again persisted in
  * localStorage.
@@ -142,55 +142,7 @@ const ScamAlertOverlay = ({ dismissKey, onContinue, storageKey = "scamAlertDismi
         >
           <X className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2.5} />
         </button>
-        {/* Brand heading — exact replica of the OTP sign-in page header (brush swash + Enqir wordmark), centered */}
-        <div className="w-full flex justify-center">
-          <div className="text-center select-none relative inline-flex items-center justify-center px-8 sm:px-12 py-8 sm:py-10">
-            {/* Painterly brush swash — same tapered stroke as the OTP page */}
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 640 260"
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              preserveAspectRatio="none"
-            >
-              <defs>
-                <linearGradient id="brushSwashScamShared" x1="0" y1="0" x2="1" y2="0.6">
-                  <stop offset="0%" stopColor="#eceef0" />
-                  <stop offset="50%" stopColor="#e4e7ea" />
-                  <stop offset="100%" stopColor="#dcdfE3" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M18 158
-                   C 40 120, 96 96, 168 92
-                   C 250 86, 330 60, 420 62
-                   C 500 64, 570 84, 614 108
-                   C 620 112, 620 120, 610 126
-                   C 560 158, 470 178, 380 182
-                   C 290 186, 190 192, 112 184
-                   C 66 180, 30 172, 18 158 Z"
-                fill="url(#brushSwashScamShared)"
-              />
-              <path
-                d="M60 150 C 170 118, 330 96, 520 108"
-                stroke="#f2f3f5"
-                strokeWidth="16"
-                strokeLinecap="round"
-                fill="none"
-                opacity="0.5"
-              />
-              <path
-                d="M96 182 C 180 194, 300 192, 420 178"
-                stroke="#d2d6da"
-                strokeWidth="5"
-                strokeLinecap="round"
-                fill="none"
-                opacity="0.45"
-              />
-            </svg>
-            <span className="relative text-8xl sm:text-9xl font-extrabold tracking-tight text-gray-950">Enqir</span>
-          </div>
-        </div>
-        <img src={SCAM_ALERT_IMG} alt="Scam Alert — safety precautions before contacting a seller" className="w-full h-auto max-h-[48vh] object-contain mx-auto" />
+        <img src={SCAM_ALERT_IMG} alt="Scam Alert — safety precautions before contacting a seller" className="w-full h-auto max-h-[70vh] object-contain mx-auto" />
         {/* Dont-show-again — red chip, placed high for comfortable mobile tapping */}
         <div className="py-3 flex justify-center">
           <button
