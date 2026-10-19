@@ -1154,16 +1154,16 @@ const EnquiryDetail = () => {
                     </p>
                   </div>
 
-                  {/* Share with ⋯ overflow beneath — Save & Flag live inside the popup */}
-                  <div className="mt-14 sm:mt-16 flex flex-col items-end gap-2.5">
+                  {/* Share on the right + ⋯ on the left in one line (mobile) — stacked on desktop; Save & Flag popup floats without shifting layout */}
+                  <div className="mt-14 sm:mt-16 flex flex-row-reverse items-center justify-between sm:flex-col sm:items-end sm:gap-2.5 relative">
                     <button
                       ref={shareBtnRef}
                       onClick={openShareMenu}
                       aria-label="Share enquiry"
                       title="Share"
-                      className="p-1 flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
+                      className="w-11 h-11 rounded-full bg-green-950 hover:bg-green-900 flex items-center justify-center text-white shadow-[0_3px_0_0_rgba(0,0,0,0.25)] transition-all active:scale-95 active:shadow-[0_1px_0_0_rgba(0,0,0,0.25)] touch-manipulation"
                     >
-                      <Share2 className="h-5 w-5" />
+                      <Share2 className="h-5 w-5 text-white" />
                     </button>
                     <button
                       ref={moreBtnRef}
@@ -1171,12 +1171,12 @@ const EnquiryDetail = () => {
                       aria-label="More actions"
                       aria-expanded={moreMenuOpen}
                       title="More"
-                      className="p-1 -mr-1 flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
+                      className="w-11 h-11 -ml-1 sm:ml-0 sm:-mr-1 rounded-full bg-black hover:bg-gray-800 flex items-center justify-center text-white shadow-[0_3px_0_0_rgba(0,0,0,0.25)] transition-all active:scale-95 active:shadow-[0_1px_0_0_rgba(0,0,0,0.25)] touch-manipulation"
                     >
-                      <MoreHorizontal className="h-5 w-5" />
+                      <MoreHorizontal className="h-5 w-5 text-white" />
                     </button>
                     {moreMenuOpen && (
-                      <div ref={moreMenuRef} className="w-48 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden py-1">
+                      <div ref={moreMenuRef} className="absolute left-0 top-full mt-1 sm:left-auto sm:right-0 w-48 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden py-1 z-30">
                         <button
                           onClick={() => { handleSave(); setMoreMenuOpen(false); }}
                           className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black hover:bg-gray-50 border-b border-slate-200 transition-colors min-h-[44px]"
