@@ -874,7 +874,7 @@ const EnquiryDetail = () => {
                       const sentence = `Need ${parts.join(' ')}${deadlinePhrase}`;
                       return (
                         <div className="flex justify-center">
-                          <p className="mt-3 text-xs sm:text-sm font-bold text-white bg-red-600 border border-black rounded-xl px-4 py-2 shadow-[0_3px_0_0_rgba(0,0,0,0.85)]">
+                          <p className="mt-3 text-[12px] sm:text-sm font-chip font-black tracking-tight leading-snug text-white bg-red-600 border border-black rounded-xl px-4 py-2">
                             {sentence}
                           </p>
                         </div>
@@ -894,7 +894,7 @@ const EnquiryDetail = () => {
                       const sentence = `Need ${parts.join(' ')}${deadlinePhrase}`;
                       return (
                         <div className="flex justify-center">
-                          <p className="mt-3 text-xs sm:text-sm font-bold text-white bg-red-600 border border-black rounded-xl px-4 py-2 shadow-[0_3px_0_0_rgba(0,0,0,0.85)]">
+                          <p className="mt-3 text-[12px] sm:text-sm font-chip font-black tracking-tight leading-snug text-white bg-red-600 border border-black rounded-xl px-4 py-2">
                             {sentence}
                           </p>
                         </div>
@@ -979,23 +979,28 @@ const EnquiryDetail = () => {
                                 {c.value}
                               </span>
                             ) : c.highlight && (c.label === 'Looking to' || c.label === 'Land / Plot') ? (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-red-600 rounded-lg px-2.5 py-1">
                                 {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
                                 {c.value}
                               </span>
                             ) : c.highlight && (c.label === 'Stay type' || c.label === null) ? (
-                              <span key={c.label || c.value} className="inline-flex items-baseline gap-2 text-sm sm:text-base font-black font-chip text-white bg-red-600 border border-black rounded-lg px-3 py-1.5 whitespace-nowrap">
+                              <span key={c.label || c.value} className="inline-flex items-baseline gap-2 text-sm sm:text-base font-black font-chip text-white bg-red-600 rounded-lg px-3 py-1.5 whitespace-nowrap">
                                 {c.label && <span className="text-[7px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
                                 <span className="whitespace-nowrap">{c.value}</span>
                               </span>
+                            ) : c.highlight && c.value === 'Open to discussion' ? (
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-green-600 border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black rounded-lg px-2.5 py-1">
+                                {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
+                                {c.value}
+                              </span>
                             ) : c.highlight ? (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-red-600 border border-black rounded-lg px-2.5 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-red-600 rounded-lg px-2.5 py-1">
                                 {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black bg-white border border-black/60 rounded-lg px-2 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black bg-white border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black/60 rounded-lg px-2 py-1">
                                 {!(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.label && <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
@@ -1017,16 +1022,16 @@ const EnquiryDetail = () => {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 items-stretch">
-                    <div className="bg-[#001f3f] rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                    <div className="bg-white rounded-2xl p-3 sm:p-3.5 !border-t-[1.5px] !border-r-[1.5px] !border-b-[4px] !border-l-[1.5px] !border-black/50 relative overflow-hidden">
                       <div className="flex items-center gap-2.5 relative z-10">
-                        <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 shadow-sm">
                           <IndianRupee className="h-4 w-4 text-black" />
                         </span>
-                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">{budgetLabel}</span>
-                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-white truncate leading-snug">
+                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">{budgetLabel}</span>
+                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-black truncate leading-snug">
                           {enquiry.budgetOpenToDiscussion ? (
                             <span className="inline-flex items-center gap-1.5">
-                              <MessageCircle className="h-4 w-4 text-white" /> Open to discussion
+                              <MessageCircle className="h-4 w-4 text-black" /> Open to discussion
                             </span>
                           ) : (
                             formatBudget(enquiry.budget)
@@ -1035,46 +1040,46 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-[#001f3f] rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                    <div className="bg-white rounded-2xl p-3 sm:p-3.5 !border-t-[1.5px] !border-r-[1.5px] !border-b-[4px] !border-l-[1.5px] !border-black/50 relative overflow-hidden">
                       <div className="flex items-center gap-2.5 relative z-10">
                         <span className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
                           <MapPin className="h-4 w-4 text-white" />
                         </span>
-                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">Location</span>
-                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-white truncate leading-snug" title={enquiry.location}>{enquiry.location}</p>
+                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">Location</span>
+                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-black truncate leading-snug" title={enquiry.location}>{enquiry.location}</p>
                       </div>
                     </div>
                     
-                    <div className="bg-[#001f3f] rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                    <div className="bg-white rounded-2xl p-3 sm:p-3.5 !border-t-[1.5px] !border-r-[1.5px] !border-b-[4px] !border-l-[1.5px] !border-black/50 relative overflow-hidden">
                       <div className="flex items-center gap-2.5 relative z-10">
                         <span className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Calendar className="h-4 w-4 text-white" />
                         </span>
-                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">Deadline</span>
+                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">Deadline</span>
                         <div className="flex-1 min-w-0 flex items-center gap-2">
                           {enquiry.deadline ? (
                             <>
                               {formatDeadlineReadable(enquiry.deadline) && (
-                                <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-white leading-snug truncate">
+                                <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-black leading-snug truncate">
                                   {formatDeadlineReadable(enquiry.deadline)}
                                 </p>
                               )}
                               <span className="shrink-0"><CountdownTimer deadline={enquiry.deadline} /></span>
                             </>
                           ) : (
-                            <p className="text-xs text-white/60 leading-snug">No deadline</p>
+                            <p className="text-xs text-gray-500 leading-snug">No deadline</p>
                           )}
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-[#001f3f] rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                    <div className="bg-white rounded-2xl p-3 sm:p-3.5 !border-t-[1.5px] !border-r-[1.5px] !border-b-[4px] !border-l-[1.5px] !border-black/50 relative overflow-hidden">
                       <div className="flex items-center gap-2.5 relative z-10">
-                        <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Clock className="h-4 w-4 text-black" />
                         </span>
-                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">Posted</span>
-                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-white truncate leading-snug" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">Posted</span>
+                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-black truncate leading-snug" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
                           {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
                         </p>
                       </div>
