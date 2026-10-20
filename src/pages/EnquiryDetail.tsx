@@ -995,7 +995,7 @@ const EnquiryDetail = () => {
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black bg-white border border-black/15 rounded-lg px-2 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black bg-white border border-black/60 rounded-lg px-2 py-1">
                                 {!(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.label && <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
@@ -1009,88 +1009,74 @@ const EnquiryDetail = () => {
 
                     {/* Description — below the detail chips */}
                     <div className="mt-6 sm:mt-7">
-                                            <div className="bg-gray-200 rounded-2xl p-4 sm:p-5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                      <div className="bg-white rounded-2xl p-4 sm:p-5 !border-[0.5px] !border-black/60 relative overflow-hidden">
                         <h3 className="text-[10px] sm:text-[10px] font-extrabold text-black mb-2 uppercase tracking-wider">Description</h3>
                         <p className="text-xs sm:text-xs md:text-sm leading-relaxed text-gray-800" style={{ lineHeight: '1.7', fontWeight: 500 }}>{enquiry.description}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-stretch gap-3 sm:gap-4">
-                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
-
-                      <div className="flex items-center gap-3 sm:gap-3 relative z-10">
-                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <IndianRupee className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">{budgetLabel}</p>
-                          <p className="text-base sm:text-base md:text-lg font-bold text-black break-words leading-tight">
-                            {enquiry.budgetOpenToDiscussion ? (
-                              <span className="inline-flex items-center gap-1.5">
-                                <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-black" /> Open to discussion
-                              </span>
-                            ) : (
-                              formatBudget(enquiry.budget)
-                            )}
-                          </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 items-stretch">
+                    <div className="bg-[#001f3f] rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                      <div className="flex items-center gap-2.5 relative z-10">
+                        <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <IndianRupee className="h-4 w-4 text-black" />
+                        </span>
+                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">{budgetLabel}</span>
+                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-white truncate leading-snug">
+                          {enquiry.budgetOpenToDiscussion ? (
+                            <span className="inline-flex items-center gap-1.5">
+                              <MessageCircle className="h-4 w-4 text-white" /> Open to discussion
+                            </span>
+                          ) : (
+                            formatBudget(enquiry.budget)
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-[#001f3f] rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                      <div className="flex items-center gap-2.5 relative z-10">
+                        <span className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <MapPin className="h-4 w-4 text-white" />
+                        </span>
+                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">Location</span>
+                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-white truncate leading-snug" title={enquiry.location}>{enquiry.location}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-[#001f3f] rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                      <div className="flex items-center gap-2.5 relative z-10">
+                        <span className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <Calendar className="h-4 w-4 text-white" />
+                        </span>
+                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">Deadline</span>
+                        <div className="flex-1 min-w-0 flex items-center gap-2">
+                          {enquiry.deadline ? (
+                            <>
+                              {formatDeadlineReadable(enquiry.deadline) && (
+                                <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-white leading-snug truncate">
+                                  {formatDeadlineReadable(enquiry.deadline)}
+                                </p>
+                              )}
+                              <span className="shrink-0"><CountdownTimer deadline={enquiry.deadline} /></span>
+                            </>
+                          ) : (
+                            <p className="text-xs text-white/60 leading-snug">No deadline</p>
+                          )}
                         </div>
                       </div>
                     </div>
                     
-                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
-
-                      <div className="flex items-center gap-3 sm:gap-3 relative z-10">
-                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <MapPin className="h-6 w-6 sm:h-6 sm:w-6 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Location</p>
-                          <p className="text-sm sm:text-sm md:text-base font-bold text-black break-words leading-tight">{enquiry.location}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
-
-                      <div className="flex items-center gap-3 sm:gap-3 relative z-10">
-                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-red-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <Calendar className="h-6 w-6 sm:h-6 sm:w-6 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Deadline</p>
-                          <div className="text-sm sm:text-sm md:text-base font-bold text-black leading-tight flex items-center gap-2 flex-wrap">
-                            {enquiry.deadline ? (
-                              <>
-                                {formatDeadlineReadable(enquiry.deadline) && (
-                                  <span className="text-xs sm:text-sm font-medium">
-                                    {formatDeadlineReadable(enquiry.deadline)}
-                                  </span>
-                                )}
-                                <div>
-                                  <CountdownTimer deadline={enquiry.deadline} />
-                                </div>
-                              </>
-                            ) : (
-                              <span className="text-gray-500 text-xs sm:text-xs">No deadline</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
-
-                      <div className="flex items-center gap-3 sm:gap-3 relative z-10">
-                        <div className="w-12 h-12 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <Clock className="h-6 w-6 sm:h-6 sm:w-6 text-black" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[11px] sm:text-xs text-gray-500 mb-1.5 font-semibold uppercase tracking-wide">Posted</p>
-                          <p className="text-xs sm:text-sm md:text-base font-bold text-black break-words leading-tight">
-                            {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
-                          </p>
-                        </div>
+                    <div className="bg-[#001f3f] rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                      <div className="flex items-center gap-2.5 relative z-10">
+                        <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <Clock className="h-4 w-4 text-black" />
+                        </span>
+                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">Posted</span>
+                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-white truncate leading-snug" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                          {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1133,9 +1119,14 @@ const EnquiryDetail = () => {
 
                   {enquiry.notes && (
                     <div className="mt-5 sm:mt-6 mb-4">
-                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
-                        <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>Additional Notes</h3>
-                        <p className="text-xs sm:text-xs md:text-sm text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
+                      <div className="bg-[#001f3f] rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                        <div className="flex items-start gap-2.5 relative z-10">
+                          <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <MessageSquare className="h-4 w-4 text-black" />
+                          </span>
+                          <h3 className="w-[78px] shrink-0 pt-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">Additional Notes</h3>
+                          <p className="flex-1 min-w-0 text-[11px] sm:text-xs text-white/90" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
+                        </div>
                       </div>
                     </div>
                   )}
