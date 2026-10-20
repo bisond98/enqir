@@ -1082,17 +1082,6 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/50 relative overflow-hidden">
-                      <div className="flex items-center gap-2.5 relative z-10">
-                        <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <Clock className="h-4 w-4 text-black" />
-                        </span>
-                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">Posted</span>
-                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-black truncate leading-snug" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
-                          {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
-                        </p>
-                      </div>
-                    </div>
                   </div>
 
                   {/* Reference Images Section - now below the Budget/Location/Deadline/Posted chips */}
@@ -1144,6 +1133,15 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Posted date — chip-sized line under Additional Notes (same size as the spec chips above) */}
+                  <div className="mt-5 sm:mt-6 mb-4 flex justify-end">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black bg-white border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black/60 rounded-lg px-2 py-1" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                      <Clock className="h-3 w-3 text-black" />
+                      <span className="text-[8px] font-semibold text-gray-400 uppercase tracking-wide">Posted</span>
+                      {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
+                    </span>
+                  </div>
 
                   {/* Posted by — poster's profile pic (or person icon) beside username / #userXXXX */}
                   <div className="mt-10 sm:mt-12 mb-4 flex items-center justify-end gap-1.5 pr-1">
