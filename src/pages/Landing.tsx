@@ -31,6 +31,7 @@ const MobileEnquiryCapsules: React.FC<{
 }> = ({ enquiries, isOutdated }) => {
   const glassRef = useRef<HTMLDivElement | null>(null);
   const trackRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const navigate = useNavigate();
 
   // Stable trio: each lane keeps its enquiry until it leaves the live pool.
   // The home deck reshuffles its 3 picks every 10s — mirroring that here would
@@ -94,10 +95,15 @@ const MobileEnquiryCapsules: React.FC<{
   }, []);
 
   return (
-    <div className="relative w-full h-[340px] mb-4 sm:hidden">
+    // Whole section (glass + padding + gaps) → Live Enquiries; capsules stop
+    // propagation below so a title tap only opens that enquiry
+    <div
+      className="relative w-full h-[340px] mb-4 sm:hidden cursor-pointer"
+      onClick={() => navigate('/enquiries')}
+    >
       {/* Magnifier glass, placed under the "Enquiries." title (absolute — never pushes other content down) */}
       <div ref={glassRef} className="enquiry-search-glass absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true">
-        <Search className="h-[330px] w-[330px] text-black" strokeWidth={2} />
+        <Search className="h-[370px] w-[370px] text-black" strokeWidth={2} />
       </div>
 
       {/* Negative delays = phases start mid-cycle, so all three glide from
@@ -112,9 +118,9 @@ const MobileEnquiryCapsules: React.FC<{
           <Link
             to={isOutdated(enquiry) ? '#' : `/enquiry/${enquiry.id}`}
             onClick={(e) => {
+              e.stopPropagation();
               if (isOutdated(enquiry)) {
                 e.preventDefault();
-                e.stopPropagation();
               }
             }}
             className="block"
