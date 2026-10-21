@@ -2423,7 +2423,7 @@ body {
   z-index: 30;
 }
 .enquiry-capsule-track.is-magnified .enquiry-capsule {
-  transform: scale(1.7);
+  transform: scale(1.35);
 }
 .enquiry-search-glass {
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
