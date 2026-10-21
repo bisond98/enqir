@@ -119,8 +119,8 @@ const MobileEnquiryCapsules: React.FC<{
             }}
             className="block"
           >
-            <span className={`enquiry-capsule inline-flex items-center gap-1.5 max-w-[64vw] bg-black text-white font-serif font-semibold text-[8px] leading-none px-2 py-1 rounded-full shadow-sm ${isOutdated(enquiry) ? 'opacity-50' : ''}`}>
-              <span className="inline-flex items-center bg-red-600 text-white font-sans font-black text-[7px] uppercase tracking-wide rounded-full px-1.5 py-[3px] flex-shrink-0">Need</span>
+            <span className={`enquiry-capsule inline-flex items-center gap-1 max-w-[64vw] bg-black text-white font-serif font-semibold text-[7px] leading-none px-1.5 py-[3px] rounded-full shadow-sm ${isOutdated(enquiry) ? 'opacity-50' : ''}`}>
+              <span className="inline-flex items-center bg-red-600 text-white font-sans font-black text-[6px] uppercase tracking-wide rounded-full px-1 py-[2px] flex-shrink-0">Need</span>
               <span className="truncate">{enquiry.title}</span>
             </span>
           </Link>
