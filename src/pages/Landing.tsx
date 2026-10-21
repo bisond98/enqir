@@ -19,6 +19,117 @@ import { toast } from "@/hooks/use-toast";
 import { buildEnquiryShareText } from "@/lib/enquiryShare";
 import ShareMenu from "@/components/ShareMenu";
 
+/* ── Mobile home "Enquiries" section: floating title capsules + magnifier glass ──
+   Presentation only — reuses the same 3 enquiries the card deck shows.
+   Each title is a black capsule gliding from the left screen edge to the right
+   edge; while a capsule drifts under the magnifier glass it scales up (like a
+   real magnifier). Tapping a capsule opens that enquiry's detail page. */
+const MOBILE_CAPSULE_TOPS = ['32%', '46%', '60%'];
+const MobileEnquiryCapsules: React.FC<{
+  enquiries: any[];
+  isOutdated: (enquiry: any) => boolean;
+}> = ({ enquiries, isOutdated }) => {
+  const glassRef = useRef<HTMLDivElement | null>(null);
+  const trackRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  // Stable trio: each lane keeps its enquiry until it leaves the live pool.
+  // The home deck reshuffles its 3 picks every 10s — mirroring that here would
+  // remount the capsules and restart their glide (the "disappearing" glitch).
+  const [lanes, setLanes] = useState<Array<any | null>>([null, null, null]);
+  useEffect(() => {
+    setLanes((prev) => {
+      const pool = enquiries.filter((e) => e && e.id);
+      if (pool.length === 0) return prev;
+      const poolIds = new Set(pool.map((e) => e.id));
+      const kept = prev.map((e) => (e && poolIds.has(e.id) ? e : null));
+      // Re-fill empty lanes from pool entries not already shown
+      const used = new Set(kept.filter(Boolean).map((e: any) => e.id));
+      let cursor = 0;
+      const filled = kept.map((slot) => {
+        if (slot) return slot;
+        while (cursor < pool.length && used.has(pool[cursor].id)) cursor++;
+        const pick = pool[cursor];
+        if (pick) used.add(pick.id);
+        cursor++;
+        return pick || null;
+      });
+      const unchanged = filled.every((e, i) => e === prev[i]);
+      return unchanged ? prev : filled;
+    });
+  }, [enquiries]);
+
+  // Magnifier effect: grow the glass + only the ONE capsule closest to its centre
+  useEffect(() => {
+    let rafId = 0;
+    const tick = () => {
+      const glass = glassRef.current;
+      if (glass) {
+        const g = glass.getBoundingClientRect();
+        const cx = g.left + g.width / 2;
+        const cy = g.top + g.height / 2;
+        const r = g.width * 0.4; // radius of the drawn circle (lucide Search)
+        let bestIndex = -1;
+        let bestDist = Infinity;
+        trackRefs.current.forEach((el, i) => {
+          if (!el) return;
+          const b = el.getBoundingClientRect();
+          const dx = b.left + b.width / 2 - cx;
+          const dy = b.top + b.height / 2 - cy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < r && dist < bestDist) {
+            bestDist = dist;
+            bestIndex = i;
+          }
+        });
+        // Only the single nearest capsule is magnified at any moment
+        trackRefs.current.forEach((el, i) => {
+          if (el) el.classList.toggle('is-magnified', i === bestIndex);
+        });
+        glass.classList.toggle('is-active', bestIndex !== -1);
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
+  return (
+    <div className="relative w-full h-[340px] mb-4 sm:hidden">
+      {/* Magnifier glass, placed under the "Enquiries." title (absolute — never pushes other content down) */}
+      <div ref={glassRef} className="enquiry-search-glass absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true">
+        <Search className="h-[330px] w-[330px] text-black" strokeWidth={2} />
+      </div>
+
+      {/* Negative delays = phases start mid-cycle, so all three glide from
+          the very first frame instead of waiting parked off-screen */}
+      {lanes.map((enquiry, index) => enquiry && (
+        <div
+          key={`capsule-lane-${index}`}
+          ref={(el) => { trackRefs.current[index] = el; }}
+          className="enquiry-capsule-track absolute left-0"
+          style={{ top: MOBILE_CAPSULE_TOPS[index] || '46%', animationDelay: `${-index * 4.3}s` }}
+        >
+          <Link
+            to={isOutdated(enquiry) ? '#' : `/enquiry/${enquiry.id}`}
+            onClick={(e) => {
+              if (isOutdated(enquiry)) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
+            className="block"
+          >
+            <span className={`enquiry-capsule inline-flex items-center gap-1.5 max-w-[64vw] bg-black text-white font-serif font-semibold text-[8px] leading-none px-2 py-1 rounded-full shadow-sm ${isOutdated(enquiry) ? 'opacity-50' : ''}`}>
+              <span className="inline-flex items-center bg-red-600 text-white font-sans font-black text-[7px] uppercase tracking-wide rounded-full px-1.5 py-[3px] flex-shrink-0">Need</span>
+              <span className="truncate">{enquiry.title}</span>
+            </span>
+          </Link>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const Landing = () => {
   // Enquiry card share menu state (shared by mobile + desktop card variants)
   const [shareMenuEnquiry, setShareMenuEnquiry] = useState<any>(null);
@@ -2093,8 +2204,15 @@ const Landing = () => {
             {/* Recent Enquiries - Overlapped Deck Layout */}
             {filteredEnquiries.length > 0 ? (
               <>
+              {/* Mobile home: floating enquiry-title capsules + magnifier glass (card deck hidden on mobile) */}
+              {windowWidth < 640 && (
+                <MobileEnquiryCapsules
+                  enquiries={filteredEnquiries}
+                  isOutdated={isEnquiryOutdated}
+                />
+              )}
               {/* Container for overlapped cards - horizontal right-to-left layout */}
-              <div className="relative mb-3 sm:mb-4 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start bg-white rounded-2xl sm:rounded-3xl" style={{ 
+              <div className={`relative ${windowWidth < 640 ? 'hidden' : ''} mb-3 sm:mb-4 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex justify-center items-start bg-white rounded-2xl sm:rounded-3xl`} style={{ 
                 backgroundColor: '#ffffff',
                 background: '#ffffff',
                 // Creative: Add subtle elevation effect when cards are touched
@@ -2263,7 +2381,20 @@ const Landing = () => {
                     const initialY = isTinyMobile ? 5 : (isSmallMobile ? 6 : (isMobile ? 10 : 18));
                     const initialRotateZ = isMobile ? 0 : (isSmallMobile ? -1 : -6);
                     const initialRotateY = isMobile ? 0 : (isSmallMobile ? 2 : 12);
-                    
+
+                    // Mobile (stacked 3-card view): title capsule floats across the full screen width — styling only
+                    const mobileCapsuleSlide = (!showAllEnquiries && windowWidth < 640)
+                      ? (() => {
+                          // capsule's resting x on screen = card left edge + card border + content padding
+                          const naturalX = windowWidth / 2 - cardCenterOffset - shiftAmount + (index * shiftAmount) + 11.5;
+                          return {
+                            '--capsule-slide-from': `calc(${-naturalX}px)`,
+                            '--capsule-slide-to': `calc(${windowWidth}px - 100% - ${naturalX}px)`,
+                            animationDelay: `${index * 1.6}s`,
+                          } as React.CSSProperties;
+                        })()
+                      : undefined;
+
                     return (
                     <motion.div
                       key={enquiry.id}
@@ -2399,9 +2530,9 @@ const Landing = () => {
                           }}
                         />
                       )}
-                      <div className={`relative z-10 ${windowWidth >= 640 ? 'flex flex-col h-full' : ''} overflow-hidden rounded-xl sm:rounded-2xl lg:rounded-3xl`}>
+                      <div className={`relative z-10 ${windowWidth >= 640 ? 'flex flex-col h-full' : ''} ${windowWidth < 640 ? 'overflow-visible' : 'overflow-hidden'} rounded-xl sm:rounded-2xl lg:rounded-3xl`}>
                       {/* Card Header - Compact on mobile, spacious on desktop - Fixed height for alignment */}
-                      <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px]' : 'px-3 py-2 sm:px-3.5 sm:py-2.5 lg:px-4 lg:py-3'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''} relative`}>
+                      <div className={`bg-gradient-to-r from-gray-900 via-black to-gray-900 ${windowWidth < 640 ? 'px-2 py-1.5 min-h-[36px] rounded-t-xl' : 'px-3 py-2 sm:px-3.5 sm:py-2.5 lg:px-4 lg:py-3'} ${windowWidth >= 640 ? 'flex-shrink-0' : ''} relative`}>
                         <div className="absolute inset-0 flex items-center justify-center">
                           <span className={`text-[8px] sm:text-[9px] lg:text-xs font-medium text-white`}>Need</span>
                         </div>
@@ -2452,12 +2583,15 @@ const Landing = () => {
                       
                       {/* Card Content - Professional Layout with Better Spacing */}
                       <div className="px-2.5 pt-2.5 pb-6 sm:px-3 sm:pt-3 sm:pb-0 flex-1 flex flex-col overflow-hidden min-h-0">
-                      {/* Title - Professional Typography */}
-                      <h3 className={`text-xs sm:text-sm font-semibold leading-tight line-clamp-2 font-serif text-gray-900 pb-1.5 mb-2 sm:pb-2 sm:mb-2.5 ${
-                        isEnquiryOutdated(enquiry) ? 'text-gray-400' : ''
-                      } w-full overflow-hidden`}>
-                        {enquiry.title && enquiry.title.length > 15 ? `${enquiry.title.substring(0, 15)}...` : enquiry.title}
-                      </h3>
+                      {/* Title - black capsule; on mobile it floats across the whole screen width, on larger screens slides inside the card (styling only) */}
+                      <div className={`w-full pb-1.5 mb-2 sm:pb-2 sm:mb-2.5 ${windowWidth < 640 ? '' : 'overflow-hidden'}`} style={{ containerType: 'inline-size' }}>
+                        <h3 className={`enquiry-title-capsule inline-flex items-center max-w-full truncate bg-black text-white font-serif font-semibold text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-full leading-none shadow-sm ${
+                          isEnquiryOutdated(enquiry) ? 'opacity-60' : ''
+                        } ${mobileCapsuleSlide ? 'enquiry-title-capsule-screen' : ''}`}
+                          style={mobileCapsuleSlide}>
+                          {enquiry.title && enquiry.title.length > 15 ? `${enquiry.title.substring(0, 15)}...` : enquiry.title}
+                        </h3>
+                      </div>
                       
                       {/* Budget - Equal Spacing */}
                       {enquiry.budget && (

@@ -2365,6 +2365,73 @@ body {
   }
 }
 
+/* Home-screen enquiry cards: title capsule glides left → right (styling only) */
+@keyframes enquiryTitleSlideLR {
+  0%, 12% {
+    transform: translateX(0);
+  }
+  50%, 62% {
+    transform: translateX(calc(100cqw - 100%));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.enquiry-title-capsule {
+  animation: enquiryTitleSlideLR 4.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Mobile: title capsule floats across the whole screen width, screen-edge to screen-edge (styling only) */
+@keyframes enquiryTitleSlideScreen {
+  0%, 12% {
+    transform: translateX(var(--capsule-slide-from, 0px));
+  }
+  50%, 62% {
+    transform: translateX(var(--capsule-slide-to, 0px));
+  }
+  100% {
+    transform: translateX(var(--capsule-slide-from, 0px));
+  }
+}
+.enquiry-title-capsule-screen {
+  animation-name: enquiryTitleSlideScreen;
+  animation-duration: 5s;
+}
+
+/* Mobile home: enquiry-title capsules float across the screen,
+   growing as they pass under the magnifier glass (styling only) */
+.enquiry-capsule-track {
+  animation: enquiryCapsuleAcross 13s linear infinite;
+  will-change: transform;
+  /* magnify grows from the capsule's centre so the glide never hiccups */
+  transform-origin: center;
+}
+@keyframes enquiryCapsuleAcross {
+  from {
+    transform: translateX(-55vw);
+  }
+  to {
+    transform: translateX(112vw);
+  }
+}
+.enquiry-capsule {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: center;
+}
+.enquiry-capsule-track.is-magnified {
+  z-index: 30;
+}
+.enquiry-capsule-track.is-magnified .enquiry-capsule {
+  transform: scale(1.7);
+}
+.enquiry-search-glass {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.enquiry-search-glass.is-active {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
 /* Hide scrollbars while keeping scroll functionality (location picker dropdown etc.) */
 .scrollbar-none {
   -ms-overflow-style: none;
