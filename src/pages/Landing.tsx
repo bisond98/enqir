@@ -25,6 +25,27 @@ import ShareMenu from "@/components/ShareMenu";
    edge; while a capsule drifts under the magnifier glass it scales up (like a
    real magnifier). Tapping a capsule opens that enquiry's detail page. */
 const MOBILE_CAPSULE_TOPS = ['32%', '46%', '60%'];
+// Decorative only: 40 thin micro-pills scattered at seeded-random positions
+// (deterministic so it renders identically every time — no state, no logic)
+const CAPSULE_SPECKS = (() => {
+  let seed = 20261021;
+  const rand = () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  return Array.from({ length: 40 }, (_, i) => {
+    const leftPct = rand() * 94;
+    return {
+      left: `${leftPct.toFixed(1)}%`,
+      // mirror of left in vw so the slide starts fully off-screen left
+      x: `${leftPct.toFixed(1)}vw`,
+      delay: `-${((i * 0.73) % 12).toFixed(2)}s`,
+      top: `${(rand() * 93).toFixed(1)}%`,
+    };
+  });
+})();
 const MobileEnquiryCapsules: React.FC<{
   enquiries: any[];
   isOutdated: (enquiry: any) => boolean;
@@ -101,6 +122,17 @@ const MobileEnquiryCapsules: React.FC<{
       className="relative w-full h-[340px] mb-4 sm:hidden cursor-pointer"
       onClick={() => navigate('/enquiries')}
     >
+      {/* Decorative background: 60 thin two-tone (20% red / 80% black) pills
+          shaped like the moving title capsules — design only, never clickable */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        {CAPSULE_SPECKS.map((s, i) => (
+          <span
+            key={i}
+            className="capsule-speck absolute"
+            style={{ left: s.left, top: s.top, '--x': s.x, '--d': s.delay } as React.CSSProperties}
+          />
+        ))}
+      </div>
       {/* Magnifier glass, placed under the "Enquiries." title (absolute — never pushes other content down) */}
       <div ref={glassRef} className="enquiry-search-glass absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true">
         <Search className="h-[370px] w-[370px] text-black" strokeWidth={2} />

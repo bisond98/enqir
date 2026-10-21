@@ -2423,10 +2423,32 @@ body {
   z-index: 30;
 }
 .enquiry-capsule-track.is-magnified .enquiry-capsule {
-  transform: scale(1.35);
+  transform: scale(1.5);
 }
 .enquiry-search-glass {
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Decorative micro-pills behind the magnifier glass: same pill shape as the
+   moving enquiry capsules, left 20% red / right 80% black (design only).
+   Each drifts left → right on its own phase; starts/ends fully off-screen so
+   the loop is seamless. --x mirrors the pill's left offset in vw, --d staggers. */
+.capsule-speck {
+  width: 11px;
+  height: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #dc2626 0 20%, #0a0a0a 20% 100%);
+  animation: speckAcross 12s linear infinite;
+  animation-delay: var(--d, 0s);
+  will-change: transform;
+}
+@keyframes speckAcross {
+  from {
+    transform: translateX(calc(-1 * var(--x, 0vw) - 40px));
+  }
+  to {
+    transform: translateX(calc(100vw + 40px));
+  }
 }
 .enquiry-search-glass.is-active {
   transform: translate(-50%, -50%) scale(1.08);
