@@ -47,6 +47,41 @@ const CAPSULE_SPECKS = (() => {
     };
   });
 })();
+/* Decorative red capsules scattered across the globe — design only.
+   Same size as the real "For sale" chips but never clickable and never
+   magnified; seeded so the scatter renders identically every time. */
+const GLOBE_PILLS = (() => {
+  let seed = 20261022;
+  const rand = () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const pts: Array<{ x: number; y: number }> = [];
+  let guard = 0;
+  while (pts.length < 16 && guard++ < 400) {
+    const x = rand() * 94 + 3; // % centre, out to the edges
+    const y = rand() * 94 + 3;
+    if (Math.hypot(x - 50, y - 50) > 47) continue; // hug the rim; disc clips overhang
+    if (pts.some((p) => Math.hypot(p.x - x, p.y - y) < 8)) continue; // spacing
+    // keep clear of the three real-card slots (approx dot centres)
+    if ([{ x: 19, y: 47 }, { x: 67, y: 23 }, { x: 67, y: 71 }].some((s) => Math.abs(x - s.x) < 14 && Math.abs(y - s.y) < 18)) continue;
+    pts.push({ x, y });
+  }
+  // Every dot joins its nearest earlier dot → one connected network, thin lines
+  const edges: Array<[number, number]> = [];
+  for (let i = 1; i < pts.length; i++) {
+    let best = 0, bestD = Infinity;
+    for (let j = 0; j < i; j++) {
+      const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+      if (d < bestD) { bestD = d; best = j; }
+    }
+    edges.push([best, i]);
+  }
+  return { pts, edges };
+})();
+
 const MobileEnquiryCapsules: React.FC<{
   enquiries: any[];
   isOutdated: (enquiry: any) => boolean;
@@ -173,36 +208,46 @@ const MobileForSaleGlobe: React.FC<{
   listings: any[];
 }> = ({ listings }) => {
   const navigate = useNavigate();
-  /* 2s on / 2s off cadence: popped pair shows for 2s, shrinks to tiny pins for
-     2s; the pair index advances mid-shrink so the content swap is invisible
-     and both the pop-in and shrink-out spring transitions actually animate. */
+  /* 3s on / 2s off cadence: a trio of real listings pops for 3s (1s tick,
+     tick%5<3), then shrinks to small red "For sale" capsules for 2s; the trio
+     index advances mid-shrink so the content swap is invisible. */
   const [tick, setTick] = useState(0);
-  const [pairIdx, setPairIdx] = useState(0);
-  const popped = tick % 2 === 0;
+  const [trioIdx, setTrioIdx] = useState(0);
+  const popped = tick % 5 < 3;
   useEffect(() => {
     if (listings.length === 0) return;
-    const id = setInterval(() => setTick((t) => t + 1), 2000);
+    const id = setInterval(() => setTick((t) => t + 1), 1000);
     return () => clearInterval(id);
   }, [listings.length]);
   useEffect(() => {
-    if (popped || listings.length <= 2) return;
-    const t = setTimeout(() => setPairIdx((i) => i + 1), 460);
+    if (popped || listings.length <= 3) return;
+    const t = setTimeout(() => setTrioIdx((i) => i + 1), 460);
     return () => clearTimeout(t);
   }, [popped, listings.length]);
 
-  const pairStart = listings.length > 0 ? (pairIdx * 2) % listings.length : 0;
-  const pair: any[] = listings.length > 0 ? [listings[pairStart], listings.length > 1 ? listings[(pairStart + 1) % listings.length] : null] : [];
+  // Three listings at a time, cycling through the live pool without repeats
+  const n = listings.length;
+  const trioStart = n > 0 ? (trioIdx * 3) % n : 0;
+  const trio: any[] = [];
+  if (n > 0) {
+    const seen = new Set<string>();
+    for (let k = 0; trio.length < Math.min(3, n); k++) {
+      const l = listings[(trioStart + k) % n];
+      if (l && l.id && !seen.has(l.id)) { seen.add(l.id); trio.push(l); }
+    }
+  }
 
-  // Mock layout: left card mid-left over the ring, right card upper-right
+  // Pop slots: left-mid, top-right, bottom-right (all chips stay on the globe)
   const slots: React.CSSProperties[] = [
     { left: '2%', top: '30%' },
-    { left: '50%', top: '12%' },
+    { left: '50%', top: '6%' },
+    { left: '50%', top: '54%' },
   ];
 
   return (
     /* Whole section → marketplace; cards stop propagation below */
     <div
-      className="relative w-full h-[380px] mb-4 sm:hidden cursor-pointer"
+      className="relative w-full h-[410px] mb-4 sm:hidden cursor-pointer"
       onClick={() => navigate('/sell/marketplace')}
       role="button"
       aria-label="Browse marketplace"
@@ -214,10 +259,31 @@ const MobileForSaleGlobe: React.FC<{
             <img src={worldMapSvg} alt="" draggable={false} />
             <img src={worldMapSvg} alt="" draggable={false} />
           </div>
+          {/* Decorative red dots joined by thin red lines — design only */}
+          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              {GLOBE_PILLS.edges.map(([a, b], i) => (
+                <line
+                  key={i}
+                  x1={GLOBE_PILLS.pts[a].x}
+                  y1={GLOBE_PILLS.pts[a].y}
+                  x2={GLOBE_PILLS.pts[b].x}
+                  y2={GLOBE_PILLS.pts[b].y}
+                  stroke="#dc2626"
+                  strokeWidth="1"
+                  strokeOpacity="0.75"
+                  vectorEffect="non-scaling-stroke"
+                />
+              ))}
+            </svg>
+            {GLOBE_PILLS.pts.map((p, i) => (
+              <span key={i} className="absolute bg-red-600 rounded-full" style={{ left: `${p.x}%`, top: `${p.y}%`, width: '7px', height: '7px', transform: 'translate(-50%, -50%)' }} />
+            ))}
+          </div>
         </div>
       </div>
 
-      {pair.map((listing, i) => listing && listing.id && (
+      {trio.map((listing, i) => listing && listing.id && (
         <div key={`sale-slot-${i}`} className="absolute" style={{ ...slots[i], zIndex: popped ? 40 : 20 }}>
           {/* Unmagnified state: just the small red "For sale" header chip,
               sitting inside the globe — taps here still open the listing */}
@@ -225,7 +291,6 @@ const MobileForSaleGlobe: React.FC<{
             to={`/sell/listing/${listing.id}`}
             onClick={(e) => e.stopPropagation()}
             className={`sale-pin-chip flex items-center justify-center bg-red-600 text-white font-serif leading-none rounded-full whitespace-nowrap ${popped ? 'is-hidden' : ''}`}
-            style={{ width: '26px', height: '11px', fontSize: '5.5px', letterSpacing: '0.02em' }}
             aria-label={`${listing.title || 'Listing'} for sale`}
           >
             For sale

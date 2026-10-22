@@ -2517,6 +2517,15 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
+  /* Defeats the global mobile `a { min-width/min-height: 44px }` touch rule
+     that was stretching this chip into a 44px circle */
+  min-width: 0;
+  min-height: 0;
+  /* Unmagnified real listing = a small red dot (text hidden; aria-label keeps it readable) */
+  width: 7px;
+  height: 7px;
+  font-size: 0;
+  letter-spacing: 0;
   transform: translate(-50%, -50%);
   transition:
     opacity 0.28s ease,
