@@ -2454,6 +2454,81 @@ body {
   transform: translate(-50%, -50%) scale(1.08);
 }
 
+/* ── Mobile home "For Sale" section: spinning globe + product pop-up cards ──
+   Design only — mirrors the magnifier pattern above: a big circular graphic
+   (spinning world map inside a thick black ring) with two listing cards that
+   pop up for 2s at a time, then shrink back to tiny pins on the globe. */
+.sale-globe-ring {
+  border-radius: 9999px;
+  background: #0a0a0a; /* thick black ring, white map disc inside */
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+.sale-globe-disc {
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #ffffff;
+}
+/* Map track holds the world twice side by side → translating -50% loops seamlessly */
+.sale-globe-map {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 200%;
+  height: 100%;
+  animation: saleGlobeSpin 26s linear infinite;
+  will-change: transform;
+}
+.sale-globe-map img {
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+}
+@keyframes saleGlobeSpin {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+/* Pop card: springs up from its pin, holds, and springs back down */
+.sale-pop-card {
+  transform-origin: center bottom;
+  transition:
+    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+.sale-pop-card.is-pop {
+  transform: scale(1);
+  opacity: 1;
+}
+/* Unmagnified: the full card bows out — only its small "For sale" header chip
+   (rendered separately) stays on the globe */
+.sale-pop-card.is-pin {
+  transform: scale(0.7);
+  opacity: 0;
+  pointer-events: none;
+}
+/* Small red "For sale" header chip resting inside the globe between pop-ups */
+.sale-pin-chip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    opacity 0.28s ease,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform, opacity;
+}
+.sale-pin-chip.is-hidden {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.55);
+  pointer-events: none;
+}
+
 /* Hide scrollbars while keeping scroll functionality (location picker dropdown etc.) */
 .scrollbar-none {
   -ms-overflow-style: none;

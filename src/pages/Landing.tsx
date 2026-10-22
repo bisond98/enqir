@@ -5,6 +5,7 @@ import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
 import newLogo from "@/assets/new-logo.png";
+import worldMapSvg from "@/assets/World_map_-_low_resolution.svg";
 import { useAuth } from "@/contexts/AuthContext";
 import { trustedName } from "@/lib/userDisplayName";
 import { NotificationContext } from "@/contexts/NotificationContext";
@@ -161,6 +162,116 @@ const MobileEnquiryCapsules: React.FC<{
               <span className="inline-flex items-center bg-red-600 text-white font-sans font-black text-[6px] uppercase tracking-wide rounded-full px-1 py-[2px] flex-shrink-0">Need</span>
               <span className="truncate">{enquiry.title}</span>
             </span>
+          </Link>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const MobileForSaleGlobe: React.FC<{
+  listings: any[];
+}> = ({ listings }) => {
+  const navigate = useNavigate();
+  /* 2s on / 2s off cadence: popped pair shows for 2s, shrinks to tiny pins for
+     2s; the pair index advances mid-shrink so the content swap is invisible
+     and both the pop-in and shrink-out spring transitions actually animate. */
+  const [tick, setTick] = useState(0);
+  const [pairIdx, setPairIdx] = useState(0);
+  const popped = tick % 2 === 0;
+  useEffect(() => {
+    if (listings.length === 0) return;
+    const id = setInterval(() => setTick((t) => t + 1), 2000);
+    return () => clearInterval(id);
+  }, [listings.length]);
+  useEffect(() => {
+    if (popped || listings.length <= 2) return;
+    const t = setTimeout(() => setPairIdx((i) => i + 1), 460);
+    return () => clearTimeout(t);
+  }, [popped, listings.length]);
+
+  const pairStart = listings.length > 0 ? (pairIdx * 2) % listings.length : 0;
+  const pair: any[] = listings.length > 0 ? [listings[pairStart], listings.length > 1 ? listings[(pairStart + 1) % listings.length] : null] : [];
+
+  // Mock layout: left card mid-left over the ring, right card upper-right
+  const slots: React.CSSProperties[] = [
+    { left: '2%', top: '30%' },
+    { left: '50%', top: '12%' },
+  ];
+
+  return (
+    /* Whole section → marketplace; cards stop propagation below */
+    <div
+      className="relative w-full h-[380px] mb-4 sm:hidden cursor-pointer"
+      onClick={() => navigate('/sell/marketplace')}
+      role="button"
+      aria-label="Browse marketplace"
+    >
+      {/* Spinning globe: thick black ring, white disc, world map sliding behind it */}
+      <div className="sale-globe-ring absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(340px,86vw)] h-[min(340px,86vw)] p-[28px]" aria-hidden="true">
+        <div className="sale-globe-disc relative w-full h-full">
+          <div className="sale-globe-map">
+            <img src={worldMapSvg} alt="" draggable={false} />
+            <img src={worldMapSvg} alt="" draggable={false} />
+          </div>
+        </div>
+      </div>
+
+      {pair.map((listing, i) => listing && listing.id && (
+        <div key={`sale-slot-${i}`} className="absolute" style={{ ...slots[i], zIndex: popped ? 40 : 20 }}>
+          {/* Unmagnified state: just the small red "For sale" header chip,
+              sitting inside the globe — taps here still open the listing */}
+          <Link
+            to={`/sell/listing/${listing.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className={`sale-pin-chip flex items-center justify-center bg-red-600 text-white font-serif leading-none rounded-full whitespace-nowrap ${popped ? 'is-hidden' : ''}`}
+            style={{ width: '26px', height: '11px', fontSize: '5.5px', letterSpacing: '0.02em' }}
+            aria-label={`${listing.title || 'Listing'} for sale`}
+          >
+            For sale
+          </Link>
+          <Link
+            to={`/sell/listing/${listing.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className={`sale-pop-card block ${popped ? 'is-pop' : 'is-pin'}`}
+            style={{ width: '132px' }}
+            aria-label={`${listing.title || 'Listing'} for sale`}
+          >
+            <div className="bg-white border-[1.5px] border-black rounded-xl overflow-hidden shadow-[0_10px_22px_-10px_rgba(0,0,0,0.45),0_2px_5px_rgba(0,0,0,0.12)] text-left active:scale-[0.97] transition-transform duration-150">
+              {/* Flat red ribbon — mock style, no gradient */}
+              <div className="bg-red-600 px-1.5 py-[4px] text-center">
+                <span className="font-serif text-white text-[10px] leading-none tracking-[0.02em]">For sale</span>
+              </div>
+              {/* Photo bleeds edge-to-edge; hairline separates it from the copy */}
+              {listing.images?.[0] && (
+                <div className="h-[58px] w-full overflow-hidden border-b border-black/15">
+                  <img src={listing.images[0]} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                </div>
+              )}
+              <div className="px-1.5 pt-1 pb-1.5">
+                <h4 className="text-[10px] font-bold leading-[1.3] text-gray-900 line-clamp-2 min-h-[24px] mb-1">
+                  {listing.title || listing.category || "For sale"}
+                </h4>
+                <div className="flex items-center justify-between gap-1.5 bg-gray-200 border border-black rounded-md px-1.5 h-[24px]">
+                  <span className="text-[7px] font-semibold uppercase tracking-wide text-gray-500 shrink-0">Price -</span>
+                  <span className="text-[9px] font-black text-gray-900 truncate">
+                    {listing.priceType === "discussion"
+                      ? "Open to discussion"
+                      : listing.priceType === "range"
+                      ? `₹${Number(listing.priceMin ?? 0).toLocaleString('en-IN')} - ₹${Number(listing.priceMax ?? 0).toLocaleString('en-IN')}`
+                      : listing.price
+                        ? `₹${Number(listing.price).toLocaleString('en-IN')}`
+                        : "₹—"}
+                  </span>
+                </div>
+                <div className="mt-1 flex items-center justify-between gap-1.5 bg-gray-200 border border-black rounded-md px-1.5 h-[24px]">
+                  <span className="text-[7px] font-semibold uppercase tracking-wide text-gray-500 shrink-0">at</span>
+                  <span className="text-[9px] font-bold text-gray-900 truncate">
+                    {listing.location && listing.location.length > 15 ? `${listing.location.substring(0, 15)}…` : (listing.location || "N/A")}
+                  </span>
+                </div>
+              </div>
+            </div>
           </Link>
         </div>
       ))}
@@ -2945,6 +3056,11 @@ const Landing = () => {
                         <span className="h-px w-8 sm:w-10 bg-black/15"></span>
                       </div>
                     </div>
+                    {/* Mobile (<640px): spinning globe + pop-up product cards.
+                        ≥640px keeps the original 3-card deck unchanged. */}
+                    {windowWidth < 640 ? (
+                      <MobileForSaleGlobe listings={shuffledSellListings} />
+                    ) : (
                     <div
                       className="relative bg-white rounded-2xl"
                       style={{
@@ -3103,6 +3219,7 @@ const Landing = () => {
                         })}
                       </AnimatePresence>
                     </div>
+                    )}
                     <div
                       className="mt-3 flex justify-end"
                       style={{
