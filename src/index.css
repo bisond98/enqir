@@ -2583,35 +2583,24 @@ body {
    never gets in the way of a tapped listing. */
 .sale-globe-cloud {
   position: absolute;
-  left: 0%;
-  top: 7%;
-  width: clamp(96px, 28vw, 136px);
-  aspect-ratio: 16 / 9;
+  /* right edge of the globe, between the two right-column cards (top 6% and
+     top 54%) so it floats over the ring without covering any listing */
+  left: auto;
+  right: -6%;
+  top: 40%;
+  width: clamp(100px, 30vw, 150px);
   z-index: 10;
   pointer-events: none;
   animation: cloudDrift 6.5s ease-in-out infinite;
   will-change: transform;
-  /* slight blur fuses the puffs into one soft cumulus; the drop shadow
-     lifts it off the page so it reads as a real cloud floating over the ring */
-  filter: blur(1.3px) drop-shadow(0 9px 12px rgba(10, 10, 10, 0.2));
+  /* the photo already carries soft edges; the drop shadow lifts it off the
+     page so it reads as a real cloud floating in front of the ring */
+  filter: drop-shadow(0 9px 12px rgba(10, 10, 10, 0.18));
 }
-/* Each puff is a shaded sphere — light from the top-left, cool grey underside */
-.sale-globe-cloud .puff {
-  position: absolute;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle at 34% 26%, #ffffff 0%, #fcfdfe 44%, #e6eaef 76%, #cdd3dc 100%);
-}
-/* Flat base — cumulus bottoms are level, which is what makes a cloud
-   read as a cloud rather than a stack of circles */
-.sale-globe-cloud .base {
-  position: absolute;
-  left: 9%;
-  bottom: 6%;
-  width: 78%;
-  height: 30%;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #f4f6f8 0%, #dee3ea 100%);
+.sale-globe-cloud img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 @keyframes cloudDrift {
   0% {

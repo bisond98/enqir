@@ -289,41 +289,11 @@ const MobileForSaleGlobe: React.FC<{
         </div>
       </div>
 
-      {/* Small 3D cloud drifting at the globe's top-left — decorative only.
-          z-10 keeps it under the listing cards (z-20/40) and clear of the left
-          card slot at top:30%, so it never covers a tappable listing. */}
+      {/* Real cloud photo (transparent PNG asset) drifting at the globe's
+          top-left — decorative only. z-10 keeps it under the listing cards
+          (z-20/40) and clear of the left card slot at top:30%. */}
       <div className="sale-globe-cloud" aria-hidden="true">
-        <svg viewBox="0 0 120 74" className="w-full h-auto" role="presentation">
-          <defs>
-            <linearGradient id="cloudBody" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="62%" stopColor="#f4f5f7" />
-              <stop offset="100%" stopColor="#dcdfe4" />
-            </linearGradient>
-            <linearGradient id="cloudShade" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#c8ccd3" stopOpacity="0" />
-              <stop offset="100%" stopColor="#aeb4bd" stopOpacity="0.9" />
-            </linearGradient>
-            <filter id="cloudLift" x="-40%" y="-40%" width="180%" height="200%">
-              <feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#0a0a0a" floodOpacity="0.2" />
-            </filter>
-          </defs>
-          {/* underside shade first, then the lit body on top */}
-          <path
-            d="M28 62c-12 0-21-8-21-18 0-9 7-16 17-17 2-11 12-19 24-19 11 0 20 6 23 15 2-1 5-2 8-2 10 0 18 7 18 16 0 14-11 25-26 25H28z"
-            fill="url(#cloudShade)"
-          />
-          <path
-            d="M31 58c-12 0-21-8-21-18 0-9 7-16 17-17 2-11 12-19 24-19 11 0 20 6 23 15 2-1 5-2 8-2 10 0 18 7 18 16 0 13-11 25-26 25H31z"
-            fill="url(#cloudBody)"
-            stroke="#0a0a0a"
-            strokeWidth="3"
-            strokeLinejoin="round"
-            filter="url(#cloudLift)"
-          />
-          {/* soft top highlight, offset up-left so the puff reads as lit */}
-          <ellipse cx="48" cy="22" rx="15" ry="9" fill="#ffffff" opacity="0.85" />
-        </svg>
+        <img src="/cloud.png" alt="" className="w-full h-auto" />
       </div>
 
       {trio.map((listing, i) => listing && listing.id && (
