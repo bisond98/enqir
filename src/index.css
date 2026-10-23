@@ -2602,6 +2602,12 @@ body {
   width: 100%;
   height: auto;
 }
+/* duplicate cloud at the globe's top-left, the original spot */
+.sale-globe-cloud--left {
+  left: 0%;
+  right: auto;
+  top: 7%;
+}
 @keyframes cloudDrift {
   0% {
     transform: translate3d(0, 0, 0) rotate(-1.5deg);

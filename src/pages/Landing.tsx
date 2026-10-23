@@ -295,6 +295,10 @@ const MobileForSaleGlobe: React.FC<{
       <div className="sale-globe-cloud" aria-hidden="true">
         <img src="/cloud.png" alt="" className="w-full h-auto" />
       </div>
+      {/* duplicate at the globe's top-left, the original spot */}
+      <div className="sale-globe-cloud sale-globe-cloud--left" aria-hidden="true">
+        <img src="/cloud.png" alt="" className="w-full h-auto" />
+      </div>
 
       {trio.map((listing, i) => listing && listing.id && (
         <div key={`sale-slot-${i}`} className="absolute" style={{ ...slots[i], zIndex: popped ? 40 : 20 }}>
