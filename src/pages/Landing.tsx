@@ -3323,9 +3323,16 @@ const Landing = () => {
                 className="absolute inset-0 h-full w-full drop-shadow-[0_10px_28px_rgba(0,0,0,0.22)]"
                 aria-hidden="true"
               >
+                <defs>
+                  {/* brand blue gradient — matches the app's pal-blue buttons */}
+                  <linearGradient id="shieldFill" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="100%" stopColor="#2563eb" />
+                  </linearGradient>
+                </defs>
                 <path
                   d="M100 7 L193 41 V118 C193 175 151 207 100 223 C49 207 7 175 7 118 V41 Z"
-                  fill="#ffffff"
+                  fill="url(#shieldFill)"
                   stroke="#0a0a0a"
                   strokeWidth="28"
                   strokeLinejoin="round"
@@ -3342,10 +3349,10 @@ const Landing = () => {
                     exit={{ opacity: 0, y: 20 }}
                     transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <h3 className="text-[18px] font-black leading-tight tracking-tight text-black">
+                    <h3 className="text-[18px] font-black leading-tight tracking-tight text-white">
                       {features[featureIdx].title}
                     </h3>
-                    <p className="mt-2 text-[11px] leading-[1.6] text-gray-600">
+                    <p className="mt-2 text-[11px] leading-[1.6] text-white/80">
                       {features[featureIdx].description}
                     </p>
                   </motion.div>
