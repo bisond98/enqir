@@ -3301,7 +3301,9 @@ const Landing = () => {
               the globe's size and border weight, holding the three feature infos one at
               a time (each drops in from the top, 3s per item, loops).
               Desktop grid further up stays untouched. */}
-          <div className="md:hidden animate-slide-up px-4 mt-6 mb-2" style={{ animationDelay: '1.1s' }}>
+          {/* mb-[103px] + the How It Works section's 40px top padding ≈ 133px,
+              the same gap the globe has above "Why Enqir." */}
+          <div className="md:hidden animate-slide-up px-4 mt-6 mb-[93px]" style={{ animationDelay: '1.1s' }}>
             {/* Section heading — same treatment as "For Sale." / "Enquiries." */}
             <div className="text-center mb-4">
               <h3 className="text-2xl font-black text-black tracking-tight leading-none">
@@ -3361,13 +3363,6 @@ const Landing = () => {
             </div>
           </div>
 
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-muted-foreground/50 rounded-full flex justify-center glass-effect backdrop-blur-sm">
-            <div className="w-1 h-3 bg-gradient-to-b from-pal-blue to-transparent rounded-full mt-2 animate-pulse"></div>
-          </div>
         </div>
 
       </section>
