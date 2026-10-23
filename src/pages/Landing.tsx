@@ -258,29 +258,72 @@ const MobileForSaleGlobe: React.FC<{
           <div className="sale-globe-map">
             <img src={worldMapSvg} alt="" draggable={false} />
             <img src={worldMapSvg} alt="" draggable={false} />
-          </div>
-          {/* Decorative red dots joined by thin red lines — design only */}
-          <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-              {GLOBE_PILLS.edges.map(([a, b], i) => (
-                <line
-                  key={i}
-                  x1={GLOBE_PILLS.pts[a].x}
-                  y1={GLOBE_PILLS.pts[a].y}
-                  x2={GLOBE_PILLS.pts[b].x}
-                  y2={GLOBE_PILLS.pts[b].y}
-                  stroke="#dc2626"
-                  strokeWidth="1"
-                  strokeOpacity="0.75"
-                  vectorEffect="non-scaling-stroke"
-                />
+            {/* Decorative red dots joined by thin red lines — drawn ON the map
+                track (twice, like the map itself) so the whole network slides
+                with the globe's rotation and loops seamlessly */}
+            <div className="sale-globe-net" aria-hidden="true">
+              {[0, 1].map((cell) => (
+                <div key={cell} className="sale-globe-net-cell">
+                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    {GLOBE_PILLS.edges.map(([a, b], i) => (
+                      <line
+                        key={i}
+                        x1={GLOBE_PILLS.pts[a].x}
+                        y1={GLOBE_PILLS.pts[a].y}
+                        x2={GLOBE_PILLS.pts[b].x}
+                        y2={GLOBE_PILLS.pts[b].y}
+                        stroke="#dc2626"
+                        strokeWidth="1"
+                        strokeOpacity="0.75"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    ))}
+                  </svg>
+                  {GLOBE_PILLS.pts.map((p, i) => (
+                    <span key={i} className="absolute bg-red-600 rounded-full" style={{ left: `${p.x}%`, top: `${p.y}%`, width: '7px', height: '7px', transform: 'translate(-50%, -50%)' }} />
+                  ))}
+                </div>
               ))}
-            </svg>
-            {GLOBE_PILLS.pts.map((p, i) => (
-              <span key={i} className="absolute bg-red-600 rounded-full" style={{ left: `${p.x}%`, top: `${p.y}%`, width: '7px', height: '7px', transform: 'translate(-50%, -50%)' }} />
-            ))}
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Small 3D cloud drifting at the globe's top-left — decorative only.
+          z-10 keeps it under the listing cards (z-20/40) and clear of the left
+          card slot at top:30%, so it never covers a tappable listing. */}
+      <div className="sale-globe-cloud" aria-hidden="true">
+        <svg viewBox="0 0 120 74" className="w-full h-auto" role="presentation">
+          <defs>
+            <linearGradient id="cloudBody" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="62%" stopColor="#f4f5f7" />
+              <stop offset="100%" stopColor="#dcdfe4" />
+            </linearGradient>
+            <linearGradient id="cloudShade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#c8ccd3" stopOpacity="0" />
+              <stop offset="100%" stopColor="#aeb4bd" stopOpacity="0.9" />
+            </linearGradient>
+            <filter id="cloudLift" x="-40%" y="-40%" width="180%" height="200%">
+              <feDropShadow dx="0" dy="5" stdDeviation="5" floodColor="#0a0a0a" floodOpacity="0.2" />
+            </filter>
+          </defs>
+          {/* underside shade first, then the lit body on top */}
+          <path
+            d="M28 62c-12 0-21-8-21-18 0-9 7-16 17-17 2-11 12-19 24-19 11 0 20 6 23 15 2-1 5-2 8-2 10 0 18 7 18 16 0 14-11 25-26 25H28z"
+            fill="url(#cloudShade)"
+          />
+          <path
+            d="M31 58c-12 0-21-8-21-18 0-9 7-16 17-17 2-11 12-19 24-19 11 0 20 6 23 15 2-1 5-2 8-2 10 0 18 7 18 16 0 13-11 25-26 25H31z"
+            fill="url(#cloudBody)"
+            stroke="#0a0a0a"
+            strokeWidth="3"
+            strokeLinejoin="round"
+            filter="url(#cloudLift)"
+          />
+          {/* soft top highlight, offset up-left so the puff reads as lit */}
+          <ellipse cx="48" cy="22" rx="15" ry="9" fill="#ffffff" opacity="0.85" />
+        </svg>
       </div>
 
       {trio.map((listing, i) => listing && listing.id && (
@@ -374,6 +417,15 @@ const Landing = () => {
       description: "To Every action paid = only serious users"
     }
   ];
+  // Shield under "Why Enqir." (mobile): shows ONE feature info at a time — it
+  // drops in from the top, rests for a full 4s, then hands over to the next.
+  // 4900ms = 4s rest + 450ms drop-in + 450ms exit, so the number the user
+  // actually perceives (time sat still) is exactly 4s.
+  const [featureIdx, setFeatureIdx] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setFeatureIdx((i) => (i + 1) % features.length), 4900);
+    return () => clearInterval(id);
+  }, []);
 
   // All categories from enquiry form
   const allEnquiryCategories = [
@@ -488,39 +540,6 @@ const Landing = () => {
       return () => clearTimeout(t);
     }
   }, [location]);
-
-  // State for shuffled categories (showing 6 at a time)
-  const [displayedCategories, setDisplayedCategories] = useState<any[]>([]);
-  const [isShufflingCategories, setIsShufflingCategories] = useState(false);
-
-  // Function to shuffle and get 6 random categories
-  const getRandomCategories = () => {
-    const shuffled = [...allEnquiryCategories].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 6).map(cat => ({
-      name: cat.label,
-      icon: getCategoryIcon(cat.value),
-      value: cat.value
-    }));
-  };
-
-  // Initialize and shuffle categories every 20 seconds
-  useEffect(() => {
-    // Set initial categories
-    setDisplayedCategories(getRandomCategories());
-
-    // Shuffle every 20 seconds
-    const interval = setInterval(() => {
-      setIsShufflingCategories(true);
-      setTimeout(() => {
-        setDisplayedCategories(getRandomCategories());
-        setTimeout(() => {
-          setIsShufflingCategories(false);
-        }, 80);
-      }, 300); // Fade out duration
-    }, 20000); // 20 seconds
-
-    return () => clearInterval(interval);
-  }, []);
 
   const { user, signOut } = useAuth();
   const notificationContext = useContext(NotificationContext);
@@ -3303,106 +3322,60 @@ const Landing = () => {
                   </div>
                 )}
 
-          {/* Feature tiles - Mobile only: under For Sale deck, above categories circles */}
-          <div className="md:hidden grid grid-cols-1 gap-3 animate-slide-up px-4 mt-6 mb-2" style={{ animationDelay: '1.1s' }}>
-            {features.map((feature, index) => (
-              <Card key={index} className="p-3 bg-gray-200 border border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.1)]">
-                <div className="relative">
-                  <feature.icon className="h-5 w-5 text-black mx-auto mb-2" />
-                </div>
-                <h3 className="text-xs font-black text-black mb-1 text-center">{feature.title}</h3>
-                <p className="text-[10px] text-muted-foreground text-center leading-relaxed">{feature.description}</p>
-              </Card>
-            ))}
-          </div>
-
-          {/* Categories Preview - Professional & Engaging */}
-          <div className="mb-12 sm:mb-20 animate-slide-up" style={{ animationDelay: '1.2s' }}>
-            {/* Background Container */}
-            <div className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50/50 via-white to-gray-50/30">
-              {/* Decorative Elements */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-100/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-purple-100/20 rounded-full blur-3xl"></div>
+          {/* Shield block - Mobile only: under "Why Enqir.", above categories circles.
+              Heading keeps the homescreen's "Title." + rule treatment; below it a shield
+              the globe's size and border weight, holding the three feature infos one at
+              a time (each drops in from the top, 3s per item, loops).
+              Desktop grid further up stays untouched. */}
+          <div className="md:hidden animate-slide-up px-4 mt-6 mb-2" style={{ animationDelay: '1.1s' }}>
+            {/* Section heading — same treatment as "For Sale." / "Enquiries." */}
+            <div className="text-center mb-4">
+              <h3 className="text-2xl font-black text-black tracking-tight leading-none">
+                Why Enqir<span className="text-gray-300">.</span>
+              </h3>
+              <div className="mt-3 flex items-center justify-center gap-1.5">
+                <span className="h-px w-8 bg-black/15"></span>
+                <span className="h-[3px] w-[3px] rounded-full bg-black/70"></span>
+                <span className="h-px w-8 bg-black/15"></span>
               </div>
-
-              <div className="max-w-7xl mx-auto relative">
-                {/* Categories Single Row - Professional Circles */}
-                <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-5 lg:gap-8 mb-10 sm:mb-12">
+            </div>
+            {/* Shield tile — same footprint and 28px black border as the globe
+                above it, so the two read as a pair. One info drops in from the
+                top at a time while the whole tile slowly turns left to right. */}
+            <div className="shield-flip relative mx-auto w-[min(340px,86vw)] aspect-[200/230]">
+              <svg
+                viewBox="0 0 200 230"
+                preserveAspectRatio="none"
+                className="absolute inset-0 h-full w-full drop-shadow-[0_10px_28px_rgba(0,0,0,0.22)]"
+                aria-hidden="true"
+              >
+                <path
+                  d="M100 7 L193 41 V118 C193 175 151 207 100 223 C49 207 7 175 7 118 V41 Z"
+                  fill="#ffffff"
+                  stroke="#0a0a0a"
+                  strokeWidth="28"
+                  strokeLinejoin="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+              {/* Copy block sits in the shield's straight-sided middle band */}
+              <div className="absolute inset-x-0 top-[37%] px-10 text-center" aria-live="polite">
                 <AnimatePresence mode="wait">
-                {displayedCategories.map((category, index) => {
-                  const IconComponent = category.icon;
-                  return (
-                    <motion.div
-                      key={`${category.value}-${index}`}
-                        className="group flex justify-center items-center"
-                        style={{ willChange: 'transform, opacity, filter' }}
-                        initial={{ opacity: 0, scale: 0.5, y: 40, rotateX: -90, filter: "blur(8px)" }}
-                        animate={{ 
-                          opacity: isShufflingCategories ? 0 : 1, 
-                          scale: isShufflingCategories ? 0.5 : 1,
-                          y: isShufflingCategories ? 40 : 0,
-                          rotateX: isShufflingCategories ? -90 : 0,
-                          filter: isShufflingCategories ? "blur(8px)" : "blur(0px)"
-                        }}
-                        exit={{ opacity: 0, scale: 0.5, y: -40, rotateX: 90, filter: "blur(8px)" }}
-                        transition={{ 
-                          duration: 0.7, 
-                          delay: index * 0.06,
-                          ease: [0.25, 0.46, 0.45, 0.94],
-                          type: "spring",
-                          stiffness: 120,
-                          damping: 18
-                        }}
-                        whileHover={{ 
-                          scale: 1.15,
-                          y: -8,
-                          transition: { duration: 0.3 }
-                        }}
-                    >
-                        {/* Circle Container - Styled exactly like Dashboard count circles with 3D shadow border */}
-                      <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.3, delay: index * 0.05 }}
-                            className="group relative flex flex-col items-center justify-center bg-white rounded-full border-3 border-black overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] cursor-pointer w-36 h-36 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40"
-                      >
-                            {/* Physical button depth effect */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                            
-                        {/* Content - Perfectly Centered */}
-                            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                          {/* Icon Container */}
-                              <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white rounded-full flex items-center justify-center group-hover:bg-white transition-all duration-300 flex-shrink-0 mb-1 sm:mb-1.5">
-                                <IconComponent className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 text-black transition-colors duration-300" />
-                          </div>
-                          
-                              {/* Category Name */}
-                              <h4 className="text-[8px] sm:text-[10px] lg:text-xs xl:text-sm font-black text-black tracking-tight leading-tight text-center px-1 sm:px-2 transition-colors duration-300 whitespace-nowrap sm:whitespace-normal">
-                                {category.name}
-                              </h4>
-                          </div>
-                        </motion.div>
-                    </motion.div>
-                  );
-                })}
+                  <motion.div
+                    key={featureIdx}
+                    initial={{ opacity: 0, y: -30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <h3 className="text-[18px] font-black leading-tight tracking-tight text-black">
+                      {features[featureIdx].title}
+                    </h3>
+                    <p className="mt-2 text-[11px] leading-[1.6] text-gray-600">
+                      {features[featureIdx].description}
+                    </p>
+                  </motion.div>
                 </AnimatePresence>
-              </div>
-
-              {/* View All CTA */}
-                <div className="text-center">
-                <Link
-                  to="/enquiries"
-                    className="group inline-flex items-center gap-2 h-7 sm:h-10 px-3 sm:px-6 text-[10px] sm:text-sm font-black border-[0.5px] border-black text-black hover:border-black hover:bg-gray-50 transition-all duration-200 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:scale-105 active:scale-95 relative overflow-hidden"
-                >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
-                  <span className="relative z-10">Explore All Categories</span>
-                    <ArrowRight className="h-2.5 w-2.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform relative z-10" />
-                </Link>
-                </div>
               </div>
             </div>
           </div>
@@ -3421,19 +3394,21 @@ const Landing = () => {
       {/* How It Works Section - Animated 2D Flow */}
       <section className="py-10 sm:py-16 relative bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
+          {/* Header — same size, weight and rule treatment as "Why Enqir." */}
           <div className="text-center mb-4 sm:mb-12">
-            <h2 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black mb-1">
-              How It Works
+            <h2 className="text-2xl font-black text-black tracking-tight leading-none">
+              How It Works<span className="text-gray-300">.</span>
             </h2>
-            <p className="text-[10px] sm:text-xs font-black text-black">
-              This isn't rocket science.
-            </p>
+            <div className="mt-3 flex items-center justify-center gap-1.5">
+              <span className="h-px w-8 bg-black/15"></span>
+              <span className="h-[3px] w-[3px] rounded-full bg-black/70"></span>
+              <span className="h-px w-8 bg-black/15"></span>
+            </div>
           </div>
 
-          {/* Animated SVG Flow - Compact Layout with 3D Border */}
+          {/* Animated SVG Flow — border weight now matches the shield above (28px) */}
           <div 
-            className="bg-white p-2 sm:p-8 rounded-xl sm:rounded-3xl border-[0.5px] border-black shadow-md sm:shadow-lg relative"
+            className="bg-white p-2 sm:p-8 rounded-[36px] border-[28px] border-black shadow-md sm:shadow-lg relative"
             style={{
               transformStyle: 'preserve-3d',
               perspective: '1000px',
@@ -3473,6 +3448,7 @@ const Landing = () => {
             }}
           >
             <div className="text-center mb-8 sm:mb-4 lg:mb-6">
+              <p className="mb-1.5 text-[8px] sm:text-xs lg:text-sm font-black tracking-tight text-gray-500">This isn't rocket science.</p>
               <p className="text-[8px] sm:text-sm lg:text-base text-black font-bold">Advanced AI powers all curations and suggestions for both buyers and sellers.</p>
             </div>
             <svg viewBox="0 0 1200 600" className="w-full h-[250px] sm:h-[400px]">

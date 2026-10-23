@@ -2485,6 +2485,22 @@ body {
   object-position: center;
   flex-shrink: 0;
 }
+/* Red dot network: absolutely overlaid INSIDE the sliding map track, so it
+   inherits the exact same transform (one animation, always in phase) instead
+   of sitting still while the world moves under it. Duplicated into two cells
+   (like the two map copies) so the -50% loop stays seamless. */
+.sale-globe-net {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  pointer-events: none;
+}
+.sale-globe-net-cell {
+  position: relative;
+  width: 50%;
+  height: 100%;
+  flex-shrink: 0;
+}
 @keyframes saleGlobeSpin {
   from {
     transform: translateX(0);
@@ -2536,6 +2552,82 @@ body {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0.55);
   pointer-events: none;
+}
+/* Shield under "Why Enqir." — slow 3D turn from left to right and back.
+   A gentle rotateY oscillation rather than a full spin, so the copy inside
+   stays readable the whole way through (a 360° flip would mirror the text
+   for half of every cycle). */
+.shield-flip {
+  animation: shieldFlip 7s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes shieldFlip {
+  0% {
+    transform: perspective(900px) rotateY(-20deg);
+  }
+  50% {
+    transform: perspective(900px) rotateY(20deg);
+  }
+  100% {
+    transform: perspective(900px) rotateY(-20deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shield-flip {
+    animation: none;
+    transform: perspective(900px) rotateY(0deg);
+  }
+}
+/* Small 3D cloud drifting at the globe's top-left. Sits BELOW the pop cards
+   (z-10 vs their z-20/z-40) and clear of the left card slot at top:30%, so it
+   never gets in the way of a tapped listing. */
+.sale-globe-cloud {
+  position: absolute;
+  left: 0%;
+  top: 7%;
+  width: clamp(96px, 28vw, 136px);
+  aspect-ratio: 16 / 9;
+  z-index: 10;
+  pointer-events: none;
+  animation: cloudDrift 6.5s ease-in-out infinite;
+  will-change: transform;
+  /* slight blur fuses the puffs into one soft cumulus; the drop shadow
+     lifts it off the page so it reads as a real cloud floating over the ring */
+  filter: blur(1.3px) drop-shadow(0 9px 12px rgba(10, 10, 10, 0.2));
+}
+/* Each puff is a shaded sphere — light from the top-left, cool grey underside */
+.sale-globe-cloud .puff {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 26%, #ffffff 0%, #fcfdfe 44%, #e6eaef 76%, #cdd3dc 100%);
+}
+/* Flat base — cumulus bottoms are level, which is what makes a cloud
+   read as a cloud rather than a stack of circles */
+.sale-globe-cloud .base {
+  position: absolute;
+  left: 9%;
+  bottom: 6%;
+  width: 78%;
+  height: 30%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f4f6f8 0%, #dee3ea 100%);
+}
+@keyframes cloudDrift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(-1.5deg);
+  }
+  50% {
+    transform: translate3d(6px, -9px, 0) rotate(1.5deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-1.5deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sale-globe-cloud {
+    animation: none;
+  }
 }
 
 /* Hide scrollbars while keeping scroll functionality (location picker dropdown etc.) */
