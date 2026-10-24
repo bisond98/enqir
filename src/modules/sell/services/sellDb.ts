@@ -140,7 +140,15 @@ export async function listMarketplace(params: {
     listings = listings.filter((l) => l.category === params.category || (Array.isArray((l as any).categories) && (l as any).categories.includes(params.category!)));
   }
   if (params.location) {
-    listings = listings.filter((l) => l.location === params.location);
+    // The location dropdown offers bare city names ('Bengaluru') while many
+    // listings store a full address ("…, Bengaluru, Karnataka, 560076, India").
+    // Exact equality hid every full-address listing — match the chosen city
+    // against each comma-separated part, case-insensitively, instead.
+    const wanted = params.location.trim().toLowerCase();
+    listings = listings.filter((l) => {
+      const parts = (l.location || '').split(',').map((p) => p.trim().toLowerCase()).filter(Boolean);
+      return parts.some((p) => p === wanted || p.includes(wanted));
+    });
   }
 
   const s = (params.search ?? '').trim().toLowerCase();

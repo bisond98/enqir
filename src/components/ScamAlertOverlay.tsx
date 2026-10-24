@@ -13,6 +13,11 @@ interface ScamAlertOverlayProps {
 }
 
 const SCAM_ALERT_IMG = "/scam-alert.png";
+// Native size of the poster (public/scam-alert.png). Used to reserve the exact
+// aspect-ratio box before the bytes arrive, so the card never collapses to a
+// bare button while a slow connection loads the PNG.
+const SCAM_ALERT_W = 1024;
+const SCAM_ALERT_H = 1536;
 
 /**
  * Scam-alert caution overlay — shown before Call/Chat (and after successful
@@ -28,6 +33,9 @@ const ScamAlertOverlay = ({ dismissKey, onContinue, storageKey = "scamAlertDismi
     try { return new Set<string>(JSON.parse(localStorage.getItem(storageKey) || "[]")); } catch { return new Set<string>(); }
   });
   const [progress, setProgress] = useState(100);
+  // Fade the poster in only once it has actually decoded, so a slow load shows
+  // a stable empty frame instead of a collapsing card.
+  const [imgReady, setImgReady] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Press-and-hold pauses the auto-dismiss countdown; releasing resumes it
   const remainingRef = useRef<number>(durationMs);
@@ -142,7 +150,39 @@ const ScamAlertOverlay = ({ dismissKey, onContinue, storageKey = "scamAlertDismi
         >
           <X className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2.5} />
         </button>
-        <img src={SCAM_ALERT_IMG} alt="Scam Alert — safety precautions before contacting a seller" className="w-full h-auto max-h-[70vh] object-contain mx-auto" />
+        <div className="px-4">
+          <div
+            className="relative w-full mx-auto"
+            style={{
+              // Reserve the poster's exact aspect box (1024x1536) so the card
+              // keeps its shape while the PNG loads instead of collapsing to a
+              // bare button. Capped at 70vh; height derived from that cap so the
+              // box never exceeds the viewport.
+              aspectRatio: `${SCAM_ALERT_W} / ${SCAM_ALERT_H}`,
+              maxHeight: "70vh",
+              maxWidth: "100%",
+              height: "min(70vh, calc((100vw - 5rem) * 1.5))",
+            }}
+          >
+            <img
+              src={SCAM_ALERT_IMG}
+              alt="Scam Alert — safety precautions before contacting a seller"
+              loading="eager"
+              decoding="async"
+              onLoad={(e) => {
+                if (e.currentTarget.naturalWidth > 0) setImgReady(true);
+              }}
+              onError={(e) => {
+                // Asset failed: hide the broken-image glyph but keep the reserved
+                // box so the layout doesn't jump. The button/close stay usable.
+                e.currentTarget.style.visibility = "hidden";
+                setImgReady(true);
+              }}
+              className="w-full h-full object-contain mx-auto transition-opacity duration-300"
+              style={{ opacity: imgReady ? 1 : 0 }}
+            />
+          </div>
+        </div>
         {/* Dont-show-again — red chip, placed high for comfortable mobile tapping */}
         <div className="py-3 flex justify-center">
           <button

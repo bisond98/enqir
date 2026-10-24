@@ -120,11 +120,16 @@ export function generateShareMessage(listing: SellListing): string {
   const listingFor = d.listingFor as string | undefined;
   const state = locationStateOnly(listing.location);
 
-  // Sentence body: condition + title ("Used BMW 320d") — no km driven, no accident history
-  const cond = listing.condition
+  // Sentence body: condition + title ("Used BMW 320d") — the condition only
+  // reads naturally on vehicles (car / automobile / bike); jobs, services,
+  // rentals, houses etc. never share as "Used …"
+  const conditionApplies = ['car', 'vehicles', 'bike', 'bicycles'].includes(cat || '');
+  const cond = conditionApplies && listing.condition
     ? listing.condition.charAt(0).toUpperCase() + listing.condition.slice(1).toLowerCase()
     : null;
-  const head = cond ? `${cond} ${listing.title || ''}`.trim() : (listing.title || '');
+  let head = cond ? `${cond} ${listing.title || ''}`.trim() : (listing.title || '');
+  // Job shares read as a vacancy notice: "Call centre executive vacancy available…"
+  if (cat === 'jobs' && head && !/vacancy/i.test(head)) head = `${head} vacancy`;
   const bits: string[] = [];
   if (head) bits.push(head);
 

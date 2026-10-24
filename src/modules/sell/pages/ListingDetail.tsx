@@ -810,17 +810,17 @@ export default function ListingDetail() {
                 return (
                   <>
                     {showDealChip && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-green-600 text-white border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-green-600 text-white border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                         For {detailsRec.listingFor}
                       </span>
                     )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {d.houseBhk}
                       </span>
                     )}
@@ -829,19 +829,24 @@ export default function ListingDetail() {
               })()}
 
               {listing.priceType === 'discussion' ? (
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-600 text-white border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-600 text-white border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <IndianRupee className="h-3.5 w-3.5 text-white" /> Open to discussion
                 </span>
               ) : (
-                <span className="bg-white text-black border-[0.5px] border-black/40 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center">₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}</span>
+                <span className="bg-white text-black border-[1.5px] border-black/60 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center gap-1.5">
+                  {listing.category === 'jobs' && (
+                    <span className="text-[8px] sm:text-[9px] text-gray-400 font-bold uppercase tracking-wide">Salary:</span>
+                  )}
+                  ₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}
+                </span>
               )}
 
               {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services', 'jobs'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                   {listing.condition}
                 </span>
               )}
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <MapPin className="h-4 w-4 text-red-500" />{listing.location}
                 </span>
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
@@ -866,6 +871,7 @@ export default function ListingDetail() {
                     sneakerAudience: '',
                     sneakerSize: 'Size',
                     salaryPeriod: 'Salary',
+                    experience: 'Experience required',
                     cleaningTypes: 'Cleaning',
                   };
                   const entries = Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key));
@@ -873,7 +879,7 @@ export default function ListingDetail() {
                     const label = key in detailLabels ? detailLabels[key] : '';
                     const brandLogo = key === 'sneakerBrand' ? getSneakerBrandLogoUrl(String(val)) : key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
-                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
                         {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
@@ -889,20 +895,20 @@ export default function ListingDetail() {
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                     {tag}
                   </span>
                 ))
               )}
               {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border-[0.5px] border-black/40 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <Calendar className="h-3.5 w-3.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
               {/* Description as a chip in the same row — short ones shrink to fit,
                   long ones wrap inside the chip. */}
               {listing.description && (
-                <span className="max-w-full inline-flex flex-col items-center gap-0.5 text-left text-[11px] font-bold font-chip bg-white text-black border-[0.5px] border-black/40 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed">
+                <span className="max-w-full inline-flex flex-col items-center gap-0.5 text-left text-[11px] font-bold font-chip bg-white text-black border-[1.5px] border-black/60 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed">
                   <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide flex-shrink-0 text-center">Description:</span>
                   {listing.description}
                 </span>
@@ -938,7 +944,7 @@ export default function ListingDetail() {
                     aria-label="More actions"
                     aria-expanded={moreMenuOpen}
                     title="More"
-                    className="p-1 -mr-1 flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
+                    className="p-1 flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
                   >
                     <MoreHorizontal className="h-5 w-5" />
                   </button>
