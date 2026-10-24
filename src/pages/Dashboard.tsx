@@ -652,6 +652,22 @@ const Dashboard = () => {
         submissionsData = Array.from(byEnquiry.values());
       }
       
+      // ⚡ First paint — at this point BOTH critical datasets (the user's
+      // enquiries and their submissions) are loaded, so show them now instead
+      // of waiting for the expiry/deleted batch round-trip below (up to 8s
+      // more on a slow connection; previously the whole page stayed on the
+      // loading screen until that finished, then went empty on timeout).
+      // The expiry-aware re-sort below re-runs the moment that check lands.
+      submissionsData.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      });
+      setSellerSubmissions(submissionsData);
+      setResponsesSummary(submissionsData);
+      setResponsesReady(true);
+      setLoading(false);
+
       // Fetch enquiry data for each response to check expiration and deletion (combined for efficiency)
       const enquiryIds = [...new Set(submissionsData.map(s => s.enquiryId))];
       const enquiryDataMap: {[key: string]: Enquiry} = {};

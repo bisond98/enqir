@@ -1219,6 +1219,13 @@ const Landing = () => {
     return new Date() > deadline;
   }
 
+  // First-snapshot flags for the two home sections: empty states must never
+  // flash while data is still arriving on a slow connection — show a loading
+  // indicator until the first snapshot (cache or server) resolves, then the
+  // genuine empty states behave exactly as before. No data/count logic changed.
+  const [enquiriesReady, setEnquiriesReady] = useState(false);
+  const [forSaleReady, setForSaleReady] = useState(false);
+
   // Fetch public recent enquiries (visible to all users)
   useEffect(() => {
     // 🛡️ PROTECTED: Enquiry Loading Logic - DO NOT MODIFY
@@ -1235,6 +1242,9 @@ const Landing = () => {
     
     // Use onSnapshot for real-time updates (matches EnquiryWall.tsx approach)
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      // First snapshot resolved — persistent cache serves this instantly on
+      // re-entry; a cold load waits for the server. Either way: stop loading.
+      setEnquiriesReady(true);
       try {
           const items: any[] = [];
           snapshot.forEach((doc) => {
@@ -1361,6 +1371,8 @@ const Landing = () => {
       }
     }, (error) => {
       console.error('Error loading enquiries:', error);
+      // Errors stop the loading state and fall through to today's empty behavior
+      setEnquiriesReady(true);
       // Set empty arrays on error
       setAllLiveEnquiries([]);
       setPublicRecentEnquiries([]);
@@ -1423,9 +1435,12 @@ const Landing = () => {
           const bMs = b.createdAt?.toMillis?.() ?? 0;
           return bMs - aMs;
         });
+      setForSaleReady(true);
       setSellListings(listings);
       setShuffledSellListings(getRandomThree(listings));
     }, (error) => {
+      // Loading ends even on error — deck stays hidden exactly as before
+      setForSaleReady(true);
       console.error("Failed to load sell listings for landing:", error);
     });
     return () => unsubscribe();
@@ -2409,7 +2424,12 @@ const Landing = () => {
               </div>
             </div>
             {/* Recent Enquiries - Overlapped Deck Layout */}
-            {filteredEnquiries.length > 0 ? (
+            {!enquiriesReady ? (
+              <div className="text-center py-16" role="status" aria-live="polite">
+                <div className="w-10 h-10 border-[3px] border-black/15 border-t-black rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-sm font-semibold text-muted-foreground">Loading live enquiries…</p>
+              </div>
+            ) : filteredEnquiries.length > 0 ? (
               <>
               {/* Mobile home: floating enquiry-title capsules + magnifier glass (card deck hidden on mobile) */}
               {windowWidth < 640 && (
@@ -3102,7 +3122,21 @@ const Landing = () => {
           )}
 
                 {/* For Sale cards with enquiry-card style deck + shuffle - All screen sizes */}
-                {shuffledSellListings.length > 0 && (
+                {!forSaleReady ? (
+                  <div className="mt-4 w-full flex flex-col items-center" role="status" aria-live="polite">
+                    <div className="text-center mb-3">
+                      <h3 className="text-2xl sm:text-3xl font-black text-black tracking-tight leading-none">
+                        For Sale<span className="text-gray-300">.</span>
+                      </h3>
+                      <div className="mt-3 flex items-center justify-center gap-1.5">
+                        <span className="h-px w-8 sm:w-10 bg-black/15"></span>
+                        <span className="h-[3px] w-[3px] rounded-full bg-black/70"></span>
+                        <span className="h-px w-8 sm:w-10 bg-black/15"></span>
+                      </div>
+                    </div>
+                    <div className="w-8 h-8 border-[3px] border-black/15 border-t-black rounded-full animate-spin" />
+                  </div>
+                ) : shuffledSellListings.length > 0 && (
                   <div className="mt-4 w-full flex flex-col items-center">
                     <div className="text-center mb-3">
                       <h3 className="text-2xl sm:text-3xl font-black text-black tracking-tight leading-none">

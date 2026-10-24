@@ -6,6 +6,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  getDocsFromCache,
   limit,
   query,
   serverTimestamp,
@@ -102,6 +103,13 @@ export async function listMarketplace(params: {
   categories?: string[];
   location?: string;
   pageSize?: number;
+  /**
+   * Optional instant-paint callback: receives the SAME filtered results built
+   * from the persistent local cache before the server read completes. Callers
+   * pass this as setListings so re-entry / slow networks show last session's
+   * data immediately instead of an empty page behind a spinner.
+   */
+  onCache?: (listings: SellListing[]) => void;
 }) {
   // Wider fetch window than the old 50: category/location/search filters are
   // applied client-side below (kept as-is to avoid requiring new composite
@@ -114,51 +122,76 @@ export async function listMarketplace(params: {
 
   // Query only by status to avoid requiring composite indexes; sort/filter client-side.
   const q = query(collection(db, LISTINGS_COLLECTION), where('status', '==', 'live'), limit(fetchLimit));
+
+  // Shared pipeline — identical for the cache pass and the server pass so
+  // the instant paint can never disagree with the refreshed results.
+  const applyFilters = (input: SellListing[]): SellListing[] => {
+    let listings = input;
+    // Hide deadline listings whose deadline has already passed — the
+    // background sweep may not have flipped their status yet. Only food listings
+    // carry a deadline, so this never affects any other category.
+    const nowMs = Date.now();
+    listings = listings.filter((l) => {
+      if (!l.deadline) return true;
+      const ms = l.deadline?.toMillis ? l.deadline.toMillis() : new Date(l.deadline).getTime();
+      return !Number.isFinite(ms) || ms > nowMs;
+    });
+
+    // Keep latest listings first.
+    listings = listings.sort((a, b) => {
+      const aMs = a.createdAt?.toMillis?.() ?? 0;
+      const bMs = b.createdAt?.toMillis?.() ?? 0;
+      return bMs - aMs;
+    });
+
+    if (params.categories?.length) {
+      listings = listings.filter((l) => params.categories!.includes(l.category) || (Array.isArray((l as any).categories) && (l as any).categories.some((c: string) => params.categories!.includes(c))));
+    } else if (params.category) {
+      listings = listings.filter((l) => l.category === params.category || (Array.isArray((l as any).categories) && (l as any).categories.includes(params.category!)));
+    }
+    if (params.location) {
+      // The location dropdown offers bare city names ('Bengaluru') while many
+      // listings store a full address ("…, Bengaluru, Karnataka, 560076, India").
+      // Exact equality hid every full-address listing — match the chosen city
+      // against each comma-separated part, case-insensitively, instead.
+      const wanted = params.location.trim().toLowerCase();
+      listings = listings.filter((l) => {
+        const parts = (l.location || '').split(',').map((p) => p.trim().toLowerCase()).filter(Boolean);
+        return parts.some((p) => p === wanted || p.includes(wanted));
+      });
+    }
+
+    const s = (params.search ?? '').trim().toLowerCase();
+    if (s) {
+      listings = listings.filter((l) => {
+        const hay = `${l.title ?? ''} ${l.description ?? ''} ${(l.tags ?? []).join(' ')} ${l.category ?? ''}`.toLowerCase();
+        return hay.includes(s);
+      });
+    }
+    return listings;
+  };
+
+  // 1) Instant paint from the persistent local cache (IndexedDB) — resolves
+  //    in milliseconds even on a cold/slow connection or when offline, which
+  //    is exactly the "re-enter the browser and nothing loads" case. Never
+  //    throws: an empty/absent cache simply falls through to the server read.
+  if (params.onCache) {
+    try {
+      const cacheSnap = await getDocsFromCache(q);
+      if (!cacheSnap.empty) {
+        const cached = cacheSnap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
+        params.onCache(applyFilters(cached));
+      }
+    } catch {
+      // No persisted cache yet (first visit / evicted) — server path below.
+    }
+  }
+
+  // 2) Authoritative server read (or cache fallback when offline) refreshes
+  //    the instantly-painted data with what's current.
   const snap = await getDocs(q);
-  let listings = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
-
-  // Hide deadline listings whose deadline has already passed — the
-  // background sweep may not have flipped their status yet. Only food listings
-  // carry a deadline, so this never affects any other category.
-  const nowMs = Date.now();
-  listings = listings.filter((l) => {
-    if (!l.deadline) return true;
-    const ms = l.deadline?.toMillis ? l.deadline.toMillis() : new Date(l.deadline).getTime();
-    return !Number.isFinite(ms) || ms > nowMs;
-  });
-
-  // Keep latest listings first.
-  listings = listings.sort((a, b) => {
-    const aMs = a.createdAt?.toMillis?.() ?? 0;
-    const bMs = b.createdAt?.toMillis?.() ?? 0;
-    return bMs - aMs;
-  });
-
-  if (params.categories?.length) {
-    listings = listings.filter((l) => params.categories!.includes(l.category) || (Array.isArray((l as any).categories) && (l as any).categories.some((c: string) => params.categories!.includes(c))));
-  } else if (params.category) {
-    listings = listings.filter((l) => l.category === params.category || (Array.isArray((l as any).categories) && (l as any).categories.includes(params.category!)));
-  }
-  if (params.location) {
-    // The location dropdown offers bare city names ('Bengaluru') while many
-    // listings store a full address ("…, Bengaluru, Karnataka, 560076, India").
-    // Exact equality hid every full-address listing — match the chosen city
-    // against each comma-separated part, case-insensitively, instead.
-    const wanted = params.location.trim().toLowerCase();
-    listings = listings.filter((l) => {
-      const parts = (l.location || '').split(',').map((p) => p.trim().toLowerCase()).filter(Boolean);
-      return parts.some((p) => p === wanted || p.includes(wanted));
-    });
-  }
-
-  const s = (params.search ?? '').trim().toLowerCase();
-  if (s) {
-    listings = listings.filter((l) => {
-      const hay = `${l.title ?? ''} ${l.description ?? ''} ${(l.tags ?? []).join(' ')} ${l.category ?? ''}`.toLowerCase();
-      return hay.includes(s);
-    });
-  }
-  return listings;
+  const serverListings = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
+  return applyFilters(serverListings);
 }
 
 export async function listMyListings(sellerId: string) {

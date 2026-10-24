@@ -270,6 +270,10 @@ export default function Marketplace() {
         categories: effectiveCats,
         category: effectiveCats ? undefined : category === 'all' ? undefined : category,
         location: location === 'all' ? undefined : location,
+        // Instant first paint from the persistent local cache — re-entry and
+        // slow networks show last session's results immediately, then the
+        // server read below refreshes them.
+        onCache: (cached) => setListings(cached),
       });
       setListings(data);
       return true;
@@ -1038,13 +1042,13 @@ export default function Marketplace() {
 
       {/* Results */}
       <div className="space-y-3">
-        {loading && (
+        {loading && !error && displayListings.length === 0 && (
           <div className="text-center py-10">
             <LoadingAnimation message="Searching" showBackButton={false} compact />
           </div>
         )}
 
-        {!loading && error && (
+        {error && displayListings.length === 0 && (
           <div className="text-center py-10 border-2 border-dashed border-red-200 rounded-2xl">
             <p className="text-sm font-bold text-red-500 mb-2">{error}</p>
             <Button variant="outline" onClick={() => load()} className="border-black text-xs">Retry</Button>
@@ -1060,7 +1064,7 @@ export default function Marketplace() {
         )}
 
         {/* LIST VIEW */}
-        {!loading && !error && viewMode === 'list' && pagedListings.map((l) => (
+        {viewMode === 'list' && pagedListings.map((l) => (
           <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer">
             <div className="flex gap-3 p-3">
               <div className="flex flex-col items-center gap-1 flex-shrink-0">
@@ -1149,7 +1153,7 @@ export default function Marketplace() {
         ))}
 
         {/* GRID VIEW */}
-        {!loading && !error && viewMode === 'grid' && (
+        {viewMode === 'grid' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {pagedListings.map((l) => (
               <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="relative block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer overflow-visible">
@@ -1252,7 +1256,7 @@ export default function Marketplace() {
         )}
 
         {/* Pagination Previous / Next buttons */}
-        {!loading && !error && displayListings.length > perPage && (
+        {displayListings.length > perPage && (
           <div className="flex justify-center gap-3 pt-2 pb-4">
             {page > 0 && (
               <button
