@@ -15,6 +15,26 @@ import { useAuth } from "@/contexts/AuthContext";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
 import SignOutDialog from "@/components/SignOutDialog";
 import { friendlyError } from "@/utils/friendlyError";
+import { toast } from "@/hooks/use-toast";
+
+// Icon chip + title + one-line description used at the top of each card.
+// Defined at module scope so toggling "Sending..." never remounts the headers.
+const SectionHeader = ({ icon, title, description, iconClass }: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  iconClass: string;
+}) => (
+  <div className="flex items-start gap-3 mb-4 sm:mb-5">
+    <span className={`w-10 h-10 rounded-xl border-2 border-black shadow-[0_3px_0_0_rgba(0,0,0,0.85)] flex items-center justify-center flex-shrink-0 ${iconClass}`}>
+      {icon}
+    </span>
+    <div className="min-w-0">
+      <h3 className="text-base sm:text-lg font-black text-black tracking-tight leading-tight">{title}</h3>
+      <p className="text-xs sm:text-[13px] text-gray-500 leading-snug mt-0.5">{description}</p>
+    </div>
+  </div>
+);
 
 const Settings = () => {
   const { user } = useUsage();
@@ -22,7 +42,24 @@ const Settings = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
-  
+
+  // Shared card shell — one consistent container for every settings group:
+  // thick black border + hard bottom shadow, matching the app's neobrutalist
+  // button/card language.
+  const sectionCard = "bg-white border-2 border-black rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.85)] p-4 sm:p-6";
+
+  // Action buttons take the Profile page's mobile-number input geometry:
+  // 12px radius, 1.5px border, input height, the same layered lift shadow
+  // on hover and the same focus ring. Button colours are unchanged — each
+  // action keeps its original background, text and icon colour.
+  const fieldLikeBtn =
+    "!w-full !bg-none !h-10 sm:!h-12 !min-h-[44px] !rounded-[12px] !border-[1.5px] !border-black !text-sm sm:!text-base !font-bold " +
+    "!shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] " +
+    "hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] " +
+    "focus-visible:!ring-3 focus-visible:!ring-black/15 " +
+    "active:!translate-y-[2px] active:!scale-100 hover:!translate-y-0 active:!shadow-[0_1px_0_0_rgba(0,0,0,0.14),0_0_6px_rgba(0,0,0,0.07),0_3px_8px_rgba(0,0,0,0.1)] " +
+    "!transition-all !duration-200";
+
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
@@ -52,111 +89,116 @@ const Settings = () => {
               </h1>
             </div>
             
-            {/* Content Card - Black Background */}
+            {/* Subtitle in Black Header */}
             <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
               <div className="text-center">
-                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
-                  <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
-              Manage your account preferences and platform settings.
-            </p>
-                </div>
+                <p className="text-[11px] sm:text-xs text-white/75 text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                  Manage your account preferences and platform settings.
+                </p>
               </div>
             </div>
           </div>
-          </div>
+        </div>
           
-        {/* Content - Inside Container */}
+        {/* Content — three grouped sections, safest actions first, destructive last */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-          {/* Privacy Settings */}
           <div className="space-y-4 sm:space-y-6">
-            <Card className="p-4 sm:p-6 border-4 border-black">
-              <div className="space-y-4 sm:space-y-6">
-                {/* Log Out - styled like the Connect button */}
-                <Button
-                  type="button"
-                  onClick={() => setShowSignOutDialog(true)}
-                  className="!w-full !h-16 !text-lg !font-black !bg-none !bg-red-600 hover:!bg-red-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
-                >
-                  {/* Physical button depth effect */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                  {/* Shimmer effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                  <div className="flex items-center justify-center space-x-2 relative z-10">
-                    <LogOut className="h-5 w-5 text-white" />
-                    <span className="text-white">Log Out</span>
-                  </div>
-                </Button>
-                
-                <div className="space-y-4">
-                  <h3 className="text-sm sm:text-base font-medium text-black">Account Security</h3>
-                  <div className="space-y-3">
-                    <Button 
-                      type="button"
-                      className="!w-full !h-14 !text-base !font-black !bg-none !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
-                      onClick={async () => {
-                        if (!authUser?.email) {
-                          toast({
-                            title: "Error",
-                            description: "Email address not found. Please contact support.",
-                            variant: "destructive",
-                          });
-                          return;
-                        }
-                        
-                        setIsResettingPassword(true);
-                        try {
-                          const result = await sendPasswordResetEmail(authUser.email);
-                          if (!result.error) {
-                            toast({
-                              title: "Password Reset Email Sent",
-                              description: `We've sent a password reset link to ${authUser.email}. Please check your inbox and spam folder.`,
-                            });
-                          } else {
-                            toast({
-                              title: "Error",
-                              description: friendlyError(result.error, "Failed to send password reset email. Please try again."),
-                              variant: "destructive",
-                            });
-                          }
-                        } catch (error: any) {
-                          toast({
-                            title: "Error",
-                            description: friendlyError(error, "Failed to send password reset email. Please try again."),
-                            variant: "destructive",
-                          });
-                        } finally {
-                          setIsResettingPassword(false);
-                        }
-                      }}
-                      disabled={isResettingPassword}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                      <div className="flex items-center justify-center space-x-2 relative z-10">
-                        <Key className="h-5 w-5 text-white" />
-                        <span className="text-white">{isResettingPassword ? "Sending..." : "Reset Password"}</span>
-                      </div>
-                    </Button>
-                  </div>
+
+            {/* Account Security */}
+            <Card className={sectionCard}>
+              <SectionHeader
+                icon={<Key className="h-5 w-5 text-white" />}
+                iconClass="bg-blue-600"
+                title="Account Security"
+                description="We'll email you a secure link to reset your password."
+              />
+              <Button
+                type="button"
+                className={`${fieldLikeBtn} !bg-blue-600 hover:!bg-blue-700 !text-white`}
+                onClick={async () => {
+                  if (!authUser?.email) {
+                    toast({
+                      title: "Error",
+                      description: "Email address not found. Please contact support.",
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+                  
+                  setIsResettingPassword(true);
+                  try {
+                    const result = await sendPasswordResetEmail(authUser.email);
+                    if (!result.error) {
+                      toast({
+                        title: "Password Reset Email Sent",
+                        description: `We've sent a password reset link to ${authUser.email}. Please check your inbox and spam folder.`,
+                      });
+                    } else {
+                      toast({
+                        title: "Error",
+                        description: friendlyError(result.error, "Failed to send password reset email. Please try again."),
+                        variant: "destructive",
+                      });
+                    }
+                  } catch (error: any) {
+                    toast({
+                      title: "Error",
+                      description: friendlyError(error, "Failed to send password reset email. Please try again."),
+                      variant: "destructive",
+                    });
+                  } finally {
+                    setIsResettingPassword(false);
+                  }
+                }}
+                disabled={isResettingPassword}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Key className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  <span>{isResettingPassword ? "Sending..." : "Reset Password"}</span>
                 </div>
-                
-                <div className="space-y-4">
-                  <h3 className="text-sm sm:text-base font-medium text-black">Account Management</h3>
-                  <Button
-                    type="button"
-                    onClick={() => setShowDeleteDialog(true)}
-                    className="!w-full !h-14 !text-base !font-black !bg-none !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] !relative !overflow-hidden group"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
-                    <div className="flex items-center justify-center space-x-2 relative z-10">
-                      <Trash2 className="h-5 w-5 text-white" />
-                      <span className="text-white">Delete Account</span>
-                    </div>
-                  </Button>
-                </div>
-              </div>
+              </Button>
             </Card>
+
+            {/* Session — Log Out (styled like the Connect button) */}
+            <Card className={sectionCard}>
+              <SectionHeader
+                icon={<LogOut className="h-5 w-5 text-white" />}
+                iconClass="bg-black"
+                title="Session"
+                description="Sign out of your account on this device."
+              />
+              <Button
+                type="button"
+                onClick={() => setShowSignOutDialog(true)}
+                className={`${fieldLikeBtn} !bg-red-600 hover:!bg-red-700 !text-white`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <LogOut className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  <span>Log Out</span>
+                </div>
+              </Button>
+            </Card>
+
+            {/* Account Management — destructive actions last */}
+            <Card className="p-4 sm:p-6 border-2 border-black rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.85)] bg-red-50/60">
+              <SectionHeader
+                icon={<Trash2 className="h-5 w-5 text-white" />}
+                iconClass="bg-red-600"
+                title="Account Management"
+                description="Permanently delete your account and all of its data."
+              />
+              <Button
+                type="button"
+                onClick={() => setShowDeleteDialog(true)}
+                className={`${fieldLikeBtn} !bg-black hover:!bg-gray-900 !text-white`}
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  <span>Delete Account</span>
+                </div>
+              </Button>
+            </Card>
+
           </div>
         </div>
       </div>

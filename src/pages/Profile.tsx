@@ -1128,7 +1128,7 @@ const Profile = () => {
                     type="button"
                     onClick={handleUsernameSave}
                     disabled={savingUsername}
-                    className="h-10 sm:h-12 px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black disabled:opacity-60 shrink-0"
+                    className="h-10 sm:h-12 min-w-[104px] px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black disabled:opacity-60 shrink-0"
                   >
                     {savingUsername ? (
                       <Loader2 className="h-4 w-4 mr-1 animate-spin" />
@@ -1141,7 +1141,7 @@ const Profile = () => {
                   <Button
                     type="button"
                     onClick={handleUsernameEdit}
-                    className="h-10 sm:h-12 px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black shrink-0"
+                    className="h-10 sm:h-12 min-w-[104px] px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black shrink-0"
                   >
                     <Edit className="h-4 w-4 mr-1" />
                     Edit
@@ -1179,7 +1179,7 @@ const Profile = () => {
                       type="button"
                       onClick={handlePhoneOtpSend}
                       disabled={!phone.trim() || sendingOtp || confirmingOtp}
-                      className="h-10 sm:h-12 px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black disabled:opacity-60 shrink-0"
+                      className="h-10 sm:h-12 min-w-[104px] px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black disabled:opacity-60 shrink-0"
                     >
                       {sendingOtp ? (
                         <Loader2 className="h-4 w-4 mr-1 animate-spin" />
