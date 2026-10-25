@@ -3390,8 +3390,13 @@ const Landing = () => {
                   vectorEffect="non-scaling-stroke"
                 />
               </svg>
-              {/* Copy block sits in the shield's straight-sided middle band */}
-              <div className="absolute inset-x-0 top-[37%] px-10 text-center" aria-live="polite">
+              {/* Copy block sits in the shield's straight-sided middle band.
+                  Type follows the app's system: Inter font-black tracking-tight
+                  for titles (same as every section heading), the signature
+                  line-dot-line rule in white between title and body, and Inter
+                  font-medium for the description — both wrapped with
+                  text-balance so the long titles break evenly. */}
+              <div className="absolute inset-x-0 top-[35%] px-9 text-center" aria-live="polite">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={featureIdx}
@@ -3400,10 +3405,16 @@ const Landing = () => {
                     exit={{ opacity: 0, y: 20 }}
                     transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <h3 className="text-[18px] font-black leading-tight tracking-tight text-white">
+                    <h3 className="text-[19px] sm:text-[21px] font-black leading-[1.15] tracking-tight text-white text-balance drop-shadow-[0_1px_3px_rgba(0,0,0,0.28)]">
                       {features[featureIdx].title}
                     </h3>
-                    <p className="mt-2 text-[11px] leading-[1.6] text-white/80">
+                    {/* White variant of the heading rule used above the section */}
+                    <div className="mt-2.5 mb-2.5 flex items-center justify-center gap-1.5">
+                      <span className="h-px w-6 bg-white/45"></span>
+                      <span className="h-[3px] w-[3px] rounded-full bg-white"></span>
+                      <span className="h-px w-6 bg-white/45"></span>
+                    </div>
+                    <p className="text-[11.5px] font-medium leading-[1.65] text-white/90 text-balance">
                       {features[featureIdx].description}
                     </p>
                   </motion.div>
