@@ -2724,7 +2724,7 @@ const EnquiryResponses = () => {
                     {/* Budget Section */}
                     <div className="flex items-center gap-1 sm:gap-1.5 sm:gap-2.5 flex-1 min-w-0">
                       <div className="text-left min-w-0 flex-1">
-                        <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">Your Budget</div>
+                        <div className="text-[8px] sm:text-[10px] text-white font-medium mb-0.5">{user && user.uid === enquiry.userId ? 'Your Budget' : "User's Budget"}</div>
                         <div className="text-[10px] sm:text-sm font-bold text-white truncate">{formatBudget(enquiry.budget)}</div>
                         </div>
                       </div>
