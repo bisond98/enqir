@@ -3354,13 +3354,14 @@ const Landing = () => {
               Desktop grid further up stays untouched. */}
           {/* mb-[103px] + the How It Works section's 40px top padding ≈ 133px,
               the same gap the globe has above "Why Enqir." */}
-          <div className="md:hidden animate-slide-up px-4 mt-6 mb-[93px]" style={{ animationDelay: '1.1s' }}>
+          <div className="md:hidden animate-slide-up px-4 mt-8 mb-[93px]" style={{ animationDelay: '1.1s' }}>
             {/* Section heading — same treatment as "For Sale." / "Enquiries." */}
             <div className="text-center mb-8">
-              {/* Distance below mirrors the "Post what you need & share" → "For Sale."
-                  gap (container mb-6 + heading wrapper mt-4 = 40px mobile, 64px sm);
-                  mb-8 leaves a wider breath between the rule and the shield */}
-              <p className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mb-10 sm:mb-16 leading-tight">
+              {/* Distance below matches the "Post what you need & share" → "For Sale."
+                  gap exactly: those are ADJACENT sibling margins (mb-6 vs mt-4) which
+                  collapse to max = 24px mobile / 48px sm — so mb-6 sm:mb-12, not 40/64.
+                  mb-8 on the heading block leaves a wider breath between rule and shield */}
+              <p className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mb-6 sm:mb-12 leading-tight">
                 Post what you sell, share — AI is here to find the best deals for your match.
               </p>
               <h3 className="text-2xl font-black text-black tracking-tight leading-none">
