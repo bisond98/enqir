@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
+import { NO_CONDITION_CATEGORIES } from '@/constants/categories';
 import { listMarketplace, expireOverdueListings } from '../services/sellDb';
 import { parseNLSearch, isNLSearchQuery, type NLFilters } from '../services/nlSearch';
 import type { SellListing } from '../types';
@@ -1115,7 +1116,7 @@ export default function Marketplace() {
                       FOR {l.details.listingFor.toUpperCase()}
                     </span>
                   )}
-                  {l.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(l.category) && !/-services$/.test(l.category || '') && (
+                  {l.condition && !NO_CONDITION_CATEGORIES.has(l.category || '') && l.category !== 'jobs' && !/-services$/.test(l.category || '') && (
                     <span className="text-[9px] font-black text-black bg-white border border-black !rounded-2xl px-2.5 py-1 flex-shrink-0 !shadow-[0_6px_0_0_rgba(0,0,0,0.15)] uppercase">
                       {l.condition}
                     </span>
@@ -1225,7 +1226,7 @@ export default function Marketplace() {
                         FOR {l.details.listingFor.toUpperCase()}
                       </span>
                     )}
-                    {l.condition && !['real-estate', 'real-estate-services', 'service', 'services'].includes(l.category) && !/-services$/.test(l.category || '') && (
+                    {l.condition && !NO_CONDITION_CATEGORIES.has(l.category || '') && l.category !== 'jobs' && !/-services$/.test(l.category || '') && (
                       <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
                         {l.condition}
                       </span>

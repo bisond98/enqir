@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Shield, Search, Users, CheckCircle, Clock, Heart, BarChart3, FileText, MessageSquare, Eye, Calendar, Share2, MapPin, Check, Bookmark, Home, Briefcase, Package, Car, Sprout, Pen, ShoppingBag, Laptop, Smartphone, BookOpen, Gem, Utensils, Dumbbell, Plane, Gamepad2, Baby, GraduationCap, Music, Camera, Wrench, Building2, Scale, Megaphone, Truck, Recycle, Stethoscope, PawPrint, Cake, Palette, Hammer, Zap, Footprints, Gift, Plus, Store } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "@/components/Layout";
-import newLogo from "@/assets/new-logo.png";
+import newLogo from "@/assets/new-logo.webp";
 import worldMapSvg from "@/assets/World_map_-_low_resolution.svg";
 import { useAuth } from "@/contexts/AuthContext";
 import { trustedName } from "@/lib/userDisplayName";
@@ -1588,11 +1588,21 @@ const Landing = () => {
 
   // Track window width for responsive card behavior
   useEffect(() => {
+    // rAF-throttled: mobile browsers fire resize storms (URL-bar show/hide)
+    // during scroll — coalescing to at most one state read per frame prevents
+    // repeated full-page re-renders mid-scroll. Same value, same logic.
+    let rafId = 0;
     const handleResize = () => {
-      setWindowWidth(window.innerWidth);
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        setWindowWidth((w) => (w === window.innerWidth ? w : window.innerWidth));
+      });
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Fetch user's dashboard data
@@ -2144,7 +2154,7 @@ const Landing = () => {
           {/* Logo with Cartoon Story Around It */}
           <div className="mb-3 sm:mb-4 animate-slide-up text-center">
             <div className="relative inline-block -m-1 sm:-m-2">
-              <img src={newLogo} alt="Enqir.in" className="h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[32rem] w-auto animate-float drop-shadow-2xl block relative z-50" style={{ display: 'block', visibility: 'visible', opacity: 1, background: 'transparent', padding: 0, margin: 0, border: 'none', outline: 'none', objectFit: 'contain', objectPosition: 'center', filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.3)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.2))' }} />
+              <img src={newLogo} alt="Enqir.in" width={1024} height={1024} className="h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[32rem] w-auto animate-float drop-shadow-2xl block relative z-50" style={{ display: 'block', visibility: 'visible', opacity: 1, background: 'transparent', padding: 0, margin: 0, border: 'none', outline: 'none', objectFit: 'contain', objectPosition: 'center', filter: 'drop-shadow(0 0 20px rgba(59, 130, 246, 0.3)) drop-shadow(0 0 40px rgba(59, 130, 246, 0.2))' }} />
               <div className="absolute inset-0 bg-gradient-radial from-white/20 to-transparent blur-2xl z-0 pointer-events-none"></div>
               
               {/* MINIMAL PROFESSIONAL SKETCH IN LOGO PADDING */}
@@ -2354,6 +2364,13 @@ const Landing = () => {
             </Link>
             </div>
           </div>
+
+          {/* Tagline above the desktop "Why Enqir" features grid — same style and
+              distance as the "Post what you need & share" line (mobile copy sits
+              above the shield heading further down, also in this style) */}
+          <p className="hidden md:block text-center text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mb-3 sm:mb-4 leading-tight">
+            Post what you sell, share — AI is here to find the best deals for your match.
+          </p>
 
           {/* Mobile: All cards in one container for equal spacing and centering */}
           <div className="flex flex-col md:contents gap-3 mb-6 sm:mb-16">
@@ -3115,7 +3132,7 @@ const Landing = () => {
               <div className="max-w-4xl mx-auto text-center">
                 {/* Stay Encrypted Text */}
                 <p className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mt-3 sm:mt-4 leading-tight">
-                  Stay Encrypted and Anonymous — let everyone be surprised!
+                  Post what you need & share — what you seek is already in your hand.
                 </p>
               </div>
             </div>
@@ -3339,7 +3356,13 @@ const Landing = () => {
               the same gap the globe has above "Why Enqir." */}
           <div className="md:hidden animate-slide-up px-4 mt-6 mb-[93px]" style={{ animationDelay: '1.1s' }}>
             {/* Section heading — same treatment as "For Sale." / "Enquiries." */}
-            <div className="text-center mb-4">
+            <div className="text-center mb-8">
+              {/* Distance below mirrors the "Post what you need & share" → "For Sale."
+                  gap (container mb-6 + heading wrapper mt-4 = 40px mobile, 64px sm);
+                  mb-8 leaves a wider breath between the rule and the shield */}
+              <p className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mb-10 sm:mb-16 leading-tight">
+                Post what you sell, share — AI is here to find the best deals for your match.
+              </p>
               <h3 className="text-2xl font-black text-black tracking-tight leading-none">
                 Why Enqir<span className="text-gray-300">.</span>
               </h3>

@@ -864,16 +864,9 @@ const Dashboard = () => {
         setResponsesSummary([]);
       }
       
-      // Show error notification only for critical errors
-      if (!error?.message?.includes('index') && !error?.message?.includes('CORS')) {
-        createNotification('system', {
-          title: 'Failed to Load Dashboard Data',
-          message: 'There was an issue loading your data. Please try refreshing the page.',
-          priority: 'high',
-          actionUrl: '/dashboard',
-          actionText: 'Refresh Page'
-        });
-      }
+      // "Failed to Load Dashboard Data" notification intentionally not shown
+      // (by request). Error handling/recovery above is unchanged.
+
     }
   };
 

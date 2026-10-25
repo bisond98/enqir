@@ -12,12 +12,22 @@ interface ScamAlertOverlayProps {
   durationMs?: number;
 }
 
-const SCAM_ALERT_IMG = "/scam-alert.png";
-// Native size of the poster (public/scam-alert.png). Used to reserve the exact
+const SCAM_ALERT_IMG = "/scam-alert.webp";
+// Native size of the poster (public/scam-alert.webp, 1024x1536 — same dims as
+// the original PNG). Used to reserve the exact
 // aspect-ratio box before the bytes arrive, so the card never collapses to a
 // bare button while a slow connection loads the PNG.
 const SCAM_ALERT_W = 1024;
 const SCAM_ALERT_H = 1536;
+
+// Warm the poster cache the moment this module is imported — i.e. as soon as
+// any page with Call/Chat buttons loads — so the 1.3 MB PNG is already in the
+// browser cache by the time the overlay opens, instead of downloading for a
+// few seconds after the popup appears.
+if (typeof Image !== "undefined") {
+  const scamAlertPreloader = new Image();
+  scamAlertPreloader.src = SCAM_ALERT_IMG;
+}
 
 /**
  * Scam-alert caution overlay — shown before Call/Chat (and after successful

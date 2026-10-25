@@ -777,13 +777,22 @@ const HelpGuide = () => {
       });
     };
     
+    // rAF-gated: scroll/resize fire far faster than the screen refreshes —
+    // coalescing to one measurement + state update per frame keeps the arrow
+    // tracking the notice identically while removing the forced-layout storm.
+    let pathRaf = 0;
+    const schedulePathUpdate = () => {
+      cancelAnimationFrame(pathRaf);
+      pathRaf = requestAnimationFrame(updatePath);
+    };
     updatePath();
-    window.addEventListener('resize', updatePath);
-    window.addEventListener('scroll', updatePath);
+    window.addEventListener('resize', schedulePathUpdate, { passive: true });
+    window.addEventListener('scroll', schedulePathUpdate, { passive: true });
     
     return () => {
-      window.removeEventListener('resize', updatePath);
-      window.removeEventListener('scroll', updatePath);
+      cancelAnimationFrame(pathRaf);
+      window.removeEventListener('resize', schedulePathUpdate);
+      window.removeEventListener('scroll', schedulePathUpdate);
     };
   }, [showPath]);
 

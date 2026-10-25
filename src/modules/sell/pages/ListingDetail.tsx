@@ -26,6 +26,7 @@ import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import { friendlyError } from '@/utils/friendlyError';
+import { NO_CONDITION_CATEGORIES } from '@/constants/categories';
 import { useContext } from 'react';
 import { displayNameForUser, shortUserId } from '@/lib/userDisplayName';
 import { NotificationContext } from '@/contexts/NotificationContext';
@@ -768,7 +769,7 @@ export default function ListingDetail() {
             {(() => {
               const d = (listing.details || {}) as Record<string, string>;
               const parts: string[] = [];
-              if (listing.condition && listing.category !== 'jobs') parts.push(listing.condition.toLowerCase());
+              if (listing.condition && listing.category !== 'jobs' && !NO_CONDITION_CATEGORIES.has(listing.category || '') && !/-services$/.test(listing.category || '')) parts.push(listing.condition.toLowerCase());
               const brandName = d.mobileBrand || d.brand;
               if (brandName) parts.push(brandName);
               const variant = d.variant || d.model;
@@ -839,9 +840,7 @@ export default function ListingDetail() {
                   )}
                   ₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}
                 </span>
-              )}
-
-              {listing.condition && !['real-estate', 'real-estate-services', 'service', 'services', 'jobs'].includes(listing.category) && !/-services$/.test(listing.category || '') && (
+              )}                {listing.condition && !NO_CONDITION_CATEGORIES.has(listing.category || '') && listing.category !== 'jobs' && !/-services$/.test(listing.category || '') && (
                 <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                   {listing.condition}
                 </span>

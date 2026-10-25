@@ -218,6 +218,24 @@ export const NO_CONDITION_CATEGORIES = new Set([
   'wedding-events',
   'childcare-family',
   'health-beauty',
+  // New/Used never shows for these anywhere (form selector, preview chip,
+  // listing-detail and marketplace badges — including older listings that
+  // already stored a condition).
+  'books-publications',
+  'antiques',
+  'events-entertainment',
+  'legal-financial',
+  'marketing-advertising',
+  'souvenir',
+  'sneakers',
+  'thrift',
+  'transportation-logistics',
+  'waste-management',
+  'vintage',
+  'agriculture-farming',
+  'entertainment-media',
+  'renewable-energy',
+  'technology',
 ]);
 
 // Legacy category values used by older posts in the database.

@@ -1642,7 +1642,7 @@ export default function CreateListing() {
                   </div>
                 ))}
 
-                {/* Deadline categories: optional countdown. Food & jobs hide the New/Used chips above (food via NO_CONDITION_CATEGORIES, jobs via the explicit check), so the timer stands alone; agriculture keeps the chips. */}
+                {/* Deadline categories: optional countdown. Food, jobs & agriculture hide the New/Used chips above (food & agriculture via NO_CONDITION_CATEGORIES, jobs via the explicit check), so the timer stands alone. */}
                 {isDeadlineCategory && (
                   <div className="space-y-2 border border-black rounded-2xl p-4 bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.1)]">
                     <Label className="text-[10px] font-bold text-black flex items-center gap-2">
@@ -1846,7 +1846,7 @@ export default function CreateListing() {
                               {(() => { const Icon = CATEGORY_ICON[category] ?? LayoutGrid; return <Icon className="h-3 w-3" />; })()}
                               {SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}
                             </span>
-                            {!hideCondition && (
+                            {!hideCondition && category !== 'jobs' && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5 capitalize">
                               <BadgeCheck className="h-3 w-3" />{condition}
                             </span>
