@@ -289,16 +289,7 @@ const MobileForSaleGlobe: React.FC<{
         </div>
       </div>
 
-      {/* Real cloud photo (transparent PNG asset) drifting at the globe's
-          top-left — decorative only. z-10 keeps it under the listing cards
-          (z-20/40) and clear of the left card slot at top:30%. */}
-      <div className="sale-globe-cloud" aria-hidden="true">
-        <img src="/cloud.png" alt="" className="w-full h-auto" />
-      </div>
-      {/* duplicate at the globe's top-left, the original spot */}
-      <div className="sale-globe-cloud sale-globe-cloud--left" aria-hidden="true">
-        <img src="/cloud.png" alt="" className="w-full h-auto" />
-      </div>
+      {/* Globe clouds removed by request */}
 
       {trio.map((listing, i) => listing && listing.id && (
         <div key={`sale-slot-${i}`} className="absolute" style={{ ...slots[i], zIndex: popped ? 40 : 20 }}>
