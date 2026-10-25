@@ -3101,9 +3101,9 @@ const Landing = () => {
               <Link to="/enquiries" className="group inline-block" aria-label="Show All Enquiries">
                 <Button 
                   variant="outline" 
-                  className="h-11 sm:h-12 px-4 !rounded-2xl !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center justify-center"
+                  className="invisible h-7 min-h-0 px-2.5 text-[10px] !rounded-full !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black font-bold relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center justify-center"
                 >
-                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 relative z-10" />
+                  Show More
                 </Button>
               </Link>
             </div>
@@ -3322,8 +3322,8 @@ const Landing = () => {
                       }}
                     >
                       <Link to="/sell/marketplace" className="group inline-block" aria-label="Show All Products">
-                        <button className="h-11 sm:h-12 px-4 !rounded-2xl !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] touch-manipulation select-none flex items-center justify-center">
-                          <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 relative z-10" />
+                        <button className="invisible h-7 min-h-0 px-2.5 text-[10px] !rounded-full !border-[1px] !border-gray-300 !bg-white hover:!bg-gray-50 !text-black font-bold relative overflow-hidden transition-all !duration-150 active:!translate-y-[3px] touch-manipulation select-none flex items-center justify-center">
+                          Show More
                         </button>
                       </Link>
                     </div>
