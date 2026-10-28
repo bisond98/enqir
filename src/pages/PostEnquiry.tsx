@@ -413,7 +413,14 @@ export default function PostEnquiry() {
     // One-frame delayed so the browser finishes its own refocus scroll first
     const reveal = () => {
       requestAnimationFrame(() => {
-        anchor()?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        const el = anchor();
+        if (!el) return;
+        // Skip when the header is already fully on screen — re-centering it
+        // anyway is what made the page visibly scroll up and down on its own,
+        // fighting the browser's focus scroll and the user's own scrolling.
+        const r = el.getBoundingClientRect();
+        if (r.top >= 0 && r.bottom <= window.innerHeight) return;
+        el.scrollIntoView({ block: 'start', behavior: 'smooth' });
       });
     };
     // Initial load of this tab (or tab change): show the heading near the top right away
@@ -422,11 +429,12 @@ export default function PostEnquiry() {
     if (!vv) return;
     let lastHeight = vv.height;
     const onResize = () => {
-      // Keyboard opening (viewport shrinks) or closing — re-reveal the heading
-      if (Math.abs(vv.height - lastHeight) > 40) {
-        lastHeight = vv.height;
-        reveal();
-      }
+      // React only to keyboard OPEN (viewport shrinks). Re-revealing when the
+      // keyboard CLOSES yanked the page back up while the user was reading the
+      // form — the random up/down jumps reported on mobile.
+      const shrink = lastHeight - vv.height; // >0 keyboard opening, <0 closing
+      lastHeight = vv.height;
+      if (shrink > 40) reveal();
     };
     vv.addEventListener('resize', onResize);
     return () => vv.removeEventListener('resize', onResize);

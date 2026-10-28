@@ -133,23 +133,31 @@ export function generateShareMessage(listing: SellListing): string {
   const bits: string[] = [];
   if (head) bits.push(head);
 
-  // Deal phrase: rent/lease for real estate, available for jobs/services, else for sale
+  // Deal phrase: rent/lease wherever the form offers a Listing-for choice
+  // (real-estate AND accommodations — the same set ListingDetail chips),
+  // available for jobs/services, else for sale
+  const hasDealType = ['real-estate', 'real-estate-services', 'accommodations'].includes(cat || '');
   let dealPhrase = 'for sale';
-  if (isRealEstate && listingFor === 'Rent') dealPhrase = 'for rent';
-  else if (isRealEstate && listingFor === 'Lease') dealPhrase = 'for lease';
+  if (hasDealType && listingFor === 'Rent') dealPhrase = 'for rent';
+  else if (hasDealType && listingFor === 'Lease') dealPhrase = 'for lease';
   else if (isOffered) dealPhrase = 'available';
 
-  // Real-estate's FOR SALE/RENT/LEASE prefix already carries the house emoji
-  const icon = isRealEstate ? '' : categoryIcon(cat);
-  let message = `${icon ? `${icon} ` : ''}${bits.join(', ')} ${dealPhrase}${state ? ` in 📍 ${state}` : ''}`;
+  // Non-Sale deal types get the FOR RENT/LEASE prefix below, which already
+  // carries the house emoji — so the body skips its own icon to avoid doubles
+  const hasRentLeasePrefix = hasDealType && !!listingFor && listingFor !== 'Sale';
+  const icon = isRealEstate || hasRentLeasePrefix ? '' : categoryIcon(cat);
+  // Titles that already end in the deal phrase ("3 BHK house for rent") skip
+  // the repeat, so the sentence never reads "… for rent for rent in Kerala"
+  const tailRedundant = head ? new RegExp(`\\s${dealPhrase}$`, 'i').test(head.trim()) : false;
+  let message = `${icon ? `${icon} ` : ''}${bits.join(', ')}${tailRedundant ? '' : ` ${dealPhrase}`}${state ? ` in 📍 ${state}` : ''}`;
 
   // Spec chips as a sentence on its own line (fuel · transmission · owner…)
   const specs = listingSpecSentence(listing);
   if (specs) message = `${message}\n${specs}`;
 
   // Prefix: make the deal type explicit at a glance
-  if (isRealEstate && listingFor && listingFor !== 'Sale') {
-    message = `🏠 FOR ${listingFor.toUpperCase()} — ${message}`;
+  if (hasRentLeasePrefix) {
+    message = `🏠 FOR ${listingFor!.toUpperCase()} — ${message}`;
   } else if (isOffered) {
     // Jobs and service listings read as availability, not a sale
     message = `❗️ AVAILABLE — ${message}`;
