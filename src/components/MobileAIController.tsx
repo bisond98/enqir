@@ -48,6 +48,12 @@ const MobileAIController: React.FC<MobileAIControllerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  // Latest-props mirror — the init effect below reads config from here so it
+  // can run exactly once per mount (the default `{}` prop is a new object on
+  // every render, so depending on it re-ran the effect endlessly).
+  const configRef = useRef(config);
+  configRef.current = config;
+  const stateIntervalRef = useRef<number | null>(null);
 
   // Initialize mobile AI with performance optimization
   useEffect(() => {
@@ -56,14 +62,14 @@ const MobileAIController: React.FC<MobileAIControllerProps> = ({
     const initMobileAI = async () => {
       try {
         // Only initialize on mobile devices or when explicitly requested
-        if (window.innerWidth > 1024 && !config.enableMobileOptimization) {
+        if (window.innerWidth > 1024 && !configRef.current.enableMobileOptimization) {
           console.log('📱 Mobile AI: Skipping on desktop for performance');
           setIsInitialized(false);
           return;
         }
         
         console.log('🔍 Starting Mobile AI initialization...');
-        const success = await initializeMobileAI(config);
+        const success = await initializeMobileAI(configRef.current);
         
         if (isMounted) {
           console.log('🔍 Mobile AI init result:', success);
@@ -71,18 +77,20 @@ const MobileAIController: React.FC<MobileAIControllerProps> = ({
           
           if (success) {
             // Get initial mobile state
-            const state = getMobileAIState(config);
+            const state = getMobileAIState(configRef.current);
             setMobileState(state);
             
-            // Update state less frequently for better performance
-            const interval = setInterval(() => {
+            // Update state less frequently for better performance. The id
+            // lives in a ref so the effect cleanup can clear it — a cleanup
+            // returned from this async function never runs.
+            stateIntervalRef.current = window.setInterval(() => {
               if (isMounted) {
-                const newState = getMobileAIState(config);
+                const newState = getMobileAIState(configRef.current);
                 setMobileState(newState);
               }
             }, 10000); // Changed from 5000 to 10000ms
             
-            return () => clearInterval(interval);
+
           }
         }
       } catch (error) {
@@ -100,7 +108,11 @@ const MobileAIController: React.FC<MobileAIControllerProps> = ({
       isMounted = false;
       clearTimeout(timer);
     };
-  }, [config]);
+    // Run ONCE per mount: `config` defaults to a fresh `{}` each render, so
+    // listing it as a dependency re-ran this effect endlessly (a re-init loop
+    // every ~1s plus an ever-growing set of polling intervals on mobile).
+    // Live config stays current through configRef instead.
+  }, []);
 
   // Touch gesture handlers
   const handleTouchStart = useCallback(async (e: TouchEvent | MouseEvent) => {

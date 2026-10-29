@@ -31,11 +31,9 @@ export default defineConfig(({ mode }) => ({
       // Don't clear screen on file changes (prevents confusion)
       clearScreen: false,
     },
-    headers: {
-      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-    },
+    // (Dev asset caching uses Vite's defaults: source modules revalidate via
+    // ETag so they're never stale, while images/fonts are cached instead of
+    // being re-downloaded on every navigation — much faster local previews.)
   },
   optimizeDeps: {
     // No 'force: true' — forced re-bundling on every dev start made the dev
