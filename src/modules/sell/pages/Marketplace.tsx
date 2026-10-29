@@ -759,6 +759,28 @@ export default function Marketplace() {
           </div>
         )}
 
+{/* View toggle — sits above the Categories + Location row, compact pill */}
+        <div className="flex justify-end">
+          <div className="flex h-8 border-[1.5px] border-black !rounded-full overflow-hidden bg-white !shadow-[0_2px_0_0_rgba(0,0,0,0.2)]">
+            <button
+              onClick={() => { setViewMode('list'); setPage(0); }}
+              aria-label="List view"
+              aria-pressed={viewMode === 'list'}
+              className={`h-full w-8 flex items-center justify-center transition-all touch-manipulation ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-black hover:bg-gray-100'}`}
+            >
+              <List className="h-3.5 w-3.5" strokeWidth={2.25} />
+            </button>
+            <button
+              onClick={() => { setViewMode('grid'); setPage(0); }}
+              aria-label="Grid view"
+              aria-pressed={viewMode === 'grid'}
+              className={`h-full w-8 flex items-center justify-center transition-all border-l-[1.5px] border-black touch-manipulation ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-black hover:bg-gray-100'}`}
+            >
+              <LayoutGrid className="h-3.5 w-3.5" strokeWidth={2.25} />
+            </button>
+          </div>
+        </div>
+
         {/* Filter Row: Categories + Location — equal size on mobile */}
         <div className="flex gap-2">
           <div className="flex-1">
@@ -1003,22 +1025,7 @@ export default function Marketplace() {
               <X className="h-3 w-3" />Clear filters
             </button>
           )}
-          {/* View Toggle */}
-          <div className="flex h-[50px] sm:h-[54px] border-[1.5px] border-black !rounded-2xl overflow-hidden !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] flex-shrink-0">
-            <button
-              onClick={() => { setViewMode('list'); setPage(0); }}
-              className={`h-full px-3.5 flex items-center justify-center transition-all touch-manipulation ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
-            >
-              <List className="h-4 w-4" strokeWidth={2.25} />
-            </button>
-            <button
-              onClick={() => { setViewMode('grid'); setPage(0); }}
-              className={`h-full px-3.5 flex items-center justify-center transition-all border-l-[1.5px] border-black touch-manipulation ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
-            >
-              <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
-            </button>
-          </div>
-          {/* Search button — original flex-1 position, restyled only */}
+        {/* Search button — original flex-1 position, restyled only */}
           <button
             className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 !transform touch-manipulation select-none disabled:!opacity-50 disabled:!translate-y-0 disabled:active:!translate-y-0 disabled:active:!shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]"
             onClick={() => load()}

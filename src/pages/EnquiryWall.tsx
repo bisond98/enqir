@@ -5333,32 +5333,7 @@ export default function EnquiryWall() {
         <div className="container mx-auto px-1 sm:px-4 py-4 sm:py-8">
           {/* Search and Filters - marketplace layout */}
           <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
-{/* Buy / Sell / Filter row - marketplace style */}
-            <div className="sm:hidden grid grid-cols-3 gap-3">
-              <button className="w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[2px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] touch-manipulation select-none">
-                <span className="relative z-10">Sell</span>
-              </button>
-              <button onClick={() => setFilterPanelOpen(v => !v)} className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[2px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] flex items-center justify-center gap-1 touch-manipulation select-none ${filterPanelOpen ? '!bg-blue-600 hover:!bg-blue-700 !text-white' : '!bg-white hover:!bg-gray-50 !text-black'} !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]`}>
-                <SlidersHorizontal className="h-4 w-4 relative z-10" />
-                <span className="relative z-10">Filter</span>
-              </button>
-              <div className="flex h-[50px] !rounded-2xl overflow-hidden !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] border-[1.5px] border-black">
-                <button
-                  onClick={() => { setViewMode('list'); }}
-                  aria-label="List view"
-                  className={`h-full flex-1 flex items-center justify-center transition-all touch-manipulation ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
-                >
-                  <List className="h-4 w-4" strokeWidth={2.25} />
-                </button>
-                <button
-                  onClick={() => { setViewMode('grid'); }}
-                  aria-label="Grid view"
-                  className={`h-full flex-1 flex items-center justify-center transition-all border-l-[1.5px] border-black touch-manipulation ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-white text-black hover:bg-gray-100'}`}
-                >
-                  <LayoutGrid className="h-4 w-4" strokeWidth={2.25} />
-                </button>
-              </div>
-            </div>
+{/* Desktop: Sell / Filter / view row — marketplace style */}
             <div className="hidden sm:flex items-center justify-end gap-2">
               <button className="px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black bg-blue-600 hover:bg-blue-700 text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] transition-all !duration-150 touch-manipulation select-none">Sell</button>
               <button onClick={() => setFilterPanelOpen(v => !v)} className={`px-5 h-[50px] font-black text-[15px] !rounded-2xl border-[1.5px] border-black transition-all !duration-150 flex items-center gap-1.5 touch-manipulation select-none ${filterPanelOpen ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-white hover:bg-gray-50 text-black'} !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px]`}><SlidersHorizontal className="h-4 w-4" />Filter</button>
@@ -5531,7 +5506,7 @@ export default function EnquiryWall() {
                     setShowSuggestions(false);
                   }
                 }}>
-                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
+                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base !border-0 !rounded-2xl focus:!border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.35),0_3px_6px_rgba(0,0,0,0.12)] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_rgba(255,255,255,0.25)] !transition-all !duration-150 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
                     <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
@@ -5546,7 +5521,7 @@ export default function EnquiryWall() {
               <div className="flex-1 relative">
                 <button
                   onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
+                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base !border-0 !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.35),0_3px_6px_rgba(0,0,0,0.12)] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_rgba(255,255,255,0.25)] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
                 >
                   <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0 relative z-10" />
                   <span className="flex-1 text-center truncate text-white font-bold relative z-10">
@@ -5766,8 +5741,10 @@ export default function EnquiryWall() {
               </div>
             </div>
 
+{/* Search + mobile Filter + view toggle — all on one line */}
             <div className="max-w-2xl mx-auto w-full">
-              <div className="relative">
+              <div className="flex items-center gap-2">
+              <div className="relative flex-1 min-w-0">
                 <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-black z-20 pointer-events-none" strokeWidth={3} style={{ transform: 'translateY(-50%)' }} />
                 <div className="relative">
                 <input
@@ -5950,6 +5927,37 @@ export default function EnquiryWall() {
                   </div>
                 )}
               </div>
+
+              {/* Mobile Filter button — same line as the search bar, neumorphic like the view toggle */}
+              <button onClick={() => setFilterPanelOpen(v => !v)} aria-label="Filter" className={`sm:hidden shrink-0 w-11 h-11 flex items-center justify-center rounded-full relative overflow-hidden transition-all duration-150 touch-manipulation select-none bg-gradient-to-b ${filterPanelOpen ? 'from-[#d7d7d7] to-[#c7c7c7] text-gray-600 shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_rgba(255,255,255,0.65)]' : 'from-[#f2f2f2] to-[#e2e2e2] text-black shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.9),0_3px_6px_rgba(0,0,0,0.12)] hover:brightness-[1.02]'}`}>
+                <SlidersHorizontal className="h-4 w-4 relative z-10" />
+              </button>
+
+              {/* Neumorphic list/grid sliding toggle — same line as the search bar */}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={viewMode === 'grid'}
+                aria-label="Toggle list and grid view"
+                onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
+                className="relative shrink-0 h-8 w-[62px] rounded-full p-[3px] touch-manipulation bg-gradient-to-b from-[#f2f2f2] to-[#e2e2e2] shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.9),0_3px_6px_rgba(0,0,0,0.12)]"
+              >
+                {/* Inactive icon — shown on the open side of the track */}
+                {viewMode === 'list' ? (
+                  <LayoutGrid className="absolute right-[9px] top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400" strokeWidth={2.25} />
+                ) : (
+                  <List className="absolute left-[9px] top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400" strokeWidth={2.25} />
+                )}
+                {/* Sliding thumb — carries the active icon */}
+                <div className={`absolute top-1/2 -translate-y-1/2 h-[34px] w-[34px] rounded-full bg-white flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.9),inset_0_-1px_2px_rgba(0,0,0,0.05)] transition-all duration-200 ease-out ${viewMode === 'list' ? 'left-[3px]' : 'left-[25px]'}`}>
+                  {viewMode === 'list' ? (
+                    <List className="h-3.5 w-3.5 text-blue-600" strokeWidth={2.5} />
+                  ) : (
+                    <LayoutGrid className="h-3.5 w-3.5 text-blue-600" strokeWidth={2.5} />
+                  )}
+                </div>
+              </button>
+              </div>
             </div>
             {/* Clear filters + view toggle + Search button - marketplace style */}
             <div className="flex items-center gap-2 w-full">
@@ -5980,7 +5988,7 @@ export default function EnquiryWall() {
                 </button>
               )}
               <button
-                className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 !transform touch-manipulation select-none !relative !overflow-hidden group"
+                className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !font-black text-[15px] sm:text-base tracking-wide !shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.35),0_3px_6px_rgba(0,0,0,0.12)] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_rgba(255,255,255,0.25)] !transition-all !duration-150 touch-manipulation select-none !relative !overflow-hidden group"
                 onClick={() => {
                   submitSearch(searchTerm);
                 }}
