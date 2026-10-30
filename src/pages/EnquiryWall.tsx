@@ -5506,7 +5506,7 @@ export default function EnquiryWall() {
                     setShowSuggestions(false);
                   }
                 }}>
-                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base !border-0 !rounded-2xl focus:!border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.35),0_3px_6px_rgba(0,0,0,0.12)] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_rgba(255,255,255,0.25)] !transition-all !duration-150 overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
+                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base !border-0 !rounded-2xl focus:!border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_5px_0_0_#002b6e,0_9px_18px_rgba(0,0,0,0.28)] hover:!shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_6px_0_0_#002b6e,0_12px_22px_rgba(0,0,0,0.32)] hover:!-translate-y-[1px] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_0_#002b6e,0_3px_6px_rgba(0,0,0,0.22)] active:!translate-y-[4px] !transition-all !duration-150 !transform overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
                     <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
@@ -5521,7 +5521,7 @@ export default function EnquiryWall() {
               <div className="flex-1 relative">
                 <button
                   onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base !border-0 !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.35),0_3px_6px_rgba(0,0,0,0.12)] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_rgba(255,255,255,0.25)] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
+                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base !border-0 !rounded-2xl !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_5px_0_0_#002b6e,0_9px_18px_rgba(0,0,0,0.28)] hover:!shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_6px_0_0_#002b6e,0_12px_22px_rgba(0,0,0,0.32)] hover:!-translate-y-[1px] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_0_#002b6e,0_3px_6px_rgba(0,0,0,0.22)] active:!translate-y-[4px] !transition-all !duration-150 !transform px-3 gap-1.5 overflow-hidden touch-manipulation"
                 >
                   <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0 relative z-10" />
                   <span className="flex-1 text-center truncate text-white font-bold relative z-10">
@@ -5944,16 +5944,16 @@ export default function EnquiryWall() {
               >
                 {/* Inactive icon — shown on the open side of the track */}
                 {viewMode === 'list' ? (
-                  <LayoutGrid className="absolute right-[9px] top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400" strokeWidth={2.25} />
+                  <LayoutGrid className="absolute right-[9px] top-1/2 -translate-y-1/2 h-3 w-3 text-black" strokeWidth={2.25} />
                 ) : (
-                  <List className="absolute left-[9px] top-1/2 -translate-y-1/2 h-3 w-3 text-gray-400" strokeWidth={2.25} />
+                  <List className="absolute left-[9px] top-1/2 -translate-y-1/2 h-3 w-3 text-black" strokeWidth={2.25} />
                 )}
                 {/* Sliding thumb — carries the active icon */}
                 <div className={`absolute top-1/2 -translate-y-1/2 h-[34px] w-[34px] rounded-full bg-white flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.9),inset_0_-1px_2px_rgba(0,0,0,0.05)] transition-all duration-200 ease-out ${viewMode === 'list' ? 'left-[3px]' : 'left-[25px]'}`}>
                   {viewMode === 'list' ? (
-                    <List className="h-3.5 w-3.5 text-blue-600" strokeWidth={2.5} />
+                    <List className="h-3.5 w-3.5 text-black" strokeWidth={2.5} />
                   ) : (
-                    <LayoutGrid className="h-3.5 w-3.5 text-blue-600" strokeWidth={2.5} />
+                    <LayoutGrid className="h-3.5 w-3.5 text-black" strokeWidth={2.5} />
                   )}
                 </div>
               </button>
@@ -5988,7 +5988,7 @@ export default function EnquiryWall() {
                 </button>
               )}
               <button
-                className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !font-black text-[15px] sm:text-base tracking-wide !shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.35),0_3px_6px_rgba(0,0,0,0.12)] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_rgba(255,255,255,0.25)] !transition-all !duration-150 touch-manipulation select-none !relative !overflow-hidden group"
+                className="relative flex-1 h-[50px] sm:h-[54px] !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !rounded-2xl !font-black text-[15px] sm:text-base tracking-wide !shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_5px_0_0_#002b6e,0_9px_18px_rgba(0,0,0,0.28)] hover:!shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_6px_0_0_#002b6e,0_12px_22px_rgba(0,0,0,0.32)] hover:!-translate-y-[1px] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_0_#002b6e,0_3px_6px_rgba(0,0,0,0.22)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none !relative !overflow-hidden group"
                 onClick={() => {
                   submitSearch(searchTerm);
                 }}

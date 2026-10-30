@@ -759,38 +759,16 @@ export default function Marketplace() {
           </div>
         )}
 
-{/* View toggle — sits above the Categories + Location row, compact pill */}
-        <div className="flex justify-end">
-          <div className="flex h-8 border-[1.5px] border-black !rounded-full overflow-hidden bg-white !shadow-[0_2px_0_0_rgba(0,0,0,0.2)]">
-            <button
-              onClick={() => { setViewMode('list'); setPage(0); }}
-              aria-label="List view"
-              aria-pressed={viewMode === 'list'}
-              className={`h-full w-8 flex items-center justify-center transition-all touch-manipulation ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-black hover:bg-gray-100'}`}
-            >
-              <List className="h-3.5 w-3.5" strokeWidth={2.25} />
-            </button>
-            <button
-              onClick={() => { setViewMode('grid'); setPage(0); }}
-              aria-label="Grid view"
-              aria-pressed={viewMode === 'grid'}
-              className={`h-full w-8 flex items-center justify-center transition-all border-l-[1.5px] border-black touch-manipulation ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-black hover:bg-gray-100'}`}
-            >
-              <LayoutGrid className="h-3.5 w-3.5" strokeWidth={2.25} />
-            </button>
-          </div>
-        </div>
-
         {/* Filter Row: Categories + Location — equal size on mobile */}
         <div className="flex gap-2">
           <div className="flex-1">
             <Select value={category} onValueChange={(v) => { setCategory(v); }}>
-              <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base border-[1.5px] border-black !rounded-2xl focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 overflow-hidden font-bold touch-manipulation">
+              <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base !border-0 !rounded-2xl focus:!border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_5px_0_0_#002b6e,0_9px_18px_rgba(0,0,0,0.28)] hover:!shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_6px_0_0_#002b6e,0_12px_22px_rgba(0,0,0,0.32)] hover:!-translate-y-[1px] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_0_#002b6e,0_3px_6px_rgba(0,0,0,0.22)] active:!translate-y-[4px] !transition-all !duration-150 !transform overflow-hidden font-bold touch-manipulation">
                 <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
-                <SelectValue placeholder="All categories" />
+                <SelectValue placeholder="Categories" />
               </SelectTrigger>
               <SelectContent className="!rounded-2xl !border-black !shadow-[0_4px_0_0_rgba(0,0,0,0.2)] bg-white">
-                <SelectItem value="all" className="!rounded-xl !font-black text-black focus:bg-black/5 focus:text-black mb-0.5 !shadow-[0_2px_0_0_rgba(0,0,0,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.15)] !transition-all !duration-150">All categories</SelectItem>
+                <SelectItem value="all" className="!rounded-xl !font-black text-black focus:bg-black/5 focus:text-black mb-0.5 !shadow-[0_2px_0_0_rgba(0,0,0,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.15)] !transition-all !duration-150">Categories</SelectItem>
                 {SELL_CATEGORIES.map((c) => {
                   const Icon = CATEGORY_ICONS[c.value] || Tag;
                   return (
@@ -805,7 +783,7 @@ export default function Marketplace() {
           <div className="flex-1 relative">
             <button
               onClick={() => setLocPopupOpen(!locPopupOpen)}
-              className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base border-[1.5px] border-black !rounded-2xl !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
+              className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base !border-0 !rounded-2xl !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_5px_0_0_#002b6e,0_9px_18px_rgba(0,0,0,0.28)] hover:!shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_6px_0_0_#002b6e,0_12px_22px_rgba(0,0,0,0.32)] hover:!-translate-y-[1px] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_0_#002b6e,0_3px_6px_rgba(0,0,0,0.22)] active:!translate-y-[4px] !transition-all !duration-150 !transform px-3 gap-1.5 overflow-hidden touch-manipulation"
             >
               <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0" />
               <span className="flex-1 text-center truncate text-white font-bold">
@@ -918,8 +896,9 @@ export default function Marketplace() {
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative">
+        {/* Search + Filter + view toggle — aligned on one line, same as Live Enquiries */}
+        <div className="flex items-center gap-2">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black pointer-events-none z-10" strokeWidth={3} />
           <Input
             value={search}
@@ -939,7 +918,7 @@ export default function Marketplace() {
               load();
             }}
             aria-label="Search listings"
-            className="relative pl-10 pr-[4.5rem] sm:pr-[5rem] min-h-[48px] h-[50px] sm:h-[54px] text-sm sm:text-base font-medium bg-white border-[1.5px] border-slate-200 rounded-[12px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus:outline-none focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:ring-offset-0 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-[11px] placeholder:text-gray-400 placeholder:font-semibold text-slate-900 text-left overflow-hidden"
+            className="relative pl-10 pr-10 min-h-[48px] h-[50px] sm:h-[54px] text-sm sm:text-base font-medium font-medium bg-white border-[1.5px] border-slate-200 rounded-[12px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus:outline-none focus:border-black focus:ring-3 focus:ring-black/15 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:ring-offset-0 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 placeholder:text-[11px] placeholder:text-gray-400 placeholder:font-semibold text-slate-900 text-left overflow-hidden"
           />
           {/* Rotating placeholder — category hints roll down from the top every 2s */}
           {!search && (
@@ -955,30 +934,46 @@ export default function Marketplace() {
             </div>
           )}
           {search && (
-            <button onClick={() => { setSearch(''); }} className="absolute right-[3.4rem] sm:right-[3.9rem] top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-20" aria-label="Clear search">
+            <button onClick={() => { setSearch(''); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black z-20" aria-label="Clear search">
               <X className="h-4 w-4" />
             </button>
           )}
-          {/* Search submit — thumb-reachable black pill inside the bar (same as EnquiryWall) */}
-          <button
-            onClick={() => {
-              // Same as Enter: apply immediately (no debounce wait) and trigger the fetch
-              const parsed = parseNLSearch(search);
-              if (parsed && isNLSearchQuery(search, parsed)) {
-                nlSuppressRef.current = null;
-                setNlFilters(parsed);
-                if (parsed.category && parsed.category !== category) setCategory(parsed.category);
-                if (parsed.location && parsed.location !== location) { setLocation(parsed.location); setLocSearch(parsed.location); }
-                if (parsed.priceMin) setPriceMin(parsed.priceMin);
-                if (parsed.priceMax) setPriceMax(parsed.priceMax);
-              }
-              load();
-            }}
-            className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 z-20 h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center bg-black text-white rounded-lg sm:rounded-xl border-[0.5px] border-black shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(255,255,255,0.15)] active:shadow-[0_1px_0_0_rgba(0,0,0,0.3)] active:translate-y-[calc(-50%+2px)] transition-all touch-manipulation"
-            aria-label="Search"
-          >
-            <Search className="h-4 w-4 sm:h-[18px] sm:w-[18px]" strokeWidth={2.5} />
-          </button>
+        </div>
+
+        {/* Filter — same line as the search bar (matches Live Enquiries) */}
+        <button
+          type="button"
+          onClick={() => setFilterOpen(v => !v)}
+          aria-label="Filter"
+          className={`shrink-0 w-11 h-11 flex items-center justify-center rounded-full relative overflow-hidden transition-all duration-150 touch-manipulation select-none bg-gradient-to-b ${filterOpen ? 'from-[#d7d7d7] to-[#c7c7c7] text-gray-600 shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_rgba(255,255,255,0.65)]' : 'from-[#f2f2f2] to-[#e2e2e2] text-black shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.9),0_3px_6px_rgba(0,0,0,0.12)] hover:brightness-[1.02]'}`}
+        >
+          <SlidersHorizontal className="h-4 w-4 relative z-10" />
+        </button>
+
+        {/* Neumorphic list/grid sliding toggle — same line as the search bar */}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={viewMode === 'grid'}
+          aria-label="Toggle list and grid view"
+          onClick={() => { setViewMode(viewMode === 'list' ? 'grid' : 'list'); setPage(0); }}
+          className="relative shrink-0 h-8 w-[62px] rounded-full p-[3px] touch-manipulation bg-gradient-to-b from-[#f2f2f2] to-[#e2e2e2] shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.9),0_3px_6px_rgba(0,0,0,0.12)]"
+        >
+          {/* Inactive icon — shown on the open side of the track */}
+          {viewMode === 'list' ? (
+            <LayoutGrid className="absolute right-[9px] top-1/2 -translate-y-1/2 h-3 w-3 text-black" strokeWidth={2.25} />
+          ) : (
+            <List className="absolute left-[9px] top-1/2 -translate-y-1/2 h-3 w-3 text-black" strokeWidth={2.25} />
+          )}
+          {/* Sliding thumb — carries the active icon */}
+          <div className={`absolute top-1/2 -translate-y-1/2 h-[34px] w-[34px] rounded-full bg-white flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.9),inset_0_-1px_2px_rgba(0,0,0,0.05)] transition-all duration-200 ease-out ${viewMode === 'list' ? 'left-[3px]' : 'left-[25px]'}`}>
+            {viewMode === 'list' ? (
+              <List className="h-3.5 w-3.5 text-black" strokeWidth={2.5} />
+            ) : (
+              <LayoutGrid className="h-3.5 w-3.5 text-black" strokeWidth={2.5} />
+            )}
+          </div>
+        </button>
         </div>
 
         {/* AI natural-language filters: chips of what was understood (auto-applied) */}
@@ -1027,7 +1022,7 @@ export default function Marketplace() {
           )}
         {/* Search button — original flex-1 position, restyled only */}
           <button
-            className="relative flex-1 h-[50px] sm:h-[54px] !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl border-[1.5px] border-black !font-black text-[15px] sm:text-base tracking-wide !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-150 !transform touch-manipulation select-none disabled:!opacity-50 disabled:!translate-y-0 disabled:active:!translate-y-0 disabled:active:!shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]"
+            className="relative flex-1 h-[50px] sm:h-[54px] !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !rounded-2xl !font-black text-[15px] sm:text-base tracking-wide !shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_5px_0_0_#002b6e,0_9px_18px_rgba(0,0,0,0.28)] hover:!shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_6px_0_0_#002b6e,0_12px_22px_rgba(0,0,0,0.32)] hover:!-translate-y-[1px] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_0_#002b6e,0_3px_6px_rgba(0,0,0,0.22)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none disabled:!opacity-50"
             onClick={() => load()}
             disabled={!canSearch || loading}
           >

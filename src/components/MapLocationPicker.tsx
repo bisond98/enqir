@@ -547,6 +547,15 @@ export function MapLocationPicker({
     }
   }, [open, autoLocate, handleUseMyLocation]);
 
+  // The pin's factory position (center of India) is not any user's real
+  // location. Until a source actually places it — GPS/network/IP fix, map tap,
+  // drag, or place search — confirming would post the same made-up Wardha
+  // address for every user on every device, so the confirm button stays locked.
+  const pinAtDefault =
+    !defaultLocation &&
+    Math.abs(position[0] - DEFAULT_CENTER.lat) < 0.005 &&
+    Math.abs(position[1] - DEFAULT_CENTER.lng) < 0.005;
+
   const handleConfirm = async () => {
     await doConfirm(position);
   };
@@ -660,12 +669,17 @@ export function MapLocationPicker({
   );
 
   const footer = (
-    <div className="flex">
+    <div className="flex flex-col gap-2">
+      {pinAtDefault && (
+        <p className="text-[11px] sm:text-xs font-semibold text-center text-amber-600 leading-snug">
+          Your location isn't set yet — tap "Use my location", search a place, or tap the map.
+        </p>
+      )}
       <Button
         type="button"
         className="!w-full !h-14 sm:!h-16 !text-base !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 !transform !relative !overflow-hidden group touch-manipulation select-none"
         onClick={handleConfirm}
-        disabled={confirming}
+        disabled={confirming || pinAtDefault}
       >
         {/* Physical button depth effect */}
         <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />

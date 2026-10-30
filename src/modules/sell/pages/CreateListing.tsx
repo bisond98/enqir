@@ -28,6 +28,7 @@ import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { processPayment } from '@/services/paymentService';
 import { displayNameForUser } from '@/lib/userDisplayName';
+import { isDefaultPinAddress } from '@/lib/reverseGeocode';
 import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import TimeLimitSelector from '@/components/TimeLimitSelector';
 import {
@@ -434,7 +435,7 @@ export default function CreateListing() {
         if (d.description) setDescription(d.description);
         if (d.category) setCategory(d.category);
         if (Array.isArray(d.categories) && d.categories.length) setSelectedCats(d.categories.slice(0, 3));
-        if (d.location) setLocation(d.location);
+        if (d.location && !isDefaultPinAddress(d.location)) setLocation(d.location);
         if (d.condition) setCondition(d.condition);
         if (d.priceType) setPriceType(d.priceType);
       if (d.price) setPrice(d.price);
@@ -1562,6 +1563,7 @@ export default function CreateListing() {
                   open={mapPickerOpen}
                   onOpenChange={(o) => setMapPickerOpen(o)}
                   title="Where is it?"
+                  autoLocate
                   defaultLocation={mapLocation ? { lat: mapLocation.latitude, lng: mapLocation.longitude } : undefined}
                   onSelect={(lat, lng, addr) => {
                     setMapLocation(addr);

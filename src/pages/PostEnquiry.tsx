@@ -23,6 +23,7 @@ import { useNotifications } from "@/contexts/NotificationContext";
 import { matchesForEnquiry, notifyMatch, type MatchItem } from "@/modules/sell/services/matchEngine";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { friendlyError } from "@/utils/friendlyError";
+import { isDefaultPinAddress } from "@/lib/reverseGeocode";
 import { useAuth } from "@/contexts/AuthContext";
 import { splitE164Phone, formatNationalForInput } from "@/lib/phonePrefill";
 import { displayNameForUser } from "@/lib/userDisplayName";
@@ -526,7 +527,7 @@ export default function PostEnquiry() {
         if (d.selectedCategories) setSelectedCategories(d.selectedCategories.slice(0, 1));
         if (d.budget) setBudget(d.budget);
         if (d.budgetOpenToDiscussion) setBudgetOpenToDiscussion(true);
-        if (d.location) setLocation(d.location);
+        if (d.location && !isDefaultPinAddress(d.location)) setLocation(d.location);
         if (d.deadline) setDeadline(new Date(d.deadline));
         if (d.notes) setNotes(d.notes);
         if (d.vehicleDetails) setVehicleDetails(d.vehicleDetails);
@@ -3349,6 +3350,7 @@ export default function PostEnquiry() {
                         open={mapPickerOpen}
                         onOpenChange={(o) => setMapPickerOpen(o)}
                         title="Where do you want it?"
+                        autoLocate
                         defaultLocation={mapLocation ? { lat: mapLocation.latitude, lng: mapLocation.longitude } : undefined}
                         onSelect={(lat, lng, addr) => {
                           setMapLocation(addr);

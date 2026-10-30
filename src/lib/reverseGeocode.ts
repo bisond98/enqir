@@ -97,3 +97,19 @@ export async function searchPlaces(query: string): Promise<PlaceSearchResult[]> 
     }))
     .filter((r) => r.label && Number.isFinite(r.lat) && Number.isFinite(r.lng));
 }
+
+// The app's default map pin (center of India, 20.5937/78.9629) reverse-geocodes
+// to this fixed address. It is not any user's real location — flag it so stale
+// form drafts (or anything else storing the string) can never re-inject it.
+const DEFAULT_PIN_ADDRESS = 'wadgaon, hirdi, samudrapur, wardha, maharashtra, india';
+const DEFAULT_PIN_TOKENS = ['wadgaon', 'hirdi', 'samudrapur', 'wardha'];
+
+/** True when `text` is the fake address produced by the default center-of-India
+ *  pin — either an exact match or the same locality chain with formatting drift. */
+export function isDefaultPinAddress(text: string | null | undefined): boolean {
+  if (!text) return false;
+  const t = text.trim().toLowerCase();
+  if (!t) return false;
+  if (t === DEFAULT_PIN_ADDRESS) return true;
+  return DEFAULT_PIN_TOKENS.every((tok) => t.includes(tok));
+}
