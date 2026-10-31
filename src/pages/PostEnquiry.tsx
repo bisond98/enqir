@@ -39,7 +39,15 @@ import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES } from "@/constants/categories";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
-import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS } from "@/modules/sell/categoryBrands";
+import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from "@/modules/sell/categoryBrands";
+
+// Description limits — every category shares one description field.
+// Cap is 1000 words (was 500 units); MAX_DESC_CHARS is only a hard safety ceiling
+// so a paste of unbroken text can't grow without bound.
+const MAX_DESC_WORDS = 1000;
+const MAX_DESC_CHARS = 9000;
+const countWords = (text: string) => (text.trim() ? text.trim().split(/\s+/).length : 0);
+const withinDescLimit = (text: string) => text.length <= MAX_DESC_CHARS && countWords(text) <= MAX_DESC_WORDS;
 import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from "@/modules/sell/categoryDetails";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
@@ -363,7 +371,7 @@ export default function PostEnquiry() {
     setTimeout(() => {
       try {
         const { suggestion } = improveDescription(description, aiDescriptionInput());
-        if (suggestion) setDescription(suggestion.slice(0, 500));
+        if (suggestion) setDescription(suggestion.split(/\s+/).slice(0, MAX_DESC_WORDS).join(' ').slice(0, MAX_DESC_CHARS));
       } catch {
         // keep the user's text untouched on failure
       } finally {
@@ -2911,6 +2919,10 @@ export default function PostEnquiry() {
                         const isCarLike = selectedCategories.some(c => ['car', 'automobile', 'vehicles'].includes(c));
                         const isBike = selectedCategories.includes('bike');
                         const isBikeOnly = isBike && !isCarLike;
+                        // Car keeps a free-text trim (VXI, ZXI); the generic Vehicles / truck
+                        // categories get the body-type picker instead.
+                        const isCar = selectedCategories.includes('car');
+                        const isTruckLike = !isCar && selectedCategories.some(c => ['automobile', 'vehicles'].includes(c));
                         if (!isCarLike && !isBike) return null;
                         return (
                           <div className="mb-6">
@@ -2923,7 +2935,7 @@ export default function PostEnquiry() {
                                   className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                                 >
                                   <option value="">Brand</option>
-                                  {(isBikeOnly ? BIKE_BRANDS : CAR_BRANDS).filter(b => b !== 'Other').map((b) => (
+                                  {(isBikeOnly ? BIKE_BRANDS.filter(b => b !== 'Other') : isCar ? CAR_BRANDS.filter(b => b !== 'Other') : VEHICLE_BRANDS.filter(b => b !== 'Other')).map((b) => (
                                     <option key={b} value={b}>{b}</option>
                                   ))}
                                   <option value="Other">Other</option>
@@ -2948,8 +2960,8 @@ export default function PostEnquiry() {
                                   <p className="text-[8px] font-bold text-black text-center tracking-wide">year</p>
                                 </div>
                               </div>
-                              {/* Variant — cars/automobiles only, not bikes */}
-                              {isCarLike && (
+                              {/* Variant — cars only, free text (VXI, ZXI (O), LXI CNG …) */}
+                              {isCar && (
                                 <div className="flex-1 min-w-0">
                                   <Input
                                     type="text"
@@ -2961,6 +2973,27 @@ export default function PostEnquiry() {
                                   />
                                   <div className="h-3">
                                     <p className="text-[8px] font-bold text-black text-center tracking-wide">variant</p>
+                                  </div>
+                                </div>
+                              )}
+                              {/* Type — body type (truck, lorry, pickup …) instead of a free-text variant */}
+                              {isTruckLike && (
+                                <div className="flex-1 min-w-0">
+                                  <div className="relative">
+                                    <select
+                                      value={vehicleDetails.variant}
+                                      onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                    >
+                                      <option value="">Type</option>
+                                      {VEHICLE_TYPES.map((t) => (
+                                        <option key={t} value={t}>{t}</option>
+                                      ))}
+                                    </select>
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                                  </div>
+                                  <div className="h-3">
+                                    <p className="text-[8px] font-bold text-black text-center tracking-wide">type</p>
                                   </div>
                                 </div>
                               )}
@@ -3280,18 +3313,14 @@ export default function PostEnquiry() {
                               id="enquiry-desc"
                               value={description}
                               onChange={(e) => {
-                                if (e.target.value.length <= 500) setDescription(e.target.value);
+                                if (withinDescLimit(e.target.value)) setDescription(e.target.value);
                               }}
                               placeholder="Specifications, requirements, timeline..."
-                              maxLength={500}
+                              maxLength={MAX_DESC_CHARS}
                               className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus
                             />
                           </div>
-                          <div className="h-3">
-                            <p className="text-[8px] font-bold text-black text-center tracking-wide">description</p>
-                          </div>
-                          <p className="text-[11px] text-slate-500 text-right">{description.length}/500</p>
                         </>
                       )}
                       {!selectedCategories.includes('real-estate') && (
@@ -3302,18 +3331,14 @@ export default function PostEnquiry() {
                               id="enquiry-desc"
                               value={description}
                               onChange={(e) => {
-                                if (e.target.value.length <= 500) setDescription(e.target.value);
+                                if (withinDescLimit(e.target.value)) setDescription(e.target.value);
                               }}
                               placeholder="Specifications, requirements, timeline..."
-                              maxLength={500}
+                              maxLength={MAX_DESC_CHARS}
                               className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus
                             />
                           </div>
-                          <div className="h-3">
-                            <p className="text-[8px] font-bold text-black text-center tracking-wide">description</p>
-                          </div>
-                          <p className="text-[11px] text-slate-500 text-right">{description.length}/500</p>
                         </>
                       )}
 

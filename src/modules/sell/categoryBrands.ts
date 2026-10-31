@@ -27,3 +27,21 @@ export const SNEAKER_BRANDS = [
   'Puma', 'Reebok', 'Salomon', 'Saucony', 'Skechers', 'Sparx', 'Under Armour', 'Vans', 'Veja', 'Woodland', 'Yonex',
   'Yeezy', 'Other',
 ];
+
+// Commercial + passenger vehicle makers — used by the Post Enquiry vehicle brand picker
+// so trucks, lorries and pickups are covered, not just car marques.
+const COMMERCIAL_VEHICLE_BRANDS = [
+  'Ashok Leyland', 'BharatBenz', 'DAF', 'Eicher', 'Force Motors', 'Hino',
+  'JCB', 'Kamaz', 'MAN', 'Piaggio', 'Scania',
+];
+
+export const VEHICLE_BRANDS = Array.from(
+  new Set([...CAR_BRANDS.filter((b) => b !== 'Other'), ...COMMERCIAL_VEHICLE_BRANDS]),
+).sort((a, b) => a.localeCompare(b)).concat('Other');
+
+// Vehicle body types for the enquiry form — trucks and commercial bodies first,
+// 'Other' stays last so the free choice sits where people expect it.
+export const VEHICLE_TYPES = [
+  'Truck', 'Lorry', 'Pickup', 'Mini Truck', 'Tipper', 'Tanker', 'Trailer',
+  'Tempo', 'Van', 'Bus', 'Tractor', 'JCB / Construction', 'Other',
+];

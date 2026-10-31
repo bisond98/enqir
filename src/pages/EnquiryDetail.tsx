@@ -24,6 +24,7 @@ import {
   IndianRupee,
   Bookmark,
   ImageIcon,
+  FileText,
   Flag,
   Fuel,
   Search,
@@ -841,23 +842,129 @@ const EnquiryDetail = () => {
         <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
           <div className="space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
-              <Card className="shadow-lg rounded-2xl bg-white border border-black">
-                {/* Card Header - Black Background */}
-                <div className="bg-black px-4 sm:px-4 py-2 sm:py-2.5 rounded-t-2xl">
-                  <h2 className="text-[10px] sm:text-[10px] md:text-xs font-medium text-white flex items-center justify-center gap-2 text-center">
-                    <Search className="h-3 w-3 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5" />
-                    Looking for
-                  </h2>
-                </div>
-                
+              <Card className="shadow-lg rounded-2xl border border-black overflow-hidden relative bg-[linear-gradient(to_bottom_right,#ffffff_0%,#eff6ff_50%,#dbeafe_100%)]">
                 {/* Card Content - Enhanced White Background */}
-                <CardContent className="p-5 sm:p-6 lg:p-7">
+                                {/* Card texture — the homescreen sketch (User -> AI Engine -> Match -> Success)
+                    tiled across the whole card as quiet watermark ink. Chips sit solid white
+                    on top of it, so the doodle only reads in the gaps between them. */}
+                <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 select-none">
+                  <svg className="h-full w-full opacity-[0.22]" fill="none">
+                    <defs>
+                      <g id="enquiry-home-doodle-art">
+                      <g transform="translate(200, 200)" opacity="0.8">
+                        <circle cx="0" cy="0" r="25" fill="none" stroke="#6B7280" strokeWidth="2" />
+                        <circle cx="0" cy="0" r="20" fill="none" stroke="#6B7280" strokeWidth="1.5" opacity="0.7" />
+                        <circle cx="0" cy="0" r="15" fill="none" stroke="#6B7280" strokeWidth="1" opacity="0.5" />
+                      </g>
+                      <g transform="translate(200, 80)" opacity="0.8">
+                        <circle cx="0" cy="0" r="12" fill="none" stroke="#6B7280" strokeWidth="1.5" />
+                        <circle cx="-3" cy="-2" r="1.5" fill="#6B7280" />
+                        <circle cx="3" cy="-2" r="1.5" fill="#6B7280" />
+                        <path d="M-2 3 Q0 4 2 3" stroke="#6B7280" strokeWidth="1.2" fill="none" />
+                        <rect x="-8" y="8" width="16" height="20" fill="none" stroke="#6B7280" strokeWidth="1" rx="2" />
+                        <rect x="-6" y="12" width="12" height="8" fill="#6B7280" opacity="0.3" />
+                        <text x="0" y="35" textAnchor="middle" fontSize="8" fill="#4B5563" fontWeight="500">User</text>
+                      </g>
+                      <g transform="translate(100, 200)" opacity="0.8">
+                        <rect x="-15" y="-12" width="30" height="24" fill="none" stroke="#6B7280" strokeWidth="1.5" rx="3" />
+                        <circle cx="-6" cy="0" r="2" fill="#6B7280" />
+                        <circle cx="0" cy="0" r="2" fill="#6B7280" />
+                        <circle cx="6" cy="0" r="2" fill="#6B7280" />
+                        <path d="M-4 -6 L4 6 M4 -6 L-4 6" stroke="#6B7280" strokeWidth="1" opacity="0.6" />
+                        <text x="0" y="25" textAnchor="middle" fontSize="8" fill="#4B5563" fontWeight="500">AI Engine</text>
+                        <path d="M-20 -5 L-15 -5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+                        <path d="M-20 0 L-15 0" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+                        <path d="M-20 5 L-15 5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+                        <path d="M15 -5 L20 -5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+                        <path d="M15 0 L20 0" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+                        <path d="M15 5 L20 5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
+                      </g>
+                      <g transform="translate(300, 200)" opacity="0.8">
+                        <circle cx="0" cy="0" r="15" fill="none" stroke="#6B7280" strokeWidth="1.5" />
+                        <circle cx="0" cy="0" r="10" fill="none" stroke="#6B7280" strokeWidth="1.2" opacity="0.7" />
+                        <circle cx="0" cy="0" r="5" fill="none" stroke="#6B7280" strokeWidth="1" opacity="0.5" />
+                        <circle cx="0" cy="0" r="2" fill="#6B7280" />
+                        <text x="0" y="22" textAnchor="middle" fontSize="8" fill="#4B5563" fontWeight="500">Match</text>
+                        <circle cx="-12" cy="-8" r="2" fill="#6B7280" opacity="0.6" />
+                        <circle cx="12" cy="-8" r="2" fill="#6B7280" opacity="0.6" />
+                        <circle cx="-12" cy="8" r="2" fill="#6B7280" opacity="0.6" />
+                        <circle cx="12" cy="8" r="2" fill="#6B7280" opacity="0.6" />
+                        <path d="M-12 -8 L-5 -3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
+                        <path d="M12 -8 L5 -3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
+                        <path d="M-12 8 L-5 3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
+                        <path d="M12 8 L5 3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
+                      </g>
+                      <g transform="translate(200, 320)" opacity="0.8">
+                        <circle cx="0" cy="0" r="16" fill="none" stroke="#6B7280" strokeWidth="1.5" />
+                        <path d="M-6 0 L-2 4 L6 -2" stroke="#6B7280" strokeWidth="2.5" fill="none" />
+                        <text x="0" y="25" textAnchor="middle" fontSize="8" fill="#4B5563" fontWeight="500">Success!</text>
+                        <path d="M-20 -8 L-18 -6 L-16 -8 L-18 -10 Z" fill="#6B7280" opacity="0.6" />
+                        <path d="M20 -8 L22 -6 L24 -8 L22 -10 Z" fill="#6B7280" opacity="0.6" />
+                        <path d="M-20 8 L-18 10 L-16 8 L-18 6 Z" fill="#6B7280" opacity="0.6" />
+                        <path d="M20 8 L22 10 L24 8 L22 6 Z" fill="#6B7280" opacity="0.6" />
+                      </g>
+                      <path d="M200 92 L200 175" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
+                      <path d="M130 200 L175 200" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
+                      <path d="M225 200 L270 200" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
+                      <path d="M100 225 L175 275" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
+                      <path d="M300 225 L225 275" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
+                      <g transform="translate(150, 120)" opacity="0.6">
+                        <circle cx="0" cy="0" r="8" fill="#6B7280" />
+                        <text x="0" y="2" textAnchor="middle" fontSize="8" fill="white">🔒</text>
+                        <text x="0" y="15" textAnchor="middle" fontSize="6" fill="#4B5563">Secure</text>
+                      </g>
+                      <g transform="translate(250, 120)" opacity="0.6">
+                        <circle cx="0" cy="0" r="8" fill="#6B7280" />
+                        <text x="0" y="2" textAnchor="middle" fontSize="8" fill="white">⚡</text>
+                        <text x="0" y="15" textAnchor="middle" fontSize="6" fill="#4B5563">Fast</text>
+                      </g>
+                      <g transform="translate(150, 280)" opacity="0.6">
+                        <circle cx="0" cy="0" r="8" fill="#6B7280" />
+                        <text x="0" y="2" textAnchor="middle" fontSize="8" fill="white">💬</text>
+                        <text x="0" y="15" textAnchor="middle" fontSize="6" fill="#4B5563">Chat</text>
+                      </g>
+                      <g transform="translate(250, 280)" opacity="0.6">
+                        <circle cx="0" cy="0" r="8" fill="#6B7280" />
+                        <text x="0" y="2" textAnchor="middle" fontSize="8" fill="white">⭐</text>
+                        <text x="0" y="15" textAnchor="middle" fontSize="6" fill="#4B5563">Quality</text>
+                      </g>
+                      <g transform="translate(60, 60)" opacity="0.4">
+                        <circle cx="0" cy="0" r="4" fill="#6B7280" />
+                        <text x="0" y="1" textAnchor="middle" fontSize="5" fill="white">💡</text>
+                      </g>
+                      <g transform="translate(340, 60)" opacity="0.4">
+                        <circle cx="0" cy="0" r="4" fill="#6B7280" />
+                        <text x="0" y="1" textAnchor="middle" fontSize="5" fill="white">🎯</text>
+                      </g>
+                      <g transform="translate(60, 340)" opacity="0.4">
+                        <circle cx="0" cy="0" r="4" fill="#6B7280" />
+                        <text x="0" y="1" textAnchor="middle" fontSize="5" fill="white">💰</text>
+                      </g>
+                      <g transform="translate(340, 340)" opacity="0.4">
+                        <circle cx="0" cy="0" r="4" fill="#6B7280" />
+                        <text x="0" y="1" textAnchor="middle" fontSize="5" fill="white">🎉</text>
+                      </g>
+                      </g>
+                      <pattern id="enquiry-home-doodle-tile" width="280" height="280" patternUnits="userSpaceOnUse" patternTransform="rotate(-6)">
+                        <g transform="scale(0.64)">
+                          <use href="#enquiry-home-doodle-art" />
+                        </g>
+                      </pattern>
+                      <marker id="enquiry-home-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#6B7280" />
+                      </marker>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#enquiry-home-doodle-tile)" />
+                  </svg>
+                </div>
+
+                <CardContent className="relative z-10 p-5 sm:p-6 lg:p-7">
                   {/* Description — merged into the same card */}
-                  <div className="mb-5 sm:mb-6">
+                  <div className="mb-2 sm:mb-2.5">
                     <div className="flex items-start justify-center gap-3 mb-6 sm:mb-7">
                       <div className="hidden sm:block w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
                       <div className="inline-flex items-center gap-2 sm:gap-3">
-                      <h2 className="text-lg sm:text-2xl font-black leading-snug break-words !text-black !bg-white !border-0 rounded-xl px-4 py-3 text-center">{enquiry.title}</h2>
+                      <h2 className="text-lg sm:text-2xl font-black leading-snug break-words !text-black !bg-white !border-[1px] !border-b-[3px] !border-black/60 rounded-xl px-4 py-3 text-center"><span className="inline-flex items-center justify-center gap-2"><Search className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />{enquiry.title}</span></h2>
                     </div>
                     </div>
                     {/* One-line summary from vehicle chips — car categories only, red background white text */}
@@ -1002,7 +1109,7 @@ const EnquiryDetail = () => {
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black bg-white border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black/60 rounded-lg px-2 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black !bg-white border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black/60 rounded-lg px-2 py-1">
                                 {!(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.label && <span className="text-[8px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
@@ -1016,21 +1123,27 @@ const EnquiryDetail = () => {
 
                     {/* Description — below the detail chips */}
                     <div className="mt-6 sm:mt-7">
-                      <div className="bg-white rounded-2xl p-4 sm:p-5 !border-t-[1.5px] !border-r-[1.5px] !border-b-[3px] !border-l-[1.5px] !border-black/60 relative overflow-hidden">
-                        <h3 className="text-[10px] sm:text-[10px] font-extrabold text-black mb-2 uppercase tracking-wider">Description</h3>
-                        <p className="text-xs sm:text-xs md:text-sm leading-relaxed text-gray-800" style={{ lineHeight: '1.7', fontWeight: 500 }}>{enquiry.description}</p>
+                    {/* Description — below the detail chips */}
+                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
+                      <div className="flex items-center gap-2 relative z-10">
+                        <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <FileText className="h-3.5 w-3.5 text-white" />
+                        </span>
+                        <h3 className="shrink-0 whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.12em] text-gray-400">Description</h3>
+                        <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
                       </div>
+                    </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 items-stretch">
-                    <div className="bg-white rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/50 relative overflow-hidden">
-                      <div className="flex items-center gap-2.5 relative z-10">
-                        <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <IndianRupee className="h-4 w-4 text-black" />
+                  <div className="flex flex-wrap gap-2 sm:gap-2.5 items-stretch">
+                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
+                      <div className="flex items-center gap-2 relative z-10">
+                        <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <IndianRupee className="h-3.5 w-3.5 text-white" />
                         </span>
-                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">{budgetLabel}</span>
-                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-black truncate leading-snug">
+                        <span className="shrink-0 whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.12em] text-gray-400">{budgetLabel}</span>
+                        <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black truncate leading-snug">
                           {enquiry.budgetOpenToDiscussion ? (
                             <span className="inline-flex items-center gap-1.5">
                               <MessageCircle className="h-4 w-4 text-black" /> Open to discussion
@@ -1048,35 +1161,35 @@ const EnquiryDetail = () => {
                       onClick={() => setShowLocationPopup(true)}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowLocationPopup(true); } }}
                       title="Show full location"
-                      className="bg-white rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/50 relative overflow-hidden cursor-pointer transition-colors hover:!border-black/80 focus:outline-none focus-visible:!border-black"
+                      className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full cursor-pointer transition-colors hover:!border-black focus:outline-none focus-visible:!border-black"
                     >
-                      <div className="flex items-center gap-2.5 relative z-10">
-                        <span className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <MapPin className="h-4 w-4 text-white" />
+                      <div className="flex items-center gap-2 relative z-10">
+                        <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <MapPin className="h-3.5 w-3.5 text-white" />
                         </span>
-                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">Location</span>
-                        <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-black truncate leading-snug" title={enquiry.location}>{enquiry.location}</p>
+                        <span className="shrink-0 whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.12em] text-gray-400">Location</span>
+                        <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black truncate leading-snug" title={enquiry.location}>{enquiry.location}</p>
                       </div>
                     </div>
                     
-                    <div className="bg-white rounded-2xl p-3 sm:p-3.5 !border-[0.5px] !border-black/50 relative overflow-hidden">
-                      <div className="flex items-center gap-2.5 relative z-10">
-                        <span className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
-                          <Calendar className="h-4 w-4 text-white" />
+                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
+                      <div className="flex items-center gap-2 relative z-10">
+                        <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <Calendar className="h-3.5 w-3.5 text-white" />
                         </span>
-                        <span className="w-[78px] shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500">Deadline</span>
+                        <span className="shrink-0 whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.12em] text-gray-400">Deadline</span>
                         <div className="flex-1 min-w-0 flex items-center gap-2">
                           {enquiry.deadline ? (
                             <>
                               {formatDeadlineReadable(enquiry.deadline) && (
-                                <p className="flex-1 min-w-0 text-xs sm:text-sm font-semibold text-black leading-snug truncate">
+                                <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black leading-snug truncate">
                                   {formatDeadlineReadable(enquiry.deadline)}
                                 </p>
                               )}
                               <span className="shrink-0"><CountdownTimer deadline={enquiry.deadline} /></span>
                             </>
                           ) : (
-                            <p className="text-xs text-gray-500 leading-snug">No deadline</p>
+                            <p className="text-xs text-black leading-snug">No deadline</p>
                           )}
                         </div>
                       </div>
@@ -1122,10 +1235,10 @@ const EnquiryDetail = () => {
 
                   {enquiry.notes && (
                     <div className="mt-5 sm:mt-6 mb-4">
-                      <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/50 relative overflow-hidden">
+                      <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-b-[3px] !border-black/50 relative overflow-hidden">
                         <div className="flex items-start gap-2.5 relative z-10">
-                          <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 shadow-sm">
-                            <MessageSquare className="h-4 w-4 text-black" />
+                        <span className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                          <MessageSquare className="h-4 w-4 text-white" />
                           </span>
                           <h3 className="w-[78px] shrink-0 pt-1.5 text-[7px] font-semibold uppercase tracking-[0.04em] whitespace-nowrap text-gray-500">Additional Notes</h3>
                           <p className="flex-1 min-w-0 text-[11px] sm:text-xs text-black" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
@@ -1135,10 +1248,12 @@ const EnquiryDetail = () => {
                   )}
 
                   {/* Posted date — chip-sized line under Additional Notes (same size as the spec chips above) */}
-                  <div className="mt-5 sm:mt-6 mb-4 flex justify-end">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black bg-white border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black/60 rounded-lg px-2 py-1" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
-                      <Clock className="h-3 w-3 text-black" />
-                      <span className="text-[8px] font-semibold text-gray-400 uppercase tracking-wide">Posted</span>
+                  <div className="mt-2 sm:mt-2.5 mb-4 flex justify-end">
+                    <span className="inline-flex items-center gap-2 text-[11px] font-bold font-chip text-black bg-white border border-b-[3px] border-black/60 rounded-lg px-2 py-1" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                      <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <Clock className="h-3.5 w-3.5 text-white" />
+                      </span>
+                      <span className="text-[7px] font-semibold text-gray-400 uppercase tracking-wide">Posted</span>
                       {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
                     </span>
                   </div>
@@ -1359,7 +1474,7 @@ const EnquiryDetail = () => {
         {/* Complete location popup — opens when the Location card is tapped */}
         {showLocationPopup && enquiry && (
           <Dialog open={showLocationPopup} onOpenChange={setShowLocationPopup}>
-            <DialogContent className="max-w-sm w-[calc(100vw-2rem)] rounded-2xl border-[1.5px] border-black p-6 text-center">
+            <DialogContent className="mx-0 max-w-sm w-[calc(100vw-2rem)] rounded-2xl border-[1.5px] border-black p-6 text-center [&>button:focus]:ring-0 [&>button:focus]:ring-offset-0 [&>button:focus]:outline-none [&>button:focus-visible]:outline-none">
               <DialogHeader className="mb-2">
                 <DialogTitle className="text-[10px] font-black uppercase tracking-[0.14em] text-gray-500 flex items-center justify-center gap-2">
                   <MapPin className="h-4 w-4 text-red-600" />
