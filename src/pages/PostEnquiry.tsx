@@ -2924,59 +2924,32 @@ export default function PostEnquiry() {
                         const isCar = selectedCategories.includes('car');
                         const isTruckLike = !isCar && selectedCategories.some(c => ['automobile', 'vehicles'].includes(c));
                         if (!isCarLike && !isBike) return null;
+                        // Brand sits first for Car/Motorcycle and last for Vehicles, so it is
+                        // built once and placed by the field order below.
+                        const brandField = (
+                          <div className="flex-1 min-w-0">
+                            <div className="relative">
+                              <select
+                                value={vehicleDetails.brand}
+                                onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value }))}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                              >
+                                <option value="">Brand</option>
+                                {(isBikeOnly ? BIKE_BRANDS.filter(b => b !== 'Other') : isCar ? CAR_BRANDS.filter(b => b !== 'Other') : VEHICLE_BRANDS.filter(b => b !== 'Other')).map((b) => (
+                                  <option key={b} value={b}>{b}</option>
+                                ))}
+                                <option value="Other">Other</option>
+                              </select>
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                            </div>
+                            <div className="h-3">
+                            </div>
+                          </div>
+                        );
                         return (
                           <div className="mb-6">
                             <div className="flex items-start justify-between gap-3">
-                              {/* Brand */}
-                              <div className="flex-1 min-w-0">
-                                <select
-                                  value={vehicleDetails.brand}
-                                  onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
-                                >
-                                  <option value="">Brand</option>
-                                  {(isBikeOnly ? BIKE_BRANDS.filter(b => b !== 'Other') : isCar ? CAR_BRANDS.filter(b => b !== 'Other') : VEHICLE_BRANDS.filter(b => b !== 'Other')).map((b) => (
-                                    <option key={b} value={b}>{b}</option>
-                                  ))}
-                                  <option value="Other">Other</option>
-                                </select>
-                                <div className="h-3">
-                                  <ChevronDown className="absolute right-3 -top-8 h-4 w-4 text-gray-500 pointer-events-none" />
-                                  <p className="text-[8px] font-bold text-black text-center tracking-wide">brand</p>
-                                </div>
-                              </div>
-                              {/* Year */}
-                              <div className="flex-1 min-w-0">
-                                <Input
-                                  type="text"
-                                  inputMode="numeric"
-                                  maxLength={4}
-                                  value={vehicleDetails.year}
-                                  onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
-                                  placeholder="Year"
-                                  className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
-                                />
-                                <div className="h-3">
-                                  <p className="text-[8px] font-bold text-black text-center tracking-wide">year</p>
-                                </div>
-                              </div>
-                              {/* Variant — cars only, free text (VXI, ZXI (O), LXI CNG …) */}
-                              {isCar && (
-                                <div className="flex-1 min-w-0">
-                                  <Input
-                                    type="text"
-                                    maxLength={40}
-                                    value={vehicleDetails.variant}
-                                    onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
-                                    placeholder="e.g., VXI, ZXI (O)"
-                                    className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
-                                  />
-                                  <div className="h-3">
-                                    <p className="text-[8px] font-bold text-black text-center tracking-wide">variant</p>
-                                  </div>
-                                </div>
-                              )}
-                              {/* Type — body type (truck, lorry, pickup …) instead of a free-text variant */}
+                              {/* Type — body type (truck, lorry, pickup …); first slot in Vehicles */}
                               {isTruckLike && (
                                 <div className="flex-1 min-w-0">
                                   <div className="relative">
@@ -2993,10 +2966,41 @@ export default function PostEnquiry() {
                                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                                   </div>
                                   <div className="h-3">
-                                    <p className="text-[8px] font-bold text-black text-center tracking-wide">type</p>
                                   </div>
                                 </div>
                               )}
+                              {/* Brand — first slot for Car / Motorcycle, last slot for Vehicles */}
+                              {!isTruckLike && brandField}
+                              {/* Year */}
+                              <div className="flex-1 min-w-0">
+                                <Input
+                                  type="text"
+                                  inputMode="numeric"
+                                  maxLength={4}
+                                  value={vehicleDetails.year}
+                                  onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
+                                  placeholder="Year"
+                                  className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                                />
+                                <div className="h-3">
+                                </div>
+                              </div>
+                              {/* Variant — cars only, free text (VXI, ZXI (O), LXI CNG …) */}
+                              {isCar && (
+                                <div className="flex-1 min-w-0">
+                                  <Input
+                                    type="text"
+                                    maxLength={40}
+                                    value={vehicleDetails.variant}
+                                    onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
+                                    placeholder="e.g., VXI, ZXI (O)"
+                                    className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                                  />
+                                  <div className="h-3">
+                                  </div>
+                                </div>
+                              )}
+                              {isTruckLike && brandField}
                             </div>
                             {/* Transmission / Fuel Type / Ownership — cars & automobiles only */}
                             {isCarLike && (
@@ -3022,7 +3026,6 @@ export default function PostEnquiry() {
                                     </div>
                                   </div>
                                   <div className="h-3">
-                                    <p className="text-[8px] font-bold text-black text-center tracking-wide">transmission</p>
                                   </div>
                                 </div>
                                 {/* Fuel Type */}
@@ -3046,7 +3049,6 @@ export default function PostEnquiry() {
                                     </div>
                                   </div>
                                   <div className="h-3">
-                                    <p className="text-[8px] font-bold text-black text-center tracking-wide">fuel type</p>
                                   </div>
                                 </div>
                               </div>
