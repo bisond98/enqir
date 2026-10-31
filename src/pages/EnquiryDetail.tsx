@@ -842,13 +842,13 @@ const EnquiryDetail = () => {
         <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
           <div className="space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
-              <Card className="shadow-lg rounded-2xl border border-black overflow-hidden relative bg-[linear-gradient(to_bottom_right,#ffffff_0%,#eff6ff_50%,#dbeafe_100%)]">
+              <Card className="shadow-lg rounded-2xl border border-black overflow-hidden relative bg-white">
                 {/* Card Content - Enhanced White Background */}
                                 {/* Card texture — the homescreen sketch (User -> AI Engine -> Match -> Success)
                     tiled across the whole card as quiet watermark ink. Chips sit solid white
                     on top of it, so the doodle only reads in the gaps between them. */}
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 select-none">
-                  <svg className="h-full w-full opacity-[0.22]" fill="none">
+                  <svg className="h-full w-full opacity-[0.10]" fill="none">
                     <defs>
                       <g id="enquiry-home-doodle-art">
                       <g transform="translate(200, 200)" opacity="0.8">
@@ -964,31 +964,9 @@ const EnquiryDetail = () => {
                     <div className="flex items-start justify-center gap-3 mb-6 sm:mb-7">
                       <div className="hidden sm:block w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
                       <div className="inline-flex items-center gap-2 sm:gap-3">
-                      <h2 className="text-lg sm:text-2xl font-black leading-snug break-words !text-black !bg-white !border-[1px] !border-b-[3px] !border-black/60 rounded-xl px-4 py-3 text-center"><span className="inline-flex items-center justify-center gap-2"><Search className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />{enquiry.title}</span></h2>
+                      <h2 className="text-lg sm:text-2xl font-black leading-snug break-words !text-white !bg-red-600 !border-[1px] !border-b-[3px] !border-black/60 rounded-xl px-4 py-3 text-center"><span className="inline-flex items-center justify-center gap-2"><Search className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />{enquiry.title}</span></h2>
                     </div>
                     </div>
-                    {/* One-line summary from vehicle chips — car categories only, red background white text */}
-                    {(() => {
-                      const d = enquiry.details as any;
-                      if (!d || !d.brand) return null;
-                      // Build summary from available details
-                      const parts: string[] = [];
-                      parts.push(d.brand);
-                      if (d.variant) parts.push(d.variant);
-                      if (d.year) parts.push(`${d.year} model`);
-                      if (d.fuelType) parts.push(d.fuelType.toLowerCase());
-                      if (d.transmission) parts.push(d.transmission.toLowerCase());
-                      const dl = formatDeadlineReadable(enquiry.deadline);
-                      const deadlinePhrase = dl ? ` before ${dl}` : '';
-                      const sentence = `Need ${parts.join(' ')}${deadlinePhrase}`;
-                      return (
-                        <div className="flex justify-center">
-                          <p className="mt-3 text-[12px] sm:text-sm font-chip font-black tracking-tight leading-snug text-white bg-red-600 border border-black rounded-xl px-4 py-2">
-                            {sentence}
-                          </p>
-                        </div>
-                      );
-                    })()}
                     {/* One-line summary from mobile chips — mobile category only, red background white text */}
                     {(() => {
                       const d = enquiry.details as any;
@@ -1003,7 +981,7 @@ const EnquiryDetail = () => {
                       const sentence = `Need ${parts.join(' ')}${deadlinePhrase}`;
                       return (
                         <div className="flex justify-center">
-                          <p className="mt-3 text-[12px] sm:text-sm font-chip font-black tracking-tight leading-snug text-white bg-red-600 border border-black rounded-xl px-4 py-2">
+                          <p className="mt-3 text-[12px] sm:text-sm font-chip font-black tracking-tight leading-snug text-black bg-gray-200 border border-black rounded-xl px-4 py-2">
                             {sentence}
                           </p>
                         </div>
@@ -1109,7 +1087,7 @@ const EnquiryDetail = () => {
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black !bg-white border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black/60 rounded-lg px-2 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black !bg-gray-200 border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black/60 rounded-lg px-2 py-1">
                                 {!(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.label && <span className="text-[8px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
@@ -1124,7 +1102,7 @@ const EnquiryDetail = () => {
                     {/* Description — below the detail chips */}
                     <div className="mt-6 sm:mt-7">
                     {/* Description — below the detail chips */}
-                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
+                    <div className="!bg-gray-200 rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
                       <div className="flex items-center gap-2 relative z-10">
                         <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
                           <FileText className="h-3.5 w-3.5 text-white" />
@@ -1137,7 +1115,7 @@ const EnquiryDetail = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-2 sm:gap-2.5 items-stretch">
-                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
+                    <div className="!bg-gray-200 rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
                       <div className="flex items-center gap-2 relative z-10">
                         <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
                           <IndianRupee className="h-3.5 w-3.5 text-white" />
@@ -1161,7 +1139,7 @@ const EnquiryDetail = () => {
                       onClick={() => setShowLocationPopup(true)}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowLocationPopup(true); } }}
                       title="Show full location"
-                      className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full cursor-pointer transition-colors hover:!border-black focus:outline-none focus-visible:!border-black"
+                      className="!bg-gray-200 rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full cursor-pointer transition-colors hover:!border-black focus:outline-none focus-visible:!border-black"
                     >
                       <div className="flex items-center gap-2 relative z-10">
                         <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -1172,7 +1150,7 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
+                    <div className="!bg-gray-200 rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
                       <div className="flex items-center gap-2 relative z-10">
                         <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
                           <Calendar className="h-3.5 w-3.5 text-white" />
@@ -1235,7 +1213,7 @@ const EnquiryDetail = () => {
 
                   {enquiry.notes && (
                     <div className="mt-5 sm:mt-6 mb-4">
-                      <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-b-[3px] !border-black/50 relative overflow-hidden">
+                      <div className="bg-gray-100 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-b-[3px] !border-black/50 relative overflow-hidden">
                         <div className="flex items-start gap-2.5 relative z-10">
                         <span className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
                           <MessageSquare className="h-4 w-4 text-white" />
@@ -1249,7 +1227,7 @@ const EnquiryDetail = () => {
 
                   {/* Posted date — chip-sized line under Additional Notes (same size as the spec chips above) */}
                   <div className="mt-2 sm:mt-2.5 mb-4 flex justify-end">
-                    <span className="inline-flex items-center gap-2 text-[11px] font-bold font-chip text-black bg-white border border-b-[3px] border-black/60 rounded-lg px-2 py-1" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                    <span className="inline-flex items-center gap-2 text-[11px] font-bold font-chip text-black bg-gray-200 border border-b-[3px] border-black/60 rounded-lg px-2 py-1" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
                       <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
                         <Clock className="h-3.5 w-3.5 text-white" />
                       </span>
@@ -1357,7 +1335,7 @@ const EnquiryDetail = () => {
                         </button>
                         <button
                           onClick={() => navigate('/dashboard')}
-                          className="w-full h-[50px] sm:h-[54px] !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !bg-white hover:!bg-gray-50 !text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] font-black touch-manipulation select-none"
+                          className="w-full h-[50px] sm:h-[54px] !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !bg-gray-200 hover:!bg-gray-50 !text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] font-black touch-manipulation select-none"
                         >
                           <span className="relative z-10">View Dashboard</span>
                         </button>
