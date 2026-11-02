@@ -795,7 +795,7 @@ export default function ListingDetail() {
               const capitalized = sentence.charAt(0).toUpperCase() + sentence.slice(1);
               return (
                 <div className="flex justify-center mt-3 px-0.5">
-                  <p className="w-full text-left text-[12px] sm:text-[13px] font-semibold text-white bg-red-600 border border-black/70 rounded-2xl px-4 py-2.5 leading-snug shadow-[0_3px_0_0_rgba(0,0,0,0.18)]">
+                  <p className="w-full text-center sm:text-left font-chip text-[12px] sm:text-[13px] font-bold tracking-tight text-gray-900 bg-white rounded-xl px-4 py-2.5 leading-relaxed">
                     {capitalized}
                   </p>
                 </div>
@@ -838,6 +838,7 @@ export default function ListingDetail() {
                   {listing.category === 'jobs' && (
                     <span className="text-[8px] sm:text-[9px] text-gray-400 font-bold uppercase tracking-wide">Salary:</span>
                   )}
+                  <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><IndianRupee className="h-2.5 w-2.5 text-white" /></span>{ ' '}
                   ₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}
                 </span>
               )}                {listing.condition && !NO_CONDITION_CATEGORIES.has(listing.category || '') && listing.category !== 'jobs' && !/-services$/.test(listing.category || '') && (
@@ -846,7 +847,7 @@ export default function ListingDetail() {
                 </span>
               )}
                 <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
-                  <MapPin className="h-4 w-4 text-red-500" />{listing.location}
+                  <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><MapPin className="h-2.5 w-2.5 text-white" /></span>{listing.location}
                 </span>
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
                 (() => {
@@ -879,12 +880,12 @@ export default function ListingDetail() {
                     const brandLogo = key === 'sneakerBrand' ? getSneakerBrandLogoUrl(String(val)) : key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
                       <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
-                        {key === 'transmission' && <Joystick className="h-3 w-3 text-black flex-shrink-0" />}
-                        {key === 'fuel' && <Fuel className="h-3 w-3 text-black flex-shrink-0" />}
-                        {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">{label}:</span>}
+                        {key === 'transmission' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Joystick className="h-2.5 w-2.5 text-white" /></span>}
+                        {key === 'fuel' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Fuel className="h-2.5 w-2.5 text-white" /></span>}
+                        {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">{label}:</span>}
                         {brandLogo && <img src={brandLogo} alt="" className="h-3.5 w-3.5 object-contain flex-shrink-0" loading="lazy" />}
-                        {key === 'facing' && !label && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Facing:</span>}
-                        {key === 'furnishing' && !label && <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide">Furnishing:</span>}
+                        {key === 'facing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Facing:</span>}
+                        {key === 'furnishing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Furnishing:</span>}
                         {String(val)}
                         {key === 'furnishing' && <Sofa className="h-3 w-3 text-black flex-shrink-0" />}
                       </span>
@@ -901,14 +902,14 @@ export default function ListingDetail() {
               )}
               {formatPostedDate(listing.createdAt) && (
                 <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
-                  <Calendar className="h-3.5 w-3.5 flex-shrink-0" />Posted on {formatPostedDate(listing.createdAt)}
+                  <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Calendar className="h-2.5 w-2.5 text-white" /></span>Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
               {/* Description as a chip in the same row — short ones shrink to fit,
                   long ones wrap inside the chip. */}
               {listing.description && (
                 <span className="max-w-full inline-flex flex-col items-center gap-0.5 text-left text-[11px] font-bold font-chip bg-white text-black border-[1.5px] border-black/60 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed">
-                  <span className="text-[8px] text-gray-400 font-bold uppercase tracking-wide flex-shrink-0 text-center">Description:</span>
+                  <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap flex-shrink-0 text-center">Description:</span>
                   {listing.description}
                 </span>
               )}
@@ -935,20 +936,20 @@ export default function ListingDetail() {
                     Your Listing
                   </span>
                 )}
-                <div className="flex flex-col items-end gap-2.5 ml-auto">
-                  <ShareButton listing={listing} className="[&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!text-black !text-black hover:!bg-transparent" />
+                <div className="relative w-full flex flex-row-reverse items-center justify-between gap-2.5 sm:w-auto sm:flex-col sm:items-start sm:justify-start sm:mx-0 sm:ml-auto">
+                  <ShareButton listing={listing} className="[&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!text-black !text-black !bg-transparent hover:!bg-transparent !w-11 !h-11 !p-0 !rounded-full !border-[1.5px] !border-black flex items-center justify-center" />
                   <button
                     ref={moreBtnRef}
                     onClick={() => setMoreMenuOpen(o => !o)}
                     aria-label="More actions"
                     aria-expanded={moreMenuOpen}
                     title="More"
-                    className="p-1 flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
+                    className="w-11 h-11 rounded-full border-[1.5px] border-black flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
                   >
                     <MoreHorizontal className="h-5 w-5" />
                   </button>
                   {moreMenuOpen && (
-                    <div ref={moreMenuRef} className="w-48 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden py-1">
+                    <div ref={moreMenuRef} className="absolute left-0 top-full z-30 mt-1 w-48 sm:left-auto sm:right-0 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden py-1">
                       <button
                         onClick={() => { toggleSave(); setMoreMenuOpen(false); }}
                         aria-label={saved ? 'Remove from saved' : 'Save listing'}

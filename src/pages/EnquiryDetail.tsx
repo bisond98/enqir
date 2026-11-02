@@ -842,13 +842,13 @@ const EnquiryDetail = () => {
         <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
           <div className="space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
-              <Card className="shadow-lg rounded-2xl border border-black overflow-hidden relative bg-white">
+              <Card className="shadow-lg rounded-2xl border border-black overflow-hidden relative bg-gray-100">
                 {/* Card Content - Enhanced White Background */}
                                 {/* Card texture — the homescreen sketch (User -> AI Engine -> Match -> Success)
                     tiled across the whole card as quiet watermark ink. Chips sit solid white
                     on top of it, so the doodle only reads in the gaps between them. */}
                 <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 select-none">
-                  <svg className="h-full w-full opacity-[0.10]" fill="none">
+                  <svg className="h-full w-full opacity-[0.07]" fill="none">
                     <defs>
                       <g id="enquiry-home-doodle-art">
                       <g transform="translate(200, 200)" opacity="0.8">
@@ -963,8 +963,13 @@ const EnquiryDetail = () => {
                   <div className="mb-2 sm:mb-2.5">
                     <div className="flex items-start justify-center gap-3 mb-6 sm:mb-7">
                       <div className="hidden sm:block w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
-                      <div className="inline-flex items-center gap-2 sm:gap-3">
-                      <h2 className="text-lg sm:text-2xl font-black leading-snug break-words !text-white !bg-red-600 !border-[1px] !border-b-[3px] !border-black/60 rounded-xl px-4 py-3 text-center"><span className="inline-flex items-center justify-center gap-2"><Search className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0" />{enquiry.title}</span></h2>
+                      <div className="flex w-full flex-col items-start gap-1.5 sm:gap-2">
+                        <span className="inline-flex items-center gap-1 text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap"><Search className="h-2 w-2 flex-shrink-0" aria-hidden="true" />Looking for</span>
+                      <h2 className="[text-shadow:none] w-full rounded-2xl !bg-[repeating-linear-gradient(135deg,#ffffff_0px,#ffffff_7px,#f1f3f6_7px,#f1f3f6_14px)] !border-[3px] !border-black px-5 py-[22px] text-center shadow-[0_1px_0_rgba(0,0,0,0.03),0_12px_28px_-16px_rgba(0,0,0,0.45)]">
+                        <span className="flex items-center justify-center gap-2.5">
+                          <span className="font-heading text-xl sm:text-2xl font-extrabold leading-[1.2] tracking-[-0.015em] text-neutral-900 break-words">{enquiry.title}</span>
+                        </span>
+                      </h2>
                     </div>
                     </div>
                     {/* One-line summary from mobile chips — mobile category only, red background white text */}
@@ -981,7 +986,7 @@ const EnquiryDetail = () => {
                       const sentence = `Need ${parts.join(' ')}${deadlinePhrase}`;
                       return (
                         <div className="flex justify-center">
-                          <p className="mt-3 text-[12px] sm:text-sm font-chip font-black tracking-tight leading-snug text-black bg-gray-200 border border-black rounded-xl px-4 py-2">
+                          <p className="mt-3 text-[12px] sm:text-sm font-chip font-black tracking-tight leading-snug text-black bg-white border border-black rounded-xl px-4 py-2">
                             {sentence}
                           </p>
                         </div>
@@ -1023,11 +1028,11 @@ const EnquiryDetail = () => {
                         d.landArea && { label: 'Land / Plot', value: d.landArea, highlight: true },
                         d.builtUpArea && { label: 'Buildings', value: d.builtUpArea, highlight: true },
                         d.houseArea && { label: 'House / Flat', value: d.houseBhk ? `${d.houseArea} · ${d.houseBhk}` : d.houseArea, highlight: true },
-                        d.brand && { label: 'Brand', value: d.brand, icon: 'brand', logoUrl: getCarBrandLogoUrl(d.brand) || getMobileBrandLogoUrl(d.brand) },
-                        d.year && { label: 'Year', value: d.year, icon: 'calendar' },
-                        d.variant && { label: 'Variant', value: d.variant },
-                        d.transmission && { label: 'Transmission', value: d.transmission, icon: 'gear' },
-                        d.fuelType && { label: 'Fuel', value: d.fuelType, icon: 'fuel' },
+                        d.brand && { label: '', value: d.brand, icon: 'brand', logoUrl: getCarBrandLogoUrl(d.brand) || getMobileBrandLogoUrl(d.brand) },
+                        d.year && { label: '', value: d.year, icon: 'calendar' },
+                        d.variant && { label: '', value: d.variant, icon: 'variant' },
+                        d.transmission && { label: '', value: /transmission/i.test(d.transmission) ? d.transmission : `${d.transmission} Transmission`, icon: 'gear' },
+                        d.fuelType && { label: '', value: d.fuelType, icon: 'fuel' },
                         d.mobileBrand && { label: 'Brand', value: d.mobileBrand, icon: 'mobileBrand', logoUrl: getMobileBrandLogoUrl(d.mobileBrand), highlight: true },
                         d.ram && { label: 'RAM', value: d.ram, highlight: true },
                         d.memory && { label: 'Memory', value: d.memory, highlight: true },
@@ -1044,20 +1049,22 @@ const EnquiryDetail = () => {
                           <path d="M12 4v16M5 12h14M5 12v-4M19 12v-4M5 12v4M19 12v4" />
                         </svg>
                       );
-                      const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) =>
-                        icon === 'brand' && logoUrl ? (
-                          <img src={logoUrl} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />
-                        ) : icon === 'mobileBrand' && logoUrl ? (
-                          <img src={logoUrl} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />
-                        ) : icon === 'sneakerBrand' && logoUrl ? (
-                          <img src={logoUrl} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />
-                        ) : icon === 'gear' ? (
-                          <GearShifterIcon className="h-3 w-3 text-black" />
-                        ) : icon === 'fuel' ? (
-                          <Fuel className="h-3 w-3 text-black" />
-                        ) : icon === 'calendar' ? (
-                          <Calendar className="h-3 w-3 text-black" />
-                        ) : null;
+                      const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) => {
+                        // Brand logos keep their own artwork; drawn glyphs sit in a black disc with a white icon
+                        const isLogo = (icon === 'brand' || icon === 'mobileBrand' || icon === 'sneakerBrand') && !!logoUrl;
+                        if (isLogo) return <img src={logoUrl as string} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />;
+                        const glyph = icon === 'gear' ? <GearShifterIcon className="h-2.5 w-2.5 text-white" />
+                          : icon === 'fuel' ? <Fuel className="h-2.5 w-2.5 text-white" />
+                          : icon === 'calendar' ? <Calendar className="h-2.5 w-2.5 text-white" />
+                          : icon === 'variant' ? <Tag className="h-2.5 w-2.5 text-white" />
+                          : null;
+                        if (!glyph) return null;
+                        return (
+                          <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
+                            {glyph}
+                          </span>
+                        );
+                      };
                       return (
                         <div className="flex flex-wrap justify-center gap-1.5 mt-3">
                           {chips.map((c) => (
@@ -1076,8 +1083,8 @@ const EnquiryDetail = () => {
                                 <span className="whitespace-nowrap">{c.value}</span>
                               </span>
                             ) : c.highlight && c.value === 'Open to discussion' ? (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-green-600 border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black rounded-lg px-2.5 py-1">
-                                {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-green-600 !border-[0.5px] border-black rounded-lg px-2.5 py-1">
+                                {c.label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">{c.label}</span>}
                                 {c.value}
                               </span>
                             ) : c.highlight ? (
@@ -1087,9 +1094,9 @@ const EnquiryDetail = () => {
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black !bg-gray-200 border-t-[1.5px] border-r-[1.5px] border-b-[3px] border-l-[1.5px] border-black/60 rounded-lg px-2 py-1">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black !bg-white !border-[0.5px] border-black/60 rounded-lg px-2 py-1">
                                 {!(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
-                                {c.label && <span className="text-[8px] font-semibold text-gray-400 uppercase tracking-wide">{c.label}</span>}
+                                {c.label && <span className="text-[8px] font-semibold text-black bg-white uppercase tracking-wide border-[0.5px] border-black rounded-[3px] px-1 py-[1px] leading-none">{c.label}</span>}
                                 {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
                                 {c.value}
                               </span>
@@ -1100,27 +1107,27 @@ const EnquiryDetail = () => {
                     })()}
 
                     {/* Description — below the detail chips */}
-                    <div className="mt-6 sm:mt-7">
+                    <div className="mt-4 sm:mt-5">
                     {/* Description — below the detail chips */}
-                    <div className="!bg-gray-200 rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
+                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden w-fit max-w-full min-w-0">
                       <div className="flex items-center gap-2 relative z-10">
-                        <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
                           <FileText className="h-3.5 w-3.5 text-white" />
                         </span>
-                        <h3 className="shrink-0 whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.12em] text-gray-400">Description</h3>
+                        <h3 className="shrink-0 whitespace-nowrap text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">Description</h3>
                         <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
                       </div>
                     </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 sm:gap-2.5 items-stretch">
-                    <div className="!bg-gray-200 rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
+                  <div className="mt-4 sm:mt-5 flex flex-wrap gap-4 sm:gap-5 items-stretch">
+                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden w-fit max-w-full min-w-0">
                       <div className="flex items-center gap-2 relative z-10">
-                        <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
                           <IndianRupee className="h-3.5 w-3.5 text-white" />
                         </span>
-                        <span className="shrink-0 whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.12em] text-gray-400">{budgetLabel}</span>
+                        <span className="shrink-0 whitespace-nowrap text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">{budgetLabel}</span>
                         <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black truncate leading-snug">
                           {enquiry.budgetOpenToDiscussion ? (
                             <span className="inline-flex items-center gap-1.5">
@@ -1139,23 +1146,22 @@ const EnquiryDetail = () => {
                       onClick={() => setShowLocationPopup(true)}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowLocationPopup(true); } }}
                       title="Show full location"
-                      className="!bg-gray-200 rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full cursor-pointer transition-colors hover:!border-black focus:outline-none focus-visible:!border-black"
+                      className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden w-fit max-w-full min-w-0 cursor-pointer transition-colors hover:!border-black focus:outline-none focus-visible:!border-black"
                     >
                       <div className="flex items-center gap-2 relative z-10">
-                        <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
                           <MapPin className="h-3.5 w-3.5 text-white" />
                         </span>
-                        <span className="shrink-0 whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.12em] text-gray-400">Location</span>
+                        <span className="shrink-0 whitespace-nowrap text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">Location</span>
                         <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black truncate leading-snug" title={enquiry.location}>{enquiry.location}</p>
                       </div>
                     </div>
-                    
-                    <div className="!bg-gray-200 rounded-xl p-1.5 sm:p-2 !border-[1px] !border-b-[3px] !border-black/60 relative overflow-hidden w-fit max-w-full">
+                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden w-fit max-w-full min-w-0">
                       <div className="flex items-center gap-2 relative z-10">
-                        <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
                           <Calendar className="h-3.5 w-3.5 text-white" />
                         </span>
-                        <span className="shrink-0 whitespace-nowrap text-[7px] font-semibold uppercase tracking-[0.12em] text-gray-400">Deadline</span>
+                        <span className="shrink-0 whitespace-nowrap text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">Deadline</span>
                         <div className="flex-1 min-w-0 flex items-center gap-2">
                           {enquiry.deadline ? (
                             <>
@@ -1173,12 +1179,13 @@ const EnquiryDetail = () => {
                       </div>
                     </div>
                     
+                    
                   </div>
 
                   {/* Reference Images Section - now below the Budget/Location/Deadline/Posted chips */}
                   {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
-                    <div className="mt-5 sm:mt-6">
-                      <div className="bg-gray-200 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/40 relative overflow-hidden">
+                    <div className="mt-4 sm:mt-5">
+                      <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/60 relative overflow-hidden shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)]">
                         <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide flex items-center gap-1.5" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>
                           <ImageIcon className="h-3 w-3 sm:h-3 sm:w-3" />
                           Reference Images ({enquiry.referenceImages.length})
@@ -1212,13 +1219,13 @@ const EnquiryDetail = () => {
                   )}
 
                   {enquiry.notes && (
-                    <div className="mt-5 sm:mt-6 mb-4">
-                      <div className="bg-gray-100 rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-b-[3px] !border-black/50 relative overflow-hidden">
-                        <div className="flex items-start gap-2.5 relative z-10">
-                        <span className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <div className="mt-4 sm:mt-5">
+                      <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden">
+                        <div className="flex items-center gap-2 relative z-10">
+                        <span className="w-8 h-8 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
                           <MessageSquare className="h-4 w-4 text-white" />
                           </span>
-                          <h3 className="w-[78px] shrink-0 pt-1.5 text-[7px] font-semibold uppercase tracking-[0.04em] whitespace-nowrap text-gray-500">Additional Notes</h3>
+                          <h3 className="shrink-0 py-[1px] text-[6px] font-semibold uppercase tracking-[0.04em] whitespace-nowrap text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px]">Additional Notes</h3>
                           <p className="flex-1 min-w-0 text-[11px] sm:text-xs text-black" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
                         </div>
                       </div>
@@ -1226,23 +1233,23 @@ const EnquiryDetail = () => {
                   )}
 
                   {/* Posted date — chip-sized line under Additional Notes (same size as the spec chips above) */}
-                  <div className="mt-2 sm:mt-2.5 mb-4 flex justify-end">
-                    <span className="inline-flex items-center gap-2 text-[11px] font-bold font-chip text-black bg-gray-200 border border-b-[3px] border-black/60 rounded-lg px-2 py-1" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
-                      <span className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <div className="mt-4 sm:mt-5 flex justify-start">
+                    <span className="inline-flex items-center gap-2 text-[11px] font-bold font-chip text-black bg-white !border-[0.5px] border-black/60 rounded-lg px-2 py-1" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                      <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
                         <Clock className="h-3.5 w-3.5 text-white" />
                       </span>
-                      <span className="text-[7px] font-semibold text-gray-400 uppercase tracking-wide">Posted</span>
+                      <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">Posted</span>
                       {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
                     </span>
                   </div>
 
                   {/* Posted by — poster's profile pic (or person icon) beside username / #userXXXX */}
                   <div className="mt-10 sm:mt-12 mb-4 flex items-center justify-end gap-1.5 pr-1">
-                    <span className="w-9 h-9 rounded-full border-[1.5px] border-black overflow-hidden bg-white flex items-center justify-center flex-shrink-0">
+                    <span className={`w-9 h-9 rounded-full border-[1.5px] border-black overflow-hidden flex items-center justify-center flex-shrink-0 ${posterProfile?.profilePicture ? 'bg-white' : 'bg-black'}`}>
                       {posterProfile?.profilePicture ? (
                         <img src={posterProfile.profilePicture} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <User className="w-5 h-5 text-black" />
+                        <User className="w-5 h-5 text-white fill-white" />
                       )}
                     </span>
                     <p className="text-[9px] sm:text-[10px] font-semibold text-gray-900">
@@ -1251,15 +1258,15 @@ const EnquiryDetail = () => {
                   </div>
 
                   {/* Share on the right + ⋯ on the left in one line (mobile) — stacked on desktop; Save & Flag popup floats without shifting layout */}
-                  <div className="mt-14 sm:mt-16 flex flex-row-reverse items-center justify-between sm:flex-col sm:items-end sm:gap-2.5 relative">
+                  <div className="mt-14 sm:mt-16 flex flex-row-reverse items-center justify-between gap-2.5 sm:flex-col sm:items-end sm:justify-start relative">
                     <button
                       ref={shareBtnRef}
                       onClick={openShareMenu}
                       aria-label="Share enquiry"
                       title="Share"
-                      className="w-11 h-11 rounded-full bg-green-950 hover:bg-green-900 flex items-center justify-center text-white shadow-[0_3px_0_0_rgba(0,0,0,0.25)] transition-all active:scale-95 active:shadow-[0_1px_0_0_rgba(0,0,0,0.25)] touch-manipulation"
+                      className="w-11 h-11 rounded-full border-[1.5px] border-black bg-white hover:bg-gray-100 flex items-center justify-center text-black shadow-[0_3px_0_0_rgba(0,0,0,0.25)] transition-all active:scale-95 active:shadow-[0_1px_0_0_rgba(0,0,0,0.25)] touch-manipulation"
                     >
-                      <Share2 className="h-5 w-5 text-white" />
+                      <Share2 className="h-5 w-5 text-black" />
                     </button>
                     <button
                       ref={moreBtnRef}
@@ -1267,9 +1274,9 @@ const EnquiryDetail = () => {
                       aria-label="More actions"
                       aria-expanded={moreMenuOpen}
                       title="More"
-                      className="w-11 h-11 -ml-1 sm:ml-0 sm:-mr-1 rounded-full bg-black hover:bg-gray-800 flex items-center justify-center text-white shadow-[0_3px_0_0_rgba(0,0,0,0.25)] transition-all active:scale-95 active:shadow-[0_1px_0_0_rgba(0,0,0,0.25)] touch-manipulation"
+                      className="w-11 h-11 sm:-mr-1 rounded-full border-[1.5px] border-black bg-white hover:bg-gray-100 flex items-center justify-center text-black shadow-[0_3px_0_0_rgba(0,0,0,0.25)] transition-all active:scale-95 active:shadow-[0_1px_0_0_rgba(0,0,0,0.25)] touch-manipulation"
                     >
-                      <MoreHorizontal className="h-5 w-5 text-white" />
+                      <MoreHorizontal className="h-5 w-5 text-black" />
                     </button>
                     {moreMenuOpen && (
                       <div ref={moreMenuRef} className="absolute left-0 top-full mt-1 sm:left-auto sm:right-0 w-48 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden py-1 z-30">
