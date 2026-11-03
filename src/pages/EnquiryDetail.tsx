@@ -29,6 +29,7 @@ import {
   Fuel,
   Search,
   MessageCircle,
+  ChevronRight,
   Sparkles,
   Bot,
   Zap,
@@ -683,6 +684,15 @@ const EnquiryDetail = () => {
   const isJobCatEnquiry = String(enquiry?.category || '').toLowerCase().includes('job')
     || (enquiry?.categories || []).some(c => String(c).toLowerCase().includes('job'));
   const budgetLabel = isJobCatEnquiry ? 'Salary' : 'Budget';
+  // No reference image => editorial stacked layout (single card, hairline rows)
+  // Both variants use the editorial stacked card; an enquiry with a reference
+  // image simply keeps that image beside the title.
+  const plainLayout = true;
+  const plainRowCls = 'flex items-center gap-3 border-x border-t border-black/[0.07] border-t-black/[0.06] bg-white px-5 py-3.5';
+  const plainLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full border-[0.5px] border-black/80 px-1.5 py-[2px] text-[8px] font-bold uppercase tracking-[0.08em] text-neutral-900';
+  const pillLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase leading-none tracking-[0.06em] text-white';
+  const discCls = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600';
+  const glyphCls = 'text-white';
 
   // Helper function to filter admin notes - hide technical details
   const formatAdminNotes = (notes: string | undefined): string | null => {
@@ -756,252 +766,108 @@ const EnquiryDetail = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className="min-h-screen bg-[#F6F6F3]">
         {/* Header - Matching Profile Background - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
-            {/* Live Badge - Top Right Corner */}
-            {enquiry.status === 'live' && (
-              <div className="absolute top-4 sm:top-6 right-4 sm:right-6 lg:right-8 z-50">
-                {getStatusBadge(enquiry.status)}
-              </div>
-            )}
-            
-            {/* Spacer Section to Match Dashboard/Profile */}
-            <div className="mb-4 sm:mb-6">
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
-                  type="button"
-                  onClick={() => navigate(-1)}
-                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </Button>
-                <div className="w-10 h-10"></div>
-              </div>
-              </div>
-              
-            {/* Enquiry Title Heading in Black Header */}            <div className="flex flex-col items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl break-words max-w-full mb-2 sm:mb-3 dashboard-header-no-emoji">
-                <span className="inline-block align-middle bg-red-600 text-white text-[10px] sm:text-xs font-black tracking-widest uppercase rounded-md px-2.5 py-1 mr-2 sm:mr-3">Need</span>
-                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{enquiry.title}.</span>
-              </h1>
-              {/* Trust Badge - Center bottom of header */}
-              {((userProfile?.isProfileVerified || 
-                 userProfile?.isVerified || 
-                 userProfile?.trustBadge || 
-                 userProfile?.isIdentityVerified) || 
-                enquiry.idFrontImage || 
+        {/* Header — slim editorial meta strip; the enquiry title lives once, in the card below */}
+        <div className="bg-black text-white">
+          <div className="mx-auto max-w-4xl px-4 pb-4 pt-4 sm:px-6 sm:pb-5 sm:pt-5">
+            <div className="flex items-center justify-between">
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => navigate(-1)}
+                aria-label="Go back"
+                className="-ml-2 rounded-full p-2 hover:bg-white/10 transition-colors relative z-50"
+              >
+                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+              </Button>
+              {enquiry.status === 'live' && (
+                <div className="z-50">{getStatusBadge(enquiry.status)}</div>
+              )}
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+              <span className="inline-flex items-center rounded-md bg-red-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white">Need</span>
+              {enquiry.category && (
+                <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/50">{enquiry.category}</span>
+              )}
+              {enquiry.isUrgent && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/70">
+                  <Clock className="h-3 w-3" aria-hidden="true" /> Urgent
+                </span>
+              )}
+              {((userProfile?.isProfileVerified ||
+                 userProfile?.isVerified ||
+                 userProfile?.trustBadge ||
+                 userProfile?.isIdentityVerified) ||
+                enquiry.idFrontImage ||
                 enquiry.idBackImage ||
-                enquiry.isProfileVerified || 
+                enquiry.isProfileVerified ||
                 enquiry.userProfileVerified ||
                 (enquiry as any).userVerified) && (
-                <div className="flex justify-center mb-3 sm:mb-4">
-                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7 text-blue-400" />
-                </div>
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/70">
+                  <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" /> Verified
+                </span>
               )}
-              
-              {/* Deadline Date and Countdown - In Header */}
               {enquiry.deadline && (
-                <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap text-white">
-                  <span className="text-[9px] sm:text-[10px] lg:text-xs font-normal text-gray-300">before</span>
+                <span className="ml-auto flex items-center gap-2">
                   {formatDeadlineReadable(enquiry.deadline) && (
-                    <span className="text-[9px] sm:text-[10px] lg:text-xs font-medium text-gray-300">
-                      {formatDeadlineReadable(enquiry.deadline)}
-                    </span>
+                    <span className="text-[10px] font-medium text-white/50">before {formatDeadlineReadable(enquiry.deadline)}</span>
                   )}
-                  <CountdownTimer 
-                    deadline={enquiry.deadline} 
-                    showIcon={false} 
-                    className="[&_*]:!text-white [&_*]:!border-red-600 [&_*]:!bg-red-600 [&_*]:!font-semibold text-[9px] sm:text-[10px] lg:text-xs" 
+                  <CountdownTimer
+                    deadline={enquiry.deadline}
+                    showIcon={false}
+                    className="[&_*]:!border-red-600 [&_*]:!bg-red-600 [&_*]:!text-white [&_*]:!font-semibold text-[10px]"
                   />
-                </div>
+                </span>
               )}
-            </div>
-            
-            {/* Content Card - Black Background */}
-            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
-                <div className="text-center">
-                  {/* Badges Row */}
-                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-5">
-                    {/* Premium badge hidden per product decision */}
-                    {enquiry.isUrgent && (
-                    <Badge className="bg-white text-black border-white border-2 px-2 sm:px-2 py-1 text-xs sm:text-xs shadow-sm">
-                        <Clock className="h-3 w-3 sm:h-3 sm:w-3 mr-1" />
-                        Urgent
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
-          
+        </div>
         {/* Content - Inside Container */}
         <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
           <div className="space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
-              <Card className="shadow-lg rounded-2xl border border-black overflow-hidden relative bg-gray-100">
+              <Card className="border-0 bg-transparent shadow-none overflow-hidden relative">
                 {/* Card Content - Enhanced White Background */}
-                                {/* Card texture — the homescreen sketch (User -> AI Engine -> Match -> Success)
-                    tiled across the whole card as quiet watermark ink. Chips sit solid white
-                    on top of it, so the doodle only reads in the gaps between them. */}
-                <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 select-none">
-                  <svg className="h-full w-full opacity-[0.07]" fill="none">
-                    <defs>
-                      <g id="enquiry-home-doodle-art">
-                      <g transform="translate(200, 200)" opacity="0.8">
-                        <circle cx="0" cy="0" r="25" fill="none" stroke="#6B7280" strokeWidth="2" />
-                        <circle cx="0" cy="0" r="20" fill="none" stroke="#6B7280" strokeWidth="1.5" opacity="0.7" />
-                        <circle cx="0" cy="0" r="15" fill="none" stroke="#6B7280" strokeWidth="1" opacity="0.5" />
-                      </g>
-                      <g transform="translate(200, 80)" opacity="0.8">
-                        <circle cx="0" cy="0" r="12" fill="none" stroke="#6B7280" strokeWidth="1.5" />
-                        <circle cx="-3" cy="-2" r="1.5" fill="#6B7280" />
-                        <circle cx="3" cy="-2" r="1.5" fill="#6B7280" />
-                        <path d="M-2 3 Q0 4 2 3" stroke="#6B7280" strokeWidth="1.2" fill="none" />
-                        <rect x="-8" y="8" width="16" height="20" fill="none" stroke="#6B7280" strokeWidth="1" rx="2" />
-                        <rect x="-6" y="12" width="12" height="8" fill="#6B7280" opacity="0.3" />
-                        <text x="0" y="35" textAnchor="middle" fontSize="8" fill="#4B5563" fontWeight="500">User</text>
-                      </g>
-                      <g transform="translate(100, 200)" opacity="0.8">
-                        <rect x="-15" y="-12" width="30" height="24" fill="none" stroke="#6B7280" strokeWidth="1.5" rx="3" />
-                        <circle cx="-6" cy="0" r="2" fill="#6B7280" />
-                        <circle cx="0" cy="0" r="2" fill="#6B7280" />
-                        <circle cx="6" cy="0" r="2" fill="#6B7280" />
-                        <path d="M-4 -6 L4 6 M4 -6 L-4 6" stroke="#6B7280" strokeWidth="1" opacity="0.6" />
-                        <text x="0" y="25" textAnchor="middle" fontSize="8" fill="#4B5563" fontWeight="500">AI Engine</text>
-                        <path d="M-20 -5 L-15 -5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
-                        <path d="M-20 0 L-15 0" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
-                        <path d="M-20 5 L-15 5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
-                        <path d="M15 -5 L20 -5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
-                        <path d="M15 0 L20 0" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
-                        <path d="M15 5 L20 5" stroke="#6B7280" strokeWidth="1" opacity="0.4" />
-                      </g>
-                      <g transform="translate(300, 200)" opacity="0.8">
-                        <circle cx="0" cy="0" r="15" fill="none" stroke="#6B7280" strokeWidth="1.5" />
-                        <circle cx="0" cy="0" r="10" fill="none" stroke="#6B7280" strokeWidth="1.2" opacity="0.7" />
-                        <circle cx="0" cy="0" r="5" fill="none" stroke="#6B7280" strokeWidth="1" opacity="0.5" />
-                        <circle cx="0" cy="0" r="2" fill="#6B7280" />
-                        <text x="0" y="22" textAnchor="middle" fontSize="8" fill="#4B5563" fontWeight="500">Match</text>
-                        <circle cx="-12" cy="-8" r="2" fill="#6B7280" opacity="0.6" />
-                        <circle cx="12" cy="-8" r="2" fill="#6B7280" opacity="0.6" />
-                        <circle cx="-12" cy="8" r="2" fill="#6B7280" opacity="0.6" />
-                        <circle cx="12" cy="8" r="2" fill="#6B7280" opacity="0.6" />
-                        <path d="M-12 -8 L-5 -3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
-                        <path d="M12 -8 L5 -3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
-                        <path d="M-12 8 L-5 3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
-                        <path d="M12 8 L5 3" stroke="#6B7280" strokeWidth="0.8" opacity="0.4" />
-                      </g>
-                      <g transform="translate(200, 320)" opacity="0.8">
-                        <circle cx="0" cy="0" r="16" fill="none" stroke="#6B7280" strokeWidth="1.5" />
-                        <path d="M-6 0 L-2 4 L6 -2" stroke="#6B7280" strokeWidth="2.5" fill="none" />
-                        <text x="0" y="25" textAnchor="middle" fontSize="8" fill="#4B5563" fontWeight="500">Success!</text>
-                        <path d="M-20 -8 L-18 -6 L-16 -8 L-18 -10 Z" fill="#6B7280" opacity="0.6" />
-                        <path d="M20 -8 L22 -6 L24 -8 L22 -10 Z" fill="#6B7280" opacity="0.6" />
-                        <path d="M-20 8 L-18 10 L-16 8 L-18 6 Z" fill="#6B7280" opacity="0.6" />
-                        <path d="M20 8 L22 10 L24 8 L22 6 Z" fill="#6B7280" opacity="0.6" />
-                      </g>
-                      <path d="M200 92 L200 175" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
-                      <path d="M130 200 L175 200" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
-                      <path d="M225 200 L270 200" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
-                      <path d="M100 225 L175 275" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
-                      <path d="M300 225 L225 275" stroke="#6B7280" strokeWidth="1.5" fill="none" opacity="0.6" markerEnd="url(#enquiry-home-arrow)" />
-                      <g transform="translate(150, 120)" opacity="0.6">
-                        <circle cx="0" cy="0" r="8" fill="#6B7280" />
-                        <text x="0" y="2" textAnchor="middle" fontSize="8" fill="white">🔒</text>
-                        <text x="0" y="15" textAnchor="middle" fontSize="6" fill="#4B5563">Secure</text>
-                      </g>
-                      <g transform="translate(250, 120)" opacity="0.6">
-                        <circle cx="0" cy="0" r="8" fill="#6B7280" />
-                        <text x="0" y="2" textAnchor="middle" fontSize="8" fill="white">⚡</text>
-                        <text x="0" y="15" textAnchor="middle" fontSize="6" fill="#4B5563">Fast</text>
-                      </g>
-                      <g transform="translate(150, 280)" opacity="0.6">
-                        <circle cx="0" cy="0" r="8" fill="#6B7280" />
-                        <text x="0" y="2" textAnchor="middle" fontSize="8" fill="white">💬</text>
-                        <text x="0" y="15" textAnchor="middle" fontSize="6" fill="#4B5563">Chat</text>
-                      </g>
-                      <g transform="translate(250, 280)" opacity="0.6">
-                        <circle cx="0" cy="0" r="8" fill="#6B7280" />
-                        <text x="0" y="2" textAnchor="middle" fontSize="8" fill="white">⭐</text>
-                        <text x="0" y="15" textAnchor="middle" fontSize="6" fill="#4B5563">Quality</text>
-                      </g>
-                      <g transform="translate(60, 60)" opacity="0.4">
-                        <circle cx="0" cy="0" r="4" fill="#6B7280" />
-                        <text x="0" y="1" textAnchor="middle" fontSize="5" fill="white">💡</text>
-                      </g>
-                      <g transform="translate(340, 60)" opacity="0.4">
-                        <circle cx="0" cy="0" r="4" fill="#6B7280" />
-                        <text x="0" y="1" textAnchor="middle" fontSize="5" fill="white">🎯</text>
-                      </g>
-                      <g transform="translate(60, 340)" opacity="0.4">
-                        <circle cx="0" cy="0" r="4" fill="#6B7280" />
-                        <text x="0" y="1" textAnchor="middle" fontSize="5" fill="white">💰</text>
-                      </g>
-                      <g transform="translate(340, 340)" opacity="0.4">
-                        <circle cx="0" cy="0" r="4" fill="#6B7280" />
-                        <text x="0" y="1" textAnchor="middle" fontSize="5" fill="white">🎉</text>
-                      </g>
-                      </g>
-                      <pattern id="enquiry-home-doodle-tile" width="280" height="280" patternUnits="userSpaceOnUse" patternTransform="rotate(-6)">
-                        <g transform="scale(0.64)">
-                          <use href="#enquiry-home-doodle-art" />
-                        </g>
-                      </pattern>
-                      <marker id="enquiry-home-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-                        <polygon points="0 0, 8 3, 0 6" fill="#6B7280" />
-                      </marker>
-                    </defs>
-                    <rect width="100%" height="100%" fill="url(#enquiry-home-doodle-tile)" />
-                  </svg>
-                </div>
+                <CardContent className="relative z-10 p-4 sm:p-6 lg:p-7">
+                  {/* Title block — LOOKING FOR pill, title, reference image, spec chips */}
+                  <div className={`${plainLayout ? 'rounded-t-[18px] rounded-b-none border border-black/[0.07] border-b-0 bg-white px-5 pb-2 pt-5' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
+                    <div className="flex items-start gap-3">
+                      <div className="min-w-0 flex-1">
+                        {plainLayout ? (
+                          <span className="flex items-center gap-2">
+                            <span className="h-3.5 w-[3px] shrink-0 bg-red-600" aria-hidden="true" />
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">Looking for</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase leading-none tracking-[0.06em] text-white">
+                            <Search className="h-2.5 w-2.5 shrink-0" aria-hidden="true" />
+                            Looking for
+                          </span>
+                        )}
+                        <h1 className={`break-words font-heading font-extrabold tracking-[-0.02em] text-neutral-900 ${plainLayout ? 'mt-2 text-[32px] leading-[1.05]' : 'mt-2 text-[25px] leading-[1.15]'}`}>
+                          {enquiry.title}
+                        </h1>
+                      </div>
+                      {enquiry.referenceImages?.[0] && (
+                        <img
+                          src={enquiry.referenceImages[0]}
+                          alt=""
+                          loading="lazy"
+                          className="h-[132px] w-[112px] shrink-0 rounded-xl object-cover sm:h-40 sm:w-36"
+                        />
+                      )}
+                    </div>
 
-                <CardContent className="relative z-10 p-5 sm:p-6 lg:p-7">
-                  {/* Description — merged into the same card */}
-                  <div className="mb-2 sm:mb-2.5">
-                    <div className="flex items-start justify-center gap-3 mb-6 sm:mb-7">
-                      <div className="hidden sm:block w-1 self-stretch bg-blue-600 rounded-full flex-shrink-0" />
-                      <div className="flex w-full flex-col items-start gap-1.5 sm:gap-2">
-                        <span className="inline-flex items-center gap-1 text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap"><Search className="h-2 w-2 flex-shrink-0" aria-hidden="true" />Looking for</span>
-                      <h2 className="[text-shadow:none] w-full rounded-2xl !bg-[repeating-linear-gradient(135deg,#ffffff_0px,#ffffff_7px,#f1f3f6_7px,#f1f3f6_14px)] !border-[3px] !border-black px-5 py-[22px] text-center shadow-[0_1px_0_rgba(0,0,0,0.03),0_12px_28px_-16px_rgba(0,0,0,0.45)]">
-                        <span className="flex items-center justify-center gap-2.5">
-                          <span className="font-heading text-xl sm:text-2xl font-extrabold leading-[1.2] tracking-[-0.015em] text-neutral-900 break-words">{enquiry.title}</span>
-                        </span>
-                      </h2>
-                    </div>
-                    </div>
-                    {/* One-line summary from mobile chips — mobile category only, red background white text */}
-                    {(() => {
-                      const d = enquiry.details as any;
-                      if (!d || !d.mobileBrand) return null;
-                      const parts: string[] = [];
-                      if (enquiry.title) parts.push(enquiry.title);
-                      parts.push(d.mobileBrand);
-                      if (d.ram) parts.push(d.ram);
-                      if (d.memory) parts.push(d.memory);
-                      const dl = formatDeadlineReadable(enquiry.deadline);
-                      const deadlinePhrase = dl ? ` before ${dl}` : '';
-                      const sentence = `Need ${parts.join(' ')}${deadlinePhrase}`;
-                      return (
-                        <div className="flex justify-center">
-                          <p className="mt-3 text-[12px] sm:text-sm font-chip font-black tracking-tight leading-snug text-black bg-white border border-black rounded-xl px-4 py-2">
-                            {sentence}
-                          </p>
-                        </div>
-                      );
-                    })()}
-                    {/* Detail chips — brand/year/variant + job direction/skills */}
+                    {/* Spec chips */}
                     {(() => {
                       const d = enquiry.details;
                       if (!d) return null;
                       const isSeeking = d.jobDirection === 'seeking';
                       const jobDir = d.jobDirection === 'hiring' ? 'Hiring' : d.jobDirection === 'seeking' ? 'Open To Work' : null;
-                      // Job-category "Hiring" renders as an oversized red badge directly under the title
                       const isHiring = !isSeeking && jobDir === 'Hiring' && String(enquiry.category || '').toLowerCase().includes('job');
-                      // Order matches the Post Enquiry preview: status first, then qualifications (Apply), then work details
-                      const jobChips: ({ label: string; value: string; highlight?: boolean; big?: boolean } | false)[] = isSeeking ? [
+                      const jobChips: any[] = isSeeking ? [
                         jobDir && { label: 'Status', value: jobDir },
                         d.education && { label: 'Education', value: d.education },
                         d.stream && { label: 'Stream', value: d.stream },
@@ -1015,13 +881,11 @@ const EnquiryDetail = () => {
                         d.jobType && { label: 'Job type', value: d.jobType },
                         d.workMode && { label: 'Work mode', value: d.workMode },
                       ];
-                      // Human-readable label for the stored accommodation subtype slug
                       const accommodationLabel = d.accommodationType
                         ? (ACCOMMODATION_SUBTYPES.find(s => s.value === d.accommodationType)?.label ?? d.accommodationType)
                         : null;
                       const chips = [
                         ...jobChips,
-                        enquiry.budgetOpenToDiscussion && { label: budgetLabel, value: 'Open to discussion', highlight: true },
                         accommodationLabel && { label: 'Stay type', value: accommodationLabel, highlight: true },
                         d.genderPreference && ['male', 'female', 'other'].includes(String(d.genderPreference).toLowerCase()) && { label: null, value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : 'Other', highlight: true },
                         d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType, highlight: true },
@@ -1037,67 +901,38 @@ const EnquiryDetail = () => {
                         d.ram && { label: 'RAM', value: d.ram, highlight: true },
                         d.memory && { label: 'Memory', value: d.memory, highlight: true },
                         d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },
-                        // Audience chip is sneaker-only — sneakerAudience defaults to 'Adults' and gets saved for every category
                         (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
                         d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
                         d.repairType && { label: 'Service type', value: d.repairType, highlight: true },
-                      ].filter(Boolean) as { label: string; value: string; highlight?: boolean; big?: boolean; icon?: string; logoUrl?: string | null }[];
+                      ].filter(Boolean) as any[];
                       if (chips.length === 0) return null;
-                      // Hand-drawn H-pattern gear shifter (manual gearbox)
                       const GearShifterIcon = ({ className = "" }: { className?: string }) => (
-                        <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                        <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 4v16M5 12h14M5 12v-4M19 12v-4M5 12v4M19 12v4" />
                         </svg>
                       );
                       const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) => {
-                        // Brand logos keep their own artwork; drawn glyphs sit in a black disc with a white icon
                         const isLogo = (icon === 'brand' || icon === 'mobileBrand' || icon === 'sneakerBrand') && !!logoUrl;
-                        if (isLogo) return <img src={logoUrl as string} alt="" className="h-3.5 w-3.5 object-contain" loading="lazy" />;
-                        const glyph = icon === 'gear' ? <GearShifterIcon className="h-2.5 w-2.5 text-white" />
-                          : icon === 'fuel' ? <Fuel className="h-2.5 w-2.5 text-white" />
-                          : icon === 'calendar' ? <Calendar className="h-2.5 w-2.5 text-white" />
-                          : icon === 'variant' ? <Tag className="h-2.5 w-2.5 text-white" />
+                        if (isLogo) return <img src={logoUrl as string} alt="" className="h-[15px] w-[15px] shrink-0 rounded-full object-contain" loading="lazy" />;
+                        const glyph = icon === 'gear' ? <GearShifterIcon className="h-[13px] w-[13px]" />
+                          : icon === 'fuel' ? <Fuel className="h-[13px] w-[13px]" />
+                          : icon === 'calendar' ? <Calendar className="h-[13px] w-[13px]" />
+                          : icon === 'variant' ? <Tag className="h-[13px] w-[13px]" />
                           : null;
                         if (!glyph) return null;
-                        return (
-                          <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
-                            {glyph}
-                          </span>
-                        );
+                        return <span className="flex shrink-0 items-center justify-center text-neutral-900">{glyph}</span>;
                       };
                       return (
-                        <div className="flex flex-wrap justify-center gap-1.5 mt-3">
-                          {chips.map((c) => (
+                        <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mt-4 justify-start' : 'mt-3.5 justify-start'}`}>
+                          {chips.map((c: any) => (
                             c.big ? (
-                              <span key={c.label || c.value} className="inline-flex items-center justify-center text-sm sm:text-lg font-black font-chip uppercase tracking-wide text-white bg-red-600 border-2 border-red-600 rounded-xl px-4 py-2">
-                                {c.value}
-                              </span>
-                            ) : c.highlight && (c.label === 'Looking to' || c.label === 'Land / Plot') ? (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-red-600 rounded-lg px-2.5 py-1">
-                                {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
-                                {c.value}
-                              </span>
-                            ) : c.highlight && (c.label === 'Stay type' || c.label === null) ? (
-                              <span key={c.label || c.value} className="inline-flex items-baseline gap-2 text-sm sm:text-base font-black font-chip text-white bg-red-600 rounded-lg px-3 py-1.5 whitespace-nowrap">
-                                {c.label && <span className="text-[7px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
-                                <span className="whitespace-nowrap">{c.value}</span>
-                              </span>
-                            ) : c.highlight && c.value === 'Open to discussion' ? (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-green-600 !border-[0.5px] border-black rounded-lg px-2.5 py-1">
-                                {c.label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">{c.label}</span>}
-                                {c.value}
-                              </span>
-                            ) : c.highlight ? (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1.5 text-xs font-black font-chip text-white bg-red-600 rounded-lg px-2.5 py-1">
-                                {c.label && <span className="text-[8px] font-semibold text-white/70 uppercase tracking-wide">{c.label}</span>}
-                                {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
+                              <span key={c.label || c.value} className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-red-600 px-3.5 py-[9px] text-[11px] font-bold uppercase tracking-[0.04em] text-white">
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-1 text-[11px] font-bold font-chip text-black !bg-white !border-[0.5px] border-black/60 rounded-lg px-2 py-1">
-                                {!(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
-                                {c.label && <span className="text-[8px] font-semibold text-black bg-white uppercase tracking-wide border-[0.5px] border-black rounded-[3px] px-1 py-[1px] leading-none">{c.label}</span>}
-                                {(c as any).logoUrl && <ChipIcon icon={(c as any).icon} logoUrl={(c as any).logoUrl} />}
+                              <span key={c.label || c.value} className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-black/70 bg-white px-3 py-[7px] text-[12px] font-medium leading-none text-neutral-900">
+                                <ChipIcon icon={c.icon} logoUrl={c.logoUrl} />
+                                {c.label ? <span className="text-[8.5px] font-semibold uppercase tracking-[0.08em] text-neutral-400">{c.label}</span> : null}
                                 {c.value}
                               </span>
                             )
@@ -1105,201 +940,192 @@ const EnquiryDetail = () => {
                         </div>
                       );
                     })()}
-
-                    {/* Description — below the detail chips */}
-                    <div className="mt-4 sm:mt-5">
-                    {/* Description — below the detail chips */}
-                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden w-fit max-w-full min-w-0">
-                      <div className="flex items-center gap-2 relative z-10">
-                        <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
-                          <FileText className="h-3.5 w-3.5 text-white" />
-                        </span>
-                        <h3 className="shrink-0 whitespace-nowrap text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">Description</h3>
-                        <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black leading-relaxed" style={{ lineHeight: '1.7' }}>{enquiry.description}</p>
-                      </div>
-                    </div>
-                    </div>
                   </div>
 
-                  <div className="mt-4 sm:mt-5 flex flex-wrap gap-4 sm:gap-5 items-stretch">
-                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden w-fit max-w-full min-w-0">
-                      <div className="flex items-center gap-2 relative z-10">
-                        <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
-                          <IndianRupee className="h-3.5 w-3.5 text-white" />
-                        </span>
-                        <span className="shrink-0 whitespace-nowrap text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">{budgetLabel}</span>
-                        <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black truncate leading-snug">
-                          {enquiry.budgetOpenToDiscussion ? (
-                            <span className="inline-flex items-center gap-1.5">
-                              <MessageCircle className="h-4 w-4 text-black" /> Open to discussion
-                            </span>
-                          ) : (
-                            formatBudget(enquiry.budget)
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setShowLocationPopup(true)}
-                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowLocationPopup(true); } }}
-                      title="Show full location"
-                      className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden w-fit max-w-full min-w-0 cursor-pointer transition-colors hover:!border-black focus:outline-none focus-visible:!border-black"
-                    >
-                      <div className="flex items-center gap-2 relative z-10">
-                        <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
-                          <MapPin className="h-3.5 w-3.5 text-white" />
-                        </span>
-                        <span className="shrink-0 whitespace-nowrap text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">Location</span>
-                        <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black truncate leading-snug" title={enquiry.location}>{enquiry.location}</p>
-                      </div>
-                    </div>
-                    <div className="!bg-white rounded-xl p-1.5 sm:p-2 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden w-fit max-w-full min-w-0">
-                      <div className="flex items-center gap-2 relative z-10">
-                        <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
-                          <Calendar className="h-3.5 w-3.5 text-white" />
-                        </span>
-                        <span className="shrink-0 whitespace-nowrap text-[6px] font-semibold uppercase tracking-[0.12em] text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">Deadline</span>
-                        <div className="flex-1 min-w-0 flex items-center gap-2">
-                          {enquiry.deadline ? (
-                            <>
-                              {formatDeadlineReadable(enquiry.deadline) && (
-                                <p className="flex-1 min-w-0 text-[11px] sm:text-xs font-semibold text-black leading-snug truncate">
-                                  {formatDeadlineReadable(enquiry.deadline)}
-                                </p>
-                              )}
-                              <span className="shrink-0"><CountdownTimer deadline={enquiry.deadline} /></span>
-                            </>
-                          ) : (
-                            <p className="text-xs text-black leading-snug">No deadline</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    
-                  </div>
-
-                  {/* Reference Images Section - now below the Budget/Location/Deadline/Posted chips */}
-                  {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
-                    <div className="mt-4 sm:mt-5">
-                      <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/60 relative overflow-hidden shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)]">
-                        <h3 className="text-[10px] sm:text-[10px] font-light text-black mb-1.5 uppercase tracking-wide flex items-center gap-1.5" style={{ textShadow: '0 0 1px rgba(0,0,0,1)' }}>
-                          <ImageIcon className="h-3 w-3 sm:h-3 sm:w-3" />
-                          Reference Images ({enquiry.referenceImages.length})
-                        </h3>
-                        <div className="flex flex-row gap-3 sm:gap-4 overflow-x-auto pb-1">
-                          {enquiry.referenceImages.map((imageUrl, index) => (
-                            <div 
-                              key={index} 
-                              className="relative group cursor-pointer w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl overflow-hidden border border-black/40 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-                              onClick={() => window.open(imageUrl, '_blank')}
-                            >
-                              <img
-                                src={imageUrl}
-                                alt={`Reference image ${index + 1}`}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                                loading="lazy"
-                                decoding="async"
-                              />
-                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200 flex items-center justify-center">
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                  <div className="bg-white rounded-full p-2 shadow-lg">
-                                    <Eye className="h-4 w-4 text-gray-700" />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {enquiry.notes && (
-                    <div className="mt-4 sm:mt-5">
-                      <div className="bg-white rounded-2xl p-3.5 sm:p-4 !border-[0.5px] !border-black/60 shadow-[0_1px_1px_rgba(0,0,0,0.08),0_4px_8px_rgba(0,0,0,0.16)] relative overflow-hidden">
-                        <div className="flex items-center gap-2 relative z-10">
-                        <span className="w-8 h-8 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
-                          <MessageSquare className="h-4 w-4 text-white" />
-                          </span>
-                          <h3 className="shrink-0 py-[1px] text-[6px] font-semibold uppercase tracking-[0.04em] whitespace-nowrap text-white bg-red-600 border-[0.5px] border-black rounded-[3px] px-[3px]">Additional Notes</h3>
-                          <p className="flex-1 min-w-0 text-[11px] sm:text-xs text-black" style={{ lineHeight: '1.7' }}>{enquiry.notes}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Posted date — chip-sized line under Additional Notes (same size as the spec chips above) */}
-                  <div className="mt-4 sm:mt-5 flex justify-start">
-                    <span className="inline-flex items-center gap-2 text-[11px] font-bold font-chip text-black bg-white !border-[0.5px] border-black/60 rounded-lg px-2 py-1" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
-                      <span className="w-6 h-6 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
-                        <Clock className="h-3.5 w-3.5 text-white" />
+                  {/* Description */}
+                  {plainLayout ? (
+                    <div className={`${plainRowCls} items-start`}>
+                      <span className={discCls}>
+                        <FileText className={`h-[15px] w-[15px] ${glyphCls}`} aria-hidden="true" />
                       </span>
-                      <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-[0.5px] border-black rounded-[3px] px-[3px] py-[1px] leading-none">Posted</span>
-                      {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
-                    </span>
-                  </div>
-
-                  {/* Posted by — poster's profile pic (or person icon) beside username / #userXXXX */}
-                  <div className="mt-10 sm:mt-12 mb-4 flex items-center justify-end gap-1.5 pr-1">
-                    <span className={`w-9 h-9 rounded-full border-[1.5px] border-black overflow-hidden flex items-center justify-center flex-shrink-0 ${posterProfile?.profilePicture ? 'bg-white' : 'bg-black'}`}>
-                      {posterProfile?.profilePicture ? (
-                        <img src={posterProfile.profilePicture} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <User className="w-5 h-5 text-white fill-white" />
-                      )}
-                    </span>
-                    <p className="text-[9px] sm:text-[10px] font-semibold text-gray-900">
-                      Posted by {posterProfile?.username?.trim() || shortUserId(enquiry.userId)}
-                    </p>
-                  </div>
-
-                  {/* Share on the right + ⋯ on the left in one line (mobile) — stacked on desktop; Save & Flag popup floats without shifting layout */}
-                  <div className="mt-14 sm:mt-16 flex flex-row-reverse items-center justify-between gap-2.5 sm:flex-col sm:items-end sm:justify-start relative">
-                    <button
-                      ref={shareBtnRef}
-                      onClick={openShareMenu}
-                      aria-label="Share enquiry"
-                      title="Share"
-                      className="w-11 h-11 rounded-full border-[1.5px] border-black bg-white hover:bg-gray-100 flex items-center justify-center text-black shadow-[0_3px_0_0_rgba(0,0,0,0.25)] transition-all active:scale-95 active:shadow-[0_1px_0_0_rgba(0,0,0,0.25)] touch-manipulation"
-                    >
-                      <Share2 className="h-5 w-5 text-black" />
-                    </button>
-                    <button
-                      ref={moreBtnRef}
-                      onClick={() => setMoreMenuOpen(o => !o)}
-                      aria-label="More actions"
-                      aria-expanded={moreMenuOpen}
-                      title="More"
-                      className="w-11 h-11 sm:-mr-1 rounded-full border-[1.5px] border-black bg-white hover:bg-gray-100 flex items-center justify-center text-black shadow-[0_3px_0_0_rgba(0,0,0,0.25)] transition-all active:scale-95 active:shadow-[0_1px_0_0_rgba(0,0,0,0.25)] touch-manipulation"
-                    >
-                      <MoreHorizontal className="h-5 w-5 text-black" />
-                    </button>
-                    {moreMenuOpen && (
-                      <div ref={moreMenuRef} className="absolute left-0 top-full mt-1 sm:left-auto sm:right-0 w-48 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden py-1 z-30">
-                        <button
-                          onClick={() => { handleSave(); setMoreMenuOpen(false); }}
-                          className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black hover:bg-gray-50 border-b border-slate-200 transition-colors min-h-[44px]"
-                        >
-                          <Bookmark className={`h-4 w-4 flex-shrink-0 ${savedEnquiries.includes(enquiry.id) ? 'fill-black' : ''}`} />
-                          {savedEnquiries.includes(enquiry.id) ? 'Remove from saved' : 'Save enquiry'}
-                        </button>
-                        {user && enquiry.userId !== user.uid && (
-                          <button
-                            onClick={() => { setMoreMenuOpen(false); navigate(`/report-user/${enquiry.userId}?enquiryId=${enquiry.id}`); }}
-                            className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black hover:bg-gray-50 transition-colors min-h-[44px]"
-                          >
-                            <Flag className="h-4 w-4 flex-shrink-0 text-red-600" />
-                            Flag / Report
-                          </button>
-                        )}
+                      <div className="min-w-0 flex-1">
+                        <p className="inline-flex items-center whitespace-nowrap rounded-full border-[0.5px] border-black/80 px-1.5 py-[2px] text-[8px] font-bold uppercase tracking-[0.08em] text-neutral-900">Description</p>
+                        <p className="mt-1 whitespace-pre-line break-words text-[13.5px] font-semibold leading-snug text-neutral-900">{enquiry.description}</p>
                       </div>
-                    )}
+                    </div>
+                  ) : (
+                    <div className="mt-3.5 rounded-[14px] border border-black/[0.08] bg-white p-4">
+                      <div className="mb-2.5 flex items-center gap-2">
+                        <FileText className="h-[15px] w-[15px] text-neutral-900" aria-hidden="true" />
+                        <h2 className="inline-flex items-center whitespace-nowrap rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase leading-none tracking-[0.06em] text-white">Description</h2>
+                      </div>
+                      <p className="whitespace-pre-line break-words text-[13px] leading-[1.6] text-neutral-700">{enquiry.description}</p>
+                    </div>
+                  )}
+
+                  {/* Budget */}
+                  <div className={plainLayout ? plainRowCls : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
+                    <span className={discCls}>
+                      <IndianRupee className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={2} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className={plainLayout ? plainLabelCls : pillLabelCls}>{budgetLabel}</p>
+                      <p className="mt-1.5 break-words text-[17px] font-bold leading-tight text-neutral-900">
+                        {enquiry.budgetOpenToDiscussion ? 'Open to discussion' : formatBudget(enquiry.budget)}
+                      </p>
+                    </div>
                   </div>
 
+                  {/* Location */}
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setShowLocationPopup(true)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowLocationPopup(true); } }}
+                    title="Show full location"
+                    className={`${plainLayout ? `${plainRowCls} cursor-pointer transition-colors hover:bg-neutral-50 focus:outline-none focus-visible:bg-neutral-50` : 'mt-2.5 flex cursor-pointer items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5 transition-colors hover:bg-neutral-50 focus:outline-none focus-visible:bg-neutral-50'}`}
+                  >
+                    <span className={discCls}>
+                      <MapPin className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className={plainLayout ? plainLabelCls : pillLabelCls}>Location</p>
+                      <p className="mt-1.5 break-words text-[13px] font-semibold leading-snug text-neutral-900">{enquiry.location}</p>
+                    </div>
+                    <ChevronRight className="h-[18px] w-[18px] shrink-0 text-neutral-400" aria-hidden="true" strokeWidth={2} />
+                  </div>
+
+                  {/* Deadline + live countdown */}
+                  <div className={plainLayout ? plainRowCls : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
+                    <span className={discCls}>
+                      <Calendar className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className={plainLayout ? plainLabelCls : pillLabelCls}>Deadline</p>
+                      {enquiry.deadline ? (
+                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                          {formatDeadlineReadable(enquiry.deadline) && (
+                            <p className="mt-1.5 text-[13px] font-bold leading-tight text-neutral-900">
+                              {formatDeadlineReadable(enquiry.deadline)}
+                            </p>
+                          )}
+                          <span className="shrink-0 border-l border-neutral-200 pl-2.5"><CountdownTimer deadline={enquiry.deadline} /></span>
+                        </div>
+                      ) : (
+                        <p className="mt-1.5 text-[14px] font-bold leading-tight text-neutral-500">No deadline</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Posted */}
+                  <div className={plainLayout ? `${plainRowCls} ${enquiry.notes ? '' : 'rounded-b-[18px] border-b'}` : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
+                    <span className={discCls}>
+                      <Clock className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className={plainLayout ? plainLabelCls : pillLabelCls}>Posted</p>
+                      <p className="break-words text-[13px] font-semibold leading-snug text-neutral-900" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                        {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Additional notes */}
+                  {enquiry.notes && (
+                    <div className={plainLayout ? `${plainRowCls} rounded-b-[18px] border-b` : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.05] bg-neutral-100 px-3.5 py-2.5'}>
+                      <span className={discCls}>
+                      <MessageSquare className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                    </span>
+                      <div className="min-w-0 flex-1">
+                        <p className={plainLayout ? plainLabelCls : pillLabelCls}>Additional notes</p>
+                        <p className="mt-1.5 break-words text-[13.5px] font-semibold leading-snug text-neutral-900">{enquiry.notes}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  
+                  {/* Reference images */}
+                  {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
+                    <div className="mt-3.5 rounded-[14px] border border-black/[0.08] bg-white p-4">
+                      <div className="mb-3 flex items-center gap-2">
+                        <ImageIcon className="h-[15px] w-[15px] text-neutral-900" aria-hidden="true" />
+                        <h2 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+                          Reference images ({enquiry.referenceImages.length})
+                        </h2>
+                      </div>
+                      <div className="flex gap-2.5 overflow-x-auto pb-1">
+                        {enquiry.referenceImages.map((imageUrl, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => window.open(imageUrl, '_blank')}
+                            aria-label={`Open reference image ${index + 1}`}
+                            className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-black/[0.08] transition-all active:scale-[0.98] active:opacity-80"
+                          >
+                            <img src={imageUrl} alt={`Reference image ${index + 1}`} className="h-full w-full object-cover" loading="lazy" decoding="async" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Posted by + share / more */}
+                  <div className={`flex gap-3 ${plainLayout ? 'mt-4 flex-col' : 'mt-5 items-center justify-between'}`}>
+                    <div className={`flex min-w-0 items-center gap-2.5 ${plainLayout ? 'justify-end' : ''}`}>
+                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
+                        {posterProfile?.profilePicture ? (
+                          <img src={posterProfile.profilePicture} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <User className="h-4 w-4 text-white fill-white" />
+                        )}
+                      </span>
+                      <p className="min-w-0 truncate text-[12px] font-normal text-neutral-500">
+                        Posted by <span className="font-semibold text-neutral-900">{posterProfile?.username?.trim() || shortUserId(enquiry.userId)}</span>
+                      </p>
+                    </div>
+
+                    <div className={`relative flex shrink-0 items-center gap-2 ${plainLayout ? 'w-full justify-end' : ''}`}>
+                      <button
+                        ref={shareBtnRef}
+                        onClick={openShareMenu}
+                        aria-label="Share enquiry"
+                        title="Share"
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-black/[0.12] bg-white text-black transition-colors hover:bg-neutral-100 active:scale-95 touch-manipulation"
+                      >
+                        <Share2 className="h-[17px] w-[17px]" strokeWidth={1.8} />
+                      </button>
+                      <button
+                        ref={moreBtnRef}
+                        onClick={() => setMoreMenuOpen(o => !o)}
+                        aria-label="More actions"
+                        aria-expanded={moreMenuOpen}
+                        title="More"
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-black/[0.12] bg-white text-black transition-colors hover:bg-neutral-100 active:scale-95 touch-manipulation"
+                      >
+                        <MoreHorizontal className="h-[17px] w-[17px]" strokeWidth={1.8} />
+                      </button>
+                      {moreMenuOpen && (
+                        <div ref={moreMenuRef} className="absolute right-0 top-full z-30 mt-2 w-48 overflow-hidden rounded-xl border border-black/[0.08] bg-white py-1 shadow-lg">
+                          <button
+                            onClick={() => { handleSave(); setMoreMenuOpen(false); }}
+                            className="flex min-h-[44px] w-full items-center gap-2.5 border-b border-neutral-100 px-3.5 py-3 text-left text-xs font-semibold text-black transition-colors hover:bg-neutral-50"
+                          >
+                            <Bookmark className={`h-4 w-4 shrink-0 ${savedEnquiries.includes(enquiry.id) ? 'fill-black' : ''}`} />
+                            {savedEnquiries.includes(enquiry.id) ? 'Remove from saved' : 'Save enquiry'}
+                          </button>
+                          {user && enquiry.userId !== user.uid && (
+                            <button
+                              onClick={() => { setMoreMenuOpen(false); navigate(`/report-user/${enquiry.userId}?enquiryId=${enquiry.id}`); }}
+                              className="flex min-h-[44px] w-full items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black transition-colors hover:bg-neutral-50"
+                            >
+                              <Flag className="h-4 w-4 shrink-0 text-red-600" />
+                              Flag / Report
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   {/* Social share targets — WhatsApp, WhatsApp Status, Instagram DM & Story */}
                   {enquiry && (
                     <ShareMenu

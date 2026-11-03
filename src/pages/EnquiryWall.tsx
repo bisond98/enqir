@@ -5929,7 +5929,7 @@ export default function EnquiryWall() {
               </div>
 
               {/* Mobile Filter button — same line as the search bar, neumorphic like the view toggle */}
-              <button onClick={() => setFilterPanelOpen(v => !v)} aria-label="Filter" className={`sm:hidden shrink-0 w-11 h-11 flex items-center justify-center rounded-full relative overflow-hidden transition-all duration-150 touch-manipulation select-none bg-gradient-to-b ${filterPanelOpen ? 'from-[#d7d7d7] to-[#c7c7c7] text-gray-600 shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_rgba(255,255,255,0.65)]' : 'from-[#f2f2f2] to-[#e2e2e2] text-black shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.9),0_3px_6px_rgba(0,0,0,0.12)] hover:brightness-[1.02]'}`}>
+              <button onClick={() => setFilterPanelOpen(v => !v)} aria-label="Filter" className={`sm:hidden shrink-0 w-11 h-11 flex items-center justify-center rounded-full border border-black relative overflow-hidden transition-all duration-150 touch-manipulation select-none ${filterPanelOpen ? 'bg-gray-200 text-black shadow-[0_1px_0_0_rgba(0,0,0,0.25)]' : 'bg-white text-black shadow-[0_3px_0_0_rgba(0,0,0,0.25)] hover:bg-gray-50 active:translate-y-[1px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.25)]'}`}>
                 <SlidersHorizontal className="h-4 w-4 relative z-10" />
               </button>
 
@@ -5940,7 +5940,7 @@ export default function EnquiryWall() {
                 aria-checked={viewMode === 'grid'}
                 aria-label="Toggle list and grid view"
                 onClick={() => setViewMode(viewMode === 'list' ? 'grid' : 'list')}
-                className="relative shrink-0 h-8 w-[62px] rounded-full p-[3px] touch-manipulation bg-gradient-to-b from-[#f2f2f2] to-[#e2e2e2] shadow-[inset_0_1px_2px_rgba(0,0,0,0.22),0_1px_0_rgba(255,255,255,0.9),0_3px_6px_rgba(0,0,0,0.12)]"
+                className="relative shrink-0 h-8 w-[62px] rounded-full border border-black p-[3px] touch-manipulation bg-[#ededed] shadow-[0_3px_0_0_rgba(0,0,0,0.25)]"
               >
                 {/* Inactive icon — shown on the open side of the track */}
                 {viewMode === 'list' ? (
@@ -5949,7 +5949,7 @@ export default function EnquiryWall() {
                   <List className="absolute left-[9px] top-1/2 -translate-y-1/2 h-3 w-3 text-black" strokeWidth={2.25} />
                 )}
                 {/* Sliding thumb — carries the active icon */}
-                <div className={`absolute top-1/2 -translate-y-1/2 h-[34px] w-[34px] rounded-full bg-white flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.9),inset_0_-1px_2px_rgba(0,0,0,0.05)] transition-all duration-200 ease-out ${viewMode === 'list' ? 'left-[3px]' : 'left-[25px]'}`}>
+                <div className={`absolute top-1/2 -translate-y-1/2 h-[34px] w-[34px] rounded-full bg-white border border-black/30 flex items-center justify-center shadow-[0_2px_4px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.9),inset_0_-1px_2px_rgba(0,0,0,0.05)] transition-all duration-200 ease-out ${viewMode === 'list' ? 'left-[3px]' : 'left-[25px]'}`}>
                   {viewMode === 'list' ? (
                     <List className="h-3.5 w-3.5 text-black" strokeWidth={2.5} />
                   ) : (
