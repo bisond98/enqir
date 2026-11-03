@@ -684,8 +684,8 @@ const EnquiryDetail = () => {
   const plainLayout = true;
   // Divider between rows is an inset hairline (via ::before) so it stops short
   // of the card's left and right edges instead of running edge to edge.
-  const plainRowCls = 'relative flex items-center gap-3 border-x border-black/[0.07] bg-white px-5 py-3.5 '
-    + 'before:absolute before:left-[18%] before:right-[18%] before:top-0 before:h-px before:bg-black/[0.07] before:content-[\'\']';
+  const plainRowCls = 'relative flex items-center gap-3 border-x border-black bg-white px-5 py-3.5 '
+    + 'before:absolute before:left-[18%] before:right-[18%] before:top-0 before:h-px before:bg-black/25 before:content-[\'\']';
   const plainLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full border-[0.5px] border-black/80 px-1.5 py-[2px] text-[8px] font-bold uppercase tracking-[0.08em] text-neutral-900';
   const pillLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase leading-none tracking-[0.06em] text-white';
   const discCls = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600';
@@ -829,7 +829,7 @@ const EnquiryDetail = () => {
                 {/* Card Content - Enhanced White Background */}
                 <CardContent className="relative z-10 p-1 sm:p-6 lg:p-7">
                   {/* Title block — LOOKING FOR pill, title, reference image, spec chips */}
-                  <div className={`${plainLayout ? 'rounded-t-[18px] rounded-b-none border border-black/[0.07] border-b-0 bg-white px-5 pb-2 pt-5' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
+                  <div className={`${plainLayout ? 'rounded-t-[18px] rounded-b-none border border-black border-b-0 bg-white px-5 pb-2 pt-5' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
                     <div className="flex items-start gap-3">
                       <div className="min-w-0 flex-1">
                         {plainLayout ? (
@@ -911,13 +911,13 @@ const EnquiryDetail = () => {
                       const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) => {
                         const isLogo = (icon === 'brand' || icon === 'mobileBrand' || icon === 'sneakerBrand') && !!logoUrl;
                         if (isLogo) return <img src={logoUrl as string} alt="" className="h-[15px] w-[15px] shrink-0 rounded-full object-contain" loading="lazy" />;
-                        const glyph = icon === 'gear' ? <GearShifterIcon className="h-[13px] w-[13px]" />
-                          : icon === 'fuel' ? <Fuel className="h-[13px] w-[13px]" />
-                          : icon === 'calendar' ? <Calendar className="h-[13px] w-[13px]" />
-                          : icon === 'variant' ? <Tag className="h-[13px] w-[13px]" />
+                        const glyph = icon === 'gear' ? <GearShifterIcon className="h-[10px] w-[10px]" />
+                          : icon === 'fuel' ? <Fuel className="h-[10px] w-[10px]" />
+                          : icon === 'calendar' ? <Calendar className="h-[10px] w-[10px]" />
+                          : icon === 'variant' ? <Tag className="h-[10px] w-[10px]" />
                           : null;
                         if (!glyph) return null;
-                        return <span className="flex shrink-0 items-center justify-center text-neutral-900">{glyph}</span>;
+                        return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-black bg-black text-white">{glyph}</span>;
                       };
                       return (
                         <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mt-4 justify-center' : 'mt-3.5 justify-center'}`}>
