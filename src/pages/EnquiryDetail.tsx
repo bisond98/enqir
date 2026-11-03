@@ -678,6 +678,31 @@ const EnquiryDetail = () => {
   const isJobCatEnquiry = String(enquiry?.category || '').toLowerCase().includes('job')
     || (enquiry?.categories || []).some(c => String(c).toLowerCase().includes('job'));
   const budgetLabel = isJobCatEnquiry ? 'Salary' : 'Budget';
+  // Goods categories where the person posting is really the buyer, so their CTA
+  // reads "Connect Buyer". Jobs, services, property and everything else keep the
+  // plain "Connect" label. Both the stored slug (tools-equipment) and the display
+  // label (Tools & Equipment) are covered — older docs store either form.
+  const BUYER_CTA_CATEGORIES = new Set([
+    // Vehicles
+    'car', 'cars', 'vehicle', 'vehicles', 'automobile', 'automobiles',
+    'bike', 'bikes', 'motorcycle', 'motorcycles', 'motorbike', 'motorbikes',
+    // Goods
+    'antiques', 'appliances', 'bicycles', 'electronics', 'electronics-gadgets',
+    'furniture', 'home-furniture', 'jewelry', 'jewellery', 'jewelry-accessories',
+    'laptops', 'laptop', 'medical-equipment', 'medical-equipments', 'memorabilia',
+    'mobiles', 'mobile', 'musical-accessories', 'musical-instruments', 'pets',
+    'sneakers', 'sneaker', 'souvenir', 'souvenirs', 'technology', 'thrift',
+    'tools-equipment', 'tools-and-equipment',
+  ]);
+  const normalizeBuyerCategory = (value: unknown) =>
+    String(value ?? '')
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  const isBuyerCatEnquiry = [enquiry?.category, ...(enquiry?.categories || [])]
+    .filter(Boolean)
+    .some((c) => BUYER_CTA_CATEGORIES.has(normalizeBuyerCategory(c)));
   // No reference image => editorial stacked layout (single card, hairline rows)
   // Both variants use the editorial stacked card; an enquiry with a reference
   // image simply keeps that image beside the title.
@@ -685,7 +710,7 @@ const EnquiryDetail = () => {
   // Divider between rows is an inset hairline (via ::before) so it stops short
   // of the card's left and right edges instead of running edge to edge.
   const plainRowCls = 'relative flex items-center gap-3 border-x border-black bg-white px-5 py-3.5 '
-    + 'before:absolute before:left-[18%] before:right-[18%] before:top-0 before:h-px before:bg-black/25 before:content-[\'\']';
+    + 'before:absolute before:left-3 before:right-3 before:top-0 before:h-px before:bg-black/[0.18] before:content-[\'\']';
   const plainLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full border-[0.5px] border-black/80 px-1.5 py-[2px] text-[8px] font-bold uppercase tracking-[0.08em] text-neutral-900';
   const pillLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase leading-none tracking-[0.06em] text-white';
   const discCls = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600';
@@ -1015,7 +1040,7 @@ const EnquiryDetail = () => {
                   </div>
 
                   {/* Posted */}
-                  <div className={plainLayout ? `${plainRowCls} ${enquiry.notes ? '' : 'rounded-b-[18px] border-b'}` : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
+                  <div className={plainLayout ? `${plainRowCls}` : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
                     <span className={discCls}>
                       <Clock className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                     </span>
@@ -1027,9 +1052,58 @@ const EnquiryDetail = () => {
                     </div>
                   </div>
 
+                  {/* Reference images — card row, between Posted and Additional notes */}
+                  {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
+                    plainLayout ? (
+                      <div className={`${plainRowCls} items-start`}>
+                        <span className={discCls}>
+                          <ImageIcon className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className={plainLabelCls}>Reference images ({enquiry.referenceImages.length})</p>
+                          <div className="mt-2 flex gap-2.5 overflow-x-auto pb-1">
+                            {enquiry.referenceImages.map((imageUrl, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => window.open(imageUrl, '_blank')}
+                                aria-label={`Open reference image ${index + 1}`}
+                                className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-black/[0.08] transition-all active:scale-[0.98] active:opacity-80"
+                              >
+                                <img src={imageUrl} alt={`Reference image ${index + 1}`} className="h-full w-full object-cover" loading="lazy" decoding="async" />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-3.5 rounded-[14px] border border-black/[0.08] bg-white p-4">
+                        <div className="mb-3 flex items-center gap-2">
+                          <ImageIcon className="h-[15px] w-[15px] text-neutral-900" aria-hidden="true" />
+                          <h2 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+                            Reference images ({enquiry.referenceImages.length})
+                          </h2>
+                        </div>
+                        <div className="flex gap-2.5 overflow-x-auto pb-1">
+                          {enquiry.referenceImages.map((imageUrl, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() => window.open(imageUrl, '_blank')}
+                              aria-label={`Open reference image ${index + 1}`}
+                              className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-black/[0.08] transition-all active:scale-[0.98] active:opacity-80"
+                            >
+                              <img src={imageUrl} alt={`Reference image ${index + 1}`} className="h-full w-full object-cover" loading="lazy" decoding="async" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  )}
+
                   {/* Additional notes */}
                   {enquiry.notes && (
-                    <div className={plainLayout ? `${plainRowCls} rounded-b-[18px] border-b` : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.05] bg-neutral-100 px-3.5 py-2.5'}>
+                    <div className={plainLayout ? `${plainRowCls}` : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.05] bg-neutral-100 px-3.5 py-2.5'}>
                       <span className={discCls}>
                       <MessageSquare className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                     </span>
@@ -1041,53 +1115,15 @@ const EnquiryDetail = () => {
                   )}
 
                   
-                  {/* Reference images */}
-                  {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
-                    <div className="mt-3.5 rounded-[14px] border border-black/[0.08] bg-white p-4">
-                      <div className="mb-3 flex items-center gap-2">
-                        <ImageIcon className="h-[15px] w-[15px] text-neutral-900" aria-hidden="true" />
-                        <h2 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
-                          Reference images ({enquiry.referenceImages.length})
-                        </h2>
-                      </div>
-                      <div className="flex gap-2.5 overflow-x-auto pb-1">
-                        {enquiry.referenceImages.map((imageUrl, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            onClick={() => window.open(imageUrl, '_blank')}
-                            aria-label={`Open reference image ${index + 1}`}
-                            className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-black/[0.08] transition-all active:scale-[0.98] active:opacity-80"
-                          >
-                            <img src={imageUrl} alt={`Reference image ${index + 1}`} className="h-full w-full object-cover" loading="lazy" decoding="async" />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Posted by + share / more */}
-                  <div className={`flex gap-3 ${plainLayout ? 'mt-4 flex-col' : 'mt-5 items-center justify-between'}`}>
-                    <div className={`flex min-w-0 items-center gap-2 ${plainLayout ? 'justify-end pr-3' : ''}`}>
-                      <span className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
-                        {posterProfile?.profilePicture ? (
-                          <img src={posterProfile.profilePicture} alt="" className="h-full w-full object-cover" />
-                        ) : (
-                          <User className="h-3 w-3 text-white fill-white" />
-                        )}
-                      </span>
-                      <p className="min-w-0 truncate text-[11px] font-normal text-neutral-500">
-                        Posted by <span className="font-semibold text-neutral-900">{posterProfile?.username?.trim() || shortUserId(enquiry.userId)}</span>
-                      </p>
-                    </div>
-
+                  {/* Share / more — last row of the card, under Additional notes */}
+                  <div className={`${plainRowCls} justify-between rounded-b-[18px] border-b`}>
                     <div className={`relative flex shrink-0 items-center gap-2 ${plainLayout ? 'w-full flex-row-reverse justify-between' : ''}`}>
                       <button
                         ref={shareBtnRef}
                         onClick={openShareMenu}
                         aria-label="Share enquiry"
                         title="Share"
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-black/[0.12] bg-white text-black transition-colors hover:bg-neutral-100 active:scale-95 touch-manipulation"
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-green-700 text-white transition-colors hover:bg-green-800 active:scale-95 touch-manipulation"
                       >
                         <Share2 className="h-[17px] w-[17px]" strokeWidth={1.8} />
                       </button>
@@ -1097,7 +1133,7 @@ const EnquiryDetail = () => {
                         aria-label="More actions"
                         aria-expanded={moreMenuOpen}
                         title="More"
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-black/[0.12] bg-white text-black transition-colors hover:bg-neutral-100 active:scale-95 touch-manipulation"
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-green-700 text-white transition-colors hover:bg-green-800 active:scale-95 touch-manipulation"
                       >
                         <MoreHorizontal className="h-[17px] w-[17px]" strokeWidth={1.8} />
                       </button>
@@ -1123,6 +1159,23 @@ const EnquiryDetail = () => {
                       )}
                     </div>
                   </div>
+
+                  {/* Posted by */}
+                  <div className={`flex gap-3 ${plainLayout ? 'mt-4 flex-col' : 'mt-5 items-center justify-between'}`}>
+                    <div className={`flex min-w-0 items-center gap-2 ${plainLayout ? 'ml-auto mr-3 w-fit justify-end rounded-full border border-black bg-white px-2.5 py-1' : ''}`}>
+                                          <span className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
+                                            {posterProfile?.profilePicture ? (
+                                              <img src={posterProfile.profilePicture} alt="" className="h-full w-full object-cover" />
+                                            ) : (
+                                              <User className="h-3 w-3 text-white fill-white" />
+                                            )}
+                                          </span>
+                                          <p className="min-w-0 truncate text-[11px] font-normal text-neutral-500">
+                                            Posted by <span className="font-semibold text-neutral-900">{posterProfile?.username?.trim() || shortUserId(enquiry.userId)}</span>
+                                          </p>
+                                        </div>
+                  </div>
+
                   {/* Social share targets — WhatsApp, WhatsApp Status, Instagram DM & Story */}
                   {enquiry && (
                     <ShareMenu
@@ -1214,7 +1267,7 @@ const EnquiryDetail = () => {
                               </div>
                             ) : (
                               <div className="flex items-center justify-center space-x-2 relative z-10">
-                                <span className="text-white">{isExpired ? 'Enquiry Expired' : 'Connect'}</span>
+                                <span className="text-white">{isExpired ? 'Enquiry Expired' : isBuyerCatEnquiry ? 'Connect Buyer' : 'Connect'}</span>
                               </div>
                             )}
                           </Button>
