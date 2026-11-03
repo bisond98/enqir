@@ -825,12 +825,12 @@ const EnquiryDetail = () => {
           </div>
         </div>
         {/* Content - Inside Container */}
-        <div className="max-w-[95rem] mx-auto px-2 sm:px-6 lg:px-8 py-5 sm:py-6">
+        <div className="max-w-[95rem] mx-auto px-1 sm:px-6 lg:px-8 py-5 sm:py-6">
           <div className="space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
               <Card className="border-0 bg-transparent shadow-none overflow-hidden relative">
                 {/* Card Content - Enhanced White Background */}
-                <CardContent className="relative z-10 p-4 sm:p-6 lg:p-7">
+                <CardContent className="relative z-10 p-1 sm:p-6 lg:p-7">
                   {/* Title block — LOOKING FOR pill, title, reference image, spec chips */}
                   <div className={`${plainLayout ? 'rounded-t-[18px] rounded-b-none border border-black/[0.07] border-b-0 bg-white px-5 pb-2 pt-5' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
                     <div className="flex items-start gap-3">
