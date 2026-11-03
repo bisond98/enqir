@@ -109,6 +109,19 @@ export default function ListingDetail() {
     };
   }, [moreMenuOpen]);
 
+  // The menu is position:fixed, so dismiss it when the page scrolls or resizes
+  // instead of letting it drift away from the button that opened it.
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+    const close = () => setMoreMenuOpen(false);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
+  }, [moreMenuOpen]);
+
   // Load initial saved state and toggle saved listings in profiles.savedListings (same pattern as savedEnquiries)
   useEffect(() => {
     if (!user || !id) return;
@@ -957,8 +970,9 @@ export default function ListingDetail() {
                       const menuHeight = 176; // 3 rows incl. padding
                       const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8));
                       const opensUp = rect.bottom + menuHeight + 8 > window.innerHeight && rect.top > menuHeight + 8;
-                      const top = opensUp ? rect.top - menuHeight - 6 : rect.bottom + 6;
-                      setMoreMenuPos({ top: Math.max(8, top), left });
+                      const desiredTop = opensUp ? rect.top - menuHeight - 6 : rect.bottom + 6;
+                      const top = Math.max(8, Math.min(desiredTop, window.innerHeight - menuHeight - 8));
+                      setMoreMenuPos({ top, left });
                       setMoreMenuOpen(true);
                     }}
                     aria-label="More actions"
