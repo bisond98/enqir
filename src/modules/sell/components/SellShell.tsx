@@ -9,6 +9,7 @@ export default function SellShell({
   filterOpen,
   onToggleFilter,
   onBack,
+  hidePanel,
 }: {
   title: string;
   children: React.ReactNode;
@@ -17,6 +18,9 @@ export default function SellShell({
   onToggleFilter?: () => void;
   /** Optional override for the header back button (e.g. wizard step-back). */
   onBack?: () => void;
+  /** Listing detail only: the Panel route already lives in the page's ⋯ menu,
+   *  so the mobile tile row drops to two columns and skips the Panel tile. */
+  hidePanel?: boolean;
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -52,7 +56,14 @@ export default function SellShell({
                         navigate('/sell/marketplace');
                       }
                     }
-                    else if (path === '/sell/dashboard') navigate('/');
+                    else if (path === '/sell/dashboard') {
+                      // Opening the Panel from a listing's ⋯ menu passes that
+                      // listing in router state, so back returns there. Every
+                      // other route into the dashboard keeps going home.
+                      const from = (location.state as any)?.from;
+                      if (from) navigate(from);
+                      else navigate('/');
+                    }
                     else if (path === '/sell/marketplace') navigate('/');
                     else navigate(-1);
                   }}
@@ -100,7 +111,7 @@ export default function SellShell({
             </Link>
           </div>
           {!isShop && (
-          <div className="sm:hidden grid grid-cols-3 gap-3 mb-4">
+          <div className={`sm:hidden grid ${hidePanel ? 'grid-cols-2' : 'grid-cols-3'} gap-3 mb-4`}>
             <Link to="/sell/new">
               <Button size="sm" variant="outline" className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-150 active:!translate-y-[2px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] ${isCreate ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]'}`}>
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
@@ -126,7 +137,7 @@ export default function SellShell({
                 <LayoutDashboard className="h-4 w-4 mr-1 relative z-10" />
                 <span className="relative z-10">Filter</span>
               </Button>
-            ) : (
+            ) : !hidePanel ? (
               <Link to="/sell/dashboard">
                 <Button variant="outline" size="sm" className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-150 active:!translate-y-[2px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] ${isPanel ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]'}`}>
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
@@ -134,7 +145,7 @@ export default function SellShell({
                   <span className="relative z-10">Panel</span>
                 </Button>
               </Link>
-            )}
+            ) : null}
           </div>
           )}
           {children}

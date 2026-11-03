@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import CallNumberPopup from '@/components/CallNumberPopup';
 import ScamAlertOverlay from '@/components/ScamAlertOverlay';
 import { createPortal } from 'react-dom';
-import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import SellShell from '../components/SellShell';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, User, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck, Clock, MoreHorizontal } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, User, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck, Clock, MoreHorizontal, LayoutDashboard } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -75,6 +75,7 @@ function formatRemaining(ms: number): string {
 export default function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, savedFullName, savedUsername } = useAuth();
   // Display name: username → saved full name → clean displayName → #userXXXX (never email prefix)
   const myName = displayNameForUser(user, savedFullName, savedUsername);
@@ -89,6 +90,8 @@ export default function ListingDetail() {
 
   // Overflow (⋯) menu — holds Save & Flag under the share button
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  // Fixed screen coords for the ⋯ menu, so the card's overflow can't clip it.
+  const [moreMenuPos, setMoreMenuPos] = useState<{ top: number; left: number } | null>(null);
   const moreBtnRef = useRef<HTMLButtonElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -621,7 +624,7 @@ export default function ListingDetail() {
 
   if (loading) {
     return (
-      <SellShell title="For Sale">
+      <SellShell title="For Sale" hidePanel>
         <div className="flex flex-col items-center justify-center py-20 gap-3 w-full">
           <LoadingAnimation message="Loading listing" showBackButton={false} compact />
         </div>
@@ -636,7 +639,7 @@ export default function ListingDetail() {
   if (!listing || listing.status !== 'live' || deadlinePassed) {
     const expired = !!listing && (deadlinePassed || listing.status === 'expired');
     return (
-      <SellShell title="For Sale">
+      <SellShell title="For Sale" hidePanel>
         <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)]">
           <CardContent className="py-16 text-center">
             <p className="text-sm font-semibold text-gray-700">
@@ -661,7 +664,7 @@ export default function ListingDetail() {
   const showDealChip = (['real-estate', 'real-estate-services', 'accommodations'].includes(listing.category || '') && !!detailsRec.listingFor);
 
   return (
-    <SellShell title="For Sale">
+    <SellShell title="For Sale" hidePanel>
       {paymentDone && sending && createPortal(
         <div className="fixed inset-0 z-[999] overflow-y-auto bg-slate-50">
           <LoadingAnimation message="Creating Chat Room" showBackButton={false} className="min-h-screen" />
@@ -937,19 +940,51 @@ export default function ListingDetail() {
                   </span>
                 )}
                 <div className="relative w-full flex flex-row-reverse items-center justify-between gap-2.5 sm:w-auto sm:flex-col sm:items-start sm:justify-start sm:mx-0 sm:ml-auto">
-                  <ShareButton listing={listing} className="[&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!text-black !text-black !bg-transparent hover:!bg-transparent !w-11 !h-11 !p-0 !rounded-full !border-[1.5px] !border-black flex items-center justify-center" />
+                  <ShareButton listing={listing} className="[&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!text-white !text-white !bg-green-700 hover:!bg-green-800 !w-11 !h-11 !p-0 !rounded-full !border-[1.5px] !border-black flex items-center justify-center" />
                   <button
                     ref={moreBtnRef}
-                    onClick={() => setMoreMenuOpen(o => !o)}
+                    onClick={() => {
+                      if (moreMenuOpen) {
+                        setMoreMenuOpen(false);
+                        return;
+                      }
+                      const rect = moreBtnRef.current?.getBoundingClientRect();
+                      if (!rect) {
+                        setMoreMenuOpen(true);
+                        return;
+                      }
+                      const width = 192;
+                      const menuHeight = 176; // 3 rows incl. padding
+                      const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8));
+                      const opensUp = rect.bottom + menuHeight + 8 > window.innerHeight && rect.top > menuHeight + 8;
+                      const top = opensUp ? rect.top - menuHeight - 6 : rect.bottom + 6;
+                      setMoreMenuPos({ top: Math.max(8, top), left });
+                      setMoreMenuOpen(true);
+                    }}
                     aria-label="More actions"
                     aria-expanded={moreMenuOpen}
                     title="More"
-                    className="w-11 h-11 rounded-full border-[1.5px] border-black flex items-center justify-center text-black hover:opacity-60 transition-all active:scale-95 touch-manipulation"
+                    className="w-11 h-11 rounded-full border-[1.5px] border-black bg-green-700 text-white flex items-center justify-center hover:bg-green-800 transition-all active:scale-95 touch-manipulation"
                   >
                     <MoreHorizontal className="h-5 w-5" />
                   </button>
+                  {/* Dim + blur the page behind the ⋯ menu, like the share popup */}
                   {moreMenuOpen && (
-                    <div ref={moreMenuRef} className="absolute left-0 top-full z-30 mt-1 w-48 sm:left-auto sm:right-0 bg-white border-2 border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.25)] overflow-hidden py-1">
+                    <div
+                      data-more-menu-backdrop
+                      className="fixed inset-0 z-[60] bg-black/20 backdrop-blur-[3px]"
+                      onClick={() => setMoreMenuOpen(false)}
+                      aria-hidden="true"
+                    />
+                  )}
+
+                  {moreMenuOpen && moreMenuPos && createPortal(
+                    <div
+                      ref={moreMenuRef}
+                      data-more-menu
+                      style={{ position: 'fixed', top: moreMenuPos.top, left: moreMenuPos.left, zIndex: 9999, maxHeight: 'calc(100vh - 16px)' }}
+                      className="w-48 overflow-y-auto rounded-2xl border-2 border-black bg-white py-1 shadow-[0_6px_0_0_rgba(0,0,0,0.25)]"
+                    >
                       <button
                         onClick={() => { toggleSave(); setMoreMenuOpen(false); }}
                         aria-label={saved ? 'Remove from saved' : 'Save listing'}
@@ -957,6 +992,14 @@ export default function ListingDetail() {
                       >
                         <Bookmark className={`h-4 w-4 flex-shrink-0 ${saved ? 'fill-black' : ''}`} />
                         {saved ? 'Remove from saved' : 'Save listing'}
+                      </button>
+                      <button
+                        onClick={() => { setMoreMenuOpen(false); navigate('/sell/dashboard', { state: { from: location.pathname + location.search } }); }}
+                        aria-label="Open seller panel"
+                        className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black hover:bg-gray-50 border-b border-slate-200 transition-colors min-h-[44px]"
+                      >
+                        <LayoutDashboard className="h-4 w-4 flex-shrink-0" />
+                        Panel
                       </button>
                       {!isOwner && listing?.sellerId && (
                         <button
@@ -967,7 +1010,8 @@ export default function ListingDetail() {
                           Flag / Report
                         </button>
                       )}
-                    </div>
+                    </div>,
+                    document.body
                   )}
                 </div>
               </div>

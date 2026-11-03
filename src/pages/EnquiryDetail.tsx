@@ -710,7 +710,7 @@ const EnquiryDetail = () => {
   // Divider between rows is an inset hairline (via ::before) so it stops short
   // of the card's left and right edges instead of running edge to edge.
   const plainRowCls = 'relative flex items-center gap-3 border-x border-black bg-white px-5 py-3.5 '
-    + 'before:absolute before:left-3 before:right-3 before:top-0 before:h-px before:bg-black/[0.18] before:content-[\'\']';
+    + 'before:absolute before:left-6 before:right-6 before:top-0 before:h-px before:bg-black/[0.09] before:content-[\'\']';
   const plainLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full border-[0.5px] border-black/80 px-1.5 py-[2px] text-[8px] font-bold uppercase tracking-[0.08em] text-neutral-900';
   const pillLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase leading-none tracking-[0.06em] text-white';
   const discCls = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600';
