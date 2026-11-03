@@ -987,7 +987,7 @@ const EnquiryDetail = () => {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className={plainLayout ? plainLabelCls : pillLabelCls}>Location</p>
-                      <p className="mt-1.5 break-words text-[13px] font-semibold leading-snug text-neutral-900">{enquiry.location}</p>
+                      <p className="mt-1.5 break-words text-[11.5px] font-semibold leading-[1.614] text-neutral-900">{enquiry.location}</p>
                     </div>
                     <ChevronRight className="h-[18px] w-[18px] shrink-0 text-neutral-400" aria-hidden="true" strokeWidth={2} />
                   </div>
@@ -1021,7 +1021,7 @@ const EnquiryDetail = () => {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className={plainLayout ? plainLabelCls : pillLabelCls}>Posted</p>
-                      <p className="break-words text-[13px] font-semibold leading-snug text-neutral-900" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                      <p className="break-words text-[11.5px] font-semibold leading-[1.614] text-neutral-900" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
                         {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
                       </p>
                     </div>
@@ -1035,7 +1035,7 @@ const EnquiryDetail = () => {
                     </span>
                       <div className="min-w-0 flex-1">
                         <p className={plainLayout ? plainLabelCls : pillLabelCls}>Additional notes</p>
-                        <p className="mt-1.5 break-words text-[13.5px] font-semibold leading-snug text-neutral-900">{enquiry.notes}</p>
+                        <p className="mt-1.5 break-words text-[11.5px] font-semibold leading-[1.614] text-neutral-900">{enquiry.notes}</p>
                       </div>
                     </div>
                   )}
