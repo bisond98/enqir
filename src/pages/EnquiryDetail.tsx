@@ -920,7 +920,7 @@ const EnquiryDetail = () => {
                         return <span className="flex shrink-0 items-center justify-center text-neutral-900">{glyph}</span>;
                       };
                       return (
-                        <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mt-4 justify-start' : 'mt-3.5 justify-start'}`}>
+                        <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mt-4 justify-center' : 'mt-3.5 justify-center'}`}>
                           {chips.map((c: any) => (
                             c.big ? (
                               <span key={c.label || c.value} className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-red-600 px-3.5 py-[9px] text-[11px] font-bold uppercase tracking-[0.04em] text-white">
@@ -947,7 +947,7 @@ const EnquiryDetail = () => {
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="inline-flex items-center whitespace-nowrap rounded-full border-[0.5px] border-black/80 px-1.5 py-[2px] text-[8px] font-bold uppercase tracking-[0.08em] text-neutral-900">Description</p>
-                        <p className="mt-1 whitespace-pre-line break-words text-[13.5px] font-semibold leading-snug text-neutral-900">{enquiry.description}</p>
+                        <p className="mt-1 whitespace-pre-line break-words text-[11.5px] font-semibold leading-[1.614] text-neutral-900">{enquiry.description}</p>
                       </div>
                     </div>
                   ) : (

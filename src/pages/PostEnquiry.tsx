@@ -411,29 +411,31 @@ export default function PostEnquiry() {
 
   const [aiGenerating, setAiGenerating] = useState(false);
 
-  // Mobile only: reveal the current tab's step header (#step-top) whenever the
-  // form loads or the user moves to another tab, and re-reveal it when the
-  // on-screen keyboard shrinks the visual viewport — so the heading, input and
-  // nav buttons stay in view like the reference screenshot. Desktop keeps its
-  // own scroll behavior via scrollToInput().
+  // Reveal the current step's header (#step-top) whenever the form loads or the
+  // user moves to another step — on mobile and desktop — so the icon and the
+  // "What are you looking for?" heading are always in view. On mobile it also
+  // re-reveals when the on-screen keyboard opens. This is the single owner of
+  // step scrolling.
   useEffect(() => {
-    if (typeof window === 'undefined' || window.innerWidth >= 640) return;
+    if (typeof window === 'undefined') return;
+    const isMobile = window.innerWidth < 640;
     const anchor = () => document.getElementById('step-top');
     // One-frame delayed so the browser finishes its own refocus scroll first
-    const reveal = () => {
+    const reveal = (force = false) => {
       requestAnimationFrame(() => {
         const el = anchor();
         if (!el) return;
-        // Skip when the header is already fully on screen — re-centering it
-        // anyway is what made the page visibly scroll up and down on its own,
-        // fighting the browser's focus scroll and the user's own scrolling.
         const r = el.getBoundingClientRect();
-        if (r.top >= 0 && r.bottom <= window.innerHeight) return;
-        el.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        // On the keyboard path, skip when the header is already fully visible —
+        // re-centering it is what made the page jump up and down on its own.
+        if (!force && r.top >= 0 && r.bottom <= window.innerHeight) return;
+        window.scrollTo({ top: Math.max(0, window.scrollY + r.top - 8), behavior: 'smooth' });
       });
     };
-    // Initial load of this tab (or tab change): show the heading near the top right away
-    reveal();
+    // Load and every step change: put the heading near the top.
+    reveal(true);
+    // Keyboard handling below is mobile-only.
+    if (!isMobile) return;
     const vv = (window as any).visualViewport as VisualViewport | undefined;
     if (!vv) return;
     let lastHeight = vv.height;
@@ -560,27 +562,16 @@ export default function PostEnquiry() {
         }
       } catch {}
       localStorage.removeItem(ENQUIRY_STORAGE_KEY);
-      // Scroll down to publish button after restoring
-      setTimeout(() => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-      }, 300);
+      // Desktop lands on the publish button after a restore; on mobile that
+      // jump pushed the "What are you looking for?" heading out of view, so
+      // there we keep the form at its first step instead.
+      if (window.innerWidth >= 640) {
+        setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 300);
+      }
     }
   }, []);
-
-  // Scroll to top on step change — desktop only; on mobile the reveal effect
-  // above owns tab-change scrolling so the two don't fight each other.
-  const scrollToInput = () => {
-    if (window.innerWidth < 640) return;
-    requestAnimationFrame(() => {
-      const el = document.getElementById('step-top');
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        window.scrollTo({ top: window.scrollY + rect.top - 20, behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    });
-  };
 
   // Step validation
   const canAdvanceFromStep = (s: number): boolean => {
@@ -631,13 +622,11 @@ export default function PostEnquiry() {
     if (!canAdvanceFromStep(step)) return;
     setAnimDir('up');
     setStep((prev) => Math.min(prev + 1, totalSteps - 1));
-    scrollToInput();
   };
 
   const goBack = () => {
     setAnimDir('down');
     setStep((prev) => Math.max(prev - 1, 0));
-    scrollToInput();
   };
 
   // Real-time ID number validation
@@ -1649,16 +1638,40 @@ export default function PostEnquiry() {
 
   const remainingEnquiries = getRemainingEnquiries();
 
+  // Wipes every category-specific answer (vehicle, mobile, sneaker, job,
+  // real-estate, accommodation, repair, cleaning). Called when the category
+  // changes so answers typed for the previous category can't ride along into
+  // the new enquiry and show up on its detail page.
+  const clearCategoryDetails = () => {
+    setVehicleDetails({ brand: '', year: '', variant: '', transmission: '', fuelType: '' });
+    setMobileDetails({ brand: '', ram: '', memory: '' });
+    setSneakerBrand('');
+    setSneakerAudience('Adults');
+    setSneakerSize('');
+    setJobDirection('');
+    setJobSkills('');
+    setJobDetails({ experience: '', jobType: '', workMode: '', education: '', stream: '' });
+    setEstateDetails({ landArea: '', landUnit: 'Cents', builtUpArea: '', builtUpUnit: 'Sqft', houseArea: '', houseUnit: 'Sqft', houseBhk: '' });
+    setEstateType('');
+    setEstateDealType('Buy');
+    setAccommodationType('');
+    setAccommodationGender('any');
+    setRepairType('');
+    setCleaningTypes([]);
+  };
+
   // Handle category selection — only ONE category can be selected at a time
   // (tapping another category replaces the current one; tapping the selected
   // one deselects it).
   const handleCategoryToggle = (categoryValue: string) => {
-    setSelectedCategories(prev => {
-      if (prev.includes(categoryValue)) {
-        return prev.filter(cat => cat !== categoryValue);
-      }
-      return [categoryValue];
-    });
+    const current = selectedCategories[0] ?? '';
+    const categoryChanged = current !== categoryValue;
+    // Moving to a different category (or clearing it) discards the detail
+    // answers that belonged to the old one.
+    if (categoryChanged) clearCategoryDetails();
+    setSelectedCategories(prev =>
+      prev.includes(categoryValue) ? [] : [categoryValue]
+    );
   };
 
   // AI Location suggestions function
@@ -3377,7 +3390,6 @@ export default function PostEnquiry() {
                         open={mapPickerOpen}
                         onOpenChange={(o) => setMapPickerOpen(o)}
                         title="Where do you want it?"
-                        autoLocate
                         defaultLocation={mapLocation ? { lat: mapLocation.latitude, lng: mapLocation.longitude } : undefined}
                         onSelect={(lat, lng, addr) => {
                           setMapLocation(addr);

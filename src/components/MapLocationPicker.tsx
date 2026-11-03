@@ -537,15 +537,19 @@ export function MapLocationPicker({
 
   }, [ipLocate]);
   const autoLocateFiredRef = useRef(false);
+  // Only auto-detect when nothing is chosen yet. With an existing pin, opening
+  // would re-run GPS, and a fast street-level fix auto-confirms and closes the
+  // picker again - the sheet flashes open and vanishes on every later open.
+  const hasExistingLocation = Boolean(defaultLocation);
   useEffect(() => {
-    if (open && autoLocate && !autoLocateFiredRef.current) {
+    if (open && autoLocate && !autoLocateFiredRef.current && !hasExistingLocation) {
       autoLocateFiredRef.current = true;
       handleUseMyLocation();
     }
     if (!open) {
       autoLocateFiredRef.current = false;
     }
-  }, [open, autoLocate, handleUseMyLocation]);
+  }, [open, autoLocate, hasExistingLocation, handleUseMyLocation]);
 
   // The pin's factory position (center of India) is not any user's real
   // location. Until a source actually places it — GPS/network/IP fix, map tap,
