@@ -16,7 +16,6 @@ import {
   User, 
   Shield, 
   MessageSquare,
-  Eye,
   Share2,
   Crown,
   CheckCircle,
@@ -30,11 +29,6 @@ import {
   Search,
   MessageCircle,
   ChevronRight,
-  Sparkles,
-  Bot,
-  Zap,
-  ShieldCheck,
-  Users,
   MoreHorizontal
 } from 'lucide-react';
 import Layout from '@/components/Layout';
@@ -688,7 +682,10 @@ const EnquiryDetail = () => {
   // Both variants use the editorial stacked card; an enquiry with a reference
   // image simply keeps that image beside the title.
   const plainLayout = true;
-  const plainRowCls = 'flex items-center gap-3 border-x border-t border-black/[0.07] border-t-black/[0.06] bg-white px-5 py-3.5';
+  // Divider between rows is an inset hairline (via ::before) so it stops short
+  // of the card's left and right edges instead of running edge to edge.
+  const plainRowCls = 'relative flex items-center gap-3 border-x border-black/[0.07] bg-white px-5 py-3.5 '
+    + 'before:absolute before:left-[18%] before:right-[18%] before:top-0 before:h-px before:bg-black/[0.07] before:content-[\'\']';
   const plainLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full border-[0.5px] border-black/80 px-1.5 py-[2px] text-[8px] font-bold uppercase tracking-[0.08em] text-neutral-900';
   const pillLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase leading-none tracking-[0.06em] text-white';
   const discCls = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600';
@@ -1071,20 +1068,20 @@ const EnquiryDetail = () => {
 
                   {/* Posted by + share / more */}
                   <div className={`flex gap-3 ${plainLayout ? 'mt-4 flex-col' : 'mt-5 items-center justify-between'}`}>
-                    <div className={`flex min-w-0 items-center gap-2.5 ${plainLayout ? 'justify-end' : ''}`}>
-                      <span className={`flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
+                    <div className={`flex min-w-0 items-center gap-2 ${plainLayout ? 'justify-end pr-3' : ''}`}>
+                      <span className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
                         {posterProfile?.profilePicture ? (
                           <img src={posterProfile.profilePicture} alt="" className="h-full w-full object-cover" />
                         ) : (
-                          <User className="h-4 w-4 text-white fill-white" />
+                          <User className="h-3 w-3 text-white fill-white" />
                         )}
                       </span>
-                      <p className="min-w-0 truncate text-[12px] font-normal text-neutral-500">
+                      <p className="min-w-0 truncate text-[11px] font-normal text-neutral-500">
                         Posted by <span className="font-semibold text-neutral-900">{posterProfile?.username?.trim() || shortUserId(enquiry.userId)}</span>
                       </p>
                     </div>
 
-                    <div className={`relative flex shrink-0 items-center gap-2 ${plainLayout ? 'w-full justify-end' : ''}`}>
+                    <div className={`relative flex shrink-0 items-center gap-2 ${plainLayout ? 'w-full flex-row-reverse justify-between' : ''}`}>
                       <button
                         ref={shareBtnRef}
                         onClick={openShareMenu}
@@ -1140,21 +1137,7 @@ const EnquiryDetail = () => {
                   )}
 
                   {/* Connect — inside the card, below save/share */}
-                  <div className="mt-4 pt-16 sm:pt-20">
-                  {/* Divider — tiny app icons (discovery, AI, matching, trust, payments) forming a centered line */}
-                  <div className="mb-10 sm:mb-12 flex w-full items-center justify-center overflow-hidden" aria-hidden="true">
-                    {Array.from({ length: 2 }).flatMap((_, rep) =>
-                      [Sparkles, Bot, Zap, Search, Tag, MessageSquare, Users, ShieldCheck, CheckCircle, IndianRupee, Crown, Eye, MapPin, Clock, Bookmark, Share2, Flag, User].map((Icon, i) => (
-                        <Icon
-                          key={rep * 18 + i}
-                          className="h-2.5 w-2.5 shrink-0"
-                          fill="black"
-                          stroke="black"
-                          strokeWidth={2.25}
-                        />
-                      ))
-                    )}
-                  </div>
+                  <div className="mt-6">
                   <div className="space-y-4">
                     {user && enquiry.userId === user.uid ? (
                       <div className="space-y-3">
