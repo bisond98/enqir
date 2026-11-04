@@ -45,6 +45,12 @@ const isEstateEnquiry = (enquiry: ShareableEnquiry): boolean =>
   ['real-estate', 'real-estate-services'].includes(enquiry.category || '') ||
   (enquiry.categories || []).some((c) => ['real-estate', 'real-estate-services'].includes(c));
 
+/** Thrift enquiries are second-hand wants, not ordinary product buys. */
+const isThriftEnquiry = (enquiry: ShareableEnquiry): boolean =>
+  [enquiry.category, ...(enquiry.categories || [])].some(
+    (c) => c === 'thrift' || (c || '').toLowerCase().includes('thrift')
+  );
+
 /** Pet enquiries read more naturally with "price range" than "budget". */
 const isPetEnquiry = (enquiry: ShareableEnquiry): boolean =>
   [enquiry.category, ...(enquiry.categories || [])].some(
@@ -237,6 +243,9 @@ export const buildEnquiryShareText = (enquiry: ShareableEnquiry, url: string): s
     parts.push(`${enquiry.isUrgent ? '⚡ URGENT — ' : ''}💼 SEEKING WORK: ${enquiry.title}`);
   } else if (job) {
     parts.push(`${enquiry.isUrgent ? '⚡ URGENT — ' : ''}👋 HIRING: ${enquiry.title}`);
+  } else if (isThriftEnquiry(enquiry)) {
+    // Thrift wants read as a hunt for a second-hand find, not a plain WANTED ad
+    parts.push(`${enquiry.isUrgent ? '⚡ URGENT — ' : ''}LOOKING TO THRIFT: ${enquiry.title}`);
   } else {
     parts.push(`${enquiry.isUrgent ? '⚡ URGENT — ' : ''}🔎 WANTED: ${enquiry.title}${estateDealSuffix(enquiry)}`);
   }

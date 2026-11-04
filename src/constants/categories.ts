@@ -4,6 +4,8 @@
 // Main categories (Business / Personal / Service) always sit on top,
 // followed by the most-used product categories.
 
+import { THRIFT_SEARCH_ITEMS } from './thriftClothing';
+
 export interface AppCategory {
   value: string;
   label: string;
@@ -253,6 +255,31 @@ export const LEGACY_CATEGORY_ALIASES: Record<string, string> = {
 // Category search synonyms — common words people type into category search
 // that don't appear in the label ("shoes" → Sneakers, "phone" → Mobiles, ...).
 // Shared by the Post Enquiry and Sell category pickers.
+/** Words people type for second-hand apparel and goods. They point at
+ * Thrift and at Fashion: Thrift leads (the item is second-hand), Fashion
+ * follows just behind it. */
+const SECOND_HAND_WORDS: string[] = [
+    'second hand', 'secondhand', 'used', 'pre owned', 'preowned', 'preloved',
+    'pre-loved', 'thrifted', 'thrifting', 'thrift', 'thrift shop', 'thrift store',
+    'resale', 'resell',
+    'clothing', 'clothes', 'apparel', 'garment', 'garments', 'outfit', 'outfits', 'fashion',
+    'footwear', 'shoe', 'shoes', 'sneaker', 'sneakers', 'sandal', 'sandals', 'heels',
+    'slipper', 'slippers', 'chappal', 'chappals', 'boots', 'loafers', 'flip flops',
+    'bag', 'bags', 'handbag', 'handbags', 'backpack', 'clutch', 'purse', 'wallet',
+    'wallets', 'luggage', 'accessory', 'accessories', 'belt', 'belts', 'scarf',
+    'scarves', 'cap', 'caps', 'sunglasses',
+    'watch', 'watches', 'wristwatch',
+    'jewellery', 'jewelry', 'jewel', 'jewels', 'ring', 'rings', 'necklace', 'earring',
+    'earrings', 'bangle', 'bangles', 'bracelet', 'anklet', 'pendant',
+    'saree', 'sari', 'kurta', 'kurti', 'lehenga', 'dupatta', 'shirt', 'shirts',
+    'tshirt', 't-shirt', 'jeans', 'trouser', 'trousers', 'dress', 'dresses', 'skirt',
+    'jacket', 'jackets', 'sweater', 'sweatshirt', 'hoodie',
+];
+
+/** Single-word Thrift items (Saree, Clutch) are matched as ordinary
+ * synonyms; multi-word items are matched as phrases in matchStrength. */
+const THRIFT_SINGLE_WORD_ITEMS = THRIFT_SEARCH_ITEMS.filter((item) => !item.includes(' '));
+
 export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   // Every repair/home-service type is a search keyword for Service, so typing
   // "plumber" or "ac repair" in the category search surfaces Service. Direct
@@ -319,7 +346,14 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   'collectibles': ['coins', 'stamps', 'collectible', 'figurine'],
   'memorabilia': ['signed', 'autograph', 'memorabilia'],
   'vintage': ['vintage', 'retro', 'old items'],
-  'thrift': ['second hand', 'used', 'pre owned', 'preowned'],
+  // Thrift is a second-hand catch-all, so the words people actually type for
+  // its types and items should also offer it next to the specific category:
+  // "shoes" still shows Sneakers first, with Thrift right beneath it. The
+  // matcher only looks at whole words (or whole phrases), so these stay safe.
+  'thrift': [
+    ...SECOND_HAND_WORDS,
+    ...THRIFT_SINGLE_WORD_ITEMS,
+  ],
   'waste-management': ['scrap dealer', 'waste collection', 'recycling', 'garbage'],
   'government-public': ['government', 'public sector', 'psc'],
   'non-profit-charity': ['charity', 'ngo', 'donation', 'volunteer'],
@@ -355,6 +389,15 @@ function boundedLevenshtein(a: string, b: string, max: number): number {
  *  === "house deep cleaning". */
 function normalizeWords(s: string): string {
   return s.toLowerCase().replace(/\(.*?\)/g, ' ').replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/** normalizeWords plus a trailing-plural strip per word, so a typed "office
+ * bags" matches the item "Office Bags". "ss" endings (Dress) are left alone. */
+function singularWords(s: string): string {
+  return normalizeWords(s)
+    .split(' ')
+    .map((w) => (w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w))
+    .join(' ');
 }
 
 /** Match strength for a query against a category's label / value / synonyms.
@@ -407,6 +450,18 @@ function matchStrength(c: AppCategory, q: string): number {
     const qWords = qNorm.split(' ').filter(w => w.length >= 3);
     const bag = new Set([...labelWords, ...otherWords]);
     if (qWords.length > 0 && qWords.every(w => bag.has(w))) return 5;
+  }
+  // Second-hand vocabulary: any Thrift type or item name ("office bags",
+  // "briefcases", "kolhapuri chappals") points at Thrift and at Fashion, which
+  // is where most apparel shoppers look. Phrase/plural insensitive, so a bare
+  // "office" stays in Office Supplies. Thrift leads because the item is a
+  // Thrift item; Fashion follows immediately after.
+  if (c.value === 'thrift' || c.value === 'fashion') {
+    const qSing = singularWords(qNorm);
+    const itemHit =
+      THRIFT_SEARCH_ITEMS.some(item => singularWords(normalizeWords(item)) === qSing) ||
+      SECOND_HAND_WORDS.some(w => singularWords(normalizeWords(w)) === qSing);
+    if (itemHit) return c.value === 'thrift' ? 3.5 : 3.6;
   }
   return -1;
 }

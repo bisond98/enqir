@@ -26,7 +26,6 @@ export const THRIFT_TYPES = [
   'Accessories',
   'Watches',
   'Jewellery',
-  'Other',
 ];
 
 const MALE_ITEMS = [
@@ -329,6 +328,23 @@ export function thriftItemsFor(gender: string, type?: string): string[] {
 }
 
 /** 'male' -> 'Male', for labels and summary rows. */
+/** Every Thrift item name, lowercased and deduped. The category search matches
+ * these as whole phrases ("office bags" → the "Office Bags" item → Thrift), so
+ * the suggestion list stays in sync with the dropdowns instead of relying on a
+ * hand-written word list. */
+export const THRIFT_SEARCH_ITEMS: string[] = (() => {
+  const out = new Set<string>();
+  const add = (list: string[]) => {
+    for (const item of list) {
+      const v = item.trim().toLowerCase();
+      if (v) out.add(v);
+    }
+  };
+  Object.values(THRIFT_ITEMS).forEach(add);
+  Object.values(THRIFT_TYPE_ITEMS).forEach((byType) => Object.values(byType).forEach(add));
+  return [...out];
+})();
+
 export function thriftGenderLabel(gender: string): string {
   return THRIFT_GENDERS.find((g) => g.value === gender)?.label ?? gender;
 }

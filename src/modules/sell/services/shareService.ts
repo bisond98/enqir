@@ -141,6 +141,10 @@ export function generateShareMessage(listing: SellListing): string {
   if (hasDealType && listingFor === 'Rent') dealPhrase = 'for rent';
   else if (hasDealType && listingFor === 'Lease') dealPhrase = 'for lease';
   else if (isOffered) dealPhrase = 'available';
+  // Thrift listings are offered to thrifters: the prefix below says it, so the
+  // body drops "for sale" and keeps the sentence short.
+  const isThrift = cat === 'thrift';
+  if (isThrift) dealPhrase = '';
 
   // Non-Sale deal types get the FOR RENT/LEASE prefix below, which already
   // carries the house emoji — so the body skips its own icon to avoid doubles
@@ -148,15 +152,17 @@ export function generateShareMessage(listing: SellListing): string {
   const icon = isRealEstate || hasRentLeasePrefix ? '' : categoryIcon(cat);
   // Titles that already end in the deal phrase ("3 BHK house for rent") skip
   // the repeat, so the sentence never reads "… for rent for rent in Kerala"
-  const tailRedundant = head ? new RegExp(`\\s${dealPhrase}$`, 'i').test(head.trim()) : false;
-  let message = `${icon ? `${icon} ` : ''}${bits.join(', ')}${tailRedundant ? '' : ` ${dealPhrase}`}${state ? ` in 📍 ${state}` : ''}`;
+  const tailRedundant = dealPhrase && head ? new RegExp(`\\s${dealPhrase}$`, 'i').test(head.trim()) : false;
+  let message = `${icon ? `${icon} ` : ''}${bits.join(', ')}${!dealPhrase || tailRedundant ? '' : ` ${dealPhrase}`}${state ? ` in 📍 ${state}` : ''}`;
 
   // Spec chips as a sentence on its own line (fuel · transmission · owner…)
   const specs = listingSpecSentence(listing);
   if (specs) message = `${message}\n${specs}`;
 
   // Prefix: make the deal type explicit at a glance
-  if (hasRentLeasePrefix) {
+  if (isThrift) {
+    message = `AVAILABLE TO THRIFT — ${message}`;
+  } else if (hasRentLeasePrefix) {
     message = `🏠 FOR ${listingFor!.toUpperCase()} — ${message}`;
   } else if (isOffered) {
     // Jobs and service listings read as availability, not a sale
