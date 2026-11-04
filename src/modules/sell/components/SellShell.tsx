@@ -10,6 +10,8 @@ export default function SellShell({
   onToggleFilter,
   onBack,
   hidePanel,
+  compactHeader,
+  hideQuickNav,
 }: {
   title: string;
   children: React.ReactNode;
@@ -21,6 +23,12 @@ export default function SellShell({
   /** Listing detail only: the Panel route already lives in the page's ⋯ menu,
    *  so the mobile tile row drops to two columns and skips the Panel tile. */
   hidePanel?: boolean;
+  /** Listing detail: match the enquiry page's compact black header — same
+   *  width, no intro card, and no trailing gap after the title. */
+  compactHeader?: boolean;
+  /** Listing detail: drop the quick-action rows (Marketplace/Sell/Dashboard
+   *  on desktop, Sell/Shop/Panel on mobile) that sit under the header. */
+  hideQuickNav?: boolean;
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,12 +36,25 @@ export default function SellShell({
   const isCreate = path === '/sell/new';
   const isShop = path === '/sell/marketplace';
   const isPanel = path === '/sell/dashboard';
+  // Listing detail centres the title inside the black band; every other sell
+  // page keeps it as a row under the back button.
+  const heading = (
+    <h1 className={`text-lg sm:text-2xl lg:text-3xl ${compactHeader ? '' : 'xl:text-4xl'} font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji`}>
+      <Tag className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
+      <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{title}.</span>
+    </h1>
+  );
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <div className="max-w-5xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
-            <div className="mb-4 sm:mb-6">
+        <div className={`bg-black text-white ${compactHeader ? 'py-4 min-h-[116px] sm:min-h-[124px]' : 'py-6 sm:py-12 lg:py-16'} relative overflow-visible`}>
+          {compactHeader && (
+            <div className="absolute inset-0 flex items-center justify-center px-16 pointer-events-none">
+              {heading}
+            </div>
+          )}
+          <div className={`${compactHeader ? 'max-w-4xl px-4' : 'max-w-5xl px-1 sm:px-4 lg:px-8'} mx-auto relative z-10`}>
+            <div className={compactHeader ? 'mb-3' : 'mb-4 sm:mb-6'}>
               <div className="flex items-center justify-between">
                 <Button
                   variant="ghost"
@@ -74,23 +95,24 @@ export default function SellShell({
                 <div className="w-10 h-10" />
               </div>
             </div>
-            <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                <Tag className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
-                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{title}.</span>
-              </h1>
-            </div>
-            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
-              <div className="text-center">
-                <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                  List what you sell, get discovered, and manage everything in one place.
-                </p>
+            {!compactHeader && (
+              <div className="flex justify-center items-center mb-4 sm:mb-6">
+                {heading}
               </div>
-            </div>
+            )}
+            {!compactHeader && (
+              <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
+                <div className="text-center">
+                  <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
+                    List what you sell, get discovered, and manage everything in one place.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <div className="max-w-5xl mx-auto px-2.5 sm:px-4 py-4 sm:py-6">
-          <div className="hidden sm:flex items-center justify-end gap-2 mb-4">
+          {!hideQuickNav && <div className="hidden sm:flex items-center justify-end gap-2 mb-4">
             <Link to="/sell/marketplace">
               <Button variant="outline" size="sm" className="border border-black">
                 <Store className="h-4 w-4 mr-1" />
@@ -109,8 +131,8 @@ export default function SellShell({
                 Dashboard
               </Button>
             </Link>
-          </div>
-          {!isShop && (
+          </div>}
+          {!hideQuickNav && !isShop && (
           <div className={`sm:hidden grid ${hidePanel ? 'grid-cols-2' : 'grid-cols-3'} gap-3 mb-4`}>
             <Link to="/sell/new">
               <Button size="sm" variant="outline" className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-150 active:!translate-y-[2px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] ${isCreate ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]'}`}>

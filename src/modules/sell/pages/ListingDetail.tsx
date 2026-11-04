@@ -637,7 +637,7 @@ export default function ListingDetail() {
 
   if (loading) {
     return (
-      <SellShell title="For Sale" hidePanel>
+      <SellShell title="For Sale" hidePanel compactHeader hideQuickNav>
         <div className="flex flex-col items-center justify-center py-20 gap-3 w-full">
           <LoadingAnimation message="Loading listing" showBackButton={false} compact />
         </div>
@@ -652,7 +652,7 @@ export default function ListingDetail() {
   if (!listing || listing.status !== 'live' || deadlinePassed) {
     const expired = !!listing && (deadlinePassed || listing.status === 'expired');
     return (
-      <SellShell title="For Sale" hidePanel>
+      <SellShell title="For Sale" hidePanel compactHeader hideQuickNav>
         <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)]">
           <CardContent className="py-16 text-center">
             <p className="text-sm font-semibold text-gray-700">
@@ -674,10 +674,22 @@ export default function ListingDetail() {
   }
 
   const detailsRec = (listing.details || {}) as Record<string, string>;
+  // Header says what the listing actually offers: rent/lease for property and
+  // stays, "Available" for jobs, and "For Sale" for everything else.
+  const dealType = (detailsRec.listingFor || '').trim();
+  const isDealCategory = ['real-estate', 'real-estate-services', 'accommodations'].includes(listing.category || '');
+  const headerTitle =
+    listing.category === 'jobs'
+      ? 'Available'
+      : isDealCategory && dealType === 'Rent'
+        ? 'For Rent'
+        : isDealCategory && dealType === 'Lease'
+          ? 'For Lease'
+          : 'For Sale';
   const showDealChip = (['real-estate', 'real-estate-services', 'accommodations'].includes(listing.category || '') && !!detailsRec.listingFor);
 
   return (
-    <SellShell title="For Sale" hidePanel>
+    <SellShell title={headerTitle} hidePanel compactHeader hideQuickNav>
       {paymentDone && sending && createPortal(
         <div className="fixed inset-0 z-[999] overflow-y-auto bg-slate-50">
           <LoadingAnimation message="Creating Chat Room" showBackButton={false} className="min-h-screen" />
