@@ -5,6 +5,7 @@
 
 import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS } from './categoryBrands';
 import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES } from '@/constants/categories';
+import { THRIFT_GENDERS, THRIFT_TYPES } from '@/constants/thriftClothing';
 
 // Sneaker sizes — US and UK scales. Adults get the full run; Kids get the
 // children's range. 'Other' always last so users can enter odd sizes.
@@ -23,6 +24,54 @@ export const SNEAKER_SIZES_KIDS = [
   'UK 2', 'UK 2.5', 'UK 3', 'UK 3.5', 'UK 4', 'UK 4.5', 'UK 5', 'UK 5.5',
   'UK 6',
   'Other',
+];
+
+// Condition grade for the Condition step of the sell form. The New/Used chips
+// above it are the coarse pick; this is the actual wear grade the buyer reads.
+export const PRODUCT_CONDITIONS = [
+  'Brand New with Tags – Unused, original tags attached',
+  'Brand New with Tags (0% wear)',
+  'Brand New without Tags (0% wear)',
+  'Open Box (0% use)',
+  'New with Minor Defects (0% use)',
+  'Like New (0–2% wear)',
+  'Excellent (2–5% wear)',
+  'Very Good (5–10% wear)',
+  'Good (10–20% wear)',
+  'Fair (20–40% wear)',
+  'Heavily Used (40%+ wear)',
+  'Vintage – Excellent (Minimal age wear)',
+  'Vintage – Good (Visible age wear)',
+  'Restored / Refurbished',
+  'Altered / Modified',
+  'Incomplete (Missing parts)',
+  'Damaged but Usable',
+  'For Repair',
+  'For Parts / Collectors',
+];
+
+// Simple yes/no dropdown shown next to the condition grade.
+export const VISIBLE_DAMAGE_OPTIONS = ['Yes', 'No'];
+
+// What kind of damage, how bad, and whether the item still works.
+export const DAMAGE_TYPES = [
+  'Scratch',
+  'Stain',
+  'Tear',
+  'Crack',
+  'Dent',
+  'Discoloration',
+  'Missing Part',
+  'Other',
+];
+
+export const DAMAGE_SEVERITIES = ['Minor', 'Moderate', 'Major'];
+
+export const FUNCTIONAL_STATUSES = [
+  'Fully Functional',
+  'Partially Functional',
+  'Not Functional',
+  'Not Applicable',
 ];
 
 export type CategoryDetailsStep = 'title' | 'description' | 'details' | 'price';
@@ -154,6 +203,15 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'sneakerAudience', label: 'Audience', type: 'select', options: ['Adults', 'Kids'], placeholder: 'Select audience', step: 'description' },
     { key: 'sneakerSize', label: 'Size', type: 'select', options: [], placeholder: 'Select size', step: 'description' },
   ],
+  // Thrift: three linked dropdowns in the Description step. The Item options
+  // depend on the picked gender, so CreateListing resolves them with
+  // thriftItemsFor() instead of listing 140 strings here.
+  thrift: [
+    { key: 'thriftGender', label: 'Gender', type: 'select', options: THRIFT_GENDERS.map(g => g.value), placeholder: 'Select gender', step: 'description' },
+    { key: 'thriftType', label: 'Type', type: 'select', options: [...THRIFT_TYPES], placeholder: 'Select type', step: 'description' },
+    { key: 'thriftItem', label: 'Item', type: 'select', options: [], placeholder: 'Select item', step: 'description' },
+    { key: 'thriftSize', label: 'Size', type: 'select', options: [], placeholder: 'Select size', step: 'description' },
+  ],
 };
 
 export function fieldsForCategoryStep(category: string | undefined, step: CategoryDetailsStep): CategoryDetailField[] {
@@ -179,5 +237,8 @@ export function isFieldHiddenForDetails(field: CategoryDetailField, details: Rec
     const match = ACCOMMODATION_SUBTYPES.find(s => s.label === details['accommodationType']);
     return !match || !GENDER_RELEVANT_ACCOMMODATION_TYPES.has(match.value);
   }
+  // Thrift: Type appears only after a gender is picked, Item after a type.
+  if (field.key === 'thriftType') return !details['thriftGender'];
+  if (field.key === 'thriftItem') return !details['thriftType'];
   return false;
 }

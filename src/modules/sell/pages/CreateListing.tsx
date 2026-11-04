@@ -14,13 +14,14 @@ import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
 import { SNEAKER_BRANDS } from '../categoryBrands';
+import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from '@/constants/thriftClothing';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapLocationPickerLazy as MapLocationPicker } from '@/components/MapLocationPickerLazy';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
-import { fieldsForCategoryStep, isFieldHiddenForDetails } from '../categoryDetails';
+import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES } from '../categoryDetails';
 import { CleaningTypeMultiSelect } from '@/components/CleaningTypeMultiSelect';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { SellerCartoon } from '@/components/doodles';
@@ -217,6 +218,13 @@ const STEPS = [
   { key: 'extras', label: 'Confirmation', description: 'Finish strong' },
 ] as const;
 
+// Description limits — same 8000-word cap as the enquiry form. The character
+// ceiling only stops an unbroken paste from growing without bound.
+const MAX_DESC_WORDS = 8000;
+const MAX_DESC_CHARS = 60000;
+const countWords = (text: string) => (text.trim() ? text.trim().split(/\s+/).length : 0);
+const withinDescLimit = (text: string) => text.length <= MAX_DESC_CHARS && countWords(text) <= MAX_DESC_WORDS;
+
 // Categories whose listings support an optional auto-expire deadline shown on
 // the Condition step (step index 4). Everything downstream (sweep, marketplace
 // filter, detail-page countdown) is category-agnostic — it only reads the
@@ -290,6 +298,8 @@ export default function CreateListing() {
         ...fieldsForCategoryStep(category, 'details').map(f => f.key),
         ...fieldsForCategoryStep(category, 'price').map(f => f.key),
         'listingFor', // real-estate deal type, managed separately
+        // Condition-step fields (not category fields — never stale)
+        'productCondition', 'visibleDamage', 'damageType', 'damageSeverity', 'functionalStatus',
       ]);
       const stale = Object.keys(prev).filter(k => !validKeys.has(k) && k !== 'landAreaNum' && k !== 'landAreaUnit' && k !== 'builtUpAreaNum' && k !== 'builtUpAreaUnit' && k !== 'houseAreaNum' && k !== 'houseAreaUnit');
       // Estate area fields belong to real-estate only
@@ -362,6 +372,23 @@ export default function CreateListing() {
 
   const [aiGenerating, setAiGenerating] = useState(false);
 
+  // Thrift dropdowns: changing a parent clears whatever was picked below it,
+  // so a stale Type/Item can never survive a Gender change.
+  const resetThriftBelow = (level: 'gender' | 'type') => {
+    setDetails((prev) => {
+      const next = { ...prev };
+      if (level === 'gender') {
+        delete next['thriftType'];
+        delete next['thriftItem'];
+        delete next['thriftSize'];
+      } else {
+        delete next['thriftItem'];
+        delete next['thriftSize'];
+      }
+      return next;
+    });
+  };
+
   // Session-drop handling: no toast — the sign-in prompt below speaks for itself.
   const sessionToastShown = useRef(false);
   const listingImageInputRef = useRef<HTMLInputElement>(null);
@@ -390,7 +417,7 @@ export default function CreateListing() {
           category,
           categories: selectedCats,
         });
-        if (suggestion) setDescription(suggestion.slice(0, 250));
+        if (suggestion) setDescription(suggestion.slice(0, MAX_DESC_CHARS));
       } catch {
         // keep the user's text untouched on failure
       } finally {
@@ -1416,13 +1443,74 @@ export default function CreateListing() {
                         onChange={(next) => setDetail('cleaningTypes', next.join(', '))}
                       />
                     )}
+                    {/* Thrift — Gender → Type → Item; each level appears once its parent is picked */}
+                    {category === 'thrift' && (
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="relative">
+                            <select
+                              value={details['thriftGender'] ?? ''}
+                              onChange={(e) => { setDetail('thriftGender', e.target.value); resetThriftBelow('gender'); }}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftGender'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            >
+                              <option value="" disabled>Select gender</option>
+                              {THRIFT_GENDERS.map((g) => <option key={g.value} value={g.label}>{g.label}</option>)}
+                              <option value="">Cancel</option>
+                            </select>
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                          </div>
+                          {details['thriftGender'] && (
+                            <div className="relative">
+                              <select
+                                value={details['thriftType'] ?? ''}
+                                onChange={(e) => { setDetail('thriftType', e.target.value); resetThriftBelow('type'); }}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftType'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                              >
+                                <option value="" disabled>Select type</option>
+                                {THRIFT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                                <option value="">Cancel</option>
+                              </select>
+                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                          )}
+                        </div>
+                        {details['thriftGender'] && details['thriftType'] && (
+                          <div className="relative">
+                            <select
+                              value={details['thriftItem'] ?? ''}
+                              onChange={(e) => setDetail('thriftItem', e.target.value)}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftItem'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            >
+                              <option value="" disabled>Select item</option>
+                              {thriftItemsFor(details['thriftGender'], details['thriftType']).map((item) => <option key={item} value={item}>{item}</option>)}
+                              <option value="">Cancel</option>
+                            </select>
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                          </div>
+                        )}
+                        {details['thriftType'] && thriftSizesFor(details['thriftType']).length > 0 && (
+                          <div className="relative">
+                            <select
+                              value={details['thriftSize'] ?? ''}
+                              onChange={(e) => setDetail('thriftSize', e.target.value)}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftSize'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            >
+                              <option value="" disabled>Select size</option>
+                              {thriftSizesFor(details['thriftType']).map((sz) => <option key={sz} value={sz}>{sz}</option>)}
+                              <option value="">Cancel</option>
+                            </select>
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                          </div>
+                        )}
+                      </div>
+                    )}
                     {/* Creative toggle-style fields (e.g., transmission) — shown above the description */}
                     {(() => {
                       // Sneaker brand/audience/size are rendered by the custom
                       // Post-Enquiry-style block above, not by the generic fields.
                       const descFields = fieldsForCategoryStep(category, 'description')
                         .filter((f) => !isFieldHiddenForDetails(f, details))
-                        .filter((f) => !['sneakerBrand', 'sneakerAudience', 'sneakerSize', 'cleaningTypes'].includes(f.key));
+                        .filter((f) => !['sneakerBrand', 'sneakerAudience', 'sneakerSize', 'cleaningTypes', 'thriftGender', 'thriftType', 'thriftItem', 'thriftSize'].includes(f.key));
                       const toggleFields = descFields.filter((f) => (f.options?.length ?? 0) === 2);
                       const selectFields = descFields.filter((f) => (f.options?.length ?? 0) !== 2);
                       return (
@@ -1522,9 +1610,11 @@ export default function CreateListing() {
                       <Textarea
                         id="listing-desc"
                         value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        onChange={(e) => {
+                          if (withinDescLimit(e.target.value)) setDescription(e.target.value);
+                        }}
                         placeholder="Condition, accessories, warranty, reason for selling…"
-                        maxLength={250}
+                        maxLength={MAX_DESC_CHARS}
                         className="rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] resize-y shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                         autoFocus
                       />
@@ -1608,6 +1698,84 @@ export default function CreateListing() {
                     </button>
                   </div>
                 </div>
+                )}
+
+                {/* Product condition grade + visible damage. Shown on every
+                    product category's Condition step — including categories where
+                    the New/Used chips are hidden — so the step is never blank. */}
+                {category !== 'jobs' && (
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <select
+                        value={details['productCondition'] ?? ''}
+                        onChange={(e) => setDetail('productCondition', e.target.value)}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['productCondition'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                      >
+                        <option value="" disabled>Product Condition</option>
+                        {PRODUCT_CONDITIONS.map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                        <option value="">Cancel</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                    </div>
+                    <div className="relative">
+                      <select
+                        value={details['visibleDamage'] ?? ''}
+                        onChange={(e) => setDetail('visibleDamage', e.target.value)}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['visibleDamage'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                      >
+                        <option value="" disabled>Visible damage?</option>
+                        {VISIBLE_DAMAGE_OPTIONS.map((v) => (
+                          <option key={v} value={v}>{v}</option>
+                        ))}
+                        <option value="">Cancel</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                    </div>
+                    <div className="relative">
+                      <select
+                        value={details['damageType'] ?? ''}
+                        onChange={(e) => setDetail('damageType', e.target.value)}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['damageType'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                      >
+                        <option value="" disabled>Damage Type</option>
+                        {DAMAGE_TYPES.map((d) => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                        <option value="">Cancel</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                    </div>
+                    <div className="relative">
+                      <select
+                        value={details['damageSeverity'] ?? ''}
+                        onChange={(e) => setDetail('damageSeverity', e.target.value)}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['damageSeverity'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                      >
+                        <option value="" disabled>Damage Severity</option>
+                        {DAMAGE_SEVERITIES.map((d) => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                        <option value="">Cancel</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                    </div>
+                    <div className="relative">
+                      <select
+                        value={details['functionalStatus'] ?? ''}
+                        onChange={(e) => setDetail('functionalStatus', e.target.value)}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['functionalStatus'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                      >
+                        <option value="" disabled>Functional Status</option>
+                        {FUNCTIONAL_STATUSES.map((f) => (
+                          <option key={f} value={f}>{f}</option>
+                        ))}
+                        <option value="">Cancel</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                    </div>
+                  </div>
                 )}
 
                 {(condition === 'used' || hideCondition) && fieldsForCategoryStep(category, 'details').map((f) => (

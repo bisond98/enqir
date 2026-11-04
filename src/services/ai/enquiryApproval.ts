@@ -217,7 +217,8 @@ export class EnquiryApprovalAI {
   }
 
   private validateDescription(description: string): boolean {
-    return description && description.trim().length >= 20 && description.trim().length <= 2000;
+    // Was capped at 2000 chars; the form now allows 8000 words (~60k chars).
+    return description && description.trim().length >= 20 && description.trim().length <= 60000;
   }
 
   private validateCategory(category: string): boolean {

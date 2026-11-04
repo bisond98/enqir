@@ -38,14 +38,16 @@ import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES } from "@/constants/categories";
+import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from "@/modules/sell/categoryBrands";
 
 // Description limits — every category shares one description field.
-// Cap is 1000 words (was 500 units); MAX_DESC_CHARS is only a hard safety ceiling
-// so a paste of unbroken text can't grow without bound.
-const MAX_DESC_WORDS = 1000;
-const MAX_DESC_CHARS = 9000;
+// Cap is 8000 words; MAX_DESC_CHARS is only a hard safety ceiling so a paste of
+// unbroken text can't grow without bound (60k chars ≈ 60 KB, well inside
+// Firestore's 1 MiB document limit).
+const MAX_DESC_WORDS = 8000;
+const MAX_DESC_CHARS = 60000;
 const countWords = (text: string) => (text.trim() ? text.trim().split(/\s+/).length : 0);
 const withinDescLimit = (text: string) => text.length <= MAX_DESC_CHARS && countWords(text) <= MAX_DESC_WORDS;
 import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
@@ -268,6 +270,13 @@ export default function PostEnquiry() {
   const [estateDealType, setEstateDealType] = useState<'' | 'Buy' | 'Rent' | 'Lease'>('Buy');
   // Accommodations: subtype + gender preference (shared-living subtypes only)
   const [accommodationType, setAccommodationType] = useState('');
+  // Thrift-only description dropdowns (Gender -> Type -> Item)
+  const [thriftGender, setThriftGender] = useState('');
+  const [thriftType, setThriftType] = useState('');
+  const [thriftItem, setThriftItem] = useState('');
+  const [thriftSize, setThriftSize] = useState('');
+  // Thrift gates these dropdowns and their saved details
+  const isThriftEnquiry = selectedCategories.includes('thrift') || (category || '').toLowerCase() === 'thrift';
   const [accommodationGender, setAccommodationGender] = useState<'any' | 'male' | 'female' | 'mixed'>('any');
   // Repair services: what kind of repair/fix is needed (service category)
   const [repairType, setRepairType] = useState('');
@@ -550,6 +559,10 @@ export default function PostEnquiry() {
         if (d.jobDetails) setJobDetails(d.jobDetails);
         if (d.accommodationType) setAccommodationType(d.accommodationType);
         if (d.accommodationGender) setAccommodationGender(d.accommodationGender);
+        if (d.thriftGender) setThriftGender(d.thriftGender);
+        if (d.thriftType) setThriftType(d.thriftType);
+        if (d.thriftItem) setThriftItem(d.thriftItem);
+        if (d.thriftSize) setThriftSize(d.thriftSize);
         if (d.repairType) setRepairType(d.repairType);
         if (Array.isArray(d.cleaningTypes)) setCleaningTypes(d.cleaningTypes);
         if (d.sneakerAudience) setSneakerAudience(d.sneakerAudience);
@@ -932,6 +945,10 @@ export default function PostEnquiry() {
             ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
             ...(accommodationType && { accommodationType }),
             ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
+            ...(isThriftEnquiry && thriftGender && { thriftGender }),
+            ...(isThriftEnquiry && thriftType && { thriftType }),
+            ...(isThriftEnquiry && thriftItem && { thriftItem }),
+            ...(isThriftEnquiry && thriftSize && { thriftSize }),
             ...(repairType && { repairType }),
             ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
             ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
@@ -3204,6 +3221,67 @@ export default function PostEnquiry() {
                         );
                       })()}
 
+                      {/* Thrift — Gender -> Type -> Item, above the description; each level appears once its parent is picked */}
+                      {isThriftEnquiry && (
+                        <div className="mb-4 space-y-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div className="relative">
+                              <select
+                                value={thriftGender}
+                                onChange={(e) => { setThriftGender(e.target.value); setThriftType(''); setThriftItem(''); setThriftSize(''); }}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftGender ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                              >
+                                <option value="" disabled>Select gender</option>
+                                {THRIFT_GENDERS.map((g) => <option key={g.value} value={g.label}>{g.label}</option>)}
+                                <option value="">Cancel</option>
+                              </select>
+                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                            {thriftGender && (
+                              <div className="relative">
+                                <select
+                                  value={thriftType}
+                                  onChange={(e) => { setThriftType(e.target.value); setThriftItem(''); setThriftSize(''); }}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                                >
+                                  <option value="" disabled>Select type</option>
+                                  {THRIFT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                                  <option value="">Cancel</option>
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                              </div>
+                            )}
+                          </div>
+                          {thriftGender && thriftType && (
+                            <div className="relative">
+                              <select
+                                value={thriftItem}
+                                onChange={(e) => setThriftItem(e.target.value)}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftItem ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                              >
+                                <option value="" disabled>Select item</option>
+                                {thriftItemsFor(thriftGender, thriftType).map((item) => <option key={item} value={item}>{item}</option>)}
+                                <option value="">Cancel</option>
+                              </select>
+                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                          )}
+                          {thriftGender && thriftType && thriftSizesFor(thriftType).length > 0 && (
+                            <div className="relative">
+                              <select
+                                value={thriftSize}
+                                onChange={(e) => setThriftSize(e.target.value)}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftSize ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                              >
+                                <option value="" disabled>Select size</option>
+                                {thriftSizesFor(thriftType).map((sz) => <option key={sz} value={sz}>{sz}</option>)}
+                                <option value="">Cancel</option>
+                              </select>
+                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                          )}
+                        </div>
+                      )}
                       {/* Real-estate — selection buttons + big capsules above the description (real-estate only, not services) */}
                       {selectedCategories.includes('real-estate') && (() => {
                         const LAND_UNITS = ['Cents', 'Acre', 'Hectare'];
@@ -3563,7 +3641,7 @@ export default function PostEnquiry() {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
                                 title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
-                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
+                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender, thriftGender, thriftType, thriftItem, thriftSize, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
                               }));
                               navigate('/profile?returnTo=/post-enquiry');
                             }}

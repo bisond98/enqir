@@ -123,7 +123,7 @@ export const generateDescription = (input: DescriptionInput): string => {
 
   if (input.notes && input.notes.trim()) parts.push(input.notes.trim().replace(/\s+$/, ''));
 
-  return parts.join(' ').replace(/\s{2,}/g, ' ').trim().slice(0, 497) + (parts.join(' ').length > 497 ? '...' : '');
+  return parts.join(' ').replace(/\s{2,}/g, ' ').trim().slice(0, 59997) + (parts.join(' ').length > 59997 ? '...' : '');
 };
 
 /**
@@ -355,7 +355,7 @@ export const improveDescription = (raw: string, input: DescriptionInput): Improv
     ? `${cleaned} ${additions.join(', ')}.`.replace(/\s{2,}/g, ' ')
     : cleaned;
 
-  return { suggestion: suggestion.slice(0, 500), additions };
+  return { suggestion: suggestion.slice(0, 60000), additions };
 };
 
 /**

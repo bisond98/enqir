@@ -889,6 +889,17 @@ export default function ListingDetail() {
                     salaryPeriod: 'Salary',
                     experience: 'Experience required',
                     cleaningTypes: 'Cleaning',
+                    // Condition step
+                    productCondition: 'Condition',
+                    visibleDamage: 'Visible damage',
+                    damageType: 'Damage',
+                    damageSeverity: 'Severity',
+                    functionalStatus: 'Working',
+                    // Thrift dropdowns
+                    thriftGender: 'For',
+                    thriftType: 'Type',
+                    thriftItem: 'Item',
+                    thriftSize: 'Size',
                   };
                   const entries = Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key));
                   return entries.map(([key, val], i) => {

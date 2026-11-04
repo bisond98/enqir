@@ -363,8 +363,9 @@ class AutoApprovalAI {
     else if (titleLength > 0) score += 5;
     
     // Description quality (0-25 points)
-    if (descriptionLength >= 50 && descriptionLength <= 500) score += 25;
-    else if (descriptionLength >= 20 && descriptionLength <= 1000) score += 15;
+    // Longer descriptions no longer lose points now that 8000 words are allowed.
+    if (descriptionLength >= 50) score += 25;
+    else if (descriptionLength >= 20) score += 15;
     else if (descriptionLength > 0) score += 5;
     
     return Math.min(100, score);
