@@ -520,9 +520,13 @@ export default function EnquiryWall() {
     };
 
     // Fallback 2: full collection ordered by createdAt (pre-existing behavior)
+    // If even this fails there is no listener left to deliver data, so surface
+    // the stalled state at once instead of leaving the spinner up until the
+    // watchdog fires.
     const tryWithOrder = () => {
       attach(enquiriesQueryWithOrder, () => {
         setLoading(false);
+        setFetchStalled(true);
       });
     };
 
@@ -685,6 +689,7 @@ export default function EnquiryWall() {
       } catch (error) {
         console.error("❌ EnquiryWall: Error processing enquiries:", error);
         setLoading(false);
+        setFetchStalled(true);
       }
     };
     
@@ -701,7 +706,7 @@ export default function EnquiryWall() {
     const watchdog = setTimeout(() => {
       setLoading((prev) => (prev ? false : prev));
       setFetchStalled(true);
-    }, 12000);
+    }, 8000);
 
     // Cleanup subscription on unmount
     return () => {
@@ -6109,10 +6114,10 @@ export default function EnquiryWall() {
                 : 'space-y-3 sm:space-y-4'
             }`}>
               {displayedEnquiries.map((enquiry) => (
-                <div key={enquiry.id} className="block">
+                <div key={enquiry.id} className="block h-full">
                   <Link
                     to={isEnquiryDisabled(enquiry) ? '#' : `/enquiry/${enquiry.id}`} 
-                    className="block"
+                    className="block h-full"
                     onClick={(e) => {
                       if (isEnquiryDisabled(enquiry)) {
                         e.preventDefault();
@@ -6121,14 +6126,14 @@ export default function EnquiryWall() {
                     }}
                   >
                     <Card data-view-mode={viewMode} className={`${
-                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border-0 bg-white rounded-none overflow-hidden relative' : 'border-0 bg-white rounded-none flex flex-col min-h-[400px] sm:min-h-[500px] lg:min-h-[550px] xl:min-h-[600px] relative'
+                      viewMode === 'grid' ? 'h-full flex-1 flex flex-col border-[1.5px] border-gray-400 bg-white rounded-2xl overflow-hidden relative' : 'border-0 bg-white rounded-none flex flex-col min-h-[400px] sm:min-h-[500px] lg:min-h-[550px] xl:min-h-[600px] relative'
                     } transition-all duration-300 cursor-pointer ${
                       isEnquiryDisabled(enquiry) 
-                        ? 'opacity-70 bg-gray-50 border-gray-300 grayscale cursor-not-allowed' 
+                        ? (viewMode === 'grid' ? 'opacity-70 bg-gray-50 border-gray-400 grayscale cursor-not-allowed' : 'opacity-70 bg-gray-50 border-gray-300 grayscale cursor-not-allowed') 
                         : viewMode === 'list' 
                           ? 'rounded-t-2xl rounded-b-none border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]' 
-                          : 'rounded-t-2xl rounded-b-none border-gray-300 bg-gradient-to-br from-white via-white to-gray-50/40 border-l-green-500 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99]'
-                    } sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, transformStyle: 'preserve-3d', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' } : {}}>
+                          : 'rounded-2xl border-gray-400 bg-white active:scale-[0.99]'
+                    } sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99]`} style={viewMode === 'list' ? { display: 'flex', flexDirection: 'column', height: 'auto', transformStyle: 'preserve-3d', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' } : viewMode === 'grid' ? { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, fontFamily: "'Plus Jakarta Sans', Inter, system-ui, sans-serif", boxShadow: '0 1px 2px rgba(0,0,0,0.04), 0 8px 20px -12px rgba(0,0,0,0.22)' } : {}}>
                       {/* EXPIRED Stamp Badge */}
                       {isEnquiryDisabled(enquiry) && (
                         <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none" style={{ filter: 'none', WebkitFilter: 'none' }}>
@@ -6172,23 +6177,68 @@ export default function EnquiryWall() {
                         </div>
                       )}
                       {/* Subtle gradient overlay for mobile - Professional depth */}
-                      {!isEnquiryDisabled(enquiry) && (
+                      {!isEnquiryDisabled(enquiry) && viewMode === 'list' && (
                         <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-white/20 to-transparent rounded-2xl pointer-events-none sm:hidden" />
                       )}
                       {/* Additional subtle border highlight for mobile */}
-                      {!isEnquiryDisabled(enquiry) && (
+                      {!isEnquiryDisabled(enquiry) && viewMode === 'list' && (
                         <div className="absolute inset-0 rounded-2xl border border-white/60 pointer-events-none sm:hidden" />
                       )}
                       {/* Physical button depth effect - Desktop only */}
-                      {!isEnquiryDisabled(enquiry) && (
+                      {!isEnquiryDisabled(enquiry) && viewMode === 'list' && (
                         <div className="hidden sm:block absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-2xl sm:rounded-3xl pointer-events-none" />
                       )}
                       {/* Shimmer effect - Desktop only */}
-                      {!isEnquiryDisabled(enquiry) && (
+                      {!isEnquiryDisabled(enquiry) && viewMode === 'list' && (
                         <div className="hidden sm:block absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl sm:rounded-3xl" />
                       )}
                       {/* Card Header - Black */}
-                      <div className={`${viewMode === 'grid' ? 'px-2 sm:px-4 py-1.5 sm:py-2.5' : 'px-4 sm:px-4 py-3 sm:py-2.5'} border-b border-black/20 relative z-10 rounded-t-2xl sm:rounded-t-none`} style={{ background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)' }}>
+                      <div className={`${viewMode === 'grid' ? 'px-3 pt-3 sm:px-5 sm:pt-4' : 'px-4 sm:px-4 py-3 sm:py-2.5 border-b border-black/20 rounded-t-2xl sm:rounded-t-none'} relative z-10`} style={{ background: '#000000' }}>
+                        {/* Doodle strip inside the verification / LIVE row */}
+                        {viewMode === 'grid' && (
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 200 24"
+                            preserveAspectRatio="xMidYMid slice"
+                            className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.22]"
+                            fill="none"
+                            stroke="#ffffff"
+                            strokeWidth="1.2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            {/* umbrella — safe from anything */}
+                            <path d="M6 12a6 6 0 0112 0z" />
+                            <path d="M12 12v6.5a2.4 2.4 0 004.6 0" />
+                            {/* shield + tick — trusted */}
+                            <path d="M26 6h8v4.4c0 3.2-3 5.3-4 5.9-1-.6-4-2.7-4-5.9z" />
+                            <path d="M28 9.2l1.6 1.6 2.7-2.9" />
+                            {/* lightning — easy, fast */}
+                            <path d="M45 5l-4 7h3l-1.6 6 5.6-8h-3z" />
+                            {/* lifebuoy — safety cover */}
+                            <circle cx="62" cy="12" r="6" />
+                            <circle cx="62" cy="12" r="2.3" />
+                            <path d="M62 6v3.7M62 14.3V18M56 12h3.7M64.3 12H68" />
+                            {/* check circle — simple */}
+                            <circle cx="80" cy="12" r="5" />
+                            <path d="M77.8 12l1.6 1.6 3.1-3.4" />
+                            {/* padlock — secure */}
+                            <rect x="92" y="11" width="9.5" height="7.5" rx="1.6" />
+                            <path d="M94.1 11V8.4a2.6 2.6 0 015.2 0V11" />
+                            {/* sparkle — good deal */}
+                            <path d="M112 6.5l1.2 2.6 2.6 1.2-2.6 1.2-1.2 2.6-1.2-2.6-2.6-1.2 2.6-1.2z" />
+                            {/* asterisk texture */}
+                            <path d="M128 8v8m-3.4-6l6.8 4m0-4l-6.8 4" />
+                            {/* two arrows meeting — deal done */}
+                            <path d="M142 12h6.5m-2.3-2.3l2.3 2.3-2.3 2.3" />
+                            <path d="M160 12h-6.5m2.3-2.3l-2.3 2.3 2.3 2.3" />
+                            {/* ticks, wave and dots to bleed to both edges */}
+                            <path d="M170 15l1.8 1.8 4-4.6" />
+                            <path d="M180 9.5c1.7-1.5 3.4 1.5 5.1 0" />
+                            <circle cx="192" cy="13" r="1.1" />
+                            <circle cx="1.5" cy="9" r="0.9" />
+                          </svg>
+                        )}
                         <div className="flex justify-between items-center relative">
                           <div className="flex items-center gap-2 sm:gap-2">
                             {/* Show verified badge if: 
@@ -6196,10 +6246,12 @@ export default function EnquiryWall() {
                                 2. This specific enquiry has ID images (enquiry-specific verification) */}
                                 {(userProfiles[enquiry.userId]?.isProfileVerified || enquiry.idFrontImage || enquiry.idBackImage || enquiry.isProfileVerified || enquiry.userVerified) && (
                                   <>
-                                    <div className={`flex items-center justify-center w-2 h-2 sm:w-3.5 sm:h-3.5 rounded-full shadow-sm ${
-                                      isEnquiryDisabled(enquiry) ? 'bg-gray-500' : 'bg-blue-500'
+                                    <div className={`flex items-center justify-center rounded-full ${
+                                      viewMode === 'grid' ? 'w-3 h-3' : 'w-2 h-2 sm:w-3.5 sm:h-3.5 shadow-sm'
+                                    } ${
+                                      isEnquiryDisabled(enquiry) ? 'bg-gray-500' : 'bg-blue-600'
                                     }`}>
-                                      <Check className="h-0.5 w-0.5 sm:h-2 sm:w-2 text-white" />
+                                      <Check className={`text-white ${viewMode === 'grid' ? 'h-2 w-2' : 'h-0.5 w-0.5 sm:h-2 sm:w-2'}`} strokeWidth={3.5} />
                                     </div>
                                     <span className={`text-[7px] sm:text-[10px] font-semibold hidden sm:inline tracking-wide ${
                                       isEnquiryDisabled(enquiry) ? 'text-gray-400' : 'text-blue-300'
@@ -6209,7 +6261,11 @@ export default function EnquiryWall() {
                           </div>
                           <div className="flex items-center gap-0.5 sm:gap-2">
                             {!isEnquiryDisabled(enquiry) && (
-                              <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-green-500 flex-shrink-0"></div>
+                              <div className={`flex items-center justify-center rounded-full bg-green-500 flex-shrink-0 ${
+                                viewMode === 'grid' ? 'w-3 h-3' : 'w-2 h-2 sm:w-2.5 sm:h-2.5'
+                              }`}>
+                                {viewMode === 'grid' && <span className="w-[3px] h-[3px] rounded-full bg-white" />}
+                              </div>
                             )}
                             {isDealClosed(enquiry) && (
                               <Badge variant="outline" className="text-[7px] sm:text-[10px] px-0.5 sm:px-2 py-0.5 sm:py-1 text-gray-400 border-gray-500 bg-black">Deal Closed</Badge>
@@ -6475,278 +6531,93 @@ export default function EnquiryWall() {
                           </CardHeader>
                         </>
                       ) : (
-                        <CardHeader className="p-2 sm:p-5 lg:p-6 xl:p-7 relative z-10 overflow-hidden" style={{ background: 'linear-gradient(to bottom, #000000, #000000, #0a0a0a)', boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.8), inset 0 -2px 4px rgba(0,0,0,0.6)' }}>
-                          {/* Urgent Badge - Top of header */}
-                          {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
-                            <div className="absolute top-1.5 right-1.5 z-20">
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-red-500 text-white text-[8px] sm:text-[10px] font-bold border border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">
-                                <span className="w-1 h-1 bg-white rounded-full animate-pulse"></span>
+                        <CardHeader className="px-3 pt-2.5 pb-6 sm:px-5 sm:pt-3 sm:pb-7 relative z-10 overflow-hidden" style={{ background: '#000000' }}>
+                          {/* Hand-drawn doodle field: trust, safety, easy deals */}
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 200 60"
+                            preserveAspectRatio="xMidYMid slice"
+                            className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.22]"
+                            fill="none"
+                            stroke="#ffffff"
+                            strokeWidth="1.4"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            {/* top row */}
+                            <path d="M4 14a7 7 0 0114 0z" />
+                            <path d="M11 14v8a2.6 2.6 0 005 0" />
+                            <rect x="30" y="12" width="11" height="9" rx="2" />
+                            <path d="M32.4 12V9.1a3 3 0 016 0V12" />
+                            <path d="M54 8l1.6 3.6 3.6 1.6-3.6 1.6L54 18l-1.6-3.6L48.8 12.8l3.6-1.6z" />
+                            <circle cx="74" cy="14" r="6.4" />
+                            <circle cx="74" cy="14" r="2.4" />
+                            <path d="M74 7.6v4M74 16.4v4M67.6 14h4M76.4 14h4" />
+                            <path d="M88 12h10v6.6c0 4.4-4 7.6-5 8.4-1-.8-5-4-5-8.4z" />
+                            <path d="M90.4 15.6l2.6 2.6 4.6-5" />
+                            <path d="M110 8l-4.4 8h3.4l-1.8 7 6.2-9h-3.4z" />
+                            <circle cx="128" cy="14" r="1.4" />
+                            <path d="M136 16l3 3 6.5-7" />
+                            <path d="M154 14h9m-3-3l3 3-3 3" />
+                            <path d="M178 14h-9m3-3l-3 3 3 3" />
+                            <circle cx="192" cy="9" r="1.1" />
+                            {/* middle row */}
+                            <path d="M6 30h9v7.6c0 3.6-3.4 6-4.5 6.8-1.1-.8-4.5-3.2-4.5-6.8z" />
+                            <path d="M8.2 33.4l2.2 2.2 4-4.4" />
+                            <circle cx="30" cy="36" r="6.6" />
+                            <circle cx="30" cy="36" r="2.5" />
+                            <path d="M30 29.4v4.1M30 38.5v4.1M23.4 36h4.1M32.5 36h4.1" />
+                            <circle cx="50" cy="36" r="6" />
+                            <path d="M47.4 36l2 2 4-4.4" />
+                            <path d="M64 29h13a2.6 2.6 0 012.6 2.6v5.8a2.6 2.6 0 01-2.6 2.6h-8l-3.6 3.6V40H64a2.6 2.6 0 01-2.6-2.6v-5.8A2.6 2.6 0 0164 29z" />
+                            <circle cx="64" cy="34.5" r="0.9" />
+                            <circle cx="67.5" cy="34.5" r="0.9" />
+                            <circle cx="71" cy="34.5" r="0.9" />
+                            <rect x="86" y="34" width="11" height="9" rx="2" />
+                            <path d="M88.4 34v-2.9a3 3 0 016 0V34" />
+                            <path d="M112 30l1.6 3.6 3.6 1.6-3.6 1.6-1.6 3.6-1.6-3.6-3.6-1.6 3.6-1.6z" />
+                            <path d="M128 32v9m-3.8-6.6l7.6 4.2m0-4.2l-7.6 4.2" />
+                            <path d="M146 35h7m-2.4-2.4l2.4 2.4-2.4 2.4" />
+                            <path d="M164 35h-7m2.4-2.4l-2.4 2.4 2.4 2.4" />
+                            <path d="M176 38c2.4-3 4.6 1.8 7-1.2" />
+                            <circle cx="192" cy="36" r="1.2" />
+                            {/* bottom row */}
+                            <path d="M8 50c3 0 3 4 6 4s3-4 6-4" />
+                            <path d="M26 56l2.6 2.6 6-7" />
+                            <path d="M44 52v7m-3-5l6 3.6m0-3.6l-6 3.6" />
+                            <circle cx="60" cy="54" r="1.2" />
+                            <path d="M70 56c3-2.4 6 2.4 9 0" />
+                            <path d="M88 52h6.6m-2.4-2.4l2.4 2.4-2.4 2.4" />
+                            <circle cx="104" cy="55" r="1" />
+                            <path d="M112 52l1.4 3 3 1.4-3 1.4-1.4 3-1.4-3-3-1.4 3-1.4z" />
+                            <path d="M128 57l2.4 2.4 5.4-6.4" />
+                            <path d="M146 52c2.2-2.6 4.2 1.6 6.4-1" />
+                            <circle cx="162" cy="54" r="1.1" />
+                            <path d="M172 51h8v6a4.6 4.6 0 01-4 4.4 4.6 4.6 0 01-4-4.4z" />
+                            <circle cx="190" cy="51" r="1" />
+                          </svg>
+                          {/* Need + Urgent + Posted date */}
+                          <div className="relative z-10 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                            <span className="inline-flex items-center rounded-lg bg-red-600 px-2 py-0.5 text-[11px] font-bold text-white sm:px-2.5 sm:py-1 sm:text-xs">
+                              Need
+                            </span>
+                            {enquiry.isUrgent && !isEnquiryDisabled(enquiry) && (
+                              <span className="inline-flex items-center gap-1 rounded-lg bg-red-500/90 px-1.5 py-0.5 text-[9px] font-bold text-white sm:text-[10px]">
+                                <span className="w-1 h-1 rounded-full bg-white animate-pulse" />
                                 Urgent
                               </span>
-                            </div>
-                          )}
-                          {/* 2D Sketches - Safely Enquire Here */}
-                          <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.08]">
-                            <svg className="w-full h-full" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
-                              {/* Shield icon for safety */}
-                              <path d="M 50 80 Q 50 50, 80 50 L 120 50 Q 150 50, 150 80 L 150 120 Q 150 150, 120 150 L 100 170 L 80 150 Q 50 150, 50 120 Z" 
-                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                              <path d="M 100 100 L 100 130 M 90 120 L 100 130 L 110 120" 
-                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
-                              
-                              {/* Lock icon */}
-                              <rect x="250" y="100" width="40" height="50" rx="4" 
-                                    stroke="white" strokeWidth="2" fill="none"/>
-                              <path d="M 270 100 L 270 80 Q 270 60, 290 60 Q 310 60, 310 80 L 310 100" 
-                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
-                              <circle cx="270" cy="125" r="3" fill="white"/>
-                              
-                              {/* Message/question bubble */}
-                              <path d="M 200 200 Q 180 200, 180 220 L 180 240 Q 180 250, 190 250 L 200 260 L 210 250 Q 220 250, 220 240 L 220 220 Q 220 200, 200 200" 
-                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
-                              <circle cx="200" cy="210" r="2" fill="white"/>
-                              <circle cx="200" cy="220" r="2" fill="white"/>
-                              <circle cx="200" cy="230" r="2" fill="white"/>
-                              
-                              {/* Connection lines */}
-                              <path d="M 150 100 Q 175 100, 200 100" 
-                                    stroke="white" strokeWidth="1.5" fill="none" strokeDasharray="3,3" opacity="0.6"/>
-                              <path d="M 150 140 Q 175 140, 200 180" 
-                                    stroke="white" strokeWidth="1.5" fill="none" strokeDasharray="3,3" opacity="0.6"/>
-                              
-                              {/* Check mark for verification */}
-                              <circle cx="320" cy="80" r="15" 
-                                      stroke="white" strokeWidth="2" fill="none"/>
-                              <path d="M 315 80 L 318 83 L 325 76" 
-                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                              
-                              {/* Arrow pointing to enquiry */}
-                              <path d="M 280 200 L 300 200 M 295 195 L 300 200 L 295 205" 
-                                    stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                              
-                              {/* Decorative dots */}
-                              <circle cx="60" cy="200" r="2" fill="white" opacity="0.5"/>
-                              <circle cx="340" cy="200" r="2" fill="white" opacity="0.5"/>
-                              <circle cx="60" cy="250" r="2" fill="white" opacity="0.5"/>
-                              <circle cx="340" cy="250" r="2" fill="white" opacity="0.5"/>
-                            </svg>
+                            )}
+                            {enquiry.deadline && (
+                              <span className="ml-auto inline-flex items-center whitespace-nowrap rounded-md bg-red-600 px-1.5 py-[2px] text-[8px] font-bold text-white sm:text-[9px]">
+                                {formatDeadlineText(enquiry.deadline)}
+                              </span>
+                            )}
                           </div>
-                          <div className="space-y-1.5 sm:space-y-3 lg:space-y-4 relative z-10">
-                            {/* Spacer to maintain original Posted Time spacing */}
-                            <div className="mb-1 sm:mb-2" style={{ height: '1em' }}></div>
-                            {/* Need Label - Above Title */}
-                            <div className="relative text-left">
-                              <span className="text-[10px] sm:text-sm text-white font-bold px-2 py-0.5 rounded-xl border border-black bg-red-600 shadow-[0_4px_0_0_rgba(0,0,0,0.2)]">Need</span>
-                              {/* Posted Time - Positioned absolutely to the right, aligned with Need but lower */}
-                              {enquiry.createdAt && (
-                                <span className="absolute right-0 top-[0.3em] text-[7px] sm:text-[9px] text-black font-bold px-1.5 py-0.5 rounded-xl border border-black bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.2)]">
-                                  Posted on: {formatDateTime(enquiry.createdAt)}
-                                </span>
-                              )}
-                            </div>
-                            
-                            {/* Title - 3D White Tile Style */}
-                            <div className="mb-1 sm:mb-3">
-                              <div className="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl sm:rounded-2xl px-2 sm:px-4 lg:px-5 py-1.5 sm:py-3 lg:py-3.5 transform-gpu transition-all duration-500 ease-out"
-                                style={{
-                                  boxShadow: '0 15px 30px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.08)',
-                                  transformStyle: 'preserve-3d',
-                                  perspective: '1000px'
-                                }}
-                              >
-                                {/* 3D Border Effect */}
-                                <div className="absolute inset-0 rounded-xl sm:rounded-2xl border-2 border-gray-300/50" 
-                                  style={{
-                                    boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.12)'
-                                  }}
-                                />
-                                
-                                {/* Top highlight for 3D effect */}
-                                <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-xl sm:rounded-t-2xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                
-                                {/* Side highlights for depth */}
-                                <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-xl sm:rounded-l-2xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-xl sm:rounded-r-2xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                
-                                {/* Bottom shadow for depth */}
-                                <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-xl sm:rounded-b-2xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                
-                                {/* Inner depth shadow */}
-                                <div className="absolute inset-1 rounded-lg sm:rounded-xl bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                
-                                <h3 className={`relative z-10 text-xs sm:text-base lg:text-lg font-black tracking-tight leading-tight line-clamp-2 text-black text-center antialiased ${
-                                    isEnquiryDisabled(enquiry) ? 'text-gray-400 opacity-70' : ''
-                                }`} style={{
-                                  WebkitFontSmoothing: 'antialiased',
-                                  MozOsxFontSmoothing: 'grayscale',
-                                    textRendering: 'optimizeLegibility',
-                                    transform: 'translateZ(15px)',
-                                    textShadow: '0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.08)'
-                                }}>
-                                  {enquiry.title}
-                                </h3>
-                              </div>
-                              
-                              {/* "before [date]" below title, right aligned */}
-                              {enquiry.deadline && (() => {
-                                try {
-                                  let deadlineDate: Date;
-                                  
-                                  // Handle Firestore Timestamp (has toDate method)
-                                  if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
-                                    deadlineDate = enquiry.deadline.toDate();
-                                  }
-                                  // Handle Firestore Timestamp object (has seconds and nanoseconds)
-                                  else if (enquiry.deadline?.seconds !== undefined) {
-                                    deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
-                                  }
-                                  // Handle Date object
-                                  else if (enquiry.deadline instanceof Date) {
-                                    deadlineDate = enquiry.deadline;
-                                  }
-                                  // Handle string or number
-                                  else {
-                                    deadlineDate = new Date(enquiry.deadline);
-                                  }
-                                  
-                                  if (!deadlineDate || isNaN(deadlineDate.getTime())) {
-                                    console.error('⚠️ Invalid deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Deadline value:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
-                                    return null;
-                                  }
-                                  
-                                  return (
-                                    <div className="flex flex-col items-end gap-1 sm:gap-1.5 pt-2">
-                                      {/* Location - Right aligned above date */}
-                                      {enquiry.location && (
-                                        <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out max-w-full overflow-hidden"
-                                          style={{
-                                            boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                            transformStyle: 'preserve-3d',
-                                            perspective: '1000px'
-                                          }}
-                                        >
-                                          {/* 3D Border Effect */}
-                                          <div className="absolute inset-0 rounded-lg sm:rounded-xl border border-gray-300/50" 
-                                            style={{
-                                              boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                            }}
-                                          />
-                                          
-                                          {/* Top highlight for 3D effect */}
-                                          <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                          
-                                          {/* Side highlights for depth */}
-                                          <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                          <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                          
-                                          {/* Bottom shadow for depth */}
-                                          <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                          
-                                          {/* Inner depth shadow */}
-                                          <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                          
-                                          <span className="text-[8px] sm:text-xs font-semibold text-gray-800 relative z-10 whitespace-nowrap flex-shrink-0" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>At </span>
-                                          <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0 relative z-10"
-                                            style={{
-                                              transform: 'translateZ(10px)'
-                                            }}
-                                          >
-                                            <MapPin className="h-1.5 w-1.5 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
-                                          </div>
-                                          <span className="truncate text-[8px] sm:text-xs md:text-sm font-semibold text-gray-800 relative z-10 whitespace-nowrap overflow-hidden" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>{enquiry.location.length > 20 ? `${enquiry.location.slice(0, 20)}...` : enquiry.location}</span>
-                                        </div>
-                                      )}
-                                      <div className="flex items-center gap-1.5 sm:gap-3">
-                                        <div className="relative inline-flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 transform-gpu transition-all duration-500 ease-out"
-                                        style={{
-                                          boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.06)',
-                                          transformStyle: 'preserve-3d',
-                                          perspective: '1000px'
-                                        }}
-                                      >
-                                        {/* 3D Border Effect */}
-                                        <div className="absolute inset-0 rounded-lg sm:rounded-xl border border-gray-300/50" 
-                                          style={{
-                                            boxShadow: 'inset 0 1px 3px rgba(255,255,255,0.8), inset 0 -1px 3px rgba(0,0,0,0.1)'
-                                          }}
-                                        />
-                                        
-                                        {/* Top highlight for 3D effect */}
-                                        <div className="absolute top-0 left-0 right-0 h-1/3 rounded-t-lg sm:rounded-t-xl bg-gradient-to-b from-white/60 via-white/20 to-transparent pointer-events-none" />
-                                        
-                                        {/* Side highlights for depth */}
-                                        <div className="absolute top-0 left-0 bottom-0 w-1/4 rounded-l-lg sm:rounded-l-xl bg-gradient-to-r from-white/40 to-transparent pointer-events-none" />
-                                        <div className="absolute top-0 right-0 bottom-0 w-1/4 rounded-r-lg sm:rounded-r-xl bg-gradient-to-l from-white/40 to-transparent pointer-events-none" />
-                                        
-                                        {/* Bottom shadow for depth */}
-                                        <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-lg sm:rounded-b-xl bg-gradient-to-t from-black/10 via-black/5 to-transparent pointer-events-none" />
-                                        
-                                        {/* Inner depth shadow */}
-                                        <div className="absolute inset-0.5 rounded-md sm:rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/5 pointer-events-none" />
-                                        
-                                        <span className="relative z-10 text-[8px] sm:text-xs font-medium text-gray-800 whitespace-nowrap" style={{ transform: 'translateZ(10px)', textShadow: '0 1px 2px rgba(0,0,0,0.08)' }}>
-                                          before {formatDate(deadlineDate.toISOString())}
-                                        </span>
-                                      </div>
-                                      <div className="inline-flex items-center bg-red-500 rounded-lg sm:rounded-xl px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5">
-                                        <span className="text-[10px] sm:text-xs font-semibold text-white whitespace-nowrap">
-                                        {formatDeadlineText(enquiry.deadline)}
-                                      </span>
-                                      </div>
-                                      </div>
-                                    </div>
-                                  );
-                                } catch (error) {
-                                  console.error('⚠️ Error displaying deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Error:', error, 'Deadline:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
-                                  return null;
-                                }
-                              })()}
-                            </div>
-                              
-                                {/* Show verified badge if: 
-                                    1. User has profile-level verification (applies to all enquiries), OR
-                                    2. This specific enquiry has ID images (enquiry-specific verification) */}
-                                {((userProfiles[enquiry.userId]?.isProfileVerified || 
-                                   userProfiles[enquiry.userId]?.isVerified || 
-                                   userProfiles[enquiry.userId]?.trustBadge || 
-                                   userProfiles[enquiry.userId]?.isIdentityVerified) || 
-                                  enquiry.idFrontImage || enquiry.idBackImage ||
-                                  enquiry.isProfileVerified || enquiry.userVerified) && (
-                                <div className={`flex items-center justify-start mt-1 sm:mt-1.5`}>
-                                  <div className={`flex items-center justify-center w-3 h-3 sm:w-5 sm:h-5 rounded-full flex-shrink-0 shadow-sm ${
-                                    isEnquiryDisabled(enquiry) ? 'bg-gray-400' : 'bg-blue-500'
-                                  }`}>
-                                    <Check className="h-1.5 w-1.5 sm:h-3 sm:w-3 text-white" />
-                                  </div>
-                                  </div>
-                                )}
-                            
 
-                            
-                            {/* Description - Hidden in grid view */}
-                            
-                            {/* Description - Hidden in grid view */}
-                            
-                            {/* Budget and Location - Grouped together */}
-                            <div className="flex flex-col gap-1.5 sm:gap-2.5">
-                              {enquiry.budget && (
-                                <div className="hidden sm:flex items-center gap-1 sm:gap-2 bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-sm px-1 sm:px-3 py-0.5 sm:py-1.5">
-                                  <span className="font-bold text-gray-900 text-[7px] sm:text-[10px] tracking-wide" style={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}>{enquiry.details?.jobDirection === 'seeking' ? 'Salary Expected -' : enquiry.details?.jobDirection === 'hiring' ? 'Salary -' : 'Budget -'}</span>
-                                  <span className="font-extrabold text-black text-xs sm:text-base md:text-lg" style={{ fontFeatureSettings: '"tnum"' }}>₹</span>
-                                  <span className="truncate font-extrabold text-gray-900 text-xs sm:text-base md:text-lg tracking-tight" style={{ fontFeatureSettings: '"tnum"' }}>{formatIndianCurrency(enquiry.budget)}</span>
-                                </div>
-                              )}
-                              {!enquiry.budget && enquiry.budgetOpenToDiscussion && (
-                                <div className="hidden sm:flex">
-                                  <span className="inline-flex items-center px-1.5 sm:px-2 py-0.5 sm:py-1 bg-red-600 text-white text-[8px] sm:text-[10px] font-bold rounded-md">Discuss price</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
                         </CardHeader>
                       )}
                       
-                      <CardContent className={`${viewMode === 'list' ? 'px-2 pt-2 pb-1 sm:px-5 sm:pt-5 sm:pb-2 lg:px-6 lg:pt-6 lg:pb-3 xl:px-7 xl:pt-7 xl:pb-4 bg-white flex flex-col justify-start sm:justify-center mobile-white-section' : 'flex-1 flex flex-col px-1.5 pt-1.5 pb-1 sm:px-5 sm:pt-5 sm:pb-2 lg:px-6 lg:pt-6 lg:pb-3 xl:px-7 xl:pt-7 xl:pb-4 justify-between bg-white'} relative z-10 overflow-hidden`} style={viewMode === 'list' ? { flex: '1 1 25%', flexGrow: 1, flexShrink: 1, flexBasis: '25%' } : {}}>
+                      <CardContent className={`${viewMode === 'list' ? 'px-2 pt-2 pb-1 sm:px-5 sm:pt-5 sm:pb-2 lg:px-6 lg:pt-6 lg:pb-3 xl:px-7 xl:pt-7 xl:pb-4 bg-white flex flex-col justify-start sm:justify-center mobile-white-section' : 'flex-1 flex flex-col px-3 pt-0 pb-3 sm:px-5 sm:pb-4 justify-between bg-white'} relative z-10 overflow-hidden`} style={viewMode === 'list' ? { flex: '1 1 25%', flexGrow: 1, flexShrink: 1, flexBasis: '25%' } : {}}>
                         {viewMode === 'list' ? (
                           <>
                           {/* Desktop Layout */}
@@ -6883,48 +6754,124 @@ export default function EnquiryWall() {
                           </div>
                           </>
                         ) : (
-                          <div className="space-y-1.5 sm:space-y-2.5 mt-auto sm:-mt-6 lg:-mt-4">
+                          <>
+                          {/* Title */}
+                          <h3 className={`mt-2 text-[15px] font-extrabold leading-snug tracking-tight sm:mt-3 sm:text-lg lg:text-xl ${
+                            isEnquiryDisabled(enquiry) ? 'text-gray-400' : 'text-gray-900'
+                          }`} style={{ fontFamily: "'Plus Jakarta Sans', Inter, system-ui, sans-serif" }}>
+                            {enquiry.title}
+                          </h3>
+
+                          {/* Location */}
+                          {enquiry.location && (
+                            <div className="mt-2 flex items-start gap-1.5">
+                              <MapPin className="mt-[1px] h-2.5 w-2.5 flex-shrink-0 text-gray-400 sm:h-3 sm:w-3" strokeWidth={2.2} />
+                              <span className="text-[9px] font-medium leading-snug text-gray-600 sm:text-[10px]">
+                                At {enquiry.location.length > 20 ? `${enquiry.location.slice(0, 20)}...` : enquiry.location}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Deadline + countdown */}
+                          {enquiry.deadline && (() => {
+                            try {
+                              let deadlineDate: Date;
+
+                              // Handle Firestore Timestamp (has toDate method)
+                              if (enquiry.deadline?.toDate && typeof enquiry.deadline.toDate === 'function') {
+                                deadlineDate = enquiry.deadline.toDate();
+                              }
+                              // Handle Firestore Timestamp object (has seconds and nanoseconds)
+                              else if (enquiry.deadline?.seconds !== undefined) {
+                                deadlineDate = new Date(enquiry.deadline.seconds * 1000 + (enquiry.deadline.nanoseconds || 0) / 1000000);
+                              }
+                              // Handle Date object
+                              else if (enquiry.deadline instanceof Date) {
+                                deadlineDate = enquiry.deadline;
+                              }
+                              // Handle string or number
+                              else {
+                                deadlineDate = new Date(enquiry.deadline);
+                              }
+
+                              if (!deadlineDate || isNaN(deadlineDate.getTime())) {
+                                console.error('⚠️ Invalid deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Deadline value:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
+                                return null;
+                              }
+
+                              return (
+                                <div className="mt-1.5 flex items-center">
+                                  <div className="flex min-w-0 items-center gap-1.5">
+                                    <Clock className="h-2.5 w-2.5 flex-shrink-0 text-gray-400 sm:h-3 sm:w-3" strokeWidth={2.2} />
+                                    <span className="truncate text-[9px] font-medium text-gray-600 sm:text-[10px]">
+                                      before {formatDate(deadlineDate.toISOString())}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            } catch (error) {
+                              console.error('⚠️ Error displaying deadline for enquiry:', enquiry.id, 'Title:', enquiry.title, 'Error:', error, 'Deadline:', enquiry.deadline, 'Type:', typeof enquiry.deadline, 'Is disabled:', isEnquiryDisabled(enquiry));
+                              return null;
+                            }
+                          })()}
+
+                          {/* Verification fallback — only if the top strip isn't already showing it */}
+                          {!((userProfiles[enquiry.userId]?.isProfileVerified ||
+                              enquiry.idFrontImage || enquiry.idBackImage ||
+                              enquiry.isProfileVerified || enquiry.userVerified)) && (
+                            ((userProfiles[enquiry.userId]?.isProfileVerified ||
+                              userProfiles[enquiry.userId]?.isVerified ||
+                              userProfiles[enquiry.userId]?.trustBadge ||
+                              userProfiles[enquiry.userId]?.isIdentityVerified) ||
+                              enquiry.idFrontImage || enquiry.idBackImage ||
+                              enquiry.isProfileVerified || enquiry.userVerified) && (
+                              <div className="mt-1.5 flex items-center justify-start">
+                                <div className={`flex h-3 w-3 items-center justify-center rounded-full sm:h-5 sm:w-5 ${
+                                  isEnquiryDisabled(enquiry) ? 'bg-gray-400' : 'bg-blue-600'
+                                }`}>
+                                  <Check className="h-1.5 w-1.5 text-white sm:h-3 sm:w-3" strokeWidth={3.5} />
+                                </div>
+                              </div>
+                            )
+                          )}
+                          <div className="mt-3 mt-auto">
                             {isOwnEnquiry(enquiry) ? (
-                              <button 
+                              <button
                                 type="button"
                                 disabled
-                                className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 sm:border-4 border-black text-white cursor-not-allowed transition-all duration-200 rounded-md sm:rounded-xl"
-                                style={{ backgroundColor: '#022c22' }}
+                                className="w-full h-10 rounded-xl bg-gray-100 text-[11px] sm:text-xs font-bold text-gray-500 cursor-not-allowed"
                               >
                                 Your Enquiry
                               </button>
                             ) : authUser ? (
                               isDealClosed(enquiry) ? (
-                                <Button variant="outline" size="sm" className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-md sm:rounded-xl" disabled>
+                                <Button variant="outline" size="sm" className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50 text-[11px] sm:text-xs font-semibold text-gray-500" disabled>
                                   Deal Closed
                                 </Button>
                               ) : isEnquiryOutdated(enquiry) ? (
-                                <Button variant="outline" size="sm" className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-bold border-2 border-gray-300 bg-gray-50 text-gray-500 transition-all duration-200 rounded-md sm:rounded-xl" disabled>
+                                <Button variant="outline" size="sm" className="w-full h-10 rounded-xl border border-gray-200 bg-gray-50 text-[11px] sm:text-xs font-semibold text-gray-500" disabled>
                                   Expired
                                 </Button>
                               ) : (
-                              <Button 
-                                className="w-full h-8 sm:h-10 text-[8px] sm:text-xs font-black !text-white !rounded-2xl !border-[1.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
+                              <Button
+                                className="w-full h-10 rounded-xl !bg-[#0b1b33] hover:!bg-[#12294d] !border-0 text-[10px] sm:text-[11px] font-bold !text-white transition-colors touch-manipulation select-none"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
-                                <span className="relative z-10 flex items-center">
+                                <span className="flex items-center gap-1.5">
+                                  <ArrowRight className="h-3 w-3" strokeWidth={2.6} />
                                   respond / sell / provide
-                                  <ArrowRight className="h-2 w-2 sm:h-3.5 sm:w-3.5 ml-1 sm:ml-2" />
                                 </span>
                               </Button>
                               )
                             ) : (
-                              <Link to="/signin">
-                                <Button className="w-full h-6 sm:h-10 text-[8px] sm:text-xs font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
-                                  {/* Top highlight overlay — same as Connect button */}
-                                  <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
-                                  {/* Shine sweep on hover — same as Connect button */}
-                                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
-                                  <span className="relative z-10">Sign In to Respond</span>
+                              <Link to="/signin" className="block">
+                                <Button className="w-full h-10 rounded-xl !bg-[#0b1b33] hover:!bg-[#12294d] !border-0 text-[10px] sm:text-[11px] font-bold !text-white transition-colors">
+                                  Sign In to Respond
                                 </Button>
                               </Link>
                             )}
                           </div>
+                          </>
                         )}
                       </CardContent>
                     </Card>
