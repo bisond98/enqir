@@ -6043,13 +6043,16 @@ export default function EnquiryWall() {
           {/* View Toggle */}
           <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div className="inline-flex items-center gap-1 sm:gap-2">
-              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px]">
-                {showTrustBadgeOnly 
-                  ? `${trustBadgeEnquiriesCount} number of trust badge buyers`
-                  : `${liveEnquiriesCount} real buyers waiting for the right seller` // 🛡️ PROTECTED TEXT - DO NOT MODIFY
-                }
-              </span>
+              {/* The "N real buyers waiting for the right seller" line is hidden;
+                  the trust-badge count still shows while that filter is on. */}
+              {showTrustBadgeOnly && (
+                <>
+                  <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px]">
+                    {trustBadgeEnquiriesCount} number of trust badge buyers
+                  </span>
+                </>
+              )}
             </div>
             <div className="flex items-center gap-2 sm:gap-3"></div>
           </div>
@@ -6764,9 +6767,9 @@ export default function EnquiryWall() {
 
                           {/* Location */}
                           {enquiry.location && (
-                            <div className="mt-2 flex items-start gap-1.5">
-                              <MapPin className="mt-[1px] h-2.5 w-2.5 flex-shrink-0 text-gray-400 sm:h-3 sm:w-3" strokeWidth={2.2} />
-                              <span className="text-[9px] font-medium leading-snug text-gray-600 sm:text-[10px]">
+                            <div className="mt-2 inline-flex max-w-full self-start items-center gap-1.5 rounded-lg border-[1.5px] border-gray-400 px-1.5 py-1">
+                              <MapPin className="h-2.5 w-2.5 flex-shrink-0 text-gray-500 sm:h-3 sm:w-3" strokeWidth={2.2} />
+                              <span className="truncate text-[9px] font-medium leading-snug text-gray-600 sm:text-[10px]">
                                 At {enquiry.location.length > 20 ? `${enquiry.location.slice(0, 20)}...` : enquiry.location}
                               </span>
                             </div>
@@ -6802,8 +6805,8 @@ export default function EnquiryWall() {
                               return (
                                 <div className="mt-1.5 flex items-center">
                                   <div className="flex min-w-0 items-center gap-1.5">
-                                    <Clock className="h-2.5 w-2.5 flex-shrink-0 text-gray-400 sm:h-3 sm:w-3" strokeWidth={2.2} />
-                                    <span className="truncate text-[9px] font-medium text-gray-600 sm:text-[10px]">
+                                    <Clock className="h-2.5 w-2.5 flex-shrink-0 text-gray-500 sm:h-3 sm:w-3" strokeWidth={2.2} />
+                                    <span className="truncate text-[9px] font-medium leading-snug text-gray-600 sm:text-[10px]">
                                       before {formatDate(deadlineDate.toISOString())}
                                     </span>
                                   </div>
