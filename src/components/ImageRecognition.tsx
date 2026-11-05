@@ -223,8 +223,7 @@ const ImageRecognition: React.FC<ImageRecognitionProps> = ({
       <CardContent className="space-y-4">
         {/* Image Preview */}
         <div className="relative">
-          <img 
-            src={imageUrl} 
+          <img loading="lazy" decoding="async" src={imageUrl} 
             alt={fileName}
             className="w-full h-48 object-cover rounded-lg border border-slate-200"
           />

@@ -29,7 +29,8 @@ import {
   Search,
   MessageCircle,
   ChevronRight,
-  MoreHorizontal
+  MoreHorizontal,
+  Check,
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { shortUserId } from '@/lib/userDisplayName';
@@ -828,7 +829,7 @@ const EnquiryDetail = () => {
                 enquiry.userProfileVerified ||
                 (enquiry as any).userVerified) && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/70">
-                  <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" /> Verified
+                  <CheckCircle className="h-3.5 w-3.5 text-blue-500" aria-hidden="true" />
                 </span>
               )}
               {enquiry.deadline && (
@@ -870,11 +871,26 @@ const EnquiryDetail = () => {
                         )}
                         <h1 className={`break-words font-heading font-extrabold tracking-[-0.02em] text-neutral-900 ${plainLayout ? 'mt-2 text-[32px] leading-[1.05]' : 'mt-2 text-[25px] leading-[1.15]'}`}>
                           {enquiry.title}
+                          {((userProfile?.isProfileVerified ||
+                             userProfile?.isVerified ||
+                             userProfile?.trustBadge ||
+                             userProfile?.isIdentityVerified) ||
+                            enquiry.idFrontImage ||
+                            enquiry.idBackImage ||
+                            enquiry.isProfileVerified ||
+                            enquiry.userProfileVerified ||
+                            (enquiry as any).userVerified) && (
+                            <span
+                              className="mb-1 ml-1.5 inline-flex h-[0.7em] w-[0.7em] shrink-0 items-center justify-center rounded-full bg-blue-500 align-baseline"
+                              aria-hidden="true"
+                            >
+                              <Check className="h-[0.52em] w-[0.52em] text-white" strokeWidth={3.5} />
+                            </span>
+                          )}
                         </h1>
                       </div>
                       {enquiry.referenceImages?.[0] && (
-                        <img
-                          src={enquiry.referenceImages[0]}
+                        <img decoding="async" src={enquiry.referenceImages[0]}
                           alt=""
                           loading="lazy"
                           className="h-[132px] w-[112px] shrink-0 rounded-xl object-cover sm:h-40 sm:w-36"
@@ -935,7 +951,7 @@ const EnquiryDetail = () => {
                       );
                       const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) => {
                         const isLogo = (icon === 'brand' || icon === 'mobileBrand' || icon === 'sneakerBrand') && !!logoUrl;
-                        if (isLogo) return <img src={logoUrl as string} alt="" className="h-[15px] w-[15px] shrink-0 rounded-full object-contain" loading="lazy" />;
+                        if (isLogo) return <img decoding="async" src={logoUrl as string} alt="" className="h-[15px] w-[15px] shrink-0 rounded-full object-contain" loading="lazy" />;
                         const glyph = icon === 'gear' ? <GearShifterIcon className="h-[10px] w-[10px]" />
                           : icon === 'fuel' ? <Fuel className="h-[10px] w-[10px]" />
                           : icon === 'calendar' ? <Calendar className="h-[10px] w-[10px]" />
@@ -945,14 +961,14 @@ const EnquiryDetail = () => {
                         return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-black bg-black text-white">{glyph}</span>;
                       };
                       return (
-                        <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mt-4 justify-center' : 'mt-3.5 justify-center'}`}>
+                        <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mt-6 justify-center' : 'mt-5 justify-center'}`}>
                           {chips.map((c: any) => (
                             c.big ? (
                               <span key={c.label || c.value} className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-red-600 px-3.5 py-[9px] text-[11px] font-bold uppercase tracking-[0.04em] text-white">
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-black/70 bg-white px-3 py-[7px] text-[12px] font-medium leading-none text-neutral-900">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-neutral-300 bg-white px-3 py-[7px] text-[12px] font-medium leading-none text-neutral-900">
                                 <ChipIcon icon={c.icon} logoUrl={c.logoUrl} />
                                 {c.label ? <span className="text-[8.5px] font-semibold uppercase tracking-[0.08em] text-neutral-400">{c.label}</span> : null}
                                 {c.value}
@@ -1165,7 +1181,7 @@ const EnquiryDetail = () => {
                     <div className={`flex min-w-0 items-center gap-2 ${plainLayout ? 'ml-auto mr-3 w-fit justify-end rounded-full border border-black bg-white px-2.5 py-1' : ''}`}>
                                           <span className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
                                             {posterProfile?.profilePicture ? (
-                                              <img src={posterProfile.profilePicture} alt="" className="h-full w-full object-cover" />
+                                              <img loading="lazy" decoding="async" src={posterProfile.profilePicture} alt="" className="h-full w-full object-cover" />
                                             ) : (
                                               <User className="h-3 w-3 text-white fill-white" />
                                             )}

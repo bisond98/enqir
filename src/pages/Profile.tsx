@@ -1040,7 +1040,7 @@ const Profile = () => {
                   className="relative w-20 h-20 rounded-full border-[1.5px] border-black bg-white overflow-hidden flex items-center justify-center disabled:opacity-60 shrink-0"
                 >
                   {photoUrl ? (
-                    <img src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
                     <User className="w-10 h-10 text-black" />
                   )}
@@ -2100,8 +2100,7 @@ const Profile = () => {
                 </>
               ) : (
                 <div className="relative w-full h-full flex items-center justify-center">
-                  <img
-                    src={capturedImage}
+                  <img loading="lazy" decoding="async" src={capturedImage}
                     alt="Captured ID"
                     className="max-w-full max-h-full object-contain"
                     style={{ maxHeight: isMobile ? '100%' : '80vh' }}

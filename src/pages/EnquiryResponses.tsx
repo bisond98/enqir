@@ -2872,7 +2872,7 @@ const EnquiryResponses = () => {
                             const otherPartyId = user && enquiry && selectedResponse && user.uid === enquiry.userId ? selectedResponse.sellerId : enquiry?.userId;
                             const otherPartyPic = otherPartyId ? userProfiles[otherPartyId]?.profilePicture : undefined;
                             return otherPartyPic ? (
-                              <img src={otherPartyPic} alt="" className="w-full h-full object-cover" />
+                              <img loading="lazy" decoding="async" src={otherPartyPic} alt="" className="w-full h-full object-cover" />
                             ) : (
                               <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
                             );
@@ -3220,8 +3220,7 @@ const EnquiryResponses = () => {
                                     <div key={attIndex}>
                                       {attachment.type.startsWith('image/') && (
                                         <div className="relative group">
-                                          <img
-                                            src={(attachment as any).base64}
+                                          <img loading="lazy" decoding="async" src={(attachment as any).base64}
                                             alt={attachment.name}
                                             className="max-w-[200px] max-h-[200px] rounded-lg object-cover cursor-pointer hover:opacity-90 transition-opacity"
                                             onClick={() => {
@@ -3758,8 +3757,7 @@ const EnquiryResponses = () => {
                                 <div key={index} className="flex items-center space-x-2 bg-white rounded-md border p-2 text-xs relative">
                                 {file.type.startsWith('image/') ? (
                                   <div className="flex items-center space-x-2">
-                                    <img
-                                      src={URL.createObjectURL(file)}
+                                    <img loading="lazy" decoding="async" src={URL.createObjectURL(file)}
                                       alt={file.name}
                                       className="w-8 h-8 rounded object-cover"
                                     />

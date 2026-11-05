@@ -1812,8 +1812,7 @@ const Admin = () => {
                                     <div className="grid grid-cols-2 gap-3">
                             {enquiry.idFrontImage && (
                                         <div className="relative group cursor-pointer">
-                                  <img 
-                                    src={enquiry.idFrontImage} 
+                                  <img loading="lazy" decoding="async" src={enquiry.idFrontImage} 
                                     alt="ID Front" 
                                             className="w-full h-20 sm:h-24 object-cover rounded-lg border border-gray-800 hover:opacity-80 transition-opacity"
                                     onClick={() => window.open(enquiry.idFrontImage, '_blank')}
@@ -1826,8 +1825,7 @@ const Admin = () => {
                             )}
                             {enquiry.idBackImage && (
                                         <div className="relative group cursor-pointer">
-                                  <img 
-                                    src={enquiry.idBackImage} 
+                                  <img loading="lazy" decoding="async" src={enquiry.idBackImage} 
                                     alt="ID Back" 
                                             className="w-full h-20 sm:h-24 object-cover rounded-lg border border-gray-800 hover:opacity-80 transition-opacity"
                                     onClick={() => window.open(enquiry.idBackImage, '_blank')}
@@ -2022,8 +2020,7 @@ const Admin = () => {
                                     <div className="grid grid-cols-2 gap-3">
                             {submission.idFrontImage && (
                                         <div className="relative group cursor-pointer">
-                                  <img 
-                                    src={submission.idFrontImage} 
+                                  <img loading="lazy" decoding="async" src={submission.idFrontImage} 
                                     alt="Seller ID Front" 
                                             className="w-full h-20 sm:h-24 object-cover rounded-lg border border-gray-200 hover:opacity-80 transition-opacity"
                                     onClick={() => window.open(submission.idFrontImage, '_blank')}
@@ -2036,8 +2033,7 @@ const Admin = () => {
                             )}
                             {submission.idBackImage && (
                                         <div className="relative group cursor-pointer">
-                                  <img 
-                                    src={submission.idBackImage} 
+                                  <img loading="lazy" decoding="async" src={submission.idBackImage} 
                                     alt="Seller ID Back" 
                                             className="w-full h-20 sm:h-24 object-cover rounded-lg border border-gray-200 hover:opacity-80 transition-opacity"
                                     onClick={() => window.open(submission.idBackImage, '_blank')}
@@ -2164,8 +2160,7 @@ const Admin = () => {
                                               <span className="text-[8px] font-bold text-white bg-blue-600 rounded-full px-2 py-0.5">Download</span>
                                             </div>
                                           ) : (
-                                            <img 
-                                              src={url} 
+                                            <img loading="lazy" decoding="async" src={url} 
                                               alt={`Product ${index + 1}`} 
                                               className="w-full h-16 sm:h-20 object-cover rounded-lg border-4 border-black hover:opacity-80 transition-opacity"
                                               onClick={() => window.open(url, '_blank')}
@@ -2193,8 +2188,7 @@ const Admin = () => {
                                         {submission.govIdType} • {submission.govIdNumber}
                             </p>
                                       <div className="relative group cursor-pointer w-fit">
-                              <img 
-                                src={submission.govIdUrl} 
+                              <img loading="lazy" decoding="async" src={submission.govIdUrl} 
                                 alt="Government ID" 
                                           className="w-24 sm:w-32 h-16 sm:h-20 object-cover rounded-lg border border-gray-200 hover:opacity-80 transition-opacity"
                                 onClick={() => window.open(submission.govIdUrl, '_blank')}
@@ -2668,8 +2662,7 @@ const Admin = () => {
                                 <div className="grid grid-cols-2 gap-3">
                         {profile.frontImageUrl && (
                                     <div className="relative group cursor-pointer">
-                            <img
-                              src={profile.frontImageUrl}
+                            <img loading="lazy" decoding="async" src={profile.frontImageUrl}
                               alt="ID Front"
                                         className="w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200 hover:opacity-80 transition-opacity"
                               onClick={() => window.open(profile.frontImageUrl, '_blank')}
@@ -2682,8 +2675,7 @@ const Admin = () => {
                         )}
                         {profile.backImageUrl && (
                                     <div className="relative group cursor-pointer">
-                            <img
-                              src={profile.backImageUrl}
+                            <img loading="lazy" decoding="async" src={profile.backImageUrl}
                               alt="ID Back"
                                         className="w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200 hover:opacity-80 transition-opacity"
                               onClick={() => window.open(profile.backImageUrl, '_blank')}
@@ -2781,8 +2773,7 @@ const Admin = () => {
                             <div className="grid grid-cols-2 gap-3">
                         {selectedEnquiry.idFrontImage && (
                                 <div className="relative group cursor-pointer">
-                            <img 
-                              src={selectedEnquiry.idFrontImage} 
+                            <img loading="lazy" decoding="async" src={selectedEnquiry.idFrontImage} 
                               alt="ID Front" 
                                     className="w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200 hover:opacity-80 transition-opacity"
                               onClick={() => window.open(selectedEnquiry.idFrontImage, '_blank')}
@@ -2795,8 +2786,7 @@ const Admin = () => {
                         )}
                         {selectedEnquiry.idBackImage && (
                                 <div className="relative group cursor-pointer">
-                            <img 
-                              src={selectedEnquiry.idBackImage} 
+                            <img loading="lazy" decoding="async" src={selectedEnquiry.idBackImage} 
                               alt="ID Back" 
                                     className="w-full h-24 sm:h-32 object-cover rounded-lg border border-gray-200 hover:opacity-80 transition-opacity"
                               onClick={() => window.open(selectedEnquiry.idBackImage, '_blank')}

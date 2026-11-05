@@ -3169,8 +3169,7 @@ export default function PostEnquiry() {
                                         ))}
                                       </select>
                                       {sneakerLogo && (
-                                        <img
-                                          src={sneakerLogo}
+                                        <img decoding="async" src={sneakerLogo}
                                           alt=""
                                           className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 object-contain pointer-events-none"
                                           loading="lazy"
@@ -3581,7 +3580,7 @@ export default function PostEnquiry() {
                           <div className="grid grid-cols-3 gap-2 mb-3">
                             {referenceImageUrls.map((url, i) => (
                               <div key={i} className="relative group">
-                                <img src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
+                                <img loading="lazy" decoding="async" src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
                                 <button
                                   type="button"
                                   onClick={() => removeReferenceImage(i)}

@@ -1253,8 +1253,7 @@ const EnquiryResponsesPage = () => {
             className="relative w-full h-full flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <img 
-              src={fullscreenImage} 
+            <img loading="lazy" decoding="async" src={fullscreenImage} 
               alt="Fullscreen view"
               className="w-full h-full object-contain sm:rounded-lg"
               style={{ 

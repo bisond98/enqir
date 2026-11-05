@@ -1867,7 +1867,7 @@ const SellerResponse = () => {
                       {images.map((url, i) => (
                         <div key={i} className="relative group">
                           {isHiringEnquiry && !/\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(url) ? (
-                            /* Resume/document attachment — icon tile, not an <img> */
+                            /* Resume/document attachment — icon tile, not an <img> tag */
                             <div className="w-full h-20 rounded-lg border border-black/10 bg-slate-100 flex flex-col items-center justify-center gap-0.5">
                               <FileText className="h-6 w-6 text-slate-600" />
                               <span className="text-[8px] font-semibold text-slate-600 truncate max-w-[90%] px-1">
@@ -1875,7 +1875,7 @@ const SellerResponse = () => {
                               </span>
                             </div>
                           ) : (
-                            <img src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
+                            <img loading="lazy" decoding="async" src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
                           )}
                           <button
                             type="button"
@@ -2174,8 +2174,7 @@ const SellerResponse = () => {
                 </>
               ) : (
                 <div className="relative w-full h-full flex items-center justify-center">
-                  <img
-                    src={capturedImage}
+                  <img loading="lazy" decoding="async" src={capturedImage}
                     alt="Captured ID"
                     className="max-w-full max-h-full object-contain"
                     style={{ maxHeight: isMobile ? '100%' : '80vh' }}

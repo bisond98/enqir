@@ -1266,8 +1266,7 @@ export default function CreateListing() {
                             ))}
                           </select>
                           {sneakerLogo && (
-                            <img
-                              src={sneakerLogo}
+                            <img decoding="async" src={sneakerLogo}
                               alt=""
                               className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 object-contain pointer-events-none"
                               loading="lazy"
@@ -1915,7 +1914,7 @@ export default function CreateListing() {
                     <div className="grid grid-cols-3 gap-2 mb-3">
                       {images.map((url, i) => (
                         <div key={i} className="relative group">
-                          <img src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
+                          <img loading="lazy" decoding="async" src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
                           <button
                             type="button"
                             onClick={() => removeImage(i)}
@@ -1990,7 +1989,7 @@ export default function CreateListing() {
                       <div className="rounded-2xl overflow-hidden border-2 border-black bg-white">
                         {hasPhoto ? (
                           <div className="relative">
-                            <img src={images[0]} alt="Listing" className="w-full h-40 sm:h-48 object-cover" />
+                            <img loading="lazy" decoding="async" src={images[0]} alt="Listing" className="w-full h-40 sm:h-48 object-cover" />
                             {images.length > 1 && (
                               <span className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-black rounded-full px-2 py-0.5">+{images.length - 1} more</span>
                             )}

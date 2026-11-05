@@ -634,7 +634,7 @@ export default function ListingChat() {
                     <div className="flex items-center space-x-1 sm:space-x-2.5 lg:space-x-3 min-w-0 flex-1">
                       <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 bg-white rounded-full flex items-center justify-center flex-shrink-0 border-[0.5px] border-black overflow-hidden">
                         {chatCounterpartProfile?.profilePicture ? (
-                          <img src={chatCounterpartProfile.profilePicture} alt="" className="w-full h-full object-cover" />
+                          <img loading="lazy" decoding="async" src={chatCounterpartProfile.profilePicture} alt="" className="w-full h-full object-cover" />
                         ) : (
                           <MessageSquare className="h-4 w-4 sm:h-4.5 sm:w-4.5 lg:h-5 lg:w-5 text-black" />
                         )}
@@ -780,7 +780,7 @@ export default function ListingChat() {
                               if ((att.type?.startsWith('image/') || att.type === 'image') && (att.base64 || att.url)) {
                                 return (
                                   <div key={`img-${i}`} className={bubbleClass}>
-                                    <img src={att.base64 || att.url} alt={att.name} className="max-w-[220px] max-h-[220px] rounded-lg object-cover" />
+                                    <img loading="lazy" decoding="async" src={att.base64 || att.url} alt={att.name} className="max-w-[220px] max-h-[220px] rounded-lg object-cover" />
                                   </div>
                                 );
                               }
@@ -868,7 +868,7 @@ export default function ListingChat() {
                           {attachments.map((file, index) => (
                             <div key={index} className="flex items-center space-x-2 bg-white rounded-md border p-2 text-xs relative">
                               {file.type.startsWith('image/') ? (
-                                <img src={URL.createObjectURL(file)} alt="" className="w-8 h-8 rounded object-cover" />
+                                <img loading="lazy" decoding="async" src={URL.createObjectURL(file)} alt="" className="w-8 h-8 rounded object-cover" />
                               ) : (
                                 <div className="w-8 h-8 bg-slate-100 rounded flex items-center justify-center">
                                   <File className="h-4 w-4 text-slate-600" />

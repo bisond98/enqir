@@ -725,8 +725,7 @@ export default function ListingDetail() {
         {listing.images && listing.images.length > 0 && (
           <div className="relative">
             <div className="relative w-full h-56 sm:h-72 lg:h-80 overflow-hidden bg-gray-100">
-              <img
-                src={listing.images[activeImage]}
+              <img loading="lazy" decoding="async" src={listing.images[activeImage]}
                 alt={listing.title}
                 className="w-full h-full object-cover"
                 onClick={() => setShowAllImages(true)}
@@ -761,7 +760,7 @@ export default function ListingDetail() {
                       idx === activeImage ? 'border-black shadow-[0_3px_0_0_rgba(0,0,0,0.2)]' : 'border-black/20 opacity-60'
                     }`}
                   >
-                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={url} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -922,7 +921,7 @@ export default function ListingDetail() {
                         {key === 'transmission' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Joystick className="h-2.5 w-2.5 text-white" /></span>}
                         {key === 'fuel' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Fuel className="h-2.5 w-2.5 text-white" /></span>}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">{label}:</span>}
-                        {brandLogo && <img src={brandLogo} alt="" className="h-3.5 w-3.5 object-contain flex-shrink-0" loading="lazy" />}
+                        {brandLogo && <img decoding="async" src={brandLogo} alt="" className="h-3.5 w-3.5 object-contain flex-shrink-0" loading="lazy" />}
                         {key === 'facing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Facing:</span>}
                         {key === 'furnishing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Furnishing:</span>}
                         {String(val)}
@@ -958,7 +957,7 @@ export default function ListingDetail() {
               <div className="mt-10 sm:mt-12 mb-4 flex items-center justify-end gap-1.5 pr-1">
                 <span className="w-9 h-9 rounded-full border-[1.5px] border-black overflow-hidden bg-white flex items-center justify-center flex-shrink-0">
                   {sellerProfile?.profilePicture ? (
-                    <img src={sellerProfile.profilePicture} alt="" className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={sellerProfile.profilePicture} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <User className="w-5 h-5 text-black" />
                   )}
@@ -1215,8 +1214,7 @@ export default function ListingDetail() {
             >
               <ChevronLeft className="h-5 w-5 text-white" />
             </button>
-            <img
-              src={listing.images[activeImage]}
+            <img loading="lazy" decoding="async" src={listing.images[activeImage]}
               alt={listing.title}
               className="max-w-full max-h-full object-contain"
             />
@@ -1353,7 +1351,7 @@ function MessageSellerInline({
             {attachedFiles.map((f: File, i: number) => (
               <div key={i} className="relative group flex flex-col">
                 {attachedPreviews[i] ? (
-                  <img src={attachedPreviews[i]} alt={f.name} className="w-14 h-14 object-cover rounded-lg border border-black/10" />
+                  <img loading="lazy" decoding="async" src={attachedPreviews[i]} alt={f.name} className="w-14 h-14 object-cover rounded-lg border border-black/10" />
                 ) : (
                   <div className="w-14 h-14 rounded-lg border border-black/10 bg-gray-50 flex items-center justify-center">
                     <span className="text-[8px] font-bold text-gray-500 text-center px-1 truncate w-full">{f.name.split('.').pop()?.toUpperCase()}</span>
