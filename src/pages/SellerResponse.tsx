@@ -1652,6 +1652,7 @@ const SellerResponse = () => {
                 <div className="relative">
                 <Input
                   id="title"
+                  maxLength={1000}
                   value={title}
                   readOnly
                   disabled
