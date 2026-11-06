@@ -52,10 +52,10 @@ export const BuyerCartoon = ({ className = "" }: { className?: string }) => (
 // plant, watch), a sunburst with a magnifier, waves and a sea of swirls. The
 // garland lines pass through the drawings, so the whole thing reads as one
 // growing drawing rather than a set of separate icons.
-const INK = '#111827';
-const BLUE = '#0055cc';
-const RED = '#dc2626';
-const GREEN = '#16a34a';
+const INK = '#5f6875';
+const BLUE = '#8e99a6';
+const RED = '#a6a2a0';
+const GREEN = '#8f9b93';
 
 // Outward spiral drawn as a chain of quarter arcs.
 const spiralPath = (cx: number, cy: number, step = 3, turns = 3) => {

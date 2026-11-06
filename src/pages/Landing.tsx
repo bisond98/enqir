@@ -2297,36 +2297,24 @@ const Landing = () => {
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center mb-6 sm:mb-16 animate-slide-up px-1 sm:px-0 relative" style={{ animationDelay: '0.4s', overflow: 'visible', zIndex: 10 }}>
             <div className="flex items-center justify-center gap-3 sm:gap-4">
             <Link to="/post-enquiry" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
-            <button className="w-40 h-40 sm:w-24 sm:h-24 border border-black bg-black text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative" style={{ overflow: 'visible' }}>
-              {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
-              {/* Shimmer effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+            <button className="w-40 h-40 sm:w-24 sm:h-24 border border-black bg-black text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 relative" style={{ overflow: 'visible' }}>
               <span className="text-[10px] leading-[1] relative z-10 text-center">Post a Need</span>
               <Plus className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
             </button>
           </Link>
           <Link to="/enquiries" className="w-auto group">
-            <button className="w-40 h-40 sm:w-24 sm:h-24 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative overflow-hidden">
-              {/* Physical button depth effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
-              {/* Shimmer effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+            <button className="w-40 h-40 sm:w-24 sm:h-24 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
               <span className="text-[10px] leading-[1] relative z-10 text-center">All Enquiries</span>
             </button>
             </Link>
             <Link to="/sell/new" className="w-auto group hidden md:block">
-              <button className="w-24 h-24 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <button className="w-24 h-24 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
                 <span className="text-[10px] leading-[1] relative z-10 text-center">Sell</span>
                 <Plus className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
               </button>
             </Link>
             <Link to="/sell/marketplace" className="w-auto group hidden md:block">
-              <button className="w-24 h-24 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <button className="w-24 h-24 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
                 <span className="text-[10px] leading-[1] relative z-10 text-center">For Sale</span>
               </button>
             </Link>
@@ -2334,28 +2322,19 @@ const Landing = () => {
             {/* Sell Row - Mobile Only */}
             <div className="flex items-center justify-center gap-3 sm:hidden">
               <Link to="/sell/new" className="w-auto group relative" style={{ overflow: 'visible', zIndex: 10 }}>
-              <button className="w-40 h-40 border border-black bg-black text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative" style={{ overflow: 'visible' }}>
-                {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <button className="w-40 h-40 border border-black bg-black text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 relative" style={{ overflow: 'visible' }}>
                 <span className="text-[10px] leading-[1] relative z-10">Sell</span>
                 <Plus className="h-4 w-4 group-hover:scale-110 transition-transform duration-200 relative z-10" />
               </button>
             </Link>
             {/* For Sale Button - Mobile Only */}
             <Link to="/sell/marketplace" className="w-auto group relative">
-              <button className="w-40 h-40 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(0,0,0,0.3)] relative overflow-hidden">
-                {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-transparent rounded-full pointer-events-none" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
+              <button className="w-40 h-40 border border-black bg-black hover:bg-gray-900 text-white font-black p-0 rounded-full flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden">
                 <span className="text-[10px] leading-[1] relative z-10">For Sale</span>
               </button>
             </Link>
             </div>
           </div>
-
           {/* Tagline above the desktop "Why Enqir" features grid — same style and
               distance as the "Post what you need & share" line (mobile copy sits
               above the shield heading further down, also in this style) */}

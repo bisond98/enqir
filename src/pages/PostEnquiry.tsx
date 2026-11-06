@@ -2524,15 +2524,15 @@ const DEADLINE_STEP = 5;
                 {(step >= 0 && step <= DEADLINE_STEP) && (
                   <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden">
                     {step === 2 ? (
-                      <DescriptionDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                      <DescriptionDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
                     ) : step === 3 ? (
-                      <LocationDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                      <LocationDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
                     ) : step === BUDGET_STEP ? (
-                      <BudgetDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                      <BudgetDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
                     ) : step === DEADLINE_STEP ? (
-                      <DeadlineDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                      <DeadlineDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
                     ) : (
-                      <MuralDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                      <MuralDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
                     )}
                   </div>
                 )}
