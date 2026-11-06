@@ -5519,7 +5519,7 @@ export default function EnquiryWall() {
                     setShowSuggestions(false);
                   }
                 }}>
-                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base !border-0 !rounded-2xl focus:!border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !transition-all !duration-150 !transform overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
+                  <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base !border-0 !rounded-2xl focus:!border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-[#0055cc] !text-white !transition-all !duration-150 !transform overflow-hidden font-bold [&>svg]:!text-white touch-manipulation">
                     <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                     <SelectValue placeholder="Categories" />
                   </SelectTrigger>
@@ -5534,7 +5534,7 @@ export default function EnquiryWall() {
               <div className="flex-1 relative">
                 <button
                   onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base !border-0 !rounded-2xl !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !transition-all !duration-150 !transform px-3 gap-1.5 overflow-hidden touch-manipulation"
+                  className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base !border-0 !rounded-2xl !bg-[#0055cc] !text-white !transition-all !duration-150 !transform px-3 gap-1.5 overflow-hidden touch-manipulation"
                 >
                   <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0 relative z-10" />
                   <span className="flex-1 text-center truncate text-white font-bold relative z-10">
@@ -6001,13 +6001,12 @@ export default function EnquiryWall() {
                 </button>
               )}
               <button
-                className="relative flex-1 h-[50px] sm:h-[54px] !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !rounded-2xl !font-black text-[15px] sm:text-base tracking-wide !transition-all !duration-150 !transform touch-manipulation select-none !relative !overflow-hidden group"
+                className="relative flex-1 h-[50px] sm:h-[54px] !bg-[#0055cc] !text-white !rounded-2xl !font-black text-[15px] sm:text-base tracking-wide !transition-all !duration-150 !transform touch-manipulation select-none !relative !overflow-hidden group"
                 onClick={() => {
                   submitSearch(searchTerm);
                 }}
               >
                 <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                 <span className="relative z-10 flex items-center justify-center"><Search className="h-4 w-4 mr-1.5" />Search</span>
               </button>            </div>
             </div>
