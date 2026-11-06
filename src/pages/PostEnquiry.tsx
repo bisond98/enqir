@@ -59,7 +59,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
-import { BuyerCartoon } from "@/components/doodles";
+import { MuralDoodles, DescriptionDoodles, LocationDoodles, BudgetDoodles, DeadlineDoodles } from "@/components/doodles";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -214,6 +214,8 @@ export default function PostEnquiry() {
   const { canPostEnquiry, incrementEnquiries, getRemainingEnquiries } = useUsage();
   const { createNotification } = useNotifications();
   const navigate = useNavigate();
+const BUDGET_STEP = 4;
+const DEADLINE_STEP = 5;
   const totalSteps = STEPS.length;
   const [step, setStep] = useState(() => {
     // If returning from profile verification, jump to last step
@@ -2516,7 +2518,24 @@ export default function PostEnquiry() {
                 </div>
               </div>
 
-              <CardContent className="pt-6 sm:pt-8 pb-6 flex flex-col">
+              <CardContent className="relative pt-6 sm:pt-8 pb-6 flex flex-col">
+                {/* Doodle watermark behind the tab content — one scene per tab,
+                    absolute so it adds no space and moves nothing. */}
+                {(step >= 0 && step <= DEADLINE_STEP) && (
+                  <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden">
+                    {step === 2 ? (
+                      <DescriptionDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                    ) : step === 3 ? (
+                      <LocationDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                    ) : step === BUDGET_STEP ? (
+                      <BudgetDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                    ) : step === DEADLINE_STEP ? (
+                      <DeadlineDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                    ) : (
+                      <MuralDoodles className="absolute inset-0 h-full w-full opacity-[0.09]" />
+                    )}
+                  </div>
+                )}
                 {/* Step Icon */}
                 <div id="step-top" className="scroll-mt-3">
                   <div className="mx-auto mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-black bg-black text-white">
@@ -2588,8 +2607,6 @@ export default function PostEnquiry() {
                   {/* Step 0: Title */}
                   {step === 0 && (
                     <div className="relative space-y-2 max-w-lg mx-auto w-full">
-                      {/* Single quiet line-art doodle — buyer seeking */}
-                      <BuyerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
                       <p className="text-[8px] font-bold text-black text-left tracking-wide">Need</p>
                       <div className="relative">
                       <Input
