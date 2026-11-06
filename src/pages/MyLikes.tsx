@@ -391,7 +391,7 @@ const MyLikes = () => {
               <button
                 type="button"
                 onClick={() => setDropdownOpen(v => !v)}
-                className="relative w-full h-16 sm:h-16 flex items-center text-base sm:text-lg !border-[1.5px] !border-black focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 font-black !rounded-2xl !overflow-hidden touch-manipulation select-none"
+                className="relative w-full h-16 sm:h-16 flex items-center text-base sm:text-lg !border-[1.5px] !border-black focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white transition-colors duration-150 font-black !rounded-2xl !overflow-hidden touch-manipulation select-none"
               >
                 <SlidersHorizontal className="h-4 w-4 sm:h-5 sm:w-5 ml-4 mr-2 text-white flex-shrink-0 relative z-10" />
                 <span className="flex-1 text-center truncate relative z-10">Categories</span>

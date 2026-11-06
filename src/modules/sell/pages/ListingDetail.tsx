@@ -11,9 +11,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-import { getListing, listResponsesForListing, createListingResponse } from '../services/sellDb';
+import { getListing, listResponsesForListing, createListingResponse, softDeleteListing } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
-import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, User, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck, Clock, MoreHorizontal, LayoutDashboard } from 'lucide-react';
+import { MapPin, Calendar, IndianRupee, MessageSquare, MessageCircle, ChevronLeft, ChevronRight, X, Send, UserCircle, User, ArrowLeft, Sparkles, CheckCircle, Mic, Paperclip, Play, Pause, AlertTriangle, Bookmark, Flag, Sofa, Joystick, Fuel, Phone, BadgeCheck, Clock, MoreHorizontal, LayoutDashboard, Trash2 } from 'lucide-react';
 import ShareButton from '../components/ShareButton';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { db } from '@/firebase';
@@ -90,6 +90,7 @@ export default function ListingDetail() {
 
   // Overflow (⋯) menu — holds Save & Flag under the share button
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [deletingListing, setDeletingListing] = useState(false);
   // Fixed screen coords for the ⋯ menu, so the card's overflow can't clip it.
   const [moreMenuPos, setMoreMenuPos] = useState<{ top: number; left: number } | null>(null);
   const moreBtnRef = useRef<HTMLButtonElement>(null);
@@ -134,6 +135,23 @@ export default function ListingDetail() {
     }).catch(() => {});
     return () => { cancelled = true; };
   }, [user?.uid, id]);
+
+  // Owner-only: delete straight from the ⋯ panel (same soft-delete the seller
+  // dashboard uses), then leave the page so the deleted listing is never shown.
+  const handleDeleteListing = async () => {
+    if (!listing || !isOwner || deletingListing) return;
+    const confirmed = window.confirm('Delete this listing? It will be removed from the marketplace.');
+    if (!confirmed) return;
+    setDeletingListing(true);
+    try {
+      await softDeleteListing(listing.id);
+      toast({ title: 'Listing deleted', description: 'Your listing has been removed from the marketplace.' });
+      navigate('/sell/dashboard', { replace: true });
+    } catch (error) {
+      setDeletingListing(false);
+      toast({ title: 'Could not delete listing', description: friendlyError(error), variant: 'destructive' });
+    }
+  };
 
   const toggleSave = async () => {
     if (!user || !id) { setSaved(v => !v); return; }
@@ -989,7 +1007,7 @@ export default function ListingDetail() {
                         return;
                       }
                       const width = 192;
-                      const menuHeight = 176; // 3 rows incl. padding
+                      const menuHeight = 176; // 3 rows incl. padding (owner: Save / Panel / Delete)
                       const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8));
                       const opensUp = rect.bottom + menuHeight + 8 > window.innerHeight && rect.top > menuHeight + 8;
                       const desiredTop = opensUp ? rect.top - menuHeight - 6 : rect.bottom + 6;
@@ -1037,6 +1055,17 @@ export default function ListingDetail() {
                         <LayoutDashboard className="h-4 w-4 flex-shrink-0" />
                         Panel
                       </button>
+                      {isOwner && listing && (
+                        <button
+                          onClick={handleDeleteListing}
+                          disabled={deletingListing}
+                          aria-label="Delete listing"
+                          className="w-full flex items-center gap-2.5 px-3.5 py-3 text-left text-xs font-bold text-red-600 hover:bg-red-50 border-b border-slate-200 transition-colors min-h-[44px] disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          <Trash2 className="h-4 w-4 flex-shrink-0" />
+                          {deletingListing ? 'Deleting…' : 'Delete listing'}
+                        </button>
+                      )}
                       {!isOwner && listing?.sellerId && (
                         <button
                           onClick={() => { setMoreMenuOpen(false); navigate(`/report-user/${listing.sellerId}?listingId=${listing.id}`); }}
@@ -1066,11 +1095,9 @@ export default function ListingDetail() {
                   )}
                   <Button
                     variant="outline"
-                    className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 !shadow-[0_8px_0_0_rgba(22,163,74,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_8px_0_0_rgba(22,163,74,0.35),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(22,163,74,0.3)] active:!translate-y-[4px] !transition-all !duration-200 !transform !relative !overflow-hidden group"
+                    className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 transition-colors duration-150"
                     onClick={() => setScamAlertPending({ action: 'chat' })}
                   >
-                    <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
-                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                     <MessageSquare className="h-4 w-4 mr-2 relative z-10" />
                     <span className="relative z-10">Continue Messaging</span>
                   </Button>

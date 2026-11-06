@@ -99,6 +99,9 @@ export default function EnquiryWall() {
   // / "slow connection" state instead of the fake "No enquiries found".
   const [firstSnapshotArrived, setFirstSnapshotArrived] = useState(false);
   const [fetchStalled, setFetchStalled] = useState(false);
+  // Bumped by the stalled-state retry so the live listener re-attaches in
+  // place instead of reloading the app and re-downloading everything.
+  const [fetchKey, setFetchKey] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -470,6 +473,11 @@ export default function EnquiryWall() {
     };
   }, [playTickSound]);
 
+  const retryEnquiriesFetch = () => {
+    setFetchStalled(false);
+    setFetchKey((k) => k + 1);
+  };
+
   // Load enquiries with real-time updates (with error handling)
   useEffect(() => {
     setLoading(true);
@@ -706,14 +714,14 @@ export default function EnquiryWall() {
     const watchdog = setTimeout(() => {
       setLoading((prev) => (prev ? false : prev));
       setFetchStalled(true);
-    }, 8000);
+    }, 25000);
 
     // Cleanup subscription on unmount
     return () => {
       clearTimeout(watchdog);
       if (unsubscribe) unsubscribe();
     };
-  }, []);
+  }, [fetchKey]);
 
   // Fetch user profiles for all enquiry owners to show trust badges (optimized with batching)
   useEffect(() => {
@@ -6868,7 +6876,7 @@ export default function EnquiryWall() {
                               )
                             ) : (
                               <Link to="/signin" className="block">
-                                <Button className="w-full h-10 rounded-xl !bg-[#0b1b33] hover:!bg-[#12294d] !border-0 text-[10px] sm:text-[11px] font-bold !text-white transition-colors">
+                                <Button className="w-full h-10 rounded-xl !bg-[#0b1b33] hover:!bg-[#12294d] !border !border-black text-[10px] sm:text-[11px] font-bold !text-white transition-colors">
                                   Sign In to Respond
                                 </Button>
                               </Link>
@@ -6925,7 +6933,7 @@ export default function EnquiryWall() {
                     : "Fetching the latest live enquiries"}
                 </p>
                 {fetchStalled && (
-                  <Button variant="outline" onClick={() => window.location.reload()}>
+                  <Button variant="outline" onClick={retryEnquiriesFetch}>
                     Try again
                   </Button>
                 )}

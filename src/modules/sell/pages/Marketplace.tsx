@@ -763,7 +763,7 @@ export default function Marketplace() {
         <div className="flex gap-2">
           <div className="flex-1">
             <Select value={category} onValueChange={(v) => { setCategory(v); }}>
-              <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base !border-0 !rounded-2xl focus:!border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_5px_0_0_#002b6e,0_9px_18px_rgba(0,0,0,0.28)] hover:!shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_6px_0_0_#002b6e,0_12px_22px_rgba(0,0,0,0.32)] hover:!-translate-y-[1px] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_0_#002b6e,0_3px_6px_rgba(0,0,0,0.22)] active:!translate-y-[4px] !transition-all !duration-150 !transform overflow-hidden font-bold touch-manipulation">
+              <SelectTrigger className="relative h-[50px] sm:h-[54px] text-sm sm:text-base !border-0 !rounded-2xl focus:!border-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !duration-150 overflow-hidden font-bold touch-manipulation transition-colors duration-150">
                 <SlidersHorizontal className="h-3.5 w-3.5 mr-1.5 text-white" />
                 <SelectValue placeholder="Categories" />
               </SelectTrigger>
@@ -783,7 +783,7 @@ export default function Marketplace() {
           <div className="flex-1 relative">
             <button
               onClick={() => setLocPopupOpen(!locPopupOpen)}
-              className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base !border-0 !rounded-2xl !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_5px_0_0_#002b6e,0_9px_18px_rgba(0,0,0,0.28)] hover:!shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_6px_0_0_#002b6e,0_12px_22px_rgba(0,0,0,0.32)] hover:!-translate-y-[1px] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_0_#002b6e,0_3px_6px_rgba(0,0,0,0.22)] active:!translate-y-[4px] !transition-all !duration-150 !transform px-3 gap-1.5 overflow-hidden touch-manipulation"
+              className="relative w-full h-[50px] sm:h-[54px] flex items-center text-sm sm:text-base !border-0 !rounded-2xl !bg-[#0055cc] hover:!bg-[#0047ab] !text-white transition-colors duration-150 px-3 gap-1.5 overflow-hidden touch-manipulation"
             >
               <MapPin className="h-3.5 w-3.5 text-white flex-shrink-0" />
               <span className="flex-1 text-center truncate text-white font-bold">
@@ -1022,7 +1022,7 @@ export default function Marketplace() {
           )}
         {/* Search button — original flex-1 position, restyled only */}
           <button
-            className="relative flex-1 h-[50px] sm:h-[54px] !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !rounded-2xl !font-black text-[15px] sm:text-base tracking-wide !shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_5px_0_0_#002b6e,0_9px_18px_rgba(0,0,0,0.28)] hover:!shadow-[inset_0_1px_2px_rgba(255,255,255,0.35),0_6px_0_0_#002b6e,0_12px_22px_rgba(0,0,0,0.32)] hover:!-translate-y-[1px] active:!shadow-[inset_0_2px_5px_rgba(0,0,0,0.30),0_1px_0_0_#002b6e,0_3px_6px_rgba(0,0,0,0.22)] active:!translate-y-[4px] !transition-all !duration-150 !transform touch-manipulation select-none disabled:!opacity-50"
+            className="relative flex-1 h-[50px] sm:h-[54px] !bg-[#0055cc] hover:!bg-[#0047ab] !text-white !rounded-2xl !font-black text-[15px] sm:text-base tracking-wide !duration-150 touch-manipulation select-none disabled:!opacity-50 transition-colors duration-150"
             onClick={() => load()}
             disabled={!canSearch || loading}
           >
