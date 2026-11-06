@@ -346,10 +346,10 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
     // On form routes, a second crash means the restore keeps breaking —
     // send the user to the homepage (a form can't safely restore mid-fill).
     if (isFormRoute(window.location.pathname)) {
-      window.location.href = 'https://www.enqir.in';
+      window.location.replace('https://www.enqir.in/?_cb=' + Date.now());
       return;
     }
-    window.location.href = window.location.pathname + '?_r=' + Date.now();
+    window.location.replace(window.location.pathname + '?_cb=' + Date.now());
   };
 
   render() {
