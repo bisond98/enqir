@@ -95,11 +95,17 @@
           document.body.appendChild(d);
         }
         // Resource-load failures (script/link tags) fire as capture-phase errors.
+        // Only the app's OWN bundle counts: a blocked third-party stylesheet
+        // (Google Fonts, ad blockers, flaky mobile networks) must never hide
+        // the app behind this card. And if React already mounted, never cover it.
         window.addEventListener('error', function (e) {
           var t = e.target;
-          if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) {
-            showRefreshScreen();
-          }
+          if (!t || (t.tagName !== 'SCRIPT' && t.tagName !== 'LINK')) return;
+          var url = t.src || t.href || '';
+          if (url.indexOf('/assets/') === -1) return;
+          var root = document.getElementById('root');
+          if (root && root.childElementCount > 0) return;
+          showRefreshScreen();
         }, true);
       })();
     </script>
