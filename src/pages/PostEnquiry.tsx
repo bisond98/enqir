@@ -2562,9 +2562,9 @@ const DEADLINE_STEP = 5;
                     >
                       <defs>
                         <linearGradient id="brushSwashStep" x1="0" y1="0" x2="1" y2="0.6">
-                          <stop offset="0%" stopColor="#eceef0" />
-                          <stop offset="50%" stopColor="#e4e7ea" />
-                          <stop offset="100%" stopColor="#dcdfE3" />
+                          <stop offset="0%" stopColor={STEPS[step].key === 'deadline' ? '#fecaca' : '#bfdbfe'} />
+                          <stop offset="50%" stopColor={STEPS[step].key === 'deadline' ? '#fca5a5' : '#a9cdfb'} />
+                          <stop offset="100%" stopColor={STEPS[step].key === 'deadline' ? '#f87171' : '#93c5fd'} />
                         </linearGradient>
                       </defs>
                       <path
@@ -2580,7 +2580,7 @@ const DEADLINE_STEP = 5;
                       />
                       <path
                         d="M60 150 C 170 118, 330 96, 520 108"
-                        stroke="#f2f3f5"
+                        stroke={STEPS[step].key === 'deadline' ? '#fee2e2' : '#e0effe'}
                         strokeWidth="16"
                         strokeLinecap="round"
                         fill="none"
@@ -2588,7 +2588,7 @@ const DEADLINE_STEP = 5;
                       />
                       <path
                         d="M96 182 C 180 194, 300 192, 420 178"
-                        stroke="#d2d6da"
+                        stroke={STEPS[step].key === 'deadline' ? '#dc2626' : '#6ea8e6'}
                         strokeWidth="5"
                         strokeLinecap="round"
                         fill="none"

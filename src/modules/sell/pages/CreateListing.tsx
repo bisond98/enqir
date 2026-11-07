@@ -970,9 +970,9 @@ export default function CreateListing() {
               >
                 <defs>
                   <linearGradient id="brushSwashSell" x1="0" y1="0" x2="1" y2="0.6">
-                    <stop offset="0%" stopColor="#eceef0" />
-                    <stop offset="50%" stopColor="#e4e7ea" />
-                    <stop offset="100%" stopColor="#dcdfE3" />
+                    <stop offset="0%" stopColor="#bfdbfe" />
+                    <stop offset="50%" stopColor="#a9cdfb" />
+                    <stop offset="100%" stopColor="#93c5fd" />
                   </linearGradient>
                 </defs>
                 <path
@@ -988,7 +988,7 @@ export default function CreateListing() {
                 />
                 <path
                   d="M60 150 C 170 118, 330 96, 520 108"
-                  stroke="#f2f3f5"
+                  stroke="#e0effe"
                   strokeWidth="16"
                   strokeLinecap="round"
                   fill="none"
@@ -996,7 +996,7 @@ export default function CreateListing() {
                 />
                 <path
                   d="M96 182 C 180 194, 300 192, 420 178"
-                  stroke="#d2d6da"
+                  stroke="#6ea8e6"
                   strokeWidth="5"
                   strokeLinecap="round"
                   fill="none"
