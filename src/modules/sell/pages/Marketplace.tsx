@@ -250,8 +250,10 @@ export default function Marketplace() {
   const [mapPickerOpen, setMapPickerOpen] = useState(false);
   const locPopupRef = useRef<HTMLDivElement>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  // `silent` = background refresh (focus/timer): refresh the grid in place
+  // without flashing the loading spinner over results the user is reading.
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       // AI NL-search family: car ↔ vehicles share one bucket so neither hides the other
@@ -283,7 +285,7 @@ export default function Marketplace() {
       setError(err?.message || 'Failed to load listings');
       return false;
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [search, category, location]);
 
@@ -299,7 +301,7 @@ export default function Marketplace() {
       if (document.hidden || loadInFlightRef.current) return;
       loadInFlightRef.current = true;
       try {
-        await loadRef.current();
+        await loadRef.current(true);
       } finally {
         loadInFlightRef.current = false;
       }

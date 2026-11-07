@@ -12,6 +12,13 @@
 
 import { db } from '@/firebase';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { withTimeout } from '@/lib/firestoreSafe';
+
+// A stalled Firestore read used to leave this promise (and its `inflight`
+// entry) pending forever, so every later page shared the same dead promise
+// and names / trust badges never appeared again until a full browser restart.
+// Bounding the reads makes the batch fail fast and fall back instead.
+const PROFILE_READ_TIMEOUT_MS = 10000;
 
 export type ProfileMap = Record<string, any>;
 
@@ -81,7 +88,7 @@ export async function fetchProfileByUid(uid: string): Promise<any | null> {
   const hit = getCachedProfile(uid);
   if (hit !== null) return hit;
   try {
-    const snap = await getDoc(doc(db, 'userProfiles', uid));
+    const snap = await withTimeout(getDoc(doc(db, 'userProfiles', uid)), PROFILE_READ_TIMEOUT_MS, 'Profile read');
     const data = snap.exists() ? snap.data() : null;
     const entry = { data, at: Date.now() };
     cache.set(uid, entry);
@@ -96,8 +103,11 @@ async function batchQuery(batch: string[]): Promise<ProfileMap> {
   const key = `in:${batch.join(',')}`;
   let promise = inflight.get(key);
   if (!promise) {
-    promise = getDocs(query(collection(db, 'userProfiles'), where('userId', 'in', batch)))
-      .finally(() => inflight.delete(key));
+    promise = withTimeout(
+      getDocs(query(collection(db, 'userProfiles'), where('userId', 'in', batch))),
+      PROFILE_READ_TIMEOUT_MS,
+      'Profile batch read',
+    ).finally(() => inflight.delete(key));
     inflight.set(key, promise);
   }
   const snap = await promise;
@@ -114,8 +124,10 @@ async function fallbackDocRead(batch: string[]): Promise<ProfileMap> {
   const out: ProfileMap = {};
   await Promise.all(batch.map(async (uid) => {
     try {
-      let snap = await getDoc(doc(db, 'userProfiles', uid));
-      if (!snap.exists()) snap = await getDoc(doc(db, 'profiles', uid));
+      let snap = await withTimeout(getDoc(doc(db, 'userProfiles', uid)), PROFILE_READ_TIMEOUT_MS, 'Profile read');
+      if (!snap.exists()) {
+        snap = await withTimeout(getDoc(doc(db, 'profiles', uid)), PROFILE_READ_TIMEOUT_MS, 'Profile read');
+      }
       out[uid] = snap.exists() ? snap.data() : null;
     } catch {
       out[uid] = null;

@@ -460,7 +460,15 @@ export default function Layout({ children, showNavigation = true }: { children: 
     let isMounted = true;
     const LIKE_READ_KEY = `likes_feed_read_${user.uid}`;
 
+    // Every route mounts its own <Layout>, and each of the two listeners below
+    // fires its initial snapshot right after that — which used to mean three
+    // full-collection reads per collection on EVERY navigation. A short
+    // leading-edge throttle collapses that burst into one pass while leaving
+    // real-time updates (which arrive seconds later) untouched.
+    let lastComputeAt = 0;
     const computeBadge = async () => {
+      if (Date.now() - lastComputeAt < 1500) return;
+      lastComputeAt = Date.now();
       try {
         // Fetch the user's liked categories
         const userSnap = await getDoc(doc(db, 'users', user.uid));

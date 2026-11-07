@@ -15,6 +15,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import type { SellListing, SellListingResponse } from '../types';
+import { withTimeout } from '@/lib/firestoreSafe';
 
 const LISTINGS_COLLECTION = 'sell_listings';
 const RESPONSES_COLLECTION = 'sell_listing_responses';
@@ -175,22 +176,44 @@ export async function listMarketplace(params: {
   //    in milliseconds even on a cold/slow connection or when offline, which
   //    is exactly the "re-enter the browser and nothing loads" case. Never
   //    throws: an empty/absent cache simply falls through to the server read.
-  if (params.onCache) {
-    try {
-      const cacheSnap = await getDocsFromCache(q);
-      if (!cacheSnap.empty) {
-        const cached = cacheSnap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
-        params.onCache(applyFilters(cached));
-      }
-    } catch {
-      // No persisted cache yet (first visit / evicted) — server path below.
-    }
-  }
+  //
+  //    This read is started but NOT awaited before the server query: a
+  //    stalled/leased IndexedDB (multi-tab cache, evicted store) used to hang
+  //    here forever, which meant the server read below never even started and
+  //    the grid sat empty behind the spinner until a browser restart.
+  let cachedResults: SellListing[] | null = null;
+  // Flipped once the authoritative read lands, so a slow cache pass can't
+  // paint stale rows over fresher ones.
+  let serverSettled = false;
+  const cacheRead: Promise<void> = params.onCache
+    ? getDocsFromCache(q)
+        .then((cacheSnap) => {
+          if (cacheSnap.empty || serverSettled) return;
+          const cached = cacheSnap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
+          cachedResults = applyFilters(cached);
+          params.onCache!(cachedResults);
+        })
+        .catch(() => {
+          // No persisted cache yet (first visit / evicted) — server path below.
+        })
+    : Promise.resolve();
 
   // 2) Authoritative server read (or cache fallback when offline) refreshes
-  //    the instantly-painted data with what's current.
-  const snap = await getDocs(q);
-  const serverListings = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
+  //    the instantly-painted data with what's current. Bounded so a stuck
+  //    long-poll surfaces as an error/retry instead of an endless spinner.
+  let serverListings: SellListing[];
+  try {
+    const snap = await withTimeout(getDocs(q), 12000, 'Marketplace listings read');
+    serverSettled = true;
+    serverListings = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
+  } catch (error) {
+    serverSettled = true;
+    // Give the cache pass a moment to land, then show whatever it had rather
+    // than failing the page outright.
+    await withTimeout(cacheRead, 3000, 'Marketplace cache read').catch(() => undefined);
+    if (cachedResults && cachedResults.length > 0) return cachedResults;
+    throw error;
+  }
   return applyFilters(serverListings);
 }
 

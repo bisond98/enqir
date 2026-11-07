@@ -546,8 +546,10 @@ export default function EnquiryWall() {
     // Start bounded, fall back to legacy chains on any query error
     attach(enquiriesQueryBounded, tryWithoutOrder);
     
-    // Process enquiries data
-    const processEnquiries = (snapshot: any) => {
+    // Process enquiries data — declared as a hoisted function (not a const) so
+    // a snapshot delivered while this effect is still running can never hit a
+    // temporal-dead-zone ReferenceError and leave the page loading forever.
+    function processEnquiries(snapshot: any) {
       try {
         const allEnquiriesData = snapshot.docs.map((doc: any) => {
           const data = doc.data();
@@ -699,7 +701,7 @@ export default function EnquiryWall() {
         setLoading(false);
         setFetchStalled(true);
       }
-    };
+    }
     
     // (Legacy `tryWithoutOrder()` used to be re-invoked here, which
     //  immediately unsubscribed the bounded listener above and re-attached the
@@ -708,13 +710,13 @@ export default function EnquiryWall() {
     //  query is now the one and only primary; the legacy chain below still
     //  engages automatically if it ever errors.)
 
-    // ⏱️ Watchdog: if no snapshot arrives within 12s (stuck long-poll, blocked
+    // ⏱️ Watchdog: if no snapshot arrives within 15s (stuck long-poll, blocked
     // network, or corrupted IndexedDB cache), stop the spinner instead of
     // spinning forever. A live onSnapshot still swaps results in when it lands.
     const watchdog = setTimeout(() => {
       setLoading((prev) => (prev ? false : prev));
       setFetchStalled(true);
-    }, 25000);
+    }, 15000);
 
     // Cleanup subscription on unmount
     return () => {
