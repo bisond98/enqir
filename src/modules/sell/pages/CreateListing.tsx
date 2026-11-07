@@ -22,6 +22,7 @@ import { MapLocationPickerLazy as MapLocationPicker } from '@/components/MapLoca
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES } from '../categoryDetails';
+import { titleHintsFor } from '../titleHints';
 import { CleaningTypeMultiSelect } from '@/components/CleaningTypeMultiSelect';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { SellerCartoon } from '@/components/doodles';
@@ -230,21 +231,6 @@ const withinDescLimit = (text: string) => text.length <= MAX_DESC_CHARS && count
 // filter, detail-page countdown) is category-agnostic — it only reads the
 // `deadline` field on the doc, so adding a category here is all it takes.
 const DEADLINE_CATEGORIES = new Set(['food-beverage', 'jobs', 'agriculture-farming']);
-
-// Rotating listing-title placeholder hints — real product examples across categories,
-// rolled down by the same kw-roll-down/kw-roll-out animations as the marketplace search bar
-const TITLE_HINTS: string[] = [
-  'e.g., iPhone 13 Pro 128 GB Black',
-  'e.g., 1 acre farming land',
-  'e.g., Diesel Royal Enfield 350',
-  'e.g., 2012 Toyota Innova Crysta',
-  'e.g., MacBook Air M2 256 GB',
-  'e.g., 3 BHK flat for rent',
-  'e.g., Teak wood double bed',
-  'e.g., Samsung 55" 4K smart TV',
-  'e.g., 22K gold necklace set',
-  'e.g., Hero Splendor 2019 model',
-];
 
 export default function CreateListing() {
   const { user, isProfileVerified, loading: authLoading, savedPhone, savedFullName, savedUsername } = useAuth();
@@ -952,6 +938,26 @@ export default function CreateListing() {
             <StepIcon active />
           </div>
 
+          {/* Picked category — carried on every step after the Category tab so the
+              seller can see what the form is being filled in for. */}
+          {step > 0 && selectedCats.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-1.5 -mb-1">
+              {selectedCats.map((catValue) => {
+                const catLabel = SELL_CATEGORIES.find((c) => c.value === catValue)?.label ?? catValue;
+                const Icon = CATEGORY_ICON[catValue] ?? LayoutGrid;
+                return (
+                  <span
+                    key={catValue}
+                    className="inline-flex items-center gap-1 rounded-full border-[1.5px] border-black/60 bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-black"
+                  >
+                    <Icon className="h-3 w-3 flex-shrink-0" strokeWidth={2} />
+                    {catLabel}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+
           <div id="step-title" className="text-center pt-4 mb-4">
             {/* Title styled like the "Enqir" wordmark on the phone sign-in page:
                 brush-swash stroke behind the text, no pill/background */}
@@ -1004,15 +1010,13 @@ export default function CreateListing() {
           <div key={step} className="space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
             {step === 0 && (() => {
               const filteredCats = filterCategoriesBySearch(SELL_CATEGORIES, catSearch);
-              // Selected categories float to the top (stable sort keeps the rest in order)
-              const sortedCats = [...filteredCats].sort((a, b) =>
-                Number(selectedCats.includes(b.value)) - Number(selectedCats.includes(a.value))
-              );
+              // Every category keeps its place in the grid — picking one only lights
+              // it up as selected, it never jumps to the top.
               const isSearching = catSearch.trim().length > 0;
-              const totalPages = Math.ceil(sortedCats.length / CATS_PER_PAGE);
+              const totalPages = Math.ceil(filteredCats.length / CATS_PER_PAGE);
               const paginatedCats = isSearching
-                ? sortedCats
-                : sortedCats.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
+                ? filteredCats
+                : filteredCats.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
               return (
                 <div className="max-w-2xl mx-auto w-full">
                   {/* Search bar */}
@@ -1164,26 +1168,30 @@ export default function CreateListing() {
                   maxLength={1000}
                   autoFocus
                 />
-                {/* Rotating placeholder — dull product examples roll down inside the input box every 3s */}
-                {!title && (
-                  <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-2xl" aria-hidden="true">
-                    {titleHintIdx > 0 && (
-                      <span key={`title-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
-                        {TITLE_HINTS[(titleHintIdx - 1 + TITLE_HINTS.length) % TITLE_HINTS.length]}
+                {/* Rotating placeholder — dull examples roll down inside the input box every 3s;
+                    Vehicles rolls truck / earthmover / tractor models instead of product examples */}
+                {!title && (() => {
+                  const hints = titleHintsFor(category);
+                  return (
+                    <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-2xl" aria-hidden="true">
+                      {titleHintIdx > 0 && (
+                        <span key={`title-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                          {hints[(titleHintIdx - 1 + hints.length) % hints.length]}
+                        </span>
+                      )}
+                      <span key={`title-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                        {hints[titleHintIdx % hints.length]}
                       </span>
-                    )}
-                    <span key={`title-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
-                      {TITLE_HINTS[titleHintIdx % TITLE_HINTS.length]}
-                    </span>
-                  </div>
-                )}
+                    </div>
+                  );
+                })()}
                 </div>
                 {fieldsForCategoryStep(category, 'title').length > 0 && (
                   <div className="flex flex-wrap items-center justify-end gap-3 -mt-1 mb-5">
                     {fieldsForCategoryStep(category, 'title').map((f) => {
                       return (
                       <div key={f.key} className="relative w-[48%]" style={f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
-                        {f.key !== 'brand' && f.key !== 'storage' && f.key !== 'repairType' && f.key !== 'transmission' && !(category === 'car' && f.key === 'year') && (
+                        {f.key !== 'brand' && f.key !== 'storage' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
                           <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
                         )}
                         {f.typeable ? (
@@ -1699,10 +1707,11 @@ export default function CreateListing() {
                 </div>
                 )}
 
-                {/* Product condition grade + visible damage. Shown on every
-                    product category's Condition step — including categories where
-                    the New/Used chips are hidden — so the step is never blank. */}
-                {category !== 'jobs' && (
+                {/* Product condition grade + visible damage. These grades (with
+                    tags, like new, vintage, wear %) are built for Thrift, so they
+                    stay on Thrift's Condition step only. Every other category —
+                    vehicles included — keeps just its New/Used chips. */}
+                {category === 'thrift' && (
                   <div className="space-y-2">
                     <div className="relative">
                       <select

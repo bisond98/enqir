@@ -3,7 +3,7 @@
 // so inputs never overcrowd — they slot into the existing flow.
 // Values are stored as a flat `details` map on the listing document.
 
-import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS } from './categoryBrands';
+import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from './categoryBrands';
 import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES } from '@/constants/categories';
 import { THRIFT_GENDERS, THRIFT_TYPES } from '@/constants/thriftClothing';
 
@@ -139,7 +139,10 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'registrationState', label: 'Registration state', type: 'select', options: REGISTRATION_STATES, placeholder: 'Registration state (e.g., KL, TN)', step: 'details' },
   ],
   vehicles: [
-    { key: 'brand', label: 'Brand', type: 'select', options: CAR_BRANDS, placeholder: 'Select brand', step: 'title' },
+    // Vehicle type (truck, lorry, pickup, tractor …) sits before Brand, then the
+    // maker list covers cars, trucks, earthmovers and tractors.
+    { key: 'vehicleType', label: 'Type', type: 'select', options: VEHICLE_TYPES, placeholder: 'Select type', step: 'title' },
+    { key: 'brand', label: 'Brand', type: 'select', options: VEHICLE_BRANDS, placeholder: 'Select brand', step: 'title' },
     { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year', typeable: true, step: 'title' },
     { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'title' },
     { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },

@@ -904,6 +904,9 @@ export default function ListingDetail() {
                     ownership: '',
                     accidentHistory: 'Accident history',
                     registrationState: 'Registration',
+                    // Vehicles — type picked on the Title step, then the maker
+                    vehicleType: 'Type',
+                    variant: 'Variant',
                     brand: 'Brand',
                     mobileBrand: 'Brand',
                     ram: 'RAM',
@@ -918,6 +921,11 @@ export default function ListingDetail() {
                     salaryPeriod: 'Salary',
                     experience: 'Experience required',
                     cleaningTypes: 'Cleaning',
+                    jobType: 'Job type',
+                    workMode: 'Work mode',
+                    serviceMode: 'Service mode',
+                    repairType: 'Service type',
+                    accommodationType: 'Stay type',
                     // Condition step
                     productCondition: 'Condition',
                     visibleDamage: 'Visible damage',

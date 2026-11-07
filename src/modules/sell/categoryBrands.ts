@@ -1,18 +1,24 @@
 // Shared brand lists used by both the Sell form (categoryDetails.ts)
 // and the Post Enquiry form's vehicle detail inputs.
+// 'Other' is always last so the free choice sits where people expect it.
 
 export const CAR_BRANDS = [
-  'Audi', 'Bentley', 'BMW', 'Chevrolet', 'Citroën', 'Datsun', 'Ferrari', 'Fiat',
-  'Force', 'Ford', 'Hindustan Motors', 'Honda', 'Hyundai', 'Isuzu', 'Jaguar',
-  'Jeep', 'Kia', 'Lamborghini', 'Land Rover', 'Lexus', 'Mahindra', 'Maruti Suzuki',
-  'Mercedes-Benz', 'MG', 'Nissan', 'Opel', 'Other', 'Porsche', 'Renault',
-  'Rolls-Royce', 'Skoda', 'Tata', 'Toyota', 'Volkswagen', 'Volvo',
+  'Aston Martin', 'Audi', 'Bentley', 'BMW', 'BYD', 'Chevrolet', 'Citroën',
+  'Datsun', 'Ferrari', 'Fiat', 'Force', 'Ford', 'Hindustan Motors', 'Honda',
+  'Hyundai', 'Isuzu', 'Jaguar', 'Jeep', 'Kia', 'Lamborghini', 'Land Rover',
+  'Lexus', 'Maruti Suzuki', 'Maserati', 'Mercedes-Benz', 'MG', 'Mini',
+  'Mitsubishi', 'Nissan', 'Opel', 'Porsche', 'Premier', 'Renault',
+  'Rolls-Royce', 'Skoda', 'Tata', 'Tesla', 'Toyota', 'VinFast', 'Volkswagen',
+  'Volvo', 'Other',
 ];
 
 export const BIKE_BRANDS = [
-  'Ather', 'Bajaj', 'Benelli', 'Ducati', 'Harley-Davidson', 'Hero', 'Honda',
-  'Jawa', 'Kawasaki', 'KTM', 'Mahindra', 'Ola Electric', 'Revolt',
-  'Royal Enfield', 'Suzuki', 'TVS', 'UM', 'Yamaha', 'Yezdi',
+  'Ampere', 'Aprilia', 'Ather', 'Bajaj', 'Benelli', 'BSA', 'CFMoto', 'Ducati',
+  'Harley-Davidson', 'Hero', 'Hero Electric', 'Honda', 'Husqvarna', 'Jawa',
+  'Joy e-bike', 'Kawasaki', 'Keeway', 'Kinetic Green', 'Komaki', 'KTM',
+  'Matter', 'Moto Morini', 'Okinawa', 'Ola Electric', 'Pure EV', 'QJ Motor',
+  'Revolt', 'Royal Enfield', 'Simple Energy', 'Suzuki', 'Triumph', 'TVS',
+  'Ultraviolette', 'UM', 'Vespa', 'Voge', 'Yamaha', 'Yezdi', 'Zontes', 'Other',
 ];
 
 export const MOBILE_BRANDS = [
@@ -28,13 +34,29 @@ export const SNEAKER_BRANDS = [
   'Yeezy', 'Other',
 ];
 
-// Commercial + passenger vehicle makers — used by the Post Enquiry vehicle brand picker
-// so trucks, lorries and pickups are covered, not just car marques.
+// Commercial, construction and farm vehicle makers — trucks, lorries, pickups,
+// tippers, three-wheeler cargo, earthmovers and tractors, not just car marques.
+// Names already in CAR_BRANDS (Tata, Mahindra, Isuzu, Force, Volvo, Hyundai) are
+// not repeated here; VEHICLE_BRANDS de-duplicates before sorting.
 const COMMERCIAL_VEHICLE_BRANDS = [
-  'Ashok Leyland', 'BharatBenz', 'DAF', 'Eicher', 'Force Motors', 'Hino',
-  'JCB', 'Kamaz', 'MAN', 'Piaggio', 'Scania',
+  // Trucks & buses
+  'AMW', 'Ashok Leyland', 'BharatBenz', 'BYD', 'DAF', 'Eicher', 'Freightliner',
+  'Hino', 'International', 'Iveco', 'JBM Auto', 'Kamaz', 'Kenworth', 'Mack',
+  'MAN', 'Mitsubishi Fuso', 'Olectra', 'Peterbilt', 'Piaggio', 'Scania',
+  'SML Isuzu', 'Switch Mobility', 'UD Trucks',
+  // Three-wheeler & last-mile cargo
+  'Altigreen', 'Bajaj', 'Etrio', 'Euler Motors', 'YC Electric',
+  // Earthmoving & construction
+  'ACE', 'Ajax Fiori', 'Bobcat', 'Case', 'Caterpillar', 'Doosan', 'Hitachi',
+  'JCB', 'Kobelco', 'Komatsu', 'LiuGong', 'SANY', 'Schwing Stetter', 'Takeuchi',
+  'XCMG', 'Yanmar',
+  // Tractors & farm
+  'Captain', 'Claas', 'Deutz-Fahr', 'Escorts', 'Farmtrac', 'John Deere',
+  'Kubota', 'Massey Ferguson', 'New Holland', 'Powertrac', 'Sonalika',
+  'Swaraj', 'TAFE', 'VST',
 ];
 
+// All vehicle makers: cars plus trucks, earthmovers and tractors.
 export const VEHICLE_BRANDS = Array.from(
   new Set([...CAR_BRANDS.filter((b) => b !== 'Other'), ...COMMERCIAL_VEHICLE_BRANDS]),
 ).sort((a, b) => a.localeCompare(b)).concat('Other');
