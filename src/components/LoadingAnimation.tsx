@@ -35,6 +35,9 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
     <motion.div 
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
+      // Marks a full-page loading screen so the app-level stall guard can spot
+      // a page that never finishes loading and recover it (see LoadingStallGuard).
+      data-app-loading={compact ? undefined : "true"}
       className={compact ? `flex items-center justify-center px-4 py-6 ${className}` : `min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 relative ${className}`}
     >
       {/* Back Button - Top Left Corner */}

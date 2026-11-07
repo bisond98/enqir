@@ -10,6 +10,7 @@ import { db } from "@/firebase";
 import { collection, query, where, doc, getDoc, orderBy } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { withTimeout } from "@/lib/firestoreSafe";
 
 interface Enquiry {
   id: string;
@@ -52,7 +53,11 @@ const SavedEnquiries = () => {
 
           const savedPromises = savedIds.map(async (enquiryId: string) => {
             try {
-              const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+              const enquiryDoc = await withTimeout(
+                getDoc(doc(db, 'enquiries', enquiryId)),
+                12000,
+                'Saved enquiry read',
+              );
               if (enquiryDoc.exists()) {
                 return { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
               }

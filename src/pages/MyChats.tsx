@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
 import { db } from "@/firebase";
+import { withTimeout } from "@/lib/firestoreSafe";
 import { collection, query, where, onSnapshot, orderBy, getDoc, doc, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -230,7 +231,7 @@ export default function MyChats() {
       try {
         // Get all chat messages
         const chatMessagesQuery = query(collection(db, "chatMessages"));
-        const snapshot = await getDocs(chatMessagesQuery);
+        const snapshot = await withTimeout(getDocs(chatMessagesQuery), 12000, 'Chat messages read');
         
         const threadsWithUnread = new Set<string>();
         

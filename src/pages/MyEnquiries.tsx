@@ -16,6 +16,7 @@ import PaymentPlanSelector from "@/components/PaymentPlanSelector";
 import { PaymentPlan, PAYMENT_PLANS, getUpgradeOptions } from "@/config/paymentPlans";
 import { getUserPaymentPlan, updateEnquiryPremiumStatus } from "@/services/paymentService";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { withTimeout } from "@/lib/firestoreSafe";
 
 interface Enquiry {
   id: string;
@@ -177,7 +178,9 @@ const MyEnquiries = () => {
     // Simple function to load enquiries
     const loadEnquiries = async () => {
       try {
-        const snapshot = await getDocs(enquiriesQuery);
+        // Bounded: a wedged Firestore read used to leave this page on its
+        // loading screen until the browser was restarted.
+        const snapshot = await withTimeout(getDocs(enquiriesQuery), 12000, 'My enquiries read');
         const enquiriesData: Enquiry[] = [];
         snapshot.forEach((doc) => {
           enquiriesData.push({ id: doc.id, ...doc.data() } as Enquiry);

@@ -10,6 +10,7 @@ import { db } from "@/firebase";
 import { doc, getDoc, setDoc, serverTimestamp, collection, query as fsQuery, where, getDocs, onSnapshot, orderBy } from "firebase/firestore";
 import { listMarketplace } from "@/modules/sell/services/sellDb";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { withTimeout } from "@/lib/firestoreSafe";
 import type { SellListing } from "@/modules/sell/types";
 import { APP_CATEGORIES } from "@/constants/categories";
 import { toast } from "@/hooks/use-toast";
@@ -123,7 +124,7 @@ const MyLikes = () => {
     if (!user?.uid) { setLoading(false); return; }
     (async () => {
       try {
-        const snap = await getDoc(doc(db, 'users', user.uid));
+        const snap = await withTimeout(getDoc(doc(db, 'users', user.uid)), 12000, 'Likes read');
         const d = snap.data() as any;
         setLiked(Array.isArray(d?.likedCategories) ? d.likedCategories : []);
         setKeywords(Array.isArray(d?.likedKeywords) ? d.likedKeywords : []);
@@ -143,7 +144,7 @@ const MyLikes = () => {
     try {
       const [listings, enqSnap] = await Promise.all([
         listMarketplace({}),
-        getDocs(fsQuery(collection(db, 'enquiries'), where('status', '==', 'live'))),
+        withTimeout(getDocs(fsQuery(collection(db, 'enquiries'), where('status', '==', 'live'))), 12000, 'Liked feed read'),
       ]);
       const matchListing = (l: any) => inLikedCats(cats, l.category, l.categories) || kws.some(kw => matchesKeyword(kw, l));
       const matchEnquiry = (e: any) => (inLikedCats(cats, e.category, e.categories) || kws.some(kw => matchesKeyword(kw, e))) && isEnquiryLive(e);

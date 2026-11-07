@@ -18,6 +18,7 @@ import { toast } from "@/hooks/use-toast";
 import { getPrivacyProtectedName, isUserVerified, getSafeLogData } from "@/utils/privacy";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { withTimeout } from "@/lib/firestoreSafe";
 import MicrophonePermissionPrompt from "@/components/MicrophonePermissionPrompt";
 import { checkMicrophonePermission, MicrophonePermissionStatus } from "@/utils/permissions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -196,7 +197,7 @@ const EnquiryResponses = () => {
     const loadData = async () => {
       try {
         // Fetch enquiry details
-        const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+        const enquiryDoc = await withTimeout(getDoc(doc(db, 'enquiries', enquiryId)), 12000, 'Enquiry read');
         if (enquiryDoc.exists()) {
           const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
           setEnquiry(enquiryData);
@@ -213,7 +214,7 @@ const EnquiryResponses = () => {
           where('enquiryId', '==', enquiryId)
         );
 
-        const snapshot = await getDocs(responsesQuery);
+        const snapshot = await withTimeout(getDocs(responsesQuery), 12000, 'Responses read');
         const responsesData: SellerSubmission[] = [];
         
         snapshot.forEach((doc) => {

@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ACCOMMODATION_SUBTYPES } from '@/constants/categories';
 import { Separator } from '@/components/ui/separator';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
+import { withTimeout } from '@/lib/firestoreSafe';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -270,7 +271,7 @@ const EnquiryDetail = () => {
       setLoading(true);
       
       // OPTIMIZATION: Fetch enquiry details first (required for everything else)
-      const enquiryDoc = await getDoc(doc(db, 'enquiries', id!));
+      const enquiryDoc = await withTimeout(getDoc(doc(db, 'enquiries', id!)), 12000, 'Enquiry read');
       if (!enquiryDoc.exists()) {
         toast({
           title: "Enquiry Not Found",

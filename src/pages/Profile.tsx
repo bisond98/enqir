@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { flushSync } from "react-dom";
 import Layout from "@/components/Layout";
 import { shortUserId } from "@/lib/userDisplayName";
-import { firestoreWrite } from "@/lib/firestoreSafe";
+import { firestoreWrite, withTimeout } from "@/lib/firestoreSafe";
 // Trigger Vercel deployment
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -220,7 +220,7 @@ const Profile = () => {
           where('userId', '==', authUser.uid),
           orderBy('createdAt', 'desc')
         );
-        const enquiriesSnapshot = await getDocs(enquiriesQuery);
+        const enquiriesSnapshot = await withTimeout(getDocs(enquiriesQuery), 12000, 'Profile enquiries read');
         const enquiriesData = enquiriesSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -233,7 +233,7 @@ const Profile = () => {
           where('sellerId', '==', authUser.uid),
           orderBy('createdAt', 'desc')
         );
-        const submissionsSnapshot = await getDocs(submissionsQuery);
+        const submissionsSnapshot = await withTimeout(getDocs(submissionsQuery), 12000, 'Profile submissions read');
         const submissionsData = submissionsSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()

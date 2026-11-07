@@ -13,6 +13,7 @@ import { trustedName } from "@/lib/userDisplayName";
 import { getPrivacyProtectedName, isUserVerified } from "@/utils/privacy";
 import VerificationBadge from "@/components/VerificationBadge";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { withTimeout } from "@/lib/firestoreSafe";
 import { isDocumentUrl, attachmentFileName, downloadAttachment } from "@/lib/attachmentUrl";
 
 interface Enquiry {
@@ -82,7 +83,7 @@ const DetailedResponses = () => {
 
     const fetchEnquiry = async () => {
       try {
-        const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+        const enquiryDoc = await withTimeout(getDoc(doc(db, 'enquiries', enquiryId)), 12000, 'Enquiry read');
         if (enquiryDoc.exists()) {
           const enquiryData = enquiryDoc.data() as Enquiry;
           setEnquiry(enquiryData);

@@ -92,7 +92,11 @@ export async function hardDeleteListing(listingId: string) {
 }
 
 export async function getListing(listingId: string): Promise<SellListing | null> {
-  const snap = await getDoc(doc(db, LISTINGS_COLLECTION, listingId));
+  const snap = await withTimeout(
+    getDoc(doc(db, LISTINGS_COLLECTION, listingId)),
+    12000,
+    'Listing read',
+  );
   if (!snap.exists()) return null;
   return { id: snap.id, ...(snap.data() as any) } as SellListing;
 }
@@ -222,7 +226,7 @@ export async function listMyListings(sellerId: string) {
     collection(db, LISTINGS_COLLECTION),
     where('sellerId', '==', sellerId)
   );
-  const snap = await getDocs(q);
+  const snap = await withTimeout(getDocs(q), 12000, 'My listings read');
   const listings = snap.docs
     .map((d) => ({ id: d.id, ...(d.data() as any) }))
     .filter((l) => l.status === 'live' || l.status === 'draft' || l.status === 'expired');
@@ -276,7 +280,7 @@ export async function createListingResponse(input: Omit<SellListingResponse, 'id
 
 export async function listResponsesForListing(listingId: string) {
   const q = query(collection(db, RESPONSES_COLLECTION), where('listingId', '==', listingId));
-  const snap = await getDocs(q);
+  const snap = await withTimeout(getDocs(q), 12000, 'Listing responses read');
   return snap.docs
     .map((d) => ({ id: d.id, ...(d.data() as any) }))
     .sort((a, b) => {
@@ -288,7 +292,7 @@ export async function listResponsesForListing(listingId: string) {
 
 export async function listResponsesForSeller(sellerId: string) {
   const q = query(collection(db, RESPONSES_COLLECTION), where('sellerId', '==', sellerId));
-  const snap = await getDocs(q);
+  const snap = await withTimeout(getDocs(q), 12000, 'Seller responses read');
   const responses = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListingResponse[];
   // Sort client-side to avoid needing a composite index
   return responses.sort((a, b) => {

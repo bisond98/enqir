@@ -29,6 +29,7 @@ import { ThemeProvider } from "next-themes";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import StaleBundleRefresher from "./components/StaleBundleRefresher";
+import LoadingStallGuard from "./components/LoadingStallGuard";
 import RouteFallback from "./components/RouteFallback";
 import { UsageProvider } from "./contexts/UsageContext";
 import { ConditionalAuthProvider } from "./contexts/ConditionalAuthProvider";
@@ -237,6 +238,7 @@ const App = () => {
                   <BrowserRouter>
                   <ScrollToTop />
                   <StaleBundleRefresher />
+                  <LoadingStallGuard />
                   <Suspense fallback={<RouteFallback />}>
                   <PageTransitionFade>
                   <Routes>

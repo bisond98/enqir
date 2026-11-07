@@ -10,6 +10,7 @@ import { db } from "@/firebase";
 import { collection, query, where, getDocs, orderBy, limit, getDoc, doc, onSnapshot, deleteDoc } from "firebase/firestore";
 import { toast } from "@/hooks/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { withTimeout } from "@/lib/firestoreSafe";
 
 interface SellerSubmission {
   id: string;
@@ -230,7 +231,11 @@ const MyResponses = () => {
         // Use Promise.all for parallel fetching
         const enquiryPromises = enquiryIds.map(async (enquiryId) => {
           try {
-            const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+            const enquiryDoc = await withTimeout(
+              getDoc(doc(db, 'enquiries', enquiryId)),
+              12000,
+              'Response enquiry read',
+            );
             if (enquiryDoc.exists()) {
               return { id: enquiryId, ...enquiryDoc.data() } as Enquiry;
             }

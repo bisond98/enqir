@@ -17,6 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import CountdownTimer from "@/components/CountdownTimer";
 import { PaymentPlan, PAYMENT_PLANS } from "@/config/paymentPlans";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import { withTimeout } from "@/lib/firestoreSafe";
 import { isDocumentUrl, attachmentFileName, downloadAttachment } from "@/lib/attachmentUrl";
 
 interface Enquiry {
@@ -224,7 +225,7 @@ const EnquiryResponsesPage = () => {
       setLoading(true);
       try {
         // Load enquiry details
-        const enquiryDoc = await getDoc(doc(db, 'enquiries', enquiryId));
+        const enquiryDoc = await withTimeout(getDoc(doc(db, 'enquiries', enquiryId)), 12000, 'Enquiry read');
         if (enquiryDoc.exists()) {
           const enquiryData = { id: enquiryDoc.id, ...enquiryDoc.data() } as Enquiry;
           setEnquiry(enquiryData);

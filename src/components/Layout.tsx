@@ -21,6 +21,7 @@ const SignOutDialog = lazy(() => import("./SignOutDialog"));
 // import { getProEnquiriesRemaining } from "@/services/paymentService";
 import { collection, query, getDocs, getDoc, doc, onSnapshot, where } from "firebase/firestore";
 import { db } from "@/firebase";
+import { withTimeout } from "@/lib/firestoreSafe";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { usePerformanceOptimizations } from "@/hooks/use-performance";
 
@@ -40,7 +41,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
   // Apply performance optimizations
   usePerformanceOptimizations();
   // Get preloaded chats from context (will be empty array if not available)
-  let preloadedChatsContext: { allChats: any[] } | null = null;
+  let preloadedChatsContext: { allChats: any[]; loading?: boolean } | null = null;
   try {
     preloadedChatsContext = useChats();
   } catch {
@@ -89,7 +90,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           
           // Only fetch messages for these specific threads (much smaller query)
           const chatMessagesQuery = query(collection(db, "chatMessages"));
-          const snapshot = await getDocs(chatMessagesQuery);
+          const snapshot = await withTimeout(getDocs(chatMessagesQuery), 12000, 'Unread chat read');
           
           const threadsWithUnread = new Set<string>();
           
@@ -137,10 +138,17 @@ export default function Layout({ children, showNavigation = true }: { children: 
           return; // Exit early - we used preloaded data!
         }
         
+        // No chats at all (context finished loading with an empty list) — there
+        // can be nothing unread, so skip the whole-collection scan entirely.
+        if (preloadedChatsContext && preloadedChatsContext.loading === false) {
+          if (isMounted) setUnreadChatCount(0);
+          return;
+        }
+
         // FALLBACK: Original method if preloaded data not available yet
         // Get all chat messages (filtered client-side for performance)
         const chatMessagesQuery = query(collection(db, "chatMessages"));
-        const snapshot = await getDocs(chatMessagesQuery);
+        const snapshot = await withTimeout(getDocs(chatMessagesQuery), 12000, 'Unread chat read');
         
         // First pass: Filter messages and collect unique enquiry IDs
         const messageThreads = new Map<string, { enquiryId: string; sellerId: string; timestamp: number }>();
@@ -289,7 +297,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
           collection(db, 'enquiries'),
           where('userId', '==', user.uid)
         );
-        const enquiriesSnapshot = await getDocs(enquiriesQuery);
+        const enquiriesSnapshot = await withTimeout(getDocs(enquiriesQuery), 12000, 'Unread badge enquiries read');
         const enquiryIds = enquiriesSnapshot.docs.map(doc => doc.id);
 
         if (enquiryIds.length === 0) {
@@ -334,16 +342,23 @@ export default function Layout({ children, showNavigation = true }: { children: 
           }
         };
 
-        // Get all responses for user's enquiries
-        const responsesQuery = query(
-          collection(db, 'sellerSubmissions'),
-          where('enquiryId', 'in', enquiryIds),
-          where('status', '==', 'approved')
-        );
-        const responsesSnapshot = await getDocs(responsesQuery);
+        // Get all responses for user's enquiries. Firestore caps `in` at 30
+        // values, so heavy accounts (30+ enquiries) used to fail this whole
+        // count and never show the badge — query in batches instead.
+        const responseDocs: any[] = [];
+        for (let i = 0; i < enquiryIds.length; i += 30) {
+          const batch = enquiryIds.slice(i, i + 30);
+          const responsesQuery = query(
+            collection(db, 'sellerSubmissions'),
+            where('enquiryId', 'in', batch),
+            where('status', '==', 'approved')
+          );
+          const responsesSnapshot = await withTimeout(getDocs(responsesQuery), 12000, 'Unread responses read');
+          responseDocs.push(...responsesSnapshot.docs);
+        }
 
         // Check each response
-        responsesSnapshot.docs.forEach((doc) => {
+        responseDocs.forEach((doc) => {
           const responseData = doc.data();
           const enquiryId = responseData.enquiryId;
           
