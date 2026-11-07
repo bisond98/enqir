@@ -948,7 +948,7 @@ export default function CreateListing() {
                 return (
                   <span
                     key={catValue}
-                    className="inline-flex items-center gap-1 rounded-full border-[1.5px] border-black/60 bg-white px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-black"
+                    className="inline-flex items-center gap-1 px-1 py-1 text-[10px] font-black uppercase tracking-wide text-black"
                   >
                     <Icon className="h-3 w-3 flex-shrink-0" strokeWidth={2} />
                     {catLabel}
