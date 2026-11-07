@@ -2639,15 +2639,13 @@ const DEADLINE_STEP = 5;
                   {/* Step 1: Category (swipeable horizontal pages) */}
                   {step === 1 && (() => {
                     const filteredCategories = filterCategoriesBySearch(categories, catSearch);
-                    // Selected categories float to the top (stable sort keeps the rest in order)
-                    const sortedCategories = [...filteredCategories].sort((a, b) =>
-                      Number(selectedCategories.includes(b.value)) - Number(selectedCategories.includes(a.value))
-                    );
+                    // Every category keeps its place in the grid — picking one only
+                    // lights it up as selected, it never jumps to the top.
                     const isSearching = catSearch.trim().length > 0;
-                    const totalPages = Math.ceil(sortedCategories.length / CATS_PER_PAGE);
+                    const totalPages = Math.ceil(filteredCategories.length / CATS_PER_PAGE);
                     const pagedCategories = isSearching
-                      ? sortedCategories
-                      : sortedCategories.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
+                      ? filteredCategories
+                      : filteredCategories.slice(catPage * CATS_PER_PAGE, (catPage + 1) * CATS_PER_PAGE);
                     return (
                       <div className="max-w-2xl mx-auto w-full">
                         {/* Search bar */}
@@ -2750,32 +2748,28 @@ const DEADLINE_STEP = 5;
                           <p className="text-[8px] text-slate-400 text-center mt-2">
                             Swipe or tap arrows for more categories
                           </p>
-                        )}                         {/* Pagination - prev/next text buttons */}
-                         {!isSearching && totalPages > 1 && (
-                           <div className="flex items-center justify-between mt-4">
-                             <button
-                               type="button"
-                               onClick={() => setCatPage(p => Math.max(0, p - 1))}
-                               disabled={catPage === 0}
-                               className="flex items-center gap-1 px-3 py-2 text-xs font-bold !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white rounded-xl !border !border-slate-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-all"
-                             >
-                               <ChevronLeft className="h-3 w-3" />
-                               Prev
-                             </button>
-                             <span className="text-[11px] font-bold text-gray-500">
-                               {catPage + 1} / {totalPages}
-                             </span>
-                             <button
-                               type="button"
-                               onClick={() => setCatPage(p => Math.min(totalPages - 1, p + 1))}
-                               disabled={catPage === totalPages - 1}
-                               className="flex items-center gap-1 px-3 py-2 text-xs font-bold !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white rounded-xl !border !border-slate-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 transition-all"
-                             >
-                               Next
-                               <ChevronRight className="h-3 w-3" />
-                             </button>
-                           </div>
-                         )}
+                        )}                        {/* Pagination — same quiet Prev / Next pills as the Sell form */}
+                        {!isSearching && totalPages > 1 && (
+                          <div className="flex items-center justify-center gap-3 mt-4">
+                            <button
+                              type="button"
+                              onClick={() => setCatPage(p => Math.max(0, p - 1))}
+                              disabled={catPage === 0}
+                              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs font-bold text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                            >
+                              <ChevronLeft className="h-3.5 w-3.5" /> Prev
+                            </button>
+                            <span className="text-[11px] font-bold text-gray-500">{catPage + 1} / {totalPages}</span>
+                            <button
+                              type="button"
+                              onClick={() => setCatPage(p => Math.min(totalPages - 1, p + 1))}
+                              disabled={catPage === totalPages - 1}
+                              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs font-bold text-black disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                            >
+                              Next <ChevronRight className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     );
                   })()}
