@@ -105,6 +105,11 @@ const Admin = () => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
   const [visibleLiveEnquiriesCount, setVisibleLiveEnquiriesCount] = useState(10);
+  const [sellListings, setSellListings] = useState<any[]>([]);
+  const [sellListingResponses, setSellListingResponses] = useState<any[]>([]);
+  // Marketplace listings arrive newest first; only the latest 5 show until the
+  // admin asks for the rest.
+  const [visibleSellListingsCount, setVisibleSellListingsCount] = useState(5);
   const [profileVerifications, setProfileVerifications] = useState<any[]>([]);
   const [userReports, setUserReports] = useState<any[]>([]);
   const [selectedEnquiry, setSelectedEnquiry] = useState<Enquiry | null>(null);
@@ -251,6 +256,28 @@ const Admin = () => {
     return new Date() > deadline;
   };
 
+  // Display helpers for the marketplace listing / response sections
+  const formatAdminDate = (value: any) => {
+    if (!value) return '—';
+    const date = value.toDate ? value.toDate() : new Date(value);
+    return isNaN(date.getTime()) ? '—' : date.toLocaleDateString();
+  };
+
+  const formatListingPrice = (listing: any) => {
+    const inr = (n: any) => (typeof n === 'number' ? `₹${n.toLocaleString('en-IN')}` : '');
+    if (listing?.priceType === 'range') {
+      const min = inr(listing.priceMin);
+      const max = inr(listing.priceMax);
+      if (min && max) return `${min} – ${max}`;
+      return min || max || 'Discuss';
+    }
+    if (listing?.priceType === 'discussion') return 'Discuss';
+    return inr(listing?.price) || 'Discuss';
+  };
+
+  const listingTitleById = (listingId: string) =>
+    sellListings.find((l) => l.id === listingId)?.title || listingId;
+
   // SIMPLE: Clear everything - accounts, data, everything
   const clearAllData = async () => {
     if (!confirm('🚨 WARNING: This will DELETE EVERYTHING - all user accounts, profiles, enquiries, and data! Users will need to create fresh accounts!\n\nAre you sure?')) {
@@ -332,6 +359,8 @@ const Admin = () => {
     let unsubscribeSubmissions: (() => void) | null = null;
     let unsubscribeSellerSubmissions: (() => void) | null = null;
     let unsubscribeUserReports: (() => void) | null = null;
+    let unsubscribeSellListings: (() => void) | null = null;
+    let unsubscribeSellResponses: (() => void) | null = null;
 
     // Real-time listener for pending enquiries
     const pendingQueryWithoutOrder = query(
@@ -356,7 +385,7 @@ const Admin = () => {
               description: data.description,
               budget: data.budget,
               deadline: data.deadline,
-              status: data.status,
+              status: data.status || 'pending',
               createdAt: data.createdAt,
               adminNotes: data.adminNotes,
               idFrontImage: data.idFrontImage,
@@ -411,7 +440,7 @@ const Admin = () => {
                 description: data.description,
                 budget: data.budget,
                 deadline: data.deadline,
-                status: data.status,
+                status: data.status || 'pending',
                 createdAt: data.createdAt,
                 adminNotes: data.adminNotes,
                 idFrontImage: data.idFrontImage,
@@ -642,11 +671,10 @@ const Admin = () => {
       }
     );
 
-    // Real-time listener for seller submissions
-    const sellerSubmissionsQueryWithoutOrder = query(
-      collection(db, 'sellerSubmissions'),
-      where('status', '==', 'pending')
-    );
+    // Real-time listener for seller submissions.
+    // The response form saves an offer as already `approved`, so filtering this
+    // listener to `pending` meant real submissions never appeared for the admin.
+    const sellerSubmissionsQueryWithoutOrder = query(collection(db, 'sellerSubmissions'));
     
     unsubscribeSellerSubmissions = onSnapshot(
       sellerSubmissionsQueryWithoutOrder,
@@ -655,7 +683,7 @@ const Admin = () => {
         const sellerItems: SellerSubmission[] = [];
         snapshot.forEach((d) => {
           const data: any = d.data();
-          if (data.status && data.status.toLowerCase() === 'pending') {
+          {
             sellerItems.push({
               id: d.id,
               enquiryId: data.enquiryId,
@@ -674,7 +702,7 @@ const Admin = () => {
               govIdUrl: data.govIdUrl || '',
               govIdFileName: data.govIdFileName || '',
               isIdentityVerified: data.isIdentityVerified || false,
-              status: data.status,
+              status: data.status || 'pending',
               createdAt: data.createdAt,
               updatedAt: data.updatedAt,
               buyerViewed: data.buyerViewed || false,
@@ -700,7 +728,7 @@ const Admin = () => {
           const allItems: SellerSubmission[] = [];
           snap.forEach((d) => {
             const data: any = d.data();
-            if (data.status && data.status.toLowerCase() === 'pending') {
+            {
               allItems.push({
                 id: d.id,
                 enquiryId: data.enquiryId,
@@ -719,7 +747,7 @@ const Admin = () => {
                 govIdUrl: data.govIdUrl || '',
                 govIdFileName: data.govIdFileName || '',
                 isIdentityVerified: data.isIdentityVerified || false,
-                status: data.status,
+                status: data.status || 'pending',
                 createdAt: data.createdAt,
                 updatedAt: data.updatedAt,
                 buyerViewed: data.buyerViewed || false,
@@ -829,6 +857,45 @@ const Admin = () => {
       }
     );
 
+    // Real-time listener for marketplace sell listings
+    unsubscribeSellListings = onSnapshot(
+      query(collection(db, 'sell_listings')),
+      (snapshot) => {
+        const items: any[] = [];
+        snapshot.forEach((d) => items.push({ id: d.id, ...d.data() }));
+        // Newest first, so the latest 5 really are the latest
+        items.sort((a, b) => {
+          const aMs = a.createdAt?.toMillis?.() ?? a.createdAt?.toDate?.()?.getTime?.() ?? 0;
+          const bMs = b.createdAt?.toMillis?.() ?? b.createdAt?.toDate?.()?.getTime?.() ?? 0;
+          return bMs - aMs;
+        });
+        console.log('✅ Admin: Setting sell listings:', items.length);
+        setSellListings(items);
+      },
+      (error) => {
+        console.error('❌ Admin: Error in sell listings listener:', error);
+      }
+    );
+
+    // Real-time listener for responses sent through the marketplace response form
+    unsubscribeSellResponses = onSnapshot(
+      query(collection(db, 'sell_listing_responses')),
+      (snapshot) => {
+        const items: any[] = [];
+        snapshot.forEach((d) => items.push({ id: d.id, ...d.data() }));
+        items.sort((a, b) => {
+          const aMs = a.createdAt?.toMillis?.() ?? a.createdAt?.toDate?.()?.getTime?.() ?? 0;
+          const bMs = b.createdAt?.toMillis?.() ?? b.createdAt?.toDate?.()?.getTime?.() ?? 0;
+          return bMs - aMs;
+        });
+        console.log('✅ Admin: Setting sell listing responses:', items.length);
+        setSellListingResponses(items);
+      },
+      (error) => {
+        console.error('❌ Admin: Error in sell listing responses listener:', error);
+      }
+    );
+
     console.log('✅ Admin: All real-time listeners set up successfully');
 
     // Cleanup function
@@ -839,6 +906,8 @@ const Admin = () => {
       if (unsubscribeSubmissions) unsubscribeSubmissions();
       if (unsubscribeSellerSubmissions) unsubscribeSellerSubmissions();
       if (unsubscribeUserReports) unsubscribeUserReports();
+      if (unsubscribeSellListings) unsubscribeSellListings();
+      if (unsubscribeSellResponses) unsubscribeSellResponses();
     };
   }, [authUser]); 
       // Fetch profile verification requests - SIMPLE & REALTIME
@@ -1119,15 +1188,67 @@ const Admin = () => {
     }
   };
 
-  const deleteEnquiry = async (id: string) => {
-    if (window.confirm('Are you sure you want to permanently delete this enquiry?')) {
-      try {
-        await deleteDoc(doc(db, 'enquiries', id));
-        toast({ title: 'Enquiry deleted', description: 'Enquiry has been permanently removed' });
-      } catch (error) {
-        toast({ title: 'Error', description: 'Failed to delete enquiry', variant: 'destructive' });
-      }
+  // Shared delete path: only reports success once Firestore has accepted the
+  // delete, and drops the row from local state immediately so the list can
+  // never show a document that no longer exists.
+  const removeDocument = async (
+    collectionName: string,
+    id: string,
+    label: string,
+    clearLocal: () => void
+  ) => {
+    try {
+      await deleteDoc(doc(db, collectionName, id));
+      clearLocal();
+      toast({ title: `${label} deleted`, description: `${label} has been permanently removed` });
+    } catch (error: any) {
+      console.error(`❌ Admin: Failed to delete ${label}:`, error?.code, error?.message);
+      toast({
+        title: `Could not delete ${label.toLowerCase()}`,
+        description:
+          error?.code === 'permission-denied'
+            ? 'Firestore rules rejected this delete. Admin delete permissions need to be deployed.'
+            : error?.message || 'Please try again.',
+        variant: 'destructive',
+      });
     }
+  };
+
+  const deleteEnquiry = async (id: string) => {
+    if (!window.confirm('Are you sure you want to permanently delete this enquiry?')) return;
+    await removeDocument('enquiries', id, 'Enquiry', () => {
+      setPending((prev) => prev.filter((e) => e.id !== id));
+      setLiveEnquiries((prev) => prev.filter((e) => e.id !== id));
+      setSelectedEnquiry((prev) => (prev?.id === id ? null : prev));
+    });
+  };
+
+  const deleteSellerSubmission = async (id: string) => {
+    if (!window.confirm('Permanently delete this seller response?')) return;
+    await removeDocument('sellerSubmissions', id, 'Seller response', () => {
+      setSellerSubmissions((prev) => prev.filter((s) => s.id !== id));
+    });
+  };
+
+  const deleteSubmission = async (id: string) => {
+    if (!window.confirm('Permanently delete this response?')) return;
+    await removeDocument('submissions', id, 'Response', () => {
+      setSubmissions((prev) => prev.filter((s) => s.id !== id));
+    });
+  };
+
+  const deleteSellListing = async (id: string) => {
+    if (!window.confirm('Permanently delete this sell listing? It will disappear from the marketplace.')) return;
+    await removeDocument('sell_listings', id, 'Listing', () => {
+      setSellListings((prev) => prev.filter((l) => l.id !== id));
+    });
+  };
+
+  const deleteSellListingResponse = async (id: string) => {
+    if (!window.confirm('Permanently delete this listing response?')) return;
+    await removeDocument('sell_listing_responses', id, 'Listing response', () => {
+      setSellListingResponses((prev) => prev.filter((r) => r.id !== id));
+    });
   };
 
   const approveSubmission = async (id: string) => {
@@ -2064,6 +2185,15 @@ const Admin = () => {
                       >
                         Reject
                       </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteSubmission(submission.id)}
+                        className="text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto flex-1 lg:flex-none"
+                      >
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                        Delete
+                      </Button>
                       {!submission.isPremium && (
                         <Button 
                           onClick={() => makePremium(submission.id)}
@@ -2094,7 +2224,9 @@ const Admin = () => {
                       <div>
                         <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900">Seller Responses</h2>
                         <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                          {sellerSubmissions.length} response{sellerSubmissions.length !== 1 ? 's' : ''} awaiting review
+                          {sellerSubmissions.length} response{sellerSubmissions.length !== 1 ? 's' : ''}
+                          {' • '}
+                          {sellerSubmissions.filter((s) => s.status === 'pending').length} awaiting review
                         </p>
                       </div>
                     </div>
@@ -2121,7 +2253,20 @@ const Admin = () => {
                             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                               <div className="flex-1 space-y-3">
                                 <div>
-                                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">{submission.sellerName}</h3>
+                                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                                    <h3 className="text-base sm:text-lg font-bold text-gray-900">{submission.sellerName}</h3>
+                                    <Badge
+                                      className={`text-[10px] sm:text-xs px-2 py-0.5 ${
+                                        submission.status === 'rejected'
+                                          ? 'bg-red-100 text-red-800'
+                                          : submission.status === 'pending'
+                                            ? 'bg-amber-100 text-amber-800'
+                                            : 'bg-green-100 text-green-800'
+                                      }`}
+                                    >
+                                      {submission.status}
+                                    </Badge>
+                                  </div>
                                   <p className="text-xs sm:text-sm text-gray-600 mb-2">Response to: {submission.title}</p>
                                 </div>
                                 <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">{submission.message}</p>
@@ -2217,6 +2362,15 @@ const Admin = () => {
                       >
                         Reject
                       </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteSellerSubmission(submission.id)}
+                        className="text-xs sm:text-sm px-3 sm:px-4 py-2 h-auto flex-1 lg:flex-none"
+                      >
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                        Delete
+                      </Button>
                     </div>
                   </div>
                           </CardContent>
@@ -2225,6 +2379,186 @@ const Admin = () => {
             </div>
           )}
                 </CardContent>
+        </Card>
+
+        {/* Sell Listings (marketplace) */}
+        <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200 px-5 sm:px-6 py-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <Database className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900">Sell Listings</h2>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                    {sellListings.length} listing{sellListings.length !== 1 ? 's' : ''}
+                    {sellListings.length > 0 && (
+                      <> • showing latest {Math.min(visibleSellListingsCount, sellListings.length)}</>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">
+                {sellListings.length} total
+              </Badge>
+            </div>
+          </div>
+
+          <CardContent className="p-4 sm:p-6">
+            {sellListings.length === 0 ? (
+              <div className="text-center py-12 sm:py-16">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Database className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
+                </div>
+                <p className="text-sm sm:text-base text-gray-600 font-medium">No listings yet</p>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">Listings posted from the sell form will appear here</p>
+              </div>
+            ) : (
+              <div className="space-y-3 sm:space-y-4">
+                {sellListings.slice(0, visibleSellListingsCount).map((listing) => (
+                  <Card key={listing.id} className="border border-gray-200 bg-white hover:shadow-md transition-all duration-200">
+                    <CardContent className="p-4 sm:p-5">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-sm sm:text-base font-bold text-gray-900 truncate">{listing.title || 'Untitled listing'}</h3>
+                            <Badge variant="secondary" className="text-[10px] sm:text-xs px-2 py-0.5 capitalize">
+                              {listing.status || 'live'}
+                            </Badge>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+                            <Badge variant="outline" className="text-[10px] sm:text-xs">{listing.category || 'Uncategorised'}</Badge>
+                            <span className="font-semibold text-gray-900">{formatListingPrice(listing)}</span>
+                            {listing.location && <span className="truncate">{listing.location}</span>}
+                            <span>{formatAdminDate(listing.createdAt)}</span>
+                          </div>
+                          {Array.isArray(listing.images) && listing.images.length > 0 && (
+                            <div className="flex items-center gap-2">
+                              {listing.images.slice(0, 3).map((url: string, index: number) => (
+                                <img
+                                  key={index}
+                                  loading="lazy"
+                                  decoding="async"
+                                  src={url}
+                                  alt={`Listing ${index + 1}`}
+                                  className="w-12 h-12 rounded-lg object-cover border border-gray-200 cursor-pointer"
+                                  onClick={() => window.open(url, '_blank')}
+                                />
+                              ))}
+                              <span className="text-[10px] text-gray-500">
+                                {listing.images.length} image{listing.images.length !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                          )}
+                          <p className="text-[10px] sm:text-xs text-gray-500 truncate">Seller: {listing.sellerId}</p>
+                        </div>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => deleteSellListing(listing.id)}
+                          className="h-8 w-8 sm:h-9 sm:w-9 p-0 self-start"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+            {sellListings.length > visibleSellListingsCount && (
+              <div className="flex justify-center mt-6">
+                <Button
+                  onClick={() => setVisibleSellListingsCount(sellListings.length)}
+                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold px-6 sm:px-8 py-3 rounded-lg shadow-lg transition-all duration-300 border-0"
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Show more ({sellListings.length - visibleSellListingsCount} more)
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Sell Listing Responses (marketplace response form) */}
+        <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-gray-200 px-5 sm:px-6 py-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900">Sell Listing Responses</h2>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                    {sellListingResponses.length} response{sellListingResponses.length !== 1 ? 's' : ''} from the sell response form
+                  </p>
+                </div>
+              </div>
+              <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1.5 bg-indigo-100 text-indigo-800 border border-indigo-200">
+                {sellListingResponses.length}
+              </Badge>
+            </div>
+          </div>
+
+          <CardContent className="p-4 sm:p-6">
+            {sellListingResponses.length === 0 ? (
+              <div className="text-center py-12 sm:py-16">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MessageSquare className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
+                </div>
+                <p className="text-sm sm:text-base text-gray-600 font-medium">No responses yet</p>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">Responses sent to listings will appear here in real time</p>
+              </div>
+            ) : (
+              <div className="space-y-3 sm:space-y-4">
+                {sellListingResponses.map((response) => (
+                  <Card key={response.id} className="border border-gray-200 bg-white hover:shadow-md transition-all duration-200">
+                    <CardContent className="p-4 sm:p-5">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-sm sm:text-base font-bold text-gray-900 truncate">
+                              {listingTitleById(response.listingId)}
+                            </h3>
+                            {response.type === 'connect' && (
+                              <Badge className="text-[10px] sm:text-xs px-2 py-0.5 bg-blue-100 text-blue-800">Connect</Badge>
+                            )}
+                            {response.offeredPrice !== null && response.offeredPrice !== undefined && (
+                              <Badge variant="outline" className="text-[10px] sm:text-xs">
+                                ₹{Number(response.offeredPrice).toLocaleString('en-IN')}
+                              </Badge>
+                            )}
+                          </div>
+                          {response.message && (
+                            <p className="text-xs sm:text-sm text-gray-700 leading-relaxed line-clamp-3">{response.message}</p>
+                          )}
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-gray-500">
+                            <span>Buyer: {response.buyerId}</span>
+                            <span>Listing: {response.listingId}</span>
+                            {Array.isArray(response.attachments) && response.attachments.length > 0 && (
+                              <span>{response.attachments.length} attachment{response.attachments.length !== 1 ? 's' : ''}</span>
+                            )}
+                            {response.voiceUrl && <span>Voice note</span>}
+                            <span>{formatAdminDate(response.createdAt)}</span>
+                          </div>
+                        </div>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => deleteSellListingResponse(response.id)}
+                          className="h-8 w-8 sm:h-9 sm:w-9 p-0 self-start"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
         {/* User Reports */}
               <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
