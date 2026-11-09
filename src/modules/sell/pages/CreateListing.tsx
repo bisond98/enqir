@@ -2219,13 +2219,11 @@ export default function CreateListing() {
         </CardContent>
       </Card>
 
-      {/* Phones only: the sketch sits under the card on the title tab, exactly
-          as the enquiry sketch does on the post-enquiry form */}
-      {step === 0 && (
-        <div className="sm:hidden px-4 pt-4 text-gray-900">
-          <SellListingSketch className="w-full h-auto" />
-        </div>
-      )}
+      {/* Phones only: the sketch sits under the card on every tab, exactly as
+          the enquiry sketch does on the post-enquiry form */}
+      <div className="sm:hidden px-4 pt-4 text-gray-900">
+        <SellListingSketch className="w-full h-auto" />
+      </div>
     </SellShell>
   );
 }
