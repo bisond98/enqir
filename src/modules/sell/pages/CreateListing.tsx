@@ -1008,12 +1008,6 @@ export default function CreateListing() {
           </div>
           </div>
 
-          {step === 0 && (
-            <div className="sm:hidden px-2 pb-1 text-gray-900">
-              <SellListingSketch className="w-full h-auto" />
-            </div>
-          )}
-
           <div key={step} className="space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
             {step === 0 && (() => {
               const filteredCats = filterCategoriesBySearch(SELL_CATEGORIES, catSearch);
@@ -2224,6 +2218,14 @@ export default function CreateListing() {
           )}
         </CardContent>
       </Card>
+
+      {/* Phones only: the sketch sits under the card on the title tab, exactly
+          as the enquiry sketch does on the post-enquiry form */}
+      {step === 0 && (
+        <div className="sm:hidden px-4 pt-4 text-gray-900">
+          <SellListingSketch className="w-full h-auto" />
+        </div>
+      )}
     </SellShell>
   );
 }
