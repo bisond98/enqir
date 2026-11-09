@@ -547,107 +547,114 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
 );
 
 // ── The mobile sketch under the post-enquiry card ───────────────────────────
-// Painted the way an illustrator finishes a page: soft watercolour washes go
-// down first, then the ink on top in three weights, a green arc for the share,
-// warm and cool tints in the small objects and an ochre pencil underline. No
-// heading — just the enquiry, the phone it travels through, the deal closing.
+// Drawn the way a page in a working sketchbook is drawn: one ink line, a
+// slightly unsteady hand, then two coloured pencils worked into the shadows —
+// terracotta in the enquiry, indigo in the phone, sage in the shield. No
+// caption and no colour fields; the paper is left as paper.
 export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
   <svg
-    viewBox="0 0 360 104"
+    viewBox="0 0 360 86"
     className={className}
     fill="none"
     stroke="currentColor"
-    strokeWidth={1.3}
+    strokeWidth={1.25}
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    {/* the washes go down before any line — uneven on purpose */}
-    <g stroke="none">
-      <path d="M18 30 C 34 14 66 12 84 22 C 100 32 102 52 88 62 C 70 74 38 74 22 63 C 8 53 6 40 18 30 Z" fill="#fbbf24" fillOpacity={0.16} />
-      <path d="M134 10 C 150 2 176 4 188 18 C 200 32 196 62 184 74 C 170 86 144 84 134 70 C 124 56 122 20 134 10 Z" fill="#60a5fa" fillOpacity={0.13} />
-      <path d="M290 12 C 308 4 334 10 342 26 C 350 42 344 64 330 72 C 314 80 294 72 288 56 C 282 40 282 20 290 12 Z" fill="#34d399" fillOpacity={0.16} />
-      <path d="M100 87 C 146 82 218 84 264 88" stroke="#f59e0b" strokeOpacity={0.22} strokeWidth={4} strokeLinecap="round" />
-    </g>
+    <defs>
+      <filter id="dealEdge" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves={3} seed={4} result="paper" />
+        <feDisplacementMap in="SourceGraphic" in2="paper" scale={5} xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
 
-    {/* the line the whole scene stands on, edge to edge */}
-    <path d="M4 72 C 74 67 140 73 200 70 C 258 67 306 71 356 68" strokeWidth={1.1} opacity={0.45} />
+    <g filter="url(#dealEdge)">
+      {/* the line the whole scene stands on */}
+      <path d="M6 66 C 80 62 150 67 210 64 C 264 62 310 66 354 63" strokeWidth={1.05} opacity={0.45} />
 
-    {/* the enquiry, written out — warm paper inside */}
-    <g transform="translate(50 42) rotate(-3)">
-      <path
-        d="M-25 -16 C-11 -19 9 -19 24 -16 C27 -8 27 4 24 12 C11 16 -7 16 -18 14 C-23 16 -26 19 -30 20 C-26 15 -25 11 -25 8 C-27 1 -27 -9 -25 -16 Z"
-        fill="#fde68a"
-        fillOpacity={0.45}
-        strokeWidth={1.6}
-      />
-      <path d="M-16 -8 C-6 -10 6 -10 15 -8" strokeWidth={0.95} />
-      <path d="M-14 -1 C-5 -3 5 -3 11 -2" strokeWidth={0.95} />
-    </g>
-    <g transform="translate(80 18) rotate(28)">
-      <path d="M-2 -11 L3 -11 L3 5 L0.5 11 L-2 5 Z" fill="#fef3c7" fillOpacity={0.8} strokeWidth={1.1} />
-    </g>
+      {/* the enquiry, written out, with a terracotta pencil in the shadow side */}
+      <g transform="translate(50 40) rotate(-3)">
+        <path
+          d="M-25 -16 C-11 -19 9 -19 24 -16 C27 -8 27 4 24 12 C11 16 -7 16 -18 14 C-23 16 -26 19 -30 20 C-26 15 -25 11 -25 8 C-27 1 -27 -9 -25 -16 Z"
+          strokeWidth={1.7}
+        />
+        <path d="M-16 -8 C-6 -10 6 -10 15 -8" strokeWidth={0.95} />
+        <path d="M-14 -1 C-5 -3 5 -3 11 -2" strokeWidth={0.9} />
+        <g stroke="#b5563a" strokeWidth={0.6} opacity={0.55}>
+          <path d="M-19 6 L-13 13" />
+          <path d="M-15 5 L-9 12" />
+          <path d="M-11 5 L-5 12" />
+          <path d="M-7 6 L-1 13" />
+          <path d="M-18 12 L-12 5" />
+          <path d="M-13 13 L-7 6" />
+        </g>
+        <circle cx="16" cy="6" r="2.1" fill="#b5563a" stroke="none" opacity={0.75} />
+      </g>
+      <g transform="translate(80 16) rotate(28)">
+        <path d="M-2 -11 L3 -11 L3 5 L0.5 11 L-2 5 Z" strokeWidth={1.15} />
+      </g>
 
-    <path d="M88 46 C96 43 104 43 112 44" strokeWidth={1.1} strokeDasharray="4 5" />
-    <path d="M108 39 L116 44 L108 49" strokeWidth={1.1} />
+      <path d="M88 44 C96 41 104 41 112 42" strokeWidth={1.05} strokeDasharray="5 5.5" />
+      <path d="M108 37 L116 42 L107 47" strokeWidth={1.05} />
 
-    {/* the phone it lands on — cool glass, white messages */}
-    <g transform="translate(160 40) rotate(2)">
-      <path d="M-16 -27 C-9 -29 9 -29 16 -27 C18 -18 18 18 16 27 C9 29 -9 29 -16 27 C-18 18 -18 -18 -16 -27 Z" fill="#e0f2fe" fillOpacity={0.85} strokeWidth={1.6} />
-      <path d="M-7 22 H7" strokeWidth={1.1} />
-      <path d="M-10 -15 H1 C3 -9 3 -6 1 -2 H-6 C-8 0 -9 1 -11 2 C-10 0 -10 -1 -10 -3 C-11 -7 -11 -11 -10 -15 Z" fill="#ffffff" strokeWidth={1} />
-      <path d="M-10 4 H5 C7 9 7 12 5 15 H-4 C-6 16 -8 18 -10 19 C-9 17 -9 15 -9 13 C-10 10 -10 7 -10 4 Z" fill="#ffffff" strokeWidth={1} />
-    </g>
+      {/* the phone it lands on, indigo pencil down the shaded side */}
+      <g transform="translate(160 38) rotate(2)">
+        <path d="M-16 -27 C-9 -29 9 -29 16 -27 C18 -18 18 18 16 27 C9 29 -9 29 -16 27 C-18 18 -18 -18 -16 -27 Z" strokeWidth={1.7} />
+        <path d="M-7 22 H7" strokeWidth={1.05} />
+        <path d="M-10 -15 H1 C3 -9 3 -6 1 -2 H-6 C-8 0 -9 1 -11 2 C-10 0 -10 -1 -10 -3 C-11 -7 -11 -11 -10 -15 Z" strokeWidth={1} />
+        <path d="M-10 4 H5 C7 9 7 12 5 15 H-4 C-6 16 -8 18 -10 19 C-9 17 -9 15 -9 13 C-10 10 -10 7 -10 4 Z" strokeWidth={1} />
+        <g stroke="#3b4a7a" strokeWidth={0.6} opacity={0.5} fill="none">
+          <path d="M-14 -20 L-8 -13" />
+          <path d="M-14 -12 L-8 -5" />
+          <path d="M-14 6 L-8 13" />
+          <path d="M-14 14 L-8 21" />
+          <path d="M7 -20 L13 -13" />
+          <path d="M7 8 L13 15" />
+        </g>
+      </g>
 
-    {/* the share, in green */}
-    <g stroke="#15803d" strokeWidth={1.1}>
-      <path d="M180 26 C192 17 204 12 216 8" strokeDasharray="3 5" />
-      <path d="M180 38 C196 36 208 36 222 37" strokeDasharray="3 5" />
-      <path d="M180 50 C192 55 204 60 216 66" strokeDasharray="3 5" />
-    </g>
-    <g transform="translate(226 5)">
-      <path d="M-8 -6 H6 C8 -1 8 2 6 6 H-3 L-8 9 V6 H-9 C-10 1 -10 -2 -8 -6 Z" fill="#dcfce7" strokeWidth={1.1} />
-    </g>
-    <g transform="translate(232 36)">
-      <path d="M-8 -4 L8 0 L-8 4 L-5 0 Z" fill="#dbeafe" strokeWidth={1.1} />
-    </g>
-    <g transform="translate(226 69)">
-      <path d="M-8 -4 H8 V5 H-8 Z" fill="#fef9c3" strokeWidth={1.1} />
-      <circle cx="0" cy="0.5" r="2.2" strokeWidth={1} />
-    </g>
+      {/* the share, drawn once and slightly wrong, the way a hand does it */}
+      <path d="M180 25 C 191 16 204 11 215 7" strokeWidth={1.05} strokeDasharray="3 5.5" />
+      <path d="M180 37 C 196 35 209 35 222 36" strokeWidth={1.05} strokeDasharray="3 6" />
+      <path d="M180 49 C 192 54 203 59 215 65" strokeWidth={1.05} strokeDasharray="3 5" />
+      <g transform="translate(225 4)">
+        <path d="M-8 -6 H6 C8 -1 8 2 6 6 H-3 L-8 9 V6 H-9 C-10 1 -10 -2 -8 -6 Z" strokeWidth={1.1} />
+      </g>
+      <g transform="translate(232 36)">
+        <path d="M-8 -4 L8 0 L-8 4 L-5 0 Z" strokeWidth={1.1} />
+      </g>
+      <g transform="translate(225 68) rotate(-2)">
+        <path d="M-8 -4 H8 V5 H-8 Z" strokeWidth={1.1} />
+        <circle cx="0" cy="0.5" r="2.2" strokeWidth={1} />
+      </g>
 
-    <path d="M246 46 C258 44 270 43 280 43" strokeWidth={1.1} strokeDasharray="4 5" />
-    <path d="M276 38 L284 43 L276 49" strokeWidth={1.1} />
+      <path d="M246 44 C 258 42 270 41 280 41" strokeWidth={1.05} strokeDasharray="5 5" />
+      <path d="M275 36 L283 41 L275 47" strokeWidth={1.05} />
 
-    {/* the deal, closed and safe — mint wash inside the shield */}
-    <g transform="translate(316 38) rotate(2)">
-      <path d="M0 -23 C7 -20 13 -18 17 -17 C17 -2 11 10 0 16 C-11 10 -17 -2 -17 -17 C-13 -18 -7 -20 0 -23 Z" fill="#bbf7d0" fillOpacity={0.6} strokeWidth={1.6} />
-      <path d="M-8 -2 C-5 1 -3 4 -1 7 C3 1 7 -4 11 -8" stroke="#15803d" strokeWidth={1.7} />
-    </g>
+      {/* the deal, closed and safe — sage pencil under the tick */}
+      <g transform="translate(316 36) rotate(2)">
+        <path d="M0 -23 C7 -20 13 -18 17 -17 C17 -2 11 10 0 16 C-11 10 -17 -2 -17 -17 C-13 -18 -7 -20 0 -23 Z" strokeWidth={1.7} />
+        <g stroke="#5f8a6a" strokeWidth={0.7} opacity={0.55}>
+          <path d="M-7 7 L-2 13" />
+          <path d="M-3 7 L2 13" />
+          <path d="M1 6 L6 12" />
+          <path d="M-9 12 L-4 6" />
+          <path d="M-5 13 L0 7" />
+        </g>
+        <path d="M-8 -2 C-5 1 -3 4 -1 7 C3 1 7 -4 11 -8" stroke="#4f7d5c" strokeWidth={1.8} />
+      </g>
 
-    {/* one handwritten line, no title, underlined in pencil */}
-    <text
-      x="180"
-      y="96"
-      textAnchor="middle"
-      fontSize="14"
-      fontWeight="500"
-      fontFamily="'Caveat', 'Bradley Hand', 'Segoe Script', cursive"
-      fill="currentColor"
-      stroke="none"
-    >
-      safe, secure and easy — the modern way
-    </text>
-
-    {/* a little life in the margins, in two inks */}
-    <g transform="translate(22 18) rotate(-6)" stroke="#f59e0b" strokeWidth={0.85} opacity={0.9}>
-      <path d="M0 -6 C1 -3 2 -1 6 0 C2 1 1 3 0 6 C-1 3 -2 1 -6 0 C-2 -1 -1 -3 0 -6" />
+      {/* two pencils in the margins, and a fleck of each */}
+      <g transform="translate(20 16) rotate(-7)" stroke="#bf8a2e" strokeWidth={0.85}>
+        <path d="M0 -6 C1 -3 2 -1 6 0 C2 1 1 3 0 6 C-1 3 -2 1 -6 0 C-2 -1 -1 -3 0 -6" />
+      </g>
+      <g transform="translate(345 30) rotate(9)" stroke="#b5563a" strokeWidth={0.8} opacity={0.85}>
+        <path d="M0 -5 C1 -2.5 2 -1 5 0 C2 1 1 2.5 0 5 C-1 2.5 -2 1 -5 0 C-2 -1 -1 -2.5 0 -5" />
+      </g>
+      <circle cx="120" cy="18" r="1.4" fill="#3b4a7a" stroke="none" opacity={0.55} />
+      <circle cx="252" cy="72" r="1.3" fill="#b5563a" stroke="none" opacity={0.5} />
     </g>
-    <g transform="translate(346 40) rotate(8)" stroke="#fb7185" strokeWidth={0.85} opacity={0.85}>
-      <path d="M0 -5 C1 -2.5 2 -1 5 0 C2 1 1 2.5 0 5 C-1 2.5 -2 1 -5 0 C-2 -1 -1 -2.5 0 -5" />
-    </g>
-    <circle cx="122" cy="20" r="1.5" fill="#60a5fa" stroke="none" opacity={0.7} />
-    <circle cx="252" cy="74" r="1.4" fill="#fb7185" stroke="none" opacity={0.6} />
   </svg>
 );
 
