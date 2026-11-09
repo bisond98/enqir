@@ -59,7 +59,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
-import { MuralDoodles, DescriptionDoodles, LocationDoodles, BudgetDoodles, DeadlineDoodles, EnquiryHeaderDoodles } from "@/components/doodles";
+import { MuralDoodles, DescriptionDoodles, LocationDoodles, BudgetDoodles, DeadlineDoodles, EnquiryHeaderDoodles, MagnifierDoodle } from "@/components/doodles";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -2432,7 +2432,7 @@ const DEADLINE_STEP = 5;
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                       <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
                       <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Post Your Enquiry.</span>
-                      <Search className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
+                      <MagnifierDoodle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white/85" />
               </h1>
                   </div>
             

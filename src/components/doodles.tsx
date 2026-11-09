@@ -546,6 +546,26 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
   </svg>
 );
 
+// ── The magnifier that sits beside the "Post Your Enquiry" title ─────────────
+// Same pen as the mural, not a UI glyph: a slightly off-true lens, one glint and
+// a thick handle, drawn in currentColor so it can sit on the black header.
+export const MagnifierDoodle = ({ className = "" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.7}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M11.6 2.4 C15 2.4 17.6 5.1 17.6 8.4 C17.6 11.7 15 14.4 11.6 14.4 C8.2 14.4 5.6 11.7 5.6 8.4 C5.6 5.1 8.2 2.4 11.6 2.4 Z" />
+    <path d="M8.7 6.1 C9.3 5.1 10.3 4.4 11.4 4.3" strokeWidth={1} opacity={0.8} />
+    <path d="M15.4 12.2 L20 16.8" strokeWidth={2.4} />
+  </svg>
+);
+
 // ── Writing doodle for the description tab ───────────────────────────────────
 // Same thin, connected mural language, drawn around words: manuscript ribbons
 // run through the page, carrying a written sheet, a pencil, speech bubbles, a
