@@ -4128,7 +4128,7 @@ const DEADLINE_STEP = 5;
 
         {/* Phones only: the sketch sits directly under the form card, using the
             space that used to run empty down to the footer */}
-        <div className="sm:hidden px-4 -mt-2 text-gray-900">
+        <div className="sm:hidden px-4 pt-1 text-gray-900">
           <DealFlowSketch className="w-full h-auto" />
         </div>
       </div>
