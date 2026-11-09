@@ -59,7 +59,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
-import { MuralDoodles, DescriptionDoodles, LocationDoodles, BudgetDoodles, DeadlineDoodles, EnquiryHeaderDoodles, MagnifierDoodle, DealFlowSketch } from "@/components/doodles";
+import { EnquiryHeaderDoodles, MagnifierDoodle, DealFlowSketch } from "@/components/doodles";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -2525,23 +2525,8 @@ const DEADLINE_STEP = 5;
               </div>
 
               <CardContent className="relative pt-6 sm:pt-8 pb-6 flex flex-col">
-                {/* Doodle watermark behind the tab content — one scene per tab,
-                    absolute so it adds no space and moves nothing. */}
-                {(step >= 0 && step <= DEADLINE_STEP) && (
-                  <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden">
-                    {step === 2 ? (
-                      <DescriptionDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
-                    ) : step === 3 ? (
-                      <LocationDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
-                    ) : step === BUDGET_STEP ? (
-                      <BudgetDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
-                    ) : step === DEADLINE_STEP ? (
-                      <DeadlineDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
-                    ) : (
-                      <MuralDoodles className="absolute inset-0 h-full w-full opacity-[0.07]" />
-                    )}
-                  </div>
-                )}
+                {/* The card is left clean: the old doodle watermark that sat
+                    behind the form fields has been removed. */}
                 {/* Step Icon */}
                 <div id="step-top" className="scroll-mt-3">
                   <div className="mx-auto mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-black bg-black text-white">
