@@ -321,7 +321,7 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
     aria-hidden="true"
   >
     {/* ── the need, posted: a hand-drawn bubble with three written lines */}
-    <g transform="translate(120 108) rotate(-6)">
+    <g transform="translate(120 108) rotate(-6) scale(0.8)">
       <path
         d="M-44 -18 C-38 -26 -20 -30 2 -30 C24 -30 40 -24 42 -12 C44 0 34 10 16 12 C2 14 -10 13 -20 12 C-28 17 -34 22 -42 24 C-40 18 -38 12 -38 8 C-44 2 -46 -4 -46 -10 C-46 -14 -45 -16 -44 -18 Z"
         strokeWidth={1.9}
@@ -334,12 +334,7 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
       <circle cx="38" cy="4" r="1.7" fill="currentColor" stroke="none" />
     </g>
 
-    {/* ── the search that finds it */}
-    <g transform="translate(214 72) rotate(16)">
-      <path d="M2 -22 C14 -22 24 -12 24 0 C24 12 14 22 2 22 C-10 22 -20 12 -20 0 C-20 -12 -10 -22 2 -22 Z" strokeWidth={2.1} />
-      <path d="M-8 -12 C-5 -16 0 -18 5 -18" strokeWidth={1.1} opacity="0.8" />
-      <path d="M16 16 C21 21 26 26 30 30" strokeWidth={3.4} />
-    </g>
+    {/* the magnifier now sits beside the title itself, not in the mural */}
 
     {/* the match, travelling from the need to the seller */}
     <path d="M236 126 C246 121 254 117 262 113" strokeWidth={1.1} strokeDasharray="3 6" opacity="0.85" />
@@ -347,7 +342,7 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
 
     {/* ── the seller's hang tag, tied off the top edge */}
     <path d="M300 6 C298 26 300 48 304 66" strokeWidth={1} strokeDasharray="2 5" opacity="0.85" />
-    <g transform="translate(302 98) rotate(-14)">
+    <g transform="translate(302 98) rotate(-14) scale(0.8)">
       <path d="M-30 -17 H8 L28 0 L8 17 H-30 Z" strokeWidth={1.9} />
       <path d="M-30 -17 V17" strokeWidth={1.9} />
       <circle cx="-22" cy="0" r="2.5" strokeWidth={1.3} />
@@ -366,7 +361,7 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
     </g>
 
     {/* ── a home on the market, chimney smoking */}
-    <g transform="translate(518 190) rotate(-2)">
+    <g transform="translate(518 190) rotate(-2) scale(0.8)">
       <path d="M-34 10 V-10 L0 -32 L34 -10 V10" strokeWidth={1.9} />
       <path d="M-37 10 H37" strokeWidth={1.6} />
       <path d="M17 -17 V-27 H26 V-12" strokeWidth={1.4} />
@@ -377,7 +372,7 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
     </g>
 
     {/* ── the coins that close the deal */}
-    <g transform="translate(626 196) rotate(-3)">
+    <g transform="translate(626 196) rotate(-3) scale(0.8)">
       <path d="M-20 2 C-20 -2 -11 -5 0 -5 C11 -5 20 -2 20 2 V12 C20 16 11 19 0 19 C-11 19 -20 16 -20 12 Z" strokeWidth={1.7} />
       <ellipse cx="0" cy="2" rx="20" ry="6" strokeWidth={1.4} />
       <ellipse cx="0" cy="-8" rx="20" ry="6" strokeWidth={1.3} opacity="0.9" />
@@ -385,7 +380,7 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
     </g>
 
     {/* ── what the seller puts up: a shirt on its hanger, and the car */}
-    <g transform="translate(700 74) rotate(7)">
+    <g transform="translate(700 74) rotate(7) scale(0.8)">
       <path d="M-6 -30 C-2 -34 7 -34 11 -30 C13 -28 11 -25 7 -24" strokeWidth={1.1} />
       <path d="M7 -24 L1 -18" strokeWidth={1.1} />
       <path
@@ -394,7 +389,7 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
       />
       <path d="M-13 -12 C-6 -16 0 -17 6 -16" strokeWidth={1} opacity="0.7" />
     </g>
-    <g transform="translate(778 178) rotate(-2)">
+    <g transform="translate(778 178) rotate(-2) scale(0.8)">
       <path d="M-46 8 C-46 2 -40 -3 -32 -4 C-24 -18 -12 -24 2 -23 C14 -22 22 -16 28 -6 C36 -5 42 0 42 8" strokeWidth={1.9} />
       <path d="M-46 8 H42" strokeWidth={1.7} />
       <path d="M-16 -4 C-10 -14 -2 -18 8 -17 C16 -16 22 -12 26 -5" strokeWidth={1.2} />
@@ -406,26 +401,26 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
     </g>
 
     {/* ── a small trade in the corner, so the far left is not bare */}
-    <g transform="translate(56 196) rotate(-7)">
+    <g transform="translate(56 196) rotate(-7) scale(0.8)">
       <path d="M-14 -12 H6 L16 0 L6 12 H-14 Z" strokeWidth={1.6} />
       <circle cx="-8" cy="0" r="2" strokeWidth={1.1} />
       <path d="M-4 -2 C0 -4 4 -4 8 -2 M-4 3 C0 1 4 1 8 3" strokeWidth={1} opacity="0.8" />
     </g>
 
     {/* ── filling the rest of the band: a phone, a parcel, a coin, a plane */}
-    <g transform="translate(44 84) rotate(-8)">
+    <g transform="translate(44 84) rotate(-8) scale(0.8)">
       <path d="M-9 -16 c3 -1 8 -1 11 0 c2 1 2 3 2 5 v18 c0 3 -1 4 -3 5 c-4 1 -8 1 -11 0 c-2 -1 -3 -2 -3 -5 v-18 c0 -2 1 -4 3 -5 z" strokeWidth={1.5} />
       <path d="M-4 -12 H4" strokeWidth={1.1} />
       <circle cx="0" cy="9" r="1.4" strokeWidth={1} />
     </g>
-    <g transform="translate(444 208) rotate(-4)">
+    <g transform="translate(444 208) rotate(-4) scale(0.8)">
       <path d="M-22 -10 H22 V12 H-22 Z" strokeWidth={1.7} />
       <path d="M-22 -10 L-15 -17 H29 L22 -10" strokeWidth={1.4} />
       <path d="M22 -10 L29 -17 V5 L22 12" strokeWidth={1.4} />
       <path d="M-6 -14 V12" strokeWidth={1.1} opacity="0.75" />
       <path d="M-14 2 H-4" strokeWidth={1} opacity="0.7" />
     </g>
-    <g transform="translate(566 206) rotate(6)">
+    <g transform="translate(566 206) rotate(6) scale(0.8)">
       <path d="M0 -18 C10 -18 18 -11 18 0 C18 11 10 18 0 18 C-10 18 -18 11 -18 0 C-18 -11 -10 -18 0 -18 Z" strokeWidth={1.7} />
       <path d="M-6 -6 C-2 -8 2 -8 6 -6 M-6 0 H6 M-2 -8 V8" strokeWidth={1.2} opacity="0.9" />
     </g>
@@ -436,11 +431,11 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
     </g>
 
     {/* ── what people leave behind: a plant, a pair of glasses */}
-    <g transform="translate(276 190) rotate(5)">
+    <g transform="translate(276 190) rotate(5) scale(0.8)">
       <path d="M-9 10 H9 L7 0 H-7 Z" strokeWidth={1.4} />
       <path d="M0 0 V-8 M0 -6 C-6 -6 -8 -11 -8 -14 C-2 -14 0 -10 0 -6 M0 -6 C6 -6 8 -11 8 -14 C2 -14 0 -10 0 -6" strokeWidth={1.2} />
     </g>
-    <g transform="translate(170 178) rotate(-6)">
+    <g transform="translate(170 178) rotate(-6) scale(0.8)">
       <circle cx="-11" cy="0" r="7" strokeWidth={1.5} />
       <circle cx="11" cy="0" r="7" strokeWidth={1.5} />
       <path d="M-4 0 C-2 -2 2 -2 4 0 M-18 0 H-24 M18 0 H24" strokeWidth={1.2} />
@@ -449,14 +444,14 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
     {/* ── the street the marketplace lives on, and birds going home */}
     <path d="M-10 226 C 70 214 130 232 210 222 C 290 212 350 230 430 220 C 510 210 570 228 650 218 C 730 208 790 226 870 216 C 890 213 900 214 910 214" strokeWidth={1.2} opacity="0.6" />
     <path d="M624 44 C630 38 636 38 641 44 M648 36 C653 31 658 31 662 37 M612 32 C616 28 620 28 623 32" strokeWidth={1.2} opacity="0.85" />
-    <g transform="translate(872 128) rotate(1)">
+    <g transform="translate(872 128) rotate(1) scale(0.8)">
       <path d="M0 52 V-26" strokeWidth={2} />
       <path d="M-11 52 H11" strokeWidth={1.8} />
       <path d="M0 -26 C0 -36 14 -36 14 -26" strokeWidth={1.5} />
       <path d="M7 -26 H21 V-14 H7 Z" strokeWidth={1.5} />
       <path d="M4 -12 H24" strokeWidth={1.2} />
     </g>
-    <g transform="translate(806 104) rotate(-6)">
+    <g transform="translate(806 104) rotate(-6) scale(0.8)">
       <path d="M-7 9 H7 L5 0 H-5 Z" strokeWidth={1.3} />
       <path d="M0 0 V-7 M0 -5 C-5 -5 -7 -9 -7 -12 C-1 -12 0 -8 0 -5 M0 -5 C5 -5 7 -9 7 -12 C1 -12 0 -8 0 -5" strokeWidth={1.1} />
     </g>
@@ -465,32 +460,32 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
         of this drawing, so the space above the title and below the subtitle is
         packed with the categories people actually trade here */}
     <g opacity="0.9">
-      <Glyph kind="phone" x={322} y={22} rot={-8} s={0.6} />
-      <Glyph kind="tag" x={368} y={34} rot={10} s={0.55} />
-      <Glyph kind="book" x={414} y={18} rot={-4} s={0.6} />
-      <Glyph kind="watch" x={462} y={36} rot={8} s={0.55} />
-      <Glyph kind="camera" x={512} y={20} rot={-6} s={0.6} />
-      <Glyph kind="bag" x={556} y={34} rot={6} s={0.55} />
-      <Glyph kind="dumbbell" x={594} y={16} rot={-10} s={0.5} />
+      <Glyph kind="phone" x={322} y={22} rot={-8} s={0.48} />
+      <Glyph kind="tag" x={368} y={34} rot={10} s={0.44} />
+      <Glyph kind="book" x={414} y={18} rot={-4} s={0.48} />
+      <Glyph kind="watch" x={462} y={36} rot={8} s={0.44} />
+      <Glyph kind="camera" x={512} y={20} rot={-6} s={0.48} />
+      <Glyph kind="bag" x={556} y={34} rot={6} s={0.44} />
+      <Glyph kind="dumbbell" x={594} y={16} rot={-10} s={0.40} />
 
-      <Glyph kind="mug" x={314} y={196} rot={-6} s={0.6} />
-      <Glyph kind="plant" x={358} y={216} rot={6} s={0.55} />
-      <Glyph kind="chair" x={404} y={188} rot={-4} s={0.6} />
-      <Glyph kind="tag" x={500} y={192} rot={-8} s={0.55} />
-      <Glyph kind="bike" x={546} y={216} rot={0} s={0.6} />
-      <Glyph kind="car" x={592} y={190} rot={4} s={0.55} />
+      <Glyph kind="mug" x={314} y={196} rot={-6} s={0.48} />
+      <Glyph kind="plant" x={358} y={216} rot={6} s={0.44} />
+      <Glyph kind="chair" x={404} y={188} rot={-4} s={0.48} />
+      <Glyph kind="tag" x={500} y={192} rot={-8} s={0.44} />
+      <Glyph kind="bike" x={546} y={216} rot={0} s={0.48} />
+      <Glyph kind="car" x={592} y={190} rot={4} s={0.44} />
     </g>
 
     {/* and the outer columns, so the wider screens fill too */}
     <g opacity="0.85">
-      <Glyph kind="tee" x={242} y={58} rot={-6} s={0.55} />
-      <Glyph kind="bag" x={108} y={52} rot={8} s={0.5} />
-      <Glyph kind="house" x={246} y={132} rot={-3} s={0.55} />
-      <Glyph kind="chair" x={700} y={132} rot={5} s={0.55} />
-      <Glyph kind="camera" x={770} y={118} rot={-7} s={0.5} />
-      <Glyph kind="watch" x={858} y={178} rot={4} s={0.55} />
-      <Glyph kind="dumbbell" x={654} y={214} rot={0} s={0.5} />
-      <Glyph kind="phone" x={126} y={196} rot={-5} s={0.5} />
+      <Glyph kind="tee" x={242} y={58} rot={-6} s={0.44} />
+      <Glyph kind="bag" x={108} y={52} rot={8} s={0.40} />
+      <Glyph kind="house" x={246} y={132} rot={-3} s={0.44} />
+      <Glyph kind="chair" x={700} y={132} rot={5} s={0.44} />
+      <Glyph kind="camera" x={770} y={118} rot={-7} s={0.40} />
+      <Glyph kind="watch" x={858} y={178} rot={4} s={0.44} />
+      <Glyph kind="dumbbell" x={654} y={214} rot={0} s={0.40} />
+      <Glyph kind="phone" x={126} y={196} rot={-5} s={0.40} />
     </g>
 
     {/* ── ink texture: hatching, grain and the artist's sparkles */}
@@ -507,16 +502,16 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
       <path d="M84 60 C104 48 128 46 148 52" />
       <path d="M846 116 C862 108 876 108 890 112" />
     </g>
-    <Spark x={58} y={42} s={1.35} rot={-8} />
-    <Spark x={862} y={52} s={1.2} rot={6} />
-    <Spark x={252} y={166} s={0.7} rot={10} sw={0.9} />
-    <Spark x={470} y={46} s={0.8} rot={-4} sw={0.9} />
-    <Spark x={822} y={214} s={0.6} rot={12} sw={0.8} />
-    <Spark x={330} y={212} s={0.75} rot={-8} sw={0.85} />
-    <Spark x={700} y={22} s={0.85} rot={6} sw={0.9} />
-    <Spark x={186} y={44} s={0.9} rot={-4} sw={0.9} />
-    <Spark x={640} y={196} s={0.65} rot={10} sw={0.8} />
-    <Spark x={508} y={140} s={0.55} rot={14} sw={0.75} />
+    <Spark x={58} y={42} s={1.08} rot={-8} />
+    <Spark x={862} y={52} s={0.96} rot={6} />
+    <Spark x={252} y={166} s={0.56} rot={10} sw={0.9} />
+    <Spark x={470} y={46} s={0.64} rot={-4} sw={0.9} />
+    <Spark x={822} y={214} s={0.48} rot={12} sw={0.8} />
+    <Spark x={330} y={212} s={0.60} rot={-8} sw={0.85} />
+    <Spark x={700} y={22} s={0.68} rot={6} sw={0.9} />
+    <Spark x={186} y={44} s={0.72} rot={-4} sw={0.9} />
+    <Spark x={640} y={196} s={0.52} rot={10} sw={0.8} />
+    <Spark x={508} y={140} s={0.44} rot={14} sw={0.75} />
     <circle cx="24" cy="112" r="1.8" fill="currentColor" stroke="none" />
     <circle cx="186" cy="34" r="1.5" fill="currentColor" stroke="none" />
     <circle cx="322" cy="196" r="1.6" fill="currentColor" stroke="none" />
