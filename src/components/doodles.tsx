@@ -547,13 +547,13 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
 );
 
 // ── The mobile sketch above the footer ──────────────────────────────────────
-// No heading and no step labels: just the three beats drawn in the gap that
-// already exists between the post-enquiry card and the footer — a written
-// enquiry, the phone it lands on with its share arcs to other apps, and the
-// deal closed under a shield — then one small hand-lettered line underneath.
+// Minimal on purpose: three beats and one line of hand lettering, spread edge to
+// edge so the strip fills the gap between the post-enquiry card and the footer —
+// a written enquiry, the phone it lands on with its share arcs, and the deal
+// closed under a shield. No heading, nothing decorative beyond two sparkles.
 export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
   <svg
-    viewBox="0 0 360 96"
+    viewBox="0 0 360 104"
     className={className}
     fill="none"
     stroke="currentColor"
@@ -562,60 +562,60 @@ export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    {/* the line the whole scene stands on */}
-    <path d="M12 68 C 78 64 140 69 200 66 C 252 64 302 67 348 65" strokeWidth={1.1} opacity={0.5} />
+    {/* the line the whole scene stands on, edge to edge */}
+    <path d="M4 72 C 74 67 140 73 200 70 C 258 67 306 71 356 68" strokeWidth={1.1} opacity={0.5} />
 
     {/* the enquiry, written out */}
-    <g transform="translate(54 40) rotate(-3)">
-      <path d="M-22 -14 C-10 -17 8 -17 21 -14 C24 -7 24 4 21 11 C10 14 -6 14 -16 12 C-20 14 -23 17 -26 18 C-23 13 -22 10 -22 7 C-24 1 -24 -8 -22 -14 Z" strokeWidth={1.5} />
-      <path d="M-14 -7 C-5 -9 6 -9 13 -7" strokeWidth={0.9} />
-      <path d="M-12 -1 C-4 -3 4 -3 10 -2" strokeWidth={0.9} />
+    <g transform="translate(50 42) rotate(-3)">
+      <path d="M-25 -16 C-11 -19 9 -19 24 -16 C27 -8 27 4 24 12 C11 16 -7 16 -18 14 C-23 16 -26 19 -30 20 C-26 15 -25 11 -25 8 C-27 1 -27 -9 -25 -16 Z" strokeWidth={1.6} />
+      <path d="M-16 -8 C-6 -10 6 -10 15 -8" strokeWidth={0.95} />
+      <path d="M-14 -1 C-5 -3 5 -3 11 -2" strokeWidth={0.95} />
     </g>
     <g transform="translate(80 18) rotate(28)">
-      <path d="M-2 -10 L3 -10 L3 5 L0.5 10 L-2 5 Z" strokeWidth={1.1} />
+      <path d="M-2 -11 L3 -11 L3 5 L0.5 11 L-2 5 Z" strokeWidth={1.1} />
     </g>
 
-    <path d="M84 44 C92 41 100 41 108 42" strokeWidth={1.1} strokeDasharray="4 5" />
-    <path d="M104 37 L112 42 L104 47" strokeWidth={1.1} />
+    <path d="M88 46 C96 43 104 43 112 44" strokeWidth={1.1} strokeDasharray="4 5" />
+    <path d="M108 39 L116 44 L108 49" strokeWidth={1.1} />
 
     {/* the phone it lands on, and the places it can travel */}
-    <g transform="translate(150 36) rotate(2)">
-      <path d="M-14 -24 C-8 -26 8 -26 14 -24 C16 -16 16 16 14 24 C8 26 -8 26 -14 24 C-16 16 -16 -16 -14 -24 Z" strokeWidth={1.5} />
-      <path d="M-6 20 H6" strokeWidth={1.1} />
-      <path d="M-9 -13 H1 C3 -8 3 -5 1 -2 H-5 C-7 0 -8 1 -10 2 C-9 0 -9 -1 -9 -3 C-10 -6 -10 -10 -9 -13 Z" strokeWidth={1} />
-      <path d="M-9 4 H4 C6 8 6 11 4 14 H-4 C-6 15 -8 16 -9 17 C-8 15 -8 13 -8 11 C-9 9 -9 6 -9 4 Z" strokeWidth={1} />
+    <g transform="translate(160 40) rotate(2)">
+      <path d="M-16 -27 C-9 -29 9 -29 16 -27 C18 -18 18 18 16 27 C9 29 -9 29 -16 27 C-18 18 -18 -18 -16 -27 Z" strokeWidth={1.6} />
+      <path d="M-7 22 H7" strokeWidth={1.1} />
+      <path d="M-10 -15 H1 C3 -9 3 -6 1 -2 H-6 C-8 0 -9 1 -11 2 C-10 0 -10 -1 -10 -3 C-11 -7 -11 -11 -10 -15 Z" strokeWidth={1} />
+      <path d="M-10 4 H5 C7 9 7 12 5 15 H-4 C-6 16 -8 18 -10 19 C-9 17 -9 15 -9 13 C-10 10 -10 7 -10 4 Z" strokeWidth={1} />
     </g>
     <g stroke="#16a34a" strokeWidth={1.1}>
-      <path d="M168 24 C180 16 190 12 200 8" strokeDasharray="3 5" />
-      <path d="M168 34 C182 32 192 32 204 33" strokeDasharray="3 5" />
-      <path d="M168 44 C180 49 190 53 200 58" strokeDasharray="3 5" />
+      <path d="M180 26 C192 17 204 12 216 8" strokeDasharray="3 5" />
+      <path d="M180 38 C196 36 208 36 222 37" strokeDasharray="3 5" />
+      <path d="M180 50 C192 55 204 60 216 66" strokeDasharray="3 5" />
     </g>
-    <g transform="translate(210 6)">
-      <path d="M-7 -5 H5 C7 -1 7 2 5 5 H-3 L-7 8 V5 H-8 C-9 1 -9 -2 -7 -5 Z" strokeWidth={1.1} />
+    <g transform="translate(226 5)">
+      <path d="M-8 -6 H6 C8 -1 8 2 6 6 H-3 L-8 9 V6 H-9 C-10 1 -10 -2 -8 -6 Z" strokeWidth={1.1} />
     </g>
-    <g transform="translate(214 33)">
-      <path d="M-7 -4 L7 0 L-7 4 L-4.5 0 Z" strokeWidth={1.1} />
+    <g transform="translate(232 36)">
+      <path d="M-8 -4 L8 0 L-8 4 L-5 0 Z" strokeWidth={1.1} />
     </g>
-    <g transform="translate(210 61)">
-      <path d="M-7 -4 H7 V5 H-7 Z" strokeWidth={1.1} />
+    <g transform="translate(226 69)">
+      <path d="M-8 -4 H8 V5 H-8 Z" strokeWidth={1.1} />
       <circle cx="0" cy="0.5" r="2.2" strokeWidth={1} />
     </g>
 
-    <path d="M228 42 C240 40 252 39 262 39" strokeWidth={1.1} strokeDasharray="4 5" />
-    <path d="M258 34 L266 39 L258 45" strokeWidth={1.1} />
+    <path d="M246 46 C258 44 270 43 280 43" strokeWidth={1.1} strokeDasharray="4 5" />
+    <path d="M276 38 L284 43 L276 49" strokeWidth={1.1} />
 
     {/* the deal, closed and safe */}
-    <g transform="translate(296 36) rotate(2)">
-      <path d="M0 -20 C6 -17 11 -16 15 -15 C15 -1 10 9 0 14 C-10 9 -15 -1 -15 -15 C-11 -16 -6 -17 0 -20 Z" strokeWidth={1.5} />
-      <path d="M-7 -2 C-4.5 1 -3 3.5 -1 6 C2.5 1 6 -3 9.5 -7" strokeWidth={1.5} />
+    <g transform="translate(316 38) rotate(2)">
+      <path d="M0 -23 C7 -20 13 -18 17 -17 C17 -2 11 10 0 16 C-11 10 -17 -2 -17 -17 C-13 -18 -7 -20 0 -23 Z" strokeWidth={1.6} />
+      <path d="M-8 -2 C-5 1 -3 4 -1 7 C3 1 7 -4 11 -8" strokeWidth={1.6} />
     </g>
 
     {/* one handwritten line, no title */}
     <text
       x="180"
-      y="88"
+      y="96"
       textAnchor="middle"
-      fontSize="13"
+      fontSize="14"
       fontWeight="500"
       fontFamily="'Caveat', 'Bradley Hand', 'Segoe Script', cursive"
       fill="currentColor"
@@ -624,19 +624,13 @@ export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
       safe, secure and easy — the modern way
     </text>
 
-    {/* a little life in the margins */}
-    <g transform="translate(26 16) rotate(-6)">
+    {/* two sparkles, nothing more */}
+    <g transform="translate(22 18) rotate(-6)">
       <path d="M0 -6 C1 -3 2 -1 6 0 C2 1 1 3 0 6 C-1 3 -2 1 -6 0 C-2 -1 -1 -3 0 -6" strokeWidth={0.85} />
     </g>
-    <g transform="translate(334 44) rotate(8)">
+    <g transform="translate(346 40) rotate(8)">
       <path d="M0 -5 C1 -2.5 2 -1 5 0 C2 1 1 2.5 0 5 C-1 2.5 -2 1 -5 0 C-2 -1 -1 -2.5 0 -5" strokeWidth={0.85} />
     </g>
-    <g opacity={0.5} strokeWidth={0.9}>
-      <path d="M32 58 l5 -7 M41 60 l5 -7" />
-      <path d="M312 60 l5 -7 M321 62 l5 -7" />
-    </g>
-    <circle cx="122" cy="20" r="1.4" fill="currentColor" stroke="none" />
-    <circle cx="250" cy="72" r="1.3" fill="currentColor" stroke="none" />
   </svg>
 );
 
