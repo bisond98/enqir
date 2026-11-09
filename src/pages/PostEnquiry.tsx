@@ -4140,6 +4140,12 @@ const DEADLINE_STEP = 5;
             />
           )}
         </div>
+
+        {/* Phones only: the sketch sits directly under the form card, using the
+            space that used to run empty down to the footer */}
+        <div className="sm:hidden px-4 -mt-2 text-gray-900">
+          <DealFlowSketch className="w-full h-auto" />
+        </div>
       </div>
 
       {/* Simplified Payment Modal */}
@@ -4235,12 +4241,6 @@ const DEADLINE_STEP = 5;
           </div>
         </div>
       )}
-
-      {/* Phones only: the sketch drops into the gap that already sits between
-          the form card and the footer, adding no section of its own */}
-      <div className="sm:hidden px-3 -mt-2 text-gray-900">
-        <DealFlowSketch className="w-full h-auto" />
-      </div>
 
     </Layout>
   );
