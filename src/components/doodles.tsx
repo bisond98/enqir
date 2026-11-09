@@ -553,7 +553,7 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
 // caption and no colour fields; the paper is left as paper.
 export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
   <svg
-    viewBox="0 0 360 86"
+    viewBox="0 -8 360 94"
     className={className}
     fill="none"
     stroke="currentColor"
