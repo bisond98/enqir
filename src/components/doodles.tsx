@@ -661,8 +661,8 @@ export const SellListingSketch = ({ className = "" }: { className?: string }) =>
     viewBox="0 -8 360 94"
     className={className}
     fill="none"
-    stroke="currentColor"
-    strokeWidth={1.55}
+    stroke="#0f172a"
+    strokeWidth={1.7}
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-hidden="true"
