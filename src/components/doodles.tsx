@@ -546,6 +546,131 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
   </svg>
 );
 
+// ── The mobile note under the post-enquiry card ──────────────────────────────
+// Drawn like a page torn from a sketchbook: a freehand frame with an overshoot at
+// the left edge, three beats — post it, share it, close it — lettered by hand in
+// Caveat with a wobbled underline, dashed arrows, a green share arc, hatching and
+// a couple of sparkles. Shown above the footer on phones only.
+export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 360 254"
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.3}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    {/* the frame, and the artist's overshoot at the left edge */}
+    <path
+      d="M16 18 C 98 11 178 13 252 10 C 302 8 344 11 347 18 C 349 62 346 150 348 216 C 349 240 344 245 335 244 C 250 247 120 248 31 245 C 19 244 15 238 16 227 C 14 160 16 72 16 18 Z"
+      strokeWidth={1.4}
+    />
+    <path d="M10 24 C 12 78 10 152 13 220" strokeWidth={0.9} opacity={0.45} />
+
+    {/* lettering */}
+    <text
+      x="180"
+      y="42"
+      textAnchor="middle"
+      fontSize="27"
+      fontWeight="700"
+      fontFamily="'Caveat', 'Bradley Hand', 'Segoe Script', cursive"
+      fill="currentColor"
+      stroke="none"
+      transform="rotate(-1.4 180 42)"
+    >
+      post it. share it. close it.
+    </text>
+    <path d="M72 51 C 108 46 148 48 184 45 C 212 43 244 46 288 44" strokeWidth={1} opacity={0.65} />
+
+    {/* beat one — the enquiry, written out */}
+    <g transform="translate(66 104) rotate(-3)">
+      <path d="M-30 -18 C-14 -22 12 -22 28 -18 C31 -8 31 6 28 16 C14 20 -8 20 -22 17 C-27 20 -31 23 -35 24 C-31 18 -30 14 -30 10 C-33 2 -33 -10 -30 -18 Z" strokeWidth={1.4} />
+      <path d="M-20 -9 C-8 -12 8 -12 18 -9" strokeWidth={0.9} />
+      <path d="M-18 -2 C-6 -5 6 -5 15 -3" strokeWidth={0.9} />
+      <path d="M-16 5 C-8 3 0 3 7 4" strokeWidth={0.9} />
+    </g>
+    <g transform="translate(107 84) rotate(26)">
+      <path d="M-2 -12 L4 -12 L4 6 L1 12 L-2 6 Z" strokeWidth={1.1} />
+      <path d="M1 12 V4" strokeWidth={0.9} />
+    </g>
+
+    <path d="M108 116 C120 112 132 112 144 113" strokeWidth={1.1} strokeDasharray="4 5" />
+    <path d="M140 107 L148 113 L140 119" strokeWidth={1.1} />
+
+    {/* beat two — the phone it lands on, and the places it can go */}
+    <g transform="translate(186 100) rotate(2)">
+      <path d="M-18 -30 C-10 -32 10 -32 18 -30 C20 -20 20 20 18 30 C10 32 -10 32 -18 30 C-20 20 -20 -20 -18 -30 Z" strokeWidth={1.5} />
+      <path d="M-8 25 H8" strokeWidth={1.1} />
+      <path d="M-12 -16 H1 C3 -10 3 -6 1 -2 H-7 C-9 0 -11 2 -13 3 C-12 0 -12 -2 -12 -4 C-13 -8 -13 -12 -12 -16 Z" strokeWidth={1} />
+      <path d="M-9 -9 H-3" strokeWidth={0.9} />
+      <path d="M-12 5 H5 C7 9 7 13 5 17 H-5 C-7 18 -9 20 -11 21 C-10 18 -10 16 -10 14 C-11 11 -12 8 -12 5 Z" strokeWidth={1} />
+      <path d="M-8 12 H0" strokeWidth={0.9} />
+    </g>
+    <g stroke="#16a34a" strokeWidth={1.1}>
+      <path d="M212 90 C226 81 238 76 250 72" strokeDasharray="3 5" />
+      <path d="M213 99 C229 97 241 97 254 98" strokeDasharray="3 5" />
+      <path d="M212 108 C226 113 238 118 250 123" strokeDasharray="3 5" />
+    </g>
+    <g transform="translate(262 66)">
+      <path d="M-8 -6 H6 C8 -1 8 2 6 6 H-3 L-8 9 V6 H-9 C-10 1 -10 -2 -8 -6 Z" strokeWidth={1.1} />
+    </g>
+    <g transform="translate(266 98)">
+      <path d="M-8 -4 L8 0 L-8 4 L-5 0 Z" strokeWidth={1.1} />
+    </g>
+    <g transform="translate(262 128)">
+      <path d="M-8 -4 H8 V5 H-8 Z" strokeWidth={1.1} />
+      <circle cx="0" cy="0.5" r="2.4" strokeWidth={1} />
+    </g>
+
+    <path d="M206 134 C232 142 264 137 288 126" strokeWidth={1.1} strokeDasharray="4 5" />
+    <path d="M281 118 L290 125 L280 131" strokeWidth={1.1} />
+
+    {/* beat three — the deal, closed and safe */}
+    <g transform="translate(306 100) rotate(2)">
+      <path d="M0 -22 C7 -19 13 -18 18 -17 C18 -2 12 10 0 16 C-12 10 -18 -2 -18 -17 C-13 -18 -7 -19 0 -22 Z" strokeWidth={1.5} />
+      <path d="M-8 -2 C-5 1 -3 4 -1 7 C3 1 7 -4 11 -8" strokeWidth={1.5} />
+    </g>
+
+    {/* captions, written under each beat */}
+    <text x="66" y="156" textAnchor="middle" fontSize="17" fontWeight="600" fontFamily="'Caveat', 'Bradley Hand', 'Segoe Script', cursive" fill="currentColor" stroke="none">
+      post the enquiry
+    </text>
+    <text x="196" y="152" textAnchor="middle" fontSize="17" fontWeight="600" fontFamily="'Caveat', 'Bradley Hand', 'Segoe Script', cursive" fill="currentColor" stroke="none">
+      share it
+    </text>
+    <text x="196" y="166" textAnchor="middle" fontSize="12" fontWeight="500" fontFamily="'Caveat', 'Bradley Hand', 'Segoe Script', cursive" fill="currentColor" stroke="none" opacity={0.75}>
+      whatsapp &amp; socials
+    </text>
+    <text x="304" y="152" textAnchor="middle" fontSize="17" fontWeight="600" fontFamily="'Caveat', 'Bradley Hand', 'Segoe Script', cursive" fill="currentColor" stroke="none">
+      close it
+    </text>
+
+    {/* the note at the foot of the page */}
+    <text x="180" y="203" textAnchor="middle" fontSize="14" fontWeight="500" fontFamily="'Caveat', 'Bradley Hand', 'Segoe Script', cursive" fill="currentColor" stroke="none">
+      safe, secure &amp; easy — modern tech does the rest
+    </text>
+    <path d="M112 211 C144 205 214 206 250 210" strokeWidth={0.9} opacity={0.5} />
+
+    {/* ink and life in the corners */}
+    <g opacity={0.55} strokeWidth={0.9}>
+      <path d="M34 176 l6 -8 M44 178 l6 -8" />
+      <path d="M296 196 l6 -8 M306 198 l6 -8" />
+    </g>
+    <g transform="translate(38 66) rotate(-6)">
+      <path d="M0 -7 C1 -3 3 -1 7 0 C3 1 1 3 0 7 C-1 3 -3 1 -7 0 C-3 -1 -1 -3 0 -7" strokeWidth={0.9} />
+    </g>
+    <g transform="translate(330 176) rotate(8)">
+      <path d="M0 -6 C1 -3 2 -1 6 0 C2 1 1 3 0 6 C-1 3 -2 1 -6 0 C-2 -1 -1 -3 0 -6" strokeWidth={0.85} />
+    </g>
+    <circle cx="120" cy="30" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="252" cy="188" r="1.3" fill="currentColor" stroke="none" />
+    <circle cx="46" cy="120" r="1.2" fill="currentColor" stroke="none" />
+  </svg>
+);
+
 // ── The magnifier that sits beside the "Post Your Enquiry" title ─────────────
 // Same pen as the mural, not a UI glyph: a slightly off-true lens, one glint and
 // a thick handle, drawn in currentColor so it can sit on the black header.

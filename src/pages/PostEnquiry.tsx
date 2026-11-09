@@ -59,7 +59,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
-import { MuralDoodles, DescriptionDoodles, LocationDoodles, BudgetDoodles, DeadlineDoodles, EnquiryHeaderDoodles, MagnifierDoodle } from "@/components/doodles";
+import { MuralDoodles, DescriptionDoodles, LocationDoodles, BudgetDoodles, DeadlineDoodles, EnquiryHeaderDoodles, MagnifierDoodle, DealFlowSketch } from "@/components/doodles";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -4235,6 +4235,12 @@ const DEADLINE_STEP = 5;
           </div>
         </div>
       )}
+
+      {/* Phones only: a sketched note on how an enquiry becomes a deal,
+          sitting between the form card and the footer */}
+      <div className="sm:hidden px-3 pt-2 pb-4 text-gray-900">
+        <DealFlowSketch className="w-full h-auto" />
+      </div>
 
     </Layout>
   );
