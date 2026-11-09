@@ -4236,9 +4236,9 @@ const DEADLINE_STEP = 5;
         </div>
       )}
 
-      {/* Phones only: a sketched note on how an enquiry becomes a deal,
-          sitting between the form card and the footer */}
-      <div className="sm:hidden px-3 pt-2 pb-4 text-gray-900">
+      {/* Phones only: the sketch drops into the gap that already sits between
+          the form card and the footer, adding no section of its own */}
+      <div className="sm:hidden px-3 -mt-2 text-gray-900">
         <DealFlowSketch className="w-full h-auto" />
       </div>
 
