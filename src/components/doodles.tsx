@@ -555,14 +555,14 @@ export const MagnifierDoodle = ({ className = "" }: { className?: string }) => (
     className={className}
     fill="none"
     stroke="currentColor"
-    strokeWidth={1.7}
+    strokeWidth={1.2}
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-hidden="true"
   >
     <path d="M11.6 2.4 C15 2.4 17.6 5.1 17.6 8.4 C17.6 11.7 15 14.4 11.6 14.4 C8.2 14.4 5.6 11.7 5.6 8.4 C5.6 5.1 8.2 2.4 11.6 2.4 Z" />
-    <path d="M8.7 6.1 C9.3 5.1 10.3 4.4 11.4 4.3" strokeWidth={1} opacity={0.8} />
-    <path d="M15.4 12.2 L20 16.8" strokeWidth={2.4} />
+    <path d="M8.7 6.1 C9.3 5.1 10.3 4.4 11.4 4.3" strokeWidth={0.7} opacity={0.75} />
+    <path d="M15.4 12.2 L20 16.8" strokeWidth={1.6} />
   </svg>
 );
 
