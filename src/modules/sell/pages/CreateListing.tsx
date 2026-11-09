@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import SellShell from '../components/SellShell';
+import { SellListingSketch } from '@/components/doodles';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -1006,6 +1007,12 @@ export default function CreateListing() {
               <h2 className="relative text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug whitespace-nowrap">{STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}</h2>
           </div>
           </div>
+
+          {step === 0 && (
+            <div className="sm:hidden px-2 pb-1 text-gray-900">
+              <SellListingSketch className="w-full h-auto" />
+            </div>
+          )}
 
           <div key={step} className="space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
             {step === 0 && (() => {

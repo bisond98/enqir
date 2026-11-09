@@ -658,6 +658,116 @@ export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
+// ── The mobile sketch under the sell form's step title ──────────────────────
+// Same hand as the post-enquiry strip: one unsteady ink line, then terracotta,
+// indigo and sage pencil worked into the shadows. Price it, put it on a phone,
+// send it out to buyers, close it safely.
+export const SellListingSketch = ({ className = "" }: { className?: string }) => (
+  <svg
+    viewBox="0 -8 360 94"
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.25}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <defs>
+      <filter id="sellEdge" x="-30%" y="-30%" width="160%" height="160%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves={3} seed={9} result="paper" />
+        <feDisplacementMap in="SourceGraphic" in2="paper" scale={5} xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+
+    <g filter="url(#sellEdge)">
+      {/* the line the whole scene stands on */}
+      <path d="M6 66 C 80 62 150 67 210 64 C 264 62 310 66 354 63" strokeWidth={1.05} opacity={0.45} />
+
+      {/* the thing being sold, priced by hand */}
+      <g transform="translate(50 38) rotate(-2)">
+        <path d="M-26 -14 C-9 -17 12 -17 26 -14 C28 -4 28 9 26 17 C9 20 -12 20 -26 17 C-28 9 -28 -4 -26 -14 Z" strokeWidth={1.7} />
+        <path d="M-26 -14 C-12 -5 12 -5 26 -14" strokeWidth={1.1} />
+        <path d="M6 -8 V17" strokeWidth={0.95} strokeDasharray="3 5" opacity={0.65} />
+        <g transform="translate(-13 1)" strokeWidth={1.15}>
+          <path d="M-6 -7 H6" />
+          <path d="M-6 -3 H6" />
+          <path d="M1 -7 C5 -4 4 0 0 0" />
+          <path d="M-6 0 H3" />
+          <path d="M1 0 L6 8" />
+        </g>
+        <g stroke="#b5563a" strokeWidth={0.6} opacity={0.5}>
+          <path d="M14 8 L19 14" />
+          <path d="M17 6 L22 12" />
+          <path d="M20 4 L25 10" />
+          <path d="M-25 13 L-20 7" />
+          <path d="M-21 15 L-16 9" />
+        </g>
+      </g>
+
+      <path d="M88 44 C96 41 104 41 112 42" strokeWidth={1.05} strokeDasharray="5 5.5" />
+      <path d="M108 37 L116 42 L107 47" strokeWidth={1.05} />
+
+      {/* the phone it goes out on — a listing on the screen */}
+      <g transform="translate(160 38) rotate(2)">
+        <path d="M-16 -27 C-9 -29 9 -29 16 -27 C18 -18 18 18 16 27 C9 29 -9 29 -16 27 C-18 18 -18 -18 -16 -27 Z" strokeWidth={1.7} />
+        <path d="M-7 22 H7" strokeWidth={1.05} />
+        <path d="M-11 -19 H9 V-3 H-11 Z" strokeWidth={1.05} />
+        <path d="M-8 -8 L-4 -12 L0 -7 L4 -10 L7 -6" strokeWidth={0.9} />
+        <path d="M-10 2 H7" strokeWidth={1.1} />
+        <path d="M-10 7 H1" strokeWidth={0.9} />
+        <g stroke="#3b4a7a" strokeWidth={0.6} opacity={0.5}>
+          <path d="M-14 -20 L-8 -13" />
+          <path d="M-14 12 L-8 19" />
+          <path d="M9 -20 L14 -14" />
+          <path d="M9 10 L14 16" />
+        </g>
+      </g>
+
+      {/* the share, drawn once and slightly wrong */}
+      <path d="M180 25 C 191 16 204 11 215 7" strokeWidth={1.05} strokeDasharray="3 5.5" />
+      <path d="M180 37 C 196 35 209 35 222 36" strokeWidth={1.05} strokeDasharray="3 6" />
+      <path d="M180 49 C 192 54 203 59 215 65" strokeWidth={1.05} strokeDasharray="3 5" />
+      <g transform="translate(225 4)">
+        <path d="M-8 -6 H6 C8 -1 8 2 6 6 H-3 L-8 9 V6 H-9 C-10 1 -10 -2 -8 -6 Z" strokeWidth={1.1} />
+      </g>
+      <g transform="translate(232 36)">
+        <path d="M-8 -4 L8 0 L-8 4 L-5 0 Z" strokeWidth={1.1} />
+      </g>
+      <g transform="translate(225 68) rotate(-2)">
+        <path d="M-8 -4 H8 V5 H-8 Z" strokeWidth={1.1} />
+        <circle cx="0" cy="0.5" r="2.2" strokeWidth={1} />
+      </g>
+
+      <path d="M246 44 C 258 42 270 41 280 41" strokeWidth={1.05} strokeDasharray="5 5" />
+      <path d="M275 36 L283 41 L275 47" strokeWidth={1.05} />
+
+      {/* the deal, closed and safe — sage pencil under the tick */}
+      <g transform="translate(316 36) rotate(2)">
+        <path d="M0 -23 C7 -20 13 -18 17 -17 C17 -2 11 10 0 16 C-11 10 -17 -2 -17 -17 C-13 -18 -7 -20 0 -23 Z" strokeWidth={1.7} />
+        <g stroke="#5f8a6a" strokeWidth={0.7} opacity={0.55}>
+          <path d="M-7 7 L-2 13" />
+          <path d="M-3 7 L2 13" />
+          <path d="M1 6 L6 12" />
+          <path d="M-9 12 L-4 6" />
+          <path d="M-5 13 L0 7" />
+        </g>
+        <path d="M-8 -2 C-5 1 -3 4 -1 7 C3 1 7 -4 11 -8" stroke="#4f7d5c" strokeWidth={1.8} />
+      </g>
+
+      {/* two pencils in the margins, and a fleck of each */}
+      <g transform="translate(20 16) rotate(-7)" stroke="#bf8a2e" strokeWidth={0.85}>
+        <path d="M0 -6 C1 -3 2 -1 6 0 C2 1 1 3 0 6 C-1 3 -2 1 -6 0 C-2 -1 -1 -3 0 -6" />
+      </g>
+      <g transform="translate(345 30) rotate(9)" stroke="#b5563a" strokeWidth={0.8} opacity={0.85}>
+        <path d="M0 -5 C1 -2.5 2 -1 5 0 C2 1 1 2.5 0 5 C-1 2.5 -2 1 -5 0 C-2 -1 -1 -2.5 0 -5" />
+      </g>
+      <circle cx="120" cy="18" r="1.4" fill="#3b4a7a" stroke="none" opacity={0.55} />
+      <circle cx="252" cy="72" r="1.3" fill="#b5563a" stroke="none" opacity={0.5} />
+    </g>
+  </svg>
+);
+
 // ── The magnifier that sits beside the "Post Your Enquiry" title ─────────────
 // Same pen as the mural, not a UI glyph: a slightly off-true lens, one glint and
 // a thick handle, drawn in currentColor so it can sit on the black header.
