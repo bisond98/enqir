@@ -294,6 +294,83 @@ export const MuralDoodles = ({ className = "" }: { className?: string }) => (
 );
 
 
+// ── Mural for the black "Post Your Enquiry" header ───────────────────────────
+// The same hand-inked mural language as MuralDoodles, re-laid as a full-bleed
+// band: garlands of small drawings, a sunburst with a magnifier, waves and
+// scattered dots and drops. Drawn in currentColor so the dark banner tintss it,
+// and always placed absolutely by the caller so it never changes header height.
+export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 900 240"
+    preserveAspectRatio="xMidYMid slice"
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    {/* band 1 — garland of small drawings across the top */}
+    <path
+      d="M-20 54 C 40 36, 90 70, 150 54 C 210 38, 260 72, 320 54 C 380 36, 430 70, 490 54 C 550 38, 600 72, 660 54 C 720 36, 770 70, 830 54 C 870 43, 910 52, 930 54"
+      strokeWidth={0.9}
+      strokeDasharray="3 6"
+    />
+    <Glyph kind="tee" x={60} y={48} rot={-6} />
+    <Glyph kind="book" x={148} y={56} rot={4} />
+    <Glyph kind="tag" x={236} y={50} rot={-9} />
+    <Glyph kind="car" x={324} y={48} rot={0} />
+    <Glyph kind="house" x={412} y={50} rot={5} />
+    <Glyph kind="camera" x={500} y={46} rot={-4} />
+    <Glyph kind="bike" x={588} y={52} rot={0} />
+    <Glyph kind="mug" x={676} y={48} rot={6} />
+    <Glyph kind="plant" x={764} y={52} rot={-5} />
+    <Glyph kind="watch" x={846} y={48} rot={0} />
+
+    {/* band 2 — second garland, offset from the first */}
+    <path
+      d="M-20 134 C 50 116, 110 152, 170 134 C 230 116, 290 152, 350 134 C 410 116, 470 152, 530 134 C 590 116, 650 152, 710 134 C 770 116, 830 152, 890 134 C 910 128, 920 130, 930 134"
+      strokeWidth={0.9}
+      strokeDasharray="3 6"
+    />
+    <Glyph kind="chair" x={100} y={130} rot={4} />
+    <Glyph kind="bag" x={196} y={136} rot={-6} />
+    <Glyph kind="dumbbell" x={292} y={130} rot={0} />
+    <Glyph kind="phone" x={388} y={132} rot={5} />
+    <Glyph kind="tee" x={580} y={136} rot={-4} />
+    <Glyph kind="car" x={676} y={130} rot={0} />
+    <Glyph kind="book" x={764} y={136} rot={6} />
+    <Glyph kind="tag" x={846} y={130} rot={-8} />
+
+    {/* centre — the sunburst and magnifier the whole mural turns around */}
+    <Burst cx={450} cy={118} r={24} len={7} n={18} sw={1} />
+    <circle cx="450" cy="118" r="17" strokeWidth={1.4} />
+    <circle cx="446" cy="114" r="7.5" strokeWidth={1.1} />
+    <path d="M458 126 l9 10" strokeWidth={2} />
+
+    {/* band 3 — waves along the bottom edge */}
+    <path d="M-20 198 q45 -24 90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0" strokeWidth={1.3} />
+    <path d="M-20 220 q45 -20 90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0 t90 0" strokeWidth={1} />
+    <Glyph kind="mug" x={268} y={192} rot={0} />
+    <Glyph kind="house" x={620} y={190} rot={-3} />
+
+    {/* scattered dots and drops so the corners fill too */}
+    <circle cx="24" cy="180" r="1.6" fill="currentColor" stroke="none" />
+    <circle cx="150" cy="26" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="280" cy="92" r="1.4" fill="currentColor" stroke="none" />
+    <circle cx="640" cy="172" r="1.5" fill="currentColor" stroke="none" />
+    <circle cx="700" cy="24" r="1.6" fill="currentColor" stroke="none" />
+    <circle cx="874" cy="110" r="1.4" fill="currentColor" stroke="none" />
+    <circle cx="40" cy="96" r="1.3" fill="currentColor" stroke="none" />
+    <Drop x={120} y={84} />
+    <Drop x={514} y={168} />
+    <Drop x={790} y={194} />
+    <Burst cx={40} cy={28} r={4} len={5} n={10} sw={0.9} />
+    <Burst cx={876} cy={186} r={3.5} len={4} n={10} sw={0.9} />
+  </svg>
+);
+
 // ── Writing doodle for the description tab ───────────────────────────────────
 // Same thin, connected mural language, drawn around words: manuscript ribbons
 // run through the page, carrying a written sheet, a pencil, speech bubbles, a

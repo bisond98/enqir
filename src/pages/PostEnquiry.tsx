@@ -59,7 +59,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
-import { MuralDoodles, DescriptionDoodles, LocationDoodles, BudgetDoodles, DeadlineDoodles } from "@/components/doodles";
+import { MuralDoodles, DescriptionDoodles, LocationDoodles, BudgetDoodles, DeadlineDoodles, EnquiryHeaderDoodles } from "@/components/doodles";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -2398,6 +2398,11 @@ const DEADLINE_STEP = 5;
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         {/* Header - Matching Live Enquiries - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          {/* Mural doodle filling the whole black header behind the text.
+              Absolutely positioned, so the header keeps exactly its height. */}
+          <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">
+            <EnquiryHeaderDoodles className="absolute inset-0 h-full w-full" />
+          </div>
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
             <div className="mb-4 sm:mb-6">
