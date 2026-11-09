@@ -461,6 +461,38 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
       <path d="M0 0 V-7 M0 -5 C-5 -5 -7 -9 -7 -12 C-1 -12 0 -8 0 -5 M0 -5 C5 -5 7 -9 7 -12 C1 -12 0 -8 0 -5" strokeWidth={1.1} />
     </g>
 
+    {/* ── the middle column, filled: on a phone the band only shows the centre
+        of this drawing, so the space above the title and below the subtitle is
+        packed with the categories people actually trade here */}
+    <g opacity="0.9">
+      <Glyph kind="phone" x={322} y={22} rot={-8} s={0.6} />
+      <Glyph kind="tag" x={368} y={34} rot={10} s={0.55} />
+      <Glyph kind="book" x={414} y={18} rot={-4} s={0.6} />
+      <Glyph kind="watch" x={462} y={36} rot={8} s={0.55} />
+      <Glyph kind="camera" x={512} y={20} rot={-6} s={0.6} />
+      <Glyph kind="bag" x={556} y={34} rot={6} s={0.55} />
+      <Glyph kind="dumbbell" x={594} y={16} rot={-10} s={0.5} />
+
+      <Glyph kind="mug" x={314} y={196} rot={-6} s={0.6} />
+      <Glyph kind="plant" x={358} y={216} rot={6} s={0.55} />
+      <Glyph kind="chair" x={404} y={188} rot={-4} s={0.6} />
+      <Glyph kind="tag" x={500} y={192} rot={-8} s={0.55} />
+      <Glyph kind="bike" x={546} y={216} rot={0} s={0.6} />
+      <Glyph kind="car" x={592} y={190} rot={4} s={0.55} />
+    </g>
+
+    {/* and the outer columns, so the wider screens fill too */}
+    <g opacity="0.85">
+      <Glyph kind="tee" x={242} y={58} rot={-6} s={0.55} />
+      <Glyph kind="bag" x={108} y={52} rot={8} s={0.5} />
+      <Glyph kind="house" x={246} y={132} rot={-3} s={0.55} />
+      <Glyph kind="chair" x={700} y={132} rot={5} s={0.55} />
+      <Glyph kind="camera" x={770} y={118} rot={-7} s={0.5} />
+      <Glyph kind="watch" x={858} y={178} rot={4} s={0.55} />
+      <Glyph kind="dumbbell" x={654} y={214} rot={0} s={0.5} />
+      <Glyph kind="phone" x={126} y={196} rot={-5} s={0.5} />
+    </g>
+
     {/* ── ink texture: hatching, grain and the artist's sparkles */}
     <g opacity="0.6" strokeWidth={1}>
       <path d="M448 202 l7 -9 M460 204 l7 -9 M472 206 l7 -9" />
@@ -501,6 +533,21 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
     <circle cx="404" cy="172" r="1.3" fill="currentColor" stroke="none" />
     <circle cx="714" cy="210" r="1.3" fill="currentColor" stroke="none" />
     <circle cx="846" cy="160" r="1.4" fill="currentColor" stroke="none" />
+    <circle cx="30" cy="12" r="1.3" fill="currentColor" stroke="none" />
+    <circle cx="76" cy="236" r="1.2" fill="currentColor" stroke="none" />
+    <circle cx="160" cy="14" r="1.2" fill="currentColor" stroke="none" />
+    <circle cx="232" cy="232" r="1.3" fill="currentColor" stroke="none" />
+    <circle cx="288" cy="58" r="1.2" fill="currentColor" stroke="none" />
+    <circle cx="340" cy="146" r="1.3" fill="currentColor" stroke="none" />
+    <circle cx="388" cy="54" r="1.2" fill="currentColor" stroke="none" />
+    <circle cx="430" cy="146" r="1.2" fill="currentColor" stroke="none" />
+    <circle cx="470" cy="94" r="1.1" fill="currentColor" stroke="none" />
+    <circle cx="524" cy="58" r="1.2" fill="currentColor" stroke="none" />
+    <circle cx="568" cy="146" r="1.3" fill="currentColor" stroke="none" />
+    <circle cx="612" cy="92" r="1.1" fill="currentColor" stroke="none" />
+    <circle cx="700" cy="12" r="1.2" fill="currentColor" stroke="none" />
+    <circle cx="782" cy="232" r="1.3" fill="currentColor" stroke="none" />
+    <circle cx="872" cy="14" r="1.2" fill="currentColor" stroke="none" />
   </svg>
 );
 
