@@ -661,6 +661,11 @@ export default function CreateListing() {
   const canAdvanceFromStep = (s: number): boolean => {
     switch (s) {
       case 0:
+        // Category is required — a listing can't be filed without one
+        if (selectedCats.length === 0) {
+          toast({ title: 'Choose a category', description: 'Pick the category that best matches what you are selling.', variant: 'destructive' });
+          return false;
+        }
         return true;
       case 1:
         if (!title.trim()) {
@@ -745,6 +750,10 @@ export default function CreateListing() {
     }
     if (!location.trim()) {
       toast({ title: 'Missing location', description: 'Location is required to publish your listing.', variant: 'destructive' });
+      return;
+    }
+    if (selectedCats.length === 0) {
+      toast({ title: 'Choose a category', description: 'Pick the category that best matches what you are selling.', variant: 'destructive' });
       return;
     }
     if (!validatePriceFields()) return;
