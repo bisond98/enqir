@@ -547,15 +547,15 @@ export const EnquiryHeaderDoodles = ({ className = "" }: { className?: string })
 );
 
 // ── The mobile sketch under the post-enquiry card ───────────────────────────
-// Same scene as before, blocked in with flat colour: terracotta for the written
-// enquiry, ochre for its pencil and the first reply, indigo for the phone, sage
-// for the closed deal. One ink outline holds each solid shape.
+// Coloured the way a sketchbook page gets coloured: each shape is a plate of
+// clay, petrol or olive laid a hair off the ink line, so the colour never sits
+// perfectly inside its outline. The whites are paper, not screen white.
 export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
   <svg
     viewBox="0 -8 360 94"
     className={className}
     fill="none"
-    stroke="#0f172a"
+    stroke="#182130"
     strokeWidth={1.7}
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -565,30 +565,59 @@ export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
       {/* the line the whole scene stands on */}
       <path d="M6 66 C 80 62 150 67 210 64 C 264 62 310 66 354 63" strokeWidth={1.5} />
 
-      {/* the enquiry, written out — solid terracotta sheet */}
+      {/* the enquiry, written out — a clay plate laid a hair off the line */}
       <g transform="translate(50 40) rotate(-3)">
+        <g transform="translate(1.7 1.4)">
+          <path
+            d="M-25 -16 C-11 -19 9 -19 24 -16 C27 -8 27 4 24 12 C11 16 -7 16 -18 14 C-23 16 -26 19 -30 20 C-26 15 -25 11 -25 8 C-27 1 -27 -9 -25 -16 Z"
+            fill="#b0694e"
+            stroke="none"
+          />
+        </g>
         <path
           d="M-25 -16 C-11 -19 9 -19 24 -16 C27 -8 27 4 24 12 C11 16 -7 16 -18 14 C-23 16 -26 19 -30 20 C-26 15 -25 11 -25 8 C-27 1 -27 -9 -25 -16 Z"
-          fill="#b5563a"
           strokeWidth={1.9}
         />
-        <path d="M-16 -8 C-6 -10 6 -10 15 -8" stroke="#ffffff" strokeWidth={1.5} />
-        <path d="M-14 -1 C-5 -3 5 -3 11 -2" stroke="#ffffff" strokeWidth={1.4} />
-        <circle cx="16" cy="6" r="2.4" fill="#ffffff" stroke="none" />
+        <path d="M-16 -8 C-6 -10 6 -10 15 -8" stroke="#f7f0e3" strokeWidth={1.5} />
+        <path d="M-14 -1 C-5 -3 5 -3 11 -2" stroke="#f7f0e3" strokeWidth={1.4} />
+        <circle cx="16" cy="6" r="2.4" fill="#f7f0e3" stroke="none" />
       </g>
+
+      {/* the pencil above it, ochre, put down before the outline */}
       <g transform="translate(80 16) rotate(28)">
-        <path d="M-2 -11 L3 -11 L3 5 L0.5 11 L-2 5 Z" fill="#bf8a2e" strokeWidth={1.4} />
+        <g transform="translate(0.9 -0.8)">
+          <path d="M-2 -11 L3 -11 L3 5 L0.5 11 L-2 5 Z" fill="#c0924a" stroke="none" />
+        </g>
+        <path d="M-2 -11 L3 -11 L3 5 L0.5 11 L-2 5 Z" strokeWidth={1.4} />
       </g>
 
       <path d="M84 43 H112" strokeWidth={1.6} />
       <path d="M104 36 L114 43 L104 50" strokeWidth={1.6} />
 
-      {/* the phone it lands on — solid indigo with white replies */}
+      {/* the phone it lands on — petrol, with the replies left as paper */}
       <g transform="translate(160 38) rotate(2)">
-        <path d="M-16 -27 C-9 -29 9 -29 16 -27 C18 -18 18 18 16 27 C9 29 -9 29 -16 27 C-18 18 -18 -18 -16 -27 Z" fill="#3b4a7a" strokeWidth={1.9} />
-        <path d="M-7 22 H7" stroke="#ffffff" strokeWidth={1.4} />
-        <path d="M-10 -15 H1 C3 -9 3 -6 1 -2 H-6 C-8 0 -9 1 -11 2 C-10 0 -10 -1 -10 -3 C-11 -7 -11 -11 -10 -15 Z" fill="#ffffff" strokeWidth={1.1} />
-        <path d="M-10 4 H5 C7 9 7 12 5 15 H-4 C-6 16 -8 18 -10 19 C-9 17 -9 15 -9 13 C-10 10 -10 7 -10 4 Z" fill="#ffffff" strokeWidth={1.1} />
+        <g transform="translate(1.6 1.5)">
+          <path
+            d="M-16 -27 C-9 -29 9 -29 16 -27 C18 -18 18 18 16 27 C9 29 -9 29 -16 27 C-18 18 -18 -18 -16 -27 Z"
+            fill="#41606b"
+            stroke="none"
+          />
+        </g>
+        <path
+          d="M-16 -27 C-9 -29 9 -29 16 -27 C18 -18 18 18 16 27 C9 29 -9 29 -16 27 C-18 18 -18 -18 -16 -27 Z"
+          strokeWidth={1.9}
+        />
+        <path d="M-7 22 H7" stroke="#f7f0e3" strokeWidth={1.4} />
+        <path
+          d="M-10 -15 H1 C3 -9 3 -6 1 -2 H-6 C-8 0 -9 1 -11 2 C-10 0 -10 -1 -10 -3 C-11 -7 -11 -11 -10 -15 Z"
+          fill="#f7f0e3"
+          strokeWidth={1.1}
+        />
+        <path
+          d="M-10 4 H5 C7 9 7 12 5 15 H-4 C-6 16 -8 18 -10 19 C-9 17 -9 15 -9 13 C-10 10 -10 7 -10 4 Z"
+          fill="#f7f0e3"
+          strokeWidth={1.1}
+        />
       </g>
 
       {/* the share, out to the buyers */}
@@ -597,34 +626,50 @@ export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
       <path d="M180 50 C 192 55 203 60 214 65" strokeWidth={1.5} />
 
       <g transform="translate(226 4)">
-        <path d="M-8 -6 H6 C8 -1 8 2 6 6 H-3 L-8 9 V6 H-9 C-10 1 -10 -2 -8 -6 Z" fill="#bf8a2e" strokeWidth={1.3} />
+        <g transform="translate(0.9 0.9)">
+          <path d="M-8 -6 H6 C8 -1 8 2 6 6 H-3 L-8 9 V6 H-9 C-10 1 -10 -2 -8 -6 Z" fill="#c0924a" stroke="none" />
+        </g>
+        <path d="M-8 -6 H6 C8 -1 8 2 6 6 H-3 L-8 9 V6 H-9 C-10 1 -10 -2 -8 -6 Z" strokeWidth={1.3} />
       </g>
       <g transform="translate(233 38)">
-        <path d="M-8 -4 L8 0 L-8 4 L-5 0 Z" fill="#ffffff" strokeWidth={1.3} />
+        <path d="M-8 -4 L8 0 L-8 4 L-5 0 Z" fill="#f7f0e3" strokeWidth={1.3} />
       </g>
       <g transform="translate(226 68) rotate(-2)">
-        <path d="M-8 -4 H8 V5 H-8 Z" fill="#b5563a" strokeWidth={1.3} />
-        <circle cx="0" cy="0.5" r="2.2" fill="#ffffff" strokeWidth={1} />
+        <g transform="translate(0.9 0.8)">
+          <path d="M-8 -4 H8 V5 H-8 Z" fill="#b0694e" stroke="none" />
+        </g>
+        <path d="M-8 -4 H8 V5 H-8 Z" strokeWidth={1.3} />
+        <circle cx="0" cy="0.5" r="2.2" fill="#f7f0e3" strokeWidth={1} />
       </g>
 
       <path d="M248 44 C 258 42 270 41 280 41" strokeWidth={1.5} />
       <path d="M274 35 L283 41 L274 47" strokeWidth={1.5} />
 
-      {/* the deal, closed — solid sage under a white tick */}
+      {/* the deal, closed — olive under a paper tick */}
       <g transform="translate(316 36) rotate(2)">
-        <path d="M0 -23 C7 -20 13 -18 17 -17 C17 -2 11 10 0 16 C-11 10 -17 -2 -17 -17 C-13 -18 -7 -20 0 -23 Z" fill="#5f8a6a" strokeWidth={1.9} />
-        <path d="M-8 -2 C-5 1 -3 4 -1 7 C3 1 7 -4 11 -8" stroke="#ffffff" strokeWidth={2.4} />
+        <g transform="translate(1.5 1.4)">
+          <path
+            d="M0 -23 C7 -20 13 -18 17 -17 C17 -2 11 10 0 16 C-11 10 -17 -2 -17 -17 C-13 -18 -7 -20 0 -23 Z"
+            fill="#6d8161"
+            stroke="none"
+          />
+        </g>
+        <path
+          d="M0 -23 C7 -20 13 -18 17 -17 C17 -2 11 10 0 16 C-11 10 -17 -2 -17 -17 C-13 -18 -7 -20 0 -23 Z"
+          strokeWidth={1.9}
+        />
+        <path d="M-8 -2 C-5 1 -3 4 -1 7 C3 1 7 -4 11 -8" stroke="#f7f0e3" strokeWidth={2.3} />
       </g>
 
       {/* two pencils in the margins, and a fleck of colour */}
       <g transform="translate(20 16) rotate(-7)">
-        <path d="M0 -6 C1 -3 2 -1 6 0 C2 1 1 3 0 6 C-1 3 -2 1 -6 0 C-2 -1 -1 -3 0 -6" fill="#bf8a2e" strokeWidth={1} />
+        <path d="M0 -6 C1 -3 2 -1 6 0 C2 1 1 3 0 6 C-1 3 -2 1 -6 0 C-2 -1 -1 -3 0 -6" fill="#c0924a" strokeWidth={1} />
       </g>
       <g transform="translate(345 30) rotate(9)">
-        <path d="M0 -5 C1 -2.5 2 -1 5 0 C2 1 1 2.5 0 5 C-1 2.5 -2 1 -5 0 C-2 -1 -1 -2.5 0 -5" fill="#b5563a" strokeWidth={1} />
+        <path d="M0 -5 C1 -2.5 2 -1 5 0 C2 1 1 2.5 0 5 C-1 2.5 -2 1 -5 0 C-2 -1 -1 -2.5 0 -5" fill="#b0694e" strokeWidth={1} />
       </g>
-      <circle cx="120" cy="18" r="1.6" fill="#3b4a7a" stroke="none" />
-      <circle cx="252" cy="74" r="1.5" fill="#bf8a2e" stroke="none" />
+      <circle cx="120" cy="18" r="1.7" fill="#41606b" stroke="none" />
+      <circle cx="252" cy="74" r="1.6" fill="#c0924a" stroke="none" />
     </g>
   </svg>
 );
