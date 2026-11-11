@@ -972,6 +972,47 @@ export const FURNITURE_SUBCATEGORIES: string[] = [
   'Other Furniture & Specialized Furnishings',
 ];
 
+// Gaming subcategory — the dropdown shown in the Description step of both forms
+// when Gaming is the chosen category. Stored as details.subcategory.
+export const GAMING_SUBCATEGORIES: string[] = [
+  'PC Gaming',
+  'Console Gaming',
+  'Mobile Gaming',
+  'Cloud Gaming',
+  'VR & AR Gaming',
+  'Handheld Gaming Devices',
+  'Gaming Laptops & PCs',
+  'Gaming Consoles',
+  'Gaming Monitors & Displays',
+  'Gaming Accessories & Peripherals',
+  'Gaming Controllers & Gamepads',
+  'Gaming Keyboards & Mice',
+  'Gaming Headsets & Audio',
+  'Gaming Chairs & Desks',
+  'Gaming Components & Hardware',
+  'Gaming Storage & Networking',
+  'Gaming Cameras & Streaming Equipment',
+  'Gaming Software & Digital Games',
+  'Physical Video Games & Game Discs',
+  'In-Game Items & Virtual Goods',
+  'Esports & Competitive Gaming',
+  'Game Development & Design',
+  'Game Testing & Quality Assurance',
+  'Gaming Content Creation & Streaming',
+  'Gaming Tournaments & Events',
+  'Gaming Coaching & Training',
+  'Board Games & Strategy Games',
+  'Card Games & Trading Card Games',
+  'Tabletop & Role-Playing Games',
+  'Arcade Games & Machines',
+  'Retro & Classic Gaming',
+  'Gaming Merchandise & Collectibles',
+  'Gaming Lounges & Centres',
+  'Gaming Cafés & Esports Arenas',
+  'Game Rental & Equipment Leasing',
+  'Other Gaming & Specialized Equipment',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
