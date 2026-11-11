@@ -1136,6 +1136,50 @@ export const HEALTH_SUBCATEGORIES: string[] = [
   'Other Health & Specialized Medical Services',
 ];
 
+// Home subcategory — the dropdown shown in the Description step of both forms
+// when Home is the chosen category. Stored as details.subcategory.
+export const HOME_SUBCATEGORIES: string[] = [
+  'Smart Home & Home Automation',
+  'Home Security & Surveillance',
+  'Home Improvement & Renovation',
+  'Home Décor & Interior Styling',
+  'Home Furniture & Furnishings',
+  'Kitchen & Dining',
+  'Home Appliances',
+  'Home Electronics & Entertainment',
+  'Home Lighting & Electricals',
+  'Home Storage & Organisation',
+  'Cleaning & Household Supplies',
+  'Bedding, Bedsheets & Linen',
+  'Mattresses & Pillows',
+  'Bath & Bathroom Accessories',
+  'Curtains, Blinds & Window Treatments',
+  'Carpets, Rugs & Floor Coverings',
+  'Wall Décor & Art',
+  'Kitchenware & Cookware',
+  'Tableware & Serveware',
+  'Home Textiles & Soft Furnishings',
+  'Gardening & Indoor Plants',
+  'Balcony & Outdoor Living',
+  'Pooja Room & Religious Supplies',
+  'Home Fragrances & Aromatherapy',
+  'Pest Control & Home Hygiene',
+  'Water Purifiers & Water Storage',
+  'Home Repair & Maintenance',
+  'Plumbing & Sanitary Supplies',
+  'Electrical Supplies & Accessories',
+  'Home Construction Materials',
+  'Doors, Windows & Hardware',
+  'Modular Kitchens & Wardrobes',
+  'Home Office & Study Spaces',
+  "Kids' Room & Nursery",
+  'Pet-Friendly Home Products',
+  'Home Safety & Accessibility',
+  'Home Moving, Packing & Relocation',
+  'Home Rental & Household Services',
+  'Other Home Products & Specialized Supplies',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
