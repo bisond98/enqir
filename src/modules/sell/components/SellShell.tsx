@@ -132,7 +132,9 @@ export default function SellShell({
               </Button>
             </Link>
           </div>}
-          {!hideQuickNav && !isShop && (
+          {/* The new-listing form keeps its mobile screen clean: the Sell / Shop /
+              Panel tile row is dropped there only — the desktop row is untouched. */}
+          {!hideQuickNav && !isShop && !isCreate && (
           <div className={`sm:hidden grid ${hidePanel ? 'grid-cols-2' : 'grid-cols-3'} gap-3 mb-4`}>
             <Link to="/sell/new">
               <Button size="sm" variant="outline" className={`w-full h-[50px] font-black !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden group transition-all !duration-150 active:!translate-y-[2px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] ${isCreate ? '!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]' : '!bg-white hover:!bg-gray-50 !text-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)]'}`}>
