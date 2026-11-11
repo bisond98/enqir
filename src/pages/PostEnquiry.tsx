@@ -37,7 +37,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
-import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES } from "@/constants/categories";
+import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES } from "@/constants/categories";
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from "@/modules/sell/categoryBrands";
@@ -282,9 +282,21 @@ const DEADLINE_STEP = 5;
   const [accommodationGender, setAccommodationGender] = useState<'any' | 'male' | 'female' | 'mixed'>('any');
   // Repair services: what kind of repair/fix is needed (service category)
   const [repairType, setRepairType] = useState('');
-  // Electronics: the subcategory the buyer is asking for (electronics category)
-  const [electronicsSubcategory, setElectronicsSubcategory] = useState('');
+  // Subcategory for the main categories that have their own list (Electronics,
+  // Agriculture). The list follows the chosen category and a switch clears it.
+  const [subcategory, setSubcategory] = useState('');
   const isElectronics = selectedCategories.includes('electronics') || (category || '').toLowerCase() === 'electronics';
+  const isAgriculture =
+    selectedCategories.includes('agriculture-farming') ||
+    (category || '').toLowerCase().includes('agricultur');
+  const subcategoryOptions = isElectronics
+    ? ELECTRONICS_SUBCATEGORIES
+    : isAgriculture
+      ? AGRICULTURE_SUBCATEGORIES
+      : null;
+  useEffect(() => {
+    setSubcategory('');
+  }, [isElectronics, isAgriculture]);
   const isAccommodationEnquiry = (cats: string[], legacy?: string) =>
     [...cats, legacy ?? ''].some((c) => c && c.toLowerCase().includes('accommodation'));
   const isAccom = isAccommodationEnquiry(selectedCategories, category);
@@ -955,7 +967,7 @@ const DEADLINE_STEP = 5;
             ...(isThriftEnquiry && thriftItem && { thriftItem }),
             ...(isThriftEnquiry && thriftSize && { thriftSize }),
             ...(repairType && { repairType }),
-            ...(electronicsSubcategory && { subcategory: electronicsSubcategory }),
+            ...(subcategory && subcategoryOptions && { subcategory }),
             ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
             ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
             ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -1121,7 +1133,7 @@ const DEADLINE_STEP = 5;
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(repairType && { repairType }),
-          ...(electronicsSubcategory && { subcategory: electronicsSubcategory }),
+          ...(subcategory && subcategoryOptions && { subcategory }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
             ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -1295,7 +1307,7 @@ const DEADLINE_STEP = 5;
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(repairType && { repairType }),
-          ...(electronicsSubcategory && { subcategory: electronicsSubcategory }),
+          ...(subcategory && subcategoryOptions && { subcategory }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
               ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -2037,7 +2049,7 @@ const DEADLINE_STEP = 5;
           ...(accommodationType && { accommodationType }),
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(repairType && { repairType }),
-          ...(electronicsSubcategory && { subcategory: electronicsSubcategory }),
+          ...(subcategory && subcategoryOptions && { subcategory }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
           ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -2953,16 +2965,16 @@ const DEADLINE_STEP = 5;
                           </div>
                         );
                       })()}
-                      {/* Electronics — subcategory dropdown above the description (electronics category) */}
-                      {isElectronics && (
+                      {/* Subcategory — Electronics / Agriculture (description step) */}
+                      {subcategoryOptions && (
                         <div className="mb-4">
                           <select
-                            value={electronicsSubcategory}
-                            onChange={(e) => setElectronicsSubcategory(e.target.value)}
-                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!electronicsSubcategory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                            value={subcategory}
+                            onChange={(e) => setSubcategory(e.target.value)}
+                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!subcategory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                           >
                             <option value="">Select subcategory</option>
-                            {ELECTRONICS_SUBCATEGORIES.map((s) => (
+                            {subcategoryOptions.map((s) => (
                               <option key={s} value={s}>{s}</option>
                             ))}
                           </select>

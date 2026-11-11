@@ -249,6 +249,43 @@ export const ELECTRONICS_SUBCATEGORIES: string[] = [
   'Vending Machines & Automated Equipment',
 ];
 
+// Agriculture subcategory — the dropdown shown in the Description step of both
+// forms when Agriculture is the chosen category. Stored as details.subcategory.
+export const AGRICULTURE_SUBCATEGORIES: string[] = [
+  'Agricultural Chemicals & Crop Protection',
+  'Agricultural Consultancy & Services',
+  'Agricultural Equipment & Tools',
+  'Agricultural Infrastructure & Structures',
+  'Agricultural Machinery & Tractors',
+  'Agricultural Technology & Automation',
+  'Animal Feed & Nutrition',
+  'Aquaculture & Fish Farming',
+  'Beekeeping & Apiculture',
+  'Dairy Farming & Equipment',
+  'Farm Buildings & Storage',
+  'Farm Vehicles & Transport',
+  'Farming Supplies & Consumables',
+  'Fertilizers & Soil Nutrients',
+  'Floriculture & Flower Farming',
+  'Forestry & Timber Farming',
+  'Fruits & Fruit Farming',
+  'Gardening & Horticulture',
+  'Greenhouses & Hydroponics',
+  'Irrigation & Water Management',
+  'Livestock & Animal Farming',
+  'Organic & Natural Farming',
+  'Poultry Farming & Equipment',
+  'Seeds, Bulbs & Saplings',
+  'Soil Testing & Agricultural Laboratories',
+  'Spices & Plantation Crops',
+  'Sustainable & Precision Agriculture',
+  'Veterinary Products & Equipment',
+  'Waste Management & Composting',
+  'Water Pumps & Agricultural Motors',
+  'Weeding, Harvesting & Post-Harvest Equipment',
+  'Other Agriculture & Specialized Equipment',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
