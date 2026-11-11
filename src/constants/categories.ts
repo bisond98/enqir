@@ -708,6 +708,50 @@ export const EDUCATION_SUBCATEGORIES: string[] = [
   'Other Education & Specialized Learning',
 ];
 
+// Entertainment subcategory — the dropdown shown in the Description step of both
+// forms when Entertainment is the chosen category. Stored as details.subcategory.
+export const ENTERTAINMENT_SUBCATEGORIES: string[] = [
+  'Online Entertainment & Streaming',
+  'Gaming & Esports',
+  'Digital Content Creation',
+  'Influencer & Creator Services',
+  'Social Media Entertainment',
+  'Virtual Reality & Augmented Reality Entertainment',
+  'Animation & VFX',
+  'Films & Cinema',
+  'Web Series & Television',
+  'Music & Music Production',
+  'Live Music & Concerts',
+  'DJ & Electronic Music',
+  'Dance & Choreography',
+  'Theatre & Performing Arts',
+  'Comedy & Stand-up',
+  'Podcasts & Audio Entertainment',
+  'Photography & Videography',
+  'Celebrity & Artist Management',
+  'Talent & Artist Booking',
+  'Event Entertainment & Production',
+  'Festivals & Cultural Events',
+  'Fairs, Exhibitions & Shows',
+  'Nightlife & Club Entertainment',
+  'Karaoke & Music Lounges',
+  'Amusement & Theme Parks',
+  'Adventure & Recreational Entertainment',
+  'Indoor Games & Entertainment Centres',
+  'Outdoor Games & Recreational Activities',
+  'Board Games & Tabletop Entertainment',
+  'Toys, Hobbies & Recreational Entertainment',
+  'Magic Shows & Illusionists',
+  'Circus & Special Performances',
+  'Celebrity Meetups & Fan Experiences',
+  'Wedding & Private Event Entertainment',
+  'Traditional & Folk Entertainment',
+  'Cultural & Heritage Performances',
+  'Radio & Broadcasting',
+  'Entertainment Equipment & Rentals',
+  'Other Entertainment & Specialized Activities',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
