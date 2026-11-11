@@ -410,6 +410,34 @@ export const BABY_KIDS_SUBCATEGORIES: string[] = [
   'Other Baby & Kids Products',
 ];
 
+// Bags & Luggage subcategory — the dropdown shown in the Description step of
+// both forms when Bags & Luggage is the chosen category.
+export const BAGS_LUGGAGE_SUBCATEGORIES: string[] = [
+  'Backpacks',
+  'Briefcases & Laptop Bags',
+  'Camera & Equipment Bags',
+  'Clutches & Evening Bags',
+  'Crossbody Bags',
+  'Duffel & Gym Bags',
+  'Handbags & Purses',
+  'Hiking & Trekking Backpacks',
+  "Kids' Bags",
+  'Luggage Sets',
+  'Messenger Bags',
+  'School Bags',
+  'Shoulder Bags',
+  'Suitcases & Trolley Bags',
+  'Travel Accessories',
+  'Travel Backpacks',
+  'Tote Bags',
+  'Wallets & Card Holders',
+  'Waist Bags & Belt Bags',
+  'Work & Business Bags',
+  'Waterproof & Dry Bags',
+  'Weekender Bags',
+  'Other Bags & Specialized Luggage',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
