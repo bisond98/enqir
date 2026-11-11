@@ -438,6 +438,32 @@ export const BAGS_LUGGAGE_SUBCATEGORIES: string[] = [
   'Other Bags & Specialized Luggage',
 ];
 
+// Beauty subcategory — the dropdown shown in the Description step of both forms
+// when Beauty is the chosen category. Stored as details.subcategory.
+export const BEAUTY_SUBCATEGORIES: string[] = [
+  'Bath & Body Care',
+  'Beauty Appliances & Electrical Tools',
+  'Beauty Accessories & Tools',
+  'Body Fragrances & Perfumes',
+  'Cosmetics & Makeup',
+  'Eyebrow & Eyelash Products',
+  'Facial Skincare',
+  'Hair Care & Styling',
+  'Hair Extensions & Wigs',
+  'Hair Removal & Shaving',
+  'Manicure & Pedicure',
+  "Men's Grooming",
+  'Nail Care & Nail Art',
+  'Oral Care & Hygiene',
+  'Personal Care Products',
+  'Salon & Professional Beauty Equipment',
+  'Skin Treatments & Serums',
+  'Spa & Massage Products',
+  'Sun Care & Tanning',
+  'Beauty Gift Sets & Kits',
+  'Other Beauty & Personal Care Products',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
