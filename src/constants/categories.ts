@@ -550,6 +550,41 @@ export const CHILDCARE_SUBCATEGORIES: string[] = [
   'Other Childcare Services',
 ];
 
+// Collectibles subcategory — the dropdown shown in the Description step of both
+// forms when Collectibles is the chosen category. Stored as details.subcategory.
+export const COLLECTIBLES_SUBCATEGORIES: string[] = [
+  'Action Figures & Figurines',
+  'Anime & Manga Collectibles',
+  'Autographs & Signed Memorabilia',
+  'Banknotes & Paper Currency',
+  'Coins & Medals',
+  'Comic Books & Collectible Comics',
+  'Die-Cast Models & Miniatures',
+  'Dolls & Dollhouses',
+  'Entertainment & Movie Memorabilia',
+  'Historical Memorabilia',
+  'LEGO & Building Sets',
+  'Limited Edition & Special Releases',
+  'Model Cars, Bikes & Aircraft',
+  'Music Memorabilia',
+  'Pins, Badges & Patches',
+  'Postcards & Greeting Cards',
+  'Rare Books & Manuscripts',
+  'Sports Cards & Memorabilia',
+  'Stamps & Philately',
+  'Trading Cards & Card Games',
+  'Vintage Advertising & Promotional Items',
+  'Vintage Toys & Games',
+  'Video Game Collectibles',
+  'Comic & Pop Culture Merchandise',
+  'Fossils, Minerals & Gemstones',
+  'Militaria & War Collectibles',
+  'Retro Technology & Gadgets',
+  'Toy Trains & Railway Collectibles',
+  'Breweriana & Bottle Collectibles',
+  'Other Collectibles & Rare Finds',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
