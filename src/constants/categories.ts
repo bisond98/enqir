@@ -379,6 +379,37 @@ export const ART_SUBCATEGORIES: string[] = [
   'Other Art & Specialized Creations',
 ];
 
+// Baby & Kids subcategory — the dropdown shown in the Description step of both
+// forms when Baby & Kids is the chosen category. Stored as details.subcategory.
+export const BABY_KIDS_SUBCATEGORIES: string[] = [
+  'Baby Bathing & Skincare',
+  'Baby Carriers & Slings',
+  'Baby Clothing & Accessories',
+  'Baby Feeding & Nursing',
+  'Baby Furniture',
+  'Baby Health & Safety',
+  'Baby Monitors & Electronics',
+  'Baby Toys & Play Equipment',
+  'Bouncers, Rockers & Swings',
+  'Car Seats & Travel Systems',
+  'Diapers & Changing Supplies',
+  'Educational Toys & Learning Materials',
+  "Kids' Clothing & Accessories",
+  "Kids' Furniture & Room Décor",
+  "Kids' Footwear",
+  "Kids' Outdoor & Sports Equipment",
+  "Kids' School Supplies & Stationery",
+  "Kids' Toys, Games & Puzzles",
+  'Maternity & Pregnancy Products',
+  'Nursery Bedding & Accessories',
+  'Potty Training & Toileting',
+  'Prams, Strollers & Pushchairs',
+  "Ride-On Toys & Kids' Vehicles",
+  'Safety Gates & Childproofing',
+  'Special Needs & Adaptive Products',
+  'Other Baby & Kids Products',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
