@@ -888,6 +888,48 @@ export const FITNESS_SUBCATEGORIES: string[] = [
   'Other Fitness & Gym Equipment / Services',
 ];
 
+// Food subcategory — the dropdown shown in the Description step of both forms
+// when Food is the chosen category. Stored as details.subcategory.
+export const FOOD_SUBCATEGORIES: string[] = [
+  'Organic & Natural Foods',
+  'Plant-Based & Vegan Foods',
+  'Health Foods & Superfoods',
+  'Protein & High-Protein Foods',
+  'Ready-to-Eat & Instant Foods',
+  'Packaged & Processed Foods',
+  'Frozen & Refrigerated Foods',
+  'Fresh Fruits',
+  'Fresh Vegetables',
+  'Meat & Poultry',
+  'Fish & Seafood',
+  'Eggs & Dairy Products',
+  'Rice, Grains & Cereals',
+  'Pulses, Lentils & Beans',
+  'Flour, Atta & Baking Ingredients',
+  'Spices & Masalas',
+  'Oils, Ghee & Cooking Fats',
+  'Nuts, Seeds & Dry Fruits',
+  'Snacks & Savouries',
+  'Sweets, Chocolates & Confectionery',
+  'Bakery & Bread Products',
+  'Cakes & Desserts',
+  'Pickles, Chutneys & Sauces',
+  'Traditional & Regional Indian Foods',
+  'Kerala & South Indian Specialities',
+  'North Indian & Regional Specialities',
+  'International & Imported Foods',
+  'Baby & Infant Foods',
+  'Dietary & Special-Requirement Foods',
+  'Gluten-Free & Allergy-Friendly Foods',
+  'Gourmet & Premium Foods',
+  'Food Ingredients & Bulk Supplies',
+  'Catering & Institutional Food Supplies',
+  'Restaurant & Hotel Food Supplies',
+  'Farm-Fresh & Direct-From-Farmer Produce',
+  'Food Hampers & Gift Boxes',
+  'Other Food Products & Specialized Supplies',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
