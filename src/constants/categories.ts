@@ -528,6 +528,28 @@ export const BOOKS_SUBCATEGORIES: string[] = [
   'Other Books & Specialized Publications',
 ];
 
+// Childcare subcategory — the dropdown shown in the Description step of both
+// forms when Childcare is the chosen category. Stored as details.subcategory.
+export const CHILDCARE_SUBCATEGORIES: string[] = [
+  'Babysitting Services',
+  'Child Development & Early Learning',
+  'Child Safety & Protection',
+  'Childcare Centres & Daycare',
+  "Children's Health & Wellness Services",
+  "Children's Special Needs Care",
+  'Educational & Learning Support',
+  'Infant Care Services',
+  'Kindergarten & Preschool Services',
+  'Nanny & Au Pair Services',
+  'Newborn Care Services',
+  'Parenting Support & Guidance',
+  'Playgroups & Activity Centres',
+  'School Transportation & Pick-up Services',
+  'Sleep Training & Sleep Support',
+  'Tutoring & Academic Assistance',
+  'Other Childcare Services',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
