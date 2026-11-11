@@ -319,6 +319,35 @@ export const ANTIQUES_SUBCATEGORIES: string[] = [
   'Other Antiques & Rare Collectibles',
 ];
 
+// Appliances subcategory — the dropdown shown in the Description step of both
+// forms when Appliances is the chosen category. Stored as details.subcategory.
+export const APPLIANCE_SUBCATEGORIES: string[] = [
+  'Air Conditioners',
+  'Air Coolers',
+  'Air Purifiers & Humidifiers',
+  'Baking & Cooking Appliances',
+  'Blenders, Mixers & Grinders',
+  'Cleaning Appliances',
+  'Coffee & Tea Makers',
+  'Dishwashers',
+  'Fans & Ventilation',
+  'Food Processors & Choppers',
+  'Freezers & Deep Freezers',
+  'Heaters & Geysers',
+  'Irons & Garment Care',
+  'Kitchen Appliances',
+  'Microwaves & Ovens',
+  'Refrigerators',
+  'Rice Cookers & Electric Cookers',
+  'Small Kitchen Appliances',
+  'Televisions & Entertainment Appliances',
+  'Vacuum Cleaners',
+  'Washing Machines & Dryers',
+  'Water Dispensers & Purifiers',
+  'Water Heaters',
+  'Other Appliances & Specialized Equipment',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.

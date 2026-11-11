@@ -37,7 +37,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
-import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES } from "@/constants/categories";
+import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES } from "@/constants/categories";
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from "@/modules/sell/categoryBrands";
@@ -290,16 +290,20 @@ const DEADLINE_STEP = 5;
     selectedCategories.includes('agriculture-farming') ||
     (category || '').toLowerCase().includes('agricultur');
   const isAntiques = selectedCategories.includes('antiques') || (category || '').toLowerCase() === 'antiques';
+  const isAppliances =
+    selectedCategories.includes('appliances') || (category || '').toLowerCase() === 'appliances';
   const subcategoryOptions = isElectronics
     ? ELECTRONICS_SUBCATEGORIES
     : isAgriculture
       ? AGRICULTURE_SUBCATEGORIES
       : isAntiques
         ? ANTIQUES_SUBCATEGORIES
-        : null;
+        : isAppliances
+          ? APPLIANCE_SUBCATEGORIES
+          : null;
   useEffect(() => {
     setSubcategory('');
-  }, [isElectronics, isAgriculture, isAntiques]);
+  }, [isElectronics, isAgriculture, isAntiques, isAppliances]);
   const isAccommodationEnquiry = (cats: string[], legacy?: string) =>
     [...cats, legacy ?? ''].some((c) => c && c.toLowerCase().includes('accommodation'));
   const isAccom = isAccommodationEnquiry(selectedCategories, category);
