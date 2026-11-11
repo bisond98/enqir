@@ -1232,6 +1232,53 @@ export const INDUSTRIAL_SUBCATEGORIES: string[] = [
   'Other Industrial Products & Specialized Equipment',
 ];
 
+// Insurance subcategory — the dropdown shown in the Description step of both
+// forms when Insurance is the chosen category. Stored as details.subcategory.
+export const INSURANCE_SUBCATEGORIES: string[] = [
+  'Health Insurance',
+  'Life Insurance',
+  'Term Life Insurance',
+  'Motor Insurance',
+  'Car Insurance',
+  'Two-Wheeler Insurance',
+  'Commercial Vehicle Insurance',
+  'Travel Insurance',
+  'International & Student Travel Insurance',
+  'Home Insurance',
+  'Property & Building Insurance',
+  'Renters & Tenant Insurance',
+  'Business & Commercial Insurance',
+  'Shop & Establishment Insurance',
+  'Fire & Burglary Insurance',
+  'Marine & Cargo Insurance',
+  'Agriculture & Crop Insurance',
+  'Livestock & Cattle Insurance',
+  'Personal Accident Insurance',
+  'Disability Insurance',
+  'Critical Illness Insurance',
+  'Senior Citizen Insurance',
+  'Maternity & Newborn Insurance',
+  'Cyber Insurance',
+  'Professional Indemnity Insurance',
+  'Public Liability Insurance',
+  'Product Liability Insurance',
+  "Workers' Compensation Insurance",
+  'Group & Employee Insurance',
+  'Education & Child Insurance Plans',
+  'Pension & Retirement Insurance Plans',
+  'Credit & Loan Protection Insurance',
+  'Gadget & Electronics Insurance',
+  'Jewellery & Valuables Insurance',
+  'Event & Wedding Insurance',
+  'Engineering & Construction Insurance',
+  'Aviation & Drone Insurance',
+  'Pet Insurance',
+  'Reinsurance & Risk Management',
+  'Insurance Brokers & Advisory Services',
+  'Insurance Claims & Assistance Services',
+  'Other Insurance & Specialized Coverage',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
