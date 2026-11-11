@@ -348,6 +348,37 @@ export const APPLIANCE_SUBCATEGORIES: string[] = [
   'Other Appliances & Specialized Equipment',
 ];
 
+// Art subcategory — the dropdown shown in the Description step of both forms
+// when Art is the chosen category. Stored as details.subcategory.
+export const ART_SUBCATEGORIES: string[] = [
+  'Abstract Art',
+  'Acrylic Paintings',
+  'Architectural Art',
+  'Art Collectibles & Memorabilia',
+  'Calligraphy & Lettering',
+  'Canvas Paintings',
+  'Ceramic & Pottery Art',
+  'Contemporary Art',
+  'Digital Art',
+  'Drawings & Illustrations',
+  'Folk & Traditional Art',
+  'Glass Art',
+  'Graffiti & Street Art',
+  'Installation Art',
+  'Mixed Media Art',
+  'Murals & Wall Art',
+  'Oil Paintings',
+  'Photography Art',
+  'Prints & Posters',
+  'Religious & Spiritual Art',
+  'Sculptures & Statues',
+  'Textile & Fabric Art',
+  'Tribal & Indigenous Art',
+  'Watercolour Paintings',
+  'Wood & Metal Art',
+  'Other Art & Specialized Creations',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
