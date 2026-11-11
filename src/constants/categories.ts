@@ -204,6 +204,51 @@ export const CLEANING_SERVICE_TYPES: string[] = [
   'Housekeeping & maid service',
 ];
 
+// Electronics subcategory — the dropdown shown in the Description step of both
+// the Post Enquiry and Sell forms when Electronics is the chosen category.
+// Stored on the document as details.subcategory (the label string).
+export const ELECTRONICS_SUBCATEGORIES: string[] = [
+  'Audio & Headphones',
+  'Automotive Electronic Components',
+  'Aerospace & Aviation Electronics',
+  'Batteries & Battery Technology',
+  'Broadcasting & Radio Equipment',
+  'Cameras & Photography',
+  'Car Electronics',
+  'Computer Components',
+  'Computers & Laptops',
+  'Drones & Robotics',
+  'Electronic Accessories',
+  'Electronic Components & DIY',
+  'Electronic Learning & Educational Kits',
+  'Electronic Manufacturing Equipment',
+  'Electronic Test & Measurement Equipment',
+  'Gaming & Consoles',
+  'Industrial Electronics & Automation',
+  'Marine & Navigation Electronics',
+  'Medical Electronics & Equipment',
+  'Mobiles & Smartphones',
+  'Monitors & Displays',
+  'Musical Instruments & Electronic Equipment',
+  'Navigation & GPS Equipment',
+  'Networking & Connectivity',
+  'Other Electronics & Specialized Equipment',
+  'Power & Backup Electronics',
+  'Printers & Office Electronics',
+  'Renewable Energy Electronics',
+  'Scientific & Laboratory Electronics',
+  'Security & Surveillance',
+  'Semiconductor & Chip Equipment',
+  'Smart Home & Automation',
+  'Smartwatches & Wearables',
+  'Speakers & Sound Systems',
+  'Storage & Memory',
+  'Telecommunication Infrastructure Equipment',
+  'Telephones & Communication',
+  'TVs & Home Entertainment',
+  'Vending Machines & Automated Equipment',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.

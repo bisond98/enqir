@@ -84,7 +84,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string } | null;
 }
 
 interface UserProfile {
@@ -943,6 +943,7 @@ const EnquiryDetail = () => {
                         (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
                         d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
                         d.repairType && { label: 'Service type', value: d.repairType, highlight: true },
+                        d.subcategory && { label: 'Subcategory', value: String(d.subcategory), highlight: true },
                       ].filter(Boolean) as any[];
                       if (chips.length === 0) return null;
                       const GearShifterIcon = ({ className = "" }: { className?: string }) => (
