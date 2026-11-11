@@ -1013,6 +1013,44 @@ export const GAMING_SUBCATEGORIES: string[] = [
   'Other Gaming & Specialized Equipment',
 ];
 
+// Garden & Outdoor subcategory — the dropdown shown in the Description step of
+// both forms when Garden & Outdoor is the chosen category.
+export const GARDEN_SUBCATEGORIES: string[] = [
+  'Smart Gardening & Automated Irrigation',
+  'Vertical Gardening & Terrace Gardening',
+  'Balcony & Indoor Gardening',
+  'Home Gardening Supplies',
+  'Garden Plants, Seeds & Saplings',
+  'Pots, Planters & Garden Containers',
+  'Soil, Compost & Growing Media',
+  'Fertilizers & Plant Nutrition',
+  'Gardening Tools & Equipment',
+  'Lawn Care & Landscaping Equipment',
+  'Irrigation & Watering Systems',
+  'Hydroponics & Aquaponics',
+  'Organic Gardening & Farming',
+  'Greenhouses & Shade Nets',
+  'Garden Décor & Ornaments',
+  'Outdoor Furniture',
+  'Patio, Balcony & Decking',
+  'Gazebos, Pergolas & Outdoor Structures',
+  'Outdoor Lighting & Solar Lighting',
+  'Outdoor Cooking & Barbecue Equipment',
+  'Swimming Pools & Accessories',
+  'Fountains, Ponds & Water Features',
+  'Outdoor Play Equipment',
+  'Camping & Outdoor Recreation',
+  'Outdoor Sports & Fitness Equipment',
+  'Bird Feeding & Birdhouses',
+  'Pest & Weed Control',
+  'Garden Fencing & Boundaries',
+  'Landscaping Materials & Supplies',
+  'Outdoor Storage & Sheds',
+  'Garden Maintenance & Landscaping Services',
+  'Tree Care & Arboriculture',
+  'Other Garden & Outdoor Products & Services',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
