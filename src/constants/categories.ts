@@ -752,6 +752,53 @@ export const ENTERTAINMENT_SUBCATEGORIES: string[] = [
   'Other Entertainment & Specialized Activities',
 ];
 
+// Events subcategory — the dropdown shown in the Description step of both forms
+// when Events is the chosen category. Stored as details.subcategory.
+export const EVENTS_SUBCATEGORIES: string[] = [
+  'AI, Technology & Startup Events',
+  'Gaming & Esports Events',
+  'Music Festivals & Concerts',
+  'Film Festivals & Screenings',
+  'Art & Creative Exhibitions',
+  'Fashion Shows & Fashion Events',
+  'Influencer & Creator Meetups',
+  'Comic-Con, Anime & Pop Culture Events',
+  'Sports Events & Tournaments',
+  'Adventure & Outdoor Events',
+  'Business & Networking Events',
+  'Startup & Entrepreneurship Events',
+  'Corporate Events & Conferences',
+  'Trade Shows & Expos',
+  'Industry & Professional Exhibitions',
+  'Educational Events & Workshops',
+  'Career Fairs & Job Events',
+  'Science & Innovation Exhibitions',
+  'Cultural & Heritage Events',
+  'Religious & Spiritual Events',
+  'Traditional & Folk Festivals',
+  'Food & Culinary Festivals',
+  'Wine & Beverage Events',
+  'Book Fairs & Literary Events',
+  'Theatre & Performing Arts',
+  'Comedy & Stand-up Shows',
+  'Dance & Cultural Performances',
+  'Weddings & Engagements',
+  'Birthday & Private Parties',
+  "Family & Kids' Events",
+  'College & Campus Events',
+  'Community & Social Gatherings',
+  'Charity & Fundraising Events',
+  'Political & Public Events',
+  'Award Shows & Ceremonies',
+  'Fashion, Beauty & Lifestyle Expos',
+  'Automobile & Motorcycle Events',
+  'Real Estate & Property Exhibitions',
+  'Agriculture & Rural Events',
+  'Government & Public Awareness Events',
+  'Virtual & Hybrid Events',
+  'Other Events & Specialized Gatherings',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
