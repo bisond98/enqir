@@ -464,6 +464,32 @@ export const BEAUTY_SUBCATEGORIES: string[] = [
   'Other Beauty & Personal Care Products',
 ];
 
+// Bicycles subcategory — the dropdown shown in the Description step of both
+// forms when Bicycles is the chosen category. Stored as details.subcategory.
+export const BICYCLES_SUBCATEGORIES: string[] = [
+  'BMX Bicycles',
+  'Cargo Bicycles',
+  "Children's Bicycles",
+  'Cruiser Bicycles',
+  'Electric Bicycles (E-Bikes)',
+  'Folding Bicycles',
+  'Hybrid Bicycles',
+  'Mountain Bicycles (MTB)',
+  'Road Bicycles',
+  'Single-Speed & Fixed-Gear Bicycles',
+  'Tandem Bicycles',
+  'Touring Bicycles',
+  'Track & Racing Bicycles',
+  'Tricycles',
+  'Adaptive & Special Needs Bicycles',
+  'Bicycle Frames & Framesets',
+  'Bicycle Parts & Components',
+  'Bicycle Accessories & Safety Gear',
+  'Bicycle Storage & Carriers',
+  'Bicycle Repair & Maintenance Equipment',
+  'Other Bicycles & Specialized Cycling Equipment',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
