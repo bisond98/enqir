@@ -14,7 +14,7 @@ import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
-import { getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
+import { LAPTOP_OTHER, getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
 import { SNEAKER_BRANDS } from '../categoryBrands';
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from '@/constants/thriftClothing';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
@@ -662,7 +662,13 @@ export default function CreateListing() {
   // Laptop listings can skip the title: the brand + model picked on the Title
   // tab stand in for it, and a typed title always wins when there is one.
   const laptopTitle = [details['brand'], details['model']].filter(Boolean).join(' ');
-  const effectiveTitle = title.trim() || (category === 'laptops' ? laptopTitle : '');
+  // "Other" means the catalogue has no name for it, so it can never stand in
+  // for the title — the seller has to type one to move on.
+  const laptopTitleIsReal =
+    !!details['brand'] &&
+    details['brand'] !== LAPTOP_OTHER &&
+    details['model'] !== LAPTOP_OTHER;
+  const effectiveTitle = title.trim() || (category === 'laptops' && laptopTitleIsReal ? laptopTitle : '');
 
   const canAdvanceFromStep = (s: number): boolean => {
     switch (s) {
@@ -1189,8 +1195,11 @@ export default function CreateListing() {
                   <div className="flex flex-wrap items-center justify-end gap-3 -mt-1 mb-5">
                     {fieldsForCategoryStep(category, 'title').map((f) => {
                       // Laptop models are the ones the picked brand actually sells.
+                      // The picked brand's models, plus Other for anything unlisted
                       const fieldOptions = f.key === 'model' && category === 'laptops'
-                        ? getLaptopModels(details['brand'] ?? '')
+                        ? (details['brand'] === LAPTOP_OTHER
+                            ? [LAPTOP_OTHER]
+                            : [...getLaptopModels(details['brand'] ?? ''), LAPTOP_OTHER])
                         : (f.options ?? []);
                       return (
                       <div key={f.key} className="relative w-[48%]" style={f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
@@ -1226,12 +1235,14 @@ export default function CreateListing() {
                                 // A different brand invalidates the model and its storage
                                 if (f.key === 'brand' && category === 'laptops') {
                                   setDetail('model', ''); setDetail('storage', ''); setDetail('processor', '');
-                                  // The title mirrors the picker until the seller edits it
-                                  setTitle(e.target.value);
+                                  // The title mirrors the picker — except for "Other",
+                                  // which has no name worth filling in.
+                                  setTitle(e.target.value === LAPTOP_OTHER ? '' : e.target.value);
                                 }
                                 if (f.key === 'model' && category === 'laptops') {
                                   setDetail('storage', '');
-                                  setTitle([details['brand'], e.target.value].filter(Boolean).join(' '));
+                                  const unknownModel = e.target.value === LAPTOP_OTHER || details['brand'] === LAPTOP_OTHER;
+                                  setTitle(unknownModel ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
                                 }
                                 // Picking a service prefills the title (editable).
                                 // Only overwrite when the title is empty or still
@@ -1596,9 +1607,9 @@ export default function CreateListing() {
                                     >
                                       <option value="">{f.placeholder ?? 'Select'}</option>
                                       {((f.key === 'storage' && category === 'laptops')
-                                      ? getLaptopStorageOptions(details['brand'] ?? '', details['model'] ?? '')
+                                      ? [...getLaptopStorageOptions(details['brand'] ?? '', details['model'] ?? ''), LAPTOP_OTHER]
                                       : (f.key === 'processor' && category === 'laptops')
-                                        ? getLaptopProcessors(details['brand'] ?? '')
+                                        ? [...getLaptopProcessors(details['brand'] ?? ''), LAPTOP_OTHER]
                                         : (f.options ?? [])).map((opt) => (
                                         <option key={opt} value={opt}>{opt}</option>
                                       ))}
