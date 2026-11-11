@@ -799,6 +799,51 @@ export const EVENTS_SUBCATEGORIES: string[] = [
   'Other Events & Specialized Gatherings',
 ];
 
+// Fashion subcategory — the dropdown shown in the Description step of both forms
+// when Fashion is the chosen category. Stored as details.subcategory.
+export const FASHION_SUBCATEGORIES: string[] = [
+  'Streetwear & Urban Fashion',
+  'Sneakers & Fashion Footwear',
+  'Luxury & Designer Fashion',
+  'Sustainable & Ethical Fashion',
+  'Fast Fashion',
+  "Men's Clothing",
+  "Women's Clothing",
+  'Unisex Clothing',
+  "Kids' & Baby Clothing",
+  'Ethnic & Traditional Wear',
+  'Western Wear',
+  'Indo-Western Fashion',
+  'Sportswear & Activewear',
+  'Athleisure',
+  'Casual Wear',
+  'Formal & Business Wear',
+  'Party & Occasion Wear',
+  'Wedding & Bridal Wear',
+  'Maternity Wear',
+  'Innerwear & Lingerie',
+  'Sleepwear & Loungewear',
+  'Winterwear & Outerwear',
+  'Plus-Size Fashion',
+  'Modest Fashion',
+  'Vintage & Retro Fashion',
+  'Thrift & Pre-Owned Fashion',
+  'Bags & Fashion Accessories',
+  'Watches & Wearable Accessories',
+  'Jewellery & Fashion Jewellery',
+  'Eyewear & Sunglasses',
+  'Belts, Hats & Headwear',
+  'Fashion Fabrics & Textiles',
+  'Tailoring & Custom-Made Clothing',
+  'Fashion Design & Styling Services',
+  'Fashion Modelling & Talent',
+  'Fashion Technology & Wearables',
+  'Costume & Performance Wear',
+  'Uniforms & Workwear',
+  'Fashion Manufacturing & Wholesale',
+  'Other Fashion & Specialized Apparel',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
