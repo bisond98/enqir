@@ -943,7 +943,8 @@ const EnquiryDetail = () => {
                         (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
                         d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
                         d.repairType && { label: 'Service type', value: d.repairType, highlight: true },
-                        d.subcategory && { label: 'Subcategory', value: String(d.subcategory), highlight: true },
+                        // User-picked subcategory: no title, description's type.
+                        d.subcategory && { label: null, value: String(d.subcategory), subcategory: true },
                       ].filter(Boolean) as any[];
                       if (chips.length === 0) return null;
                       const GearShifterIcon = ({ className = "" }: { className?: string }) => (
@@ -965,7 +966,11 @@ const EnquiryDetail = () => {
                       return (
                         <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mt-6 justify-center' : 'mt-5 justify-center'}`}>
                           {chips.map((c: any) => (
-                            c.big ? (
+                            c.subcategory ? (
+                              <span key={c.value} className={`inline-flex max-w-full items-center whitespace-normal break-words rounded-full border border-neutral-300 bg-white px-3 py-[7px] text-neutral-900 ${plainLayout ? 'text-[11.5px] font-semibold leading-[1.614]' : 'text-[13px] leading-[1.6]'}`}>
+                                {c.value}
+                              </span>
+                            ) : c.big ? (
                               <span key={c.label || c.value} className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-red-600 px-3.5 py-[9px] text-[11px] font-bold uppercase tracking-[0.04em] text-white">
                                 {c.value}
                               </span>

@@ -925,8 +925,6 @@ export default function ListingDetail() {
                     workMode: 'Work mode',
                     serviceMode: 'Service mode',
                     repairType: 'Service type',
-                    // Description-step subcategory (Electronics, Agriculture, Antiques, …)
-                    subcategory: 'Subcategory',
                     accommodationType: 'Stay type',
                     // Condition step
                     productCondition: 'Condition',
@@ -945,7 +943,10 @@ export default function ListingDetail() {
                     const label = key in detailLabels ? detailLabels[key] : '';
                     const brandLogo = key === 'sneakerBrand' ? getSneakerBrandLogoUrl(String(val)) : key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
-                      <span key={`${val}-${i}`} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span key={`${val}-${i}`} className={key === 'subcategory'
+                        // Subcategory has no title tab and borrows the description's type.
+                        ? "max-w-full inline-flex items-center text-left text-[11px] font-bold font-chip bg-white text-black border-[1.5px] border-black/60 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed"
+                        : "inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl"}>
                         {key === 'transmission' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Joystick className="h-2.5 w-2.5 text-white" /></span>}
                         {key === 'fuel' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Fuel className="h-2.5 w-2.5 text-white" /></span>}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">{label}:</span>}
