@@ -14,6 +14,7 @@ import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
+import { getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
 import { SNEAKER_BRANDS } from '../categoryBrands';
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from '@/constants/thriftClothing';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
@@ -658,6 +659,11 @@ export default function CreateListing() {
     return true;
   };
 
+  // Laptop listings can skip the title: the brand + model picked on the Title
+  // tab stand in for it, and a typed title always wins when there is one.
+  const laptopTitle = [details['brand'], details['model']].filter(Boolean).join(' ');
+  const effectiveTitle = title.trim() || (category === 'laptops' ? laptopTitle : '');
+
   const canAdvanceFromStep = (s: number): boolean => {
     switch (s) {
       case 0:
@@ -668,7 +674,7 @@ export default function CreateListing() {
         }
         return true;
       case 1:
-        if (!title.trim()) {
+        if (!effectiveTitle) {
           toast({ title: 'Add a title', description: 'Buyers need a clear name for your item.', variant: 'destructive' });
           return false;
         }
@@ -744,8 +750,8 @@ export default function CreateListing() {
 
   const publish = async () => {
     if (!user) return;
-    if (!title.trim() || !description.trim()) {
-      toast({ title: 'Missing info', description: 'Title and description are required.', variant: 'destructive' });
+    if (!effectiveTitle || !description.trim()) {
+      toast({ title: 'Missing info', description: 'Add a title — or a brand and model — plus a description.', variant: 'destructive' });
       return;
     }
     if (!location.trim()) {
@@ -820,7 +826,7 @@ export default function CreateListing() {
 
       const newListingId = await createListing(user.uid, {
         mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
-        title: title.trim(),
+        title: effectiveTitle,
         description: description.trim(),
         category,
         categories: selectedCats.length > 0 ? selectedCats : [category],
@@ -844,7 +850,7 @@ export default function CreateListing() {
       toast({ title: 'Published', description: 'Your listing is live.' });
       // AI Match engine: how many buyers need this? Notify the seller (non-blocking)
       import('../services/matchEngine').then(({ matchesForListing, notifyMatch }) =>
-        matchesForListing({ id: newListingId, sellerId: user.uid, title: title.trim(), description: description.trim(), category, categories: selectedCats.length > 0 ? selectedCats : [category], location, condition, priceType: effectivePriceType, price: fixedPrice, priceMin: rangeMin, priceMax: rangeMax, tags: parsedTags, images, details: Object.keys(details).length > 0 ? details : null, status: 'live' })
+        matchesForListing({ id: newListingId, sellerId: user.uid, title: effectiveTitle, description: description.trim(), category, categories: selectedCats.length > 0 ? selectedCats : [category], location, condition, priceType: effectivePriceType, price: fixedPrice, priceMin: rangeMin, priceMax: rangeMax, tags: parsedTags, images, details: Object.keys(details).length > 0 ? details : null, status: 'live' })
           .then((matches) => {
             if (matches.length > 0) {
               notifyMatch({
@@ -852,7 +858,7 @@ export default function CreateListing() {
                 side: 'seller',
                 count: matches.length,
                 topScore: matches[0].score,
-                listingTitle: title.trim(),
+                listingTitle: effectiveTitle,
                 targetUrl: `/sell/listing/${newListingId}`,
               }).catch(() => {});
             }
@@ -864,7 +870,7 @@ export default function CreateListing() {
         notifyNewListing({
           categories: selectedCats.length > 0 ? selectedCats : [category],
           authorId: user.uid,
-          title: title.trim(),
+          title: effectiveTitle,
           targetUrl: `/sell/listing/${newListingId}`,
         })
       ).catch(() => {});
@@ -1135,6 +1141,18 @@ export default function CreateListing() {
                   value={title}
                   onChange={(e) => {
                     setTitle(e.target.value);
+                    // The title writes back to the picker: deleting the whole
+                    // title clears everything, deleting just the model keeps the
+                    // brand and resets only what hung off the model.
+                    if (category === 'laptops') {
+                      const typed = e.target.value.trim();
+                      const brand = details['brand'] ?? '';
+                      if (!typed) {
+                        setDetail('brand', ''); setDetail('model', ''); setDetail('storage', ''); setDetail('processor', '');
+                      } else if (brand && typed.toLowerCase() === brand.toLowerCase()) {
+                        setDetail('model', ''); setDetail('storage', ''); setDetail('processor', '');
+                      }
+                    }
                     // If the user types a title that exactly equals another
                     // service name, switch the Service-type dropdown to it.
                     // Any other title edit leaves the dropdown untouched.
@@ -1170,9 +1188,13 @@ export default function CreateListing() {
                 {fieldsForCategoryStep(category, 'title').length > 0 && (
                   <div className="flex flex-wrap items-center justify-end gap-3 -mt-1 mb-5">
                     {fieldsForCategoryStep(category, 'title').map((f) => {
+                      // Laptop models are the ones the picked brand actually sells.
+                      const fieldOptions = f.key === 'model' && category === 'laptops'
+                        ? getLaptopModels(details['brand'] ?? '')
+                        : (f.options ?? []);
                       return (
                       <div key={f.key} className="relative w-[48%]" style={f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
-                        {f.key !== 'brand' && f.key !== 'storage' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
+                        {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
                           <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
                         )}
                         {f.typeable ? (
@@ -1198,8 +1220,19 @@ export default function CreateListing() {
                           <>
                             <select
                               value={details[f.key] ?? ''}
+                              disabled={f.key === 'model' && category === 'laptops' && !details['brand']}
                               onChange={(e) => {
                                 setDetail(f.key, e.target.value);
+                                // A different brand invalidates the model and its storage
+                                if (f.key === 'brand' && category === 'laptops') {
+                                  setDetail('model', ''); setDetail('storage', ''); setDetail('processor', '');
+                                  // The title mirrors the picker until the seller edits it
+                                  setTitle(e.target.value);
+                                }
+                                if (f.key === 'model' && category === 'laptops') {
+                                  setDetail('storage', '');
+                                  setTitle([details['brand'], e.target.value].filter(Boolean).join(' '));
+                                }
                                 // Picking a service prefills the title (editable).
                                 // Only overwrite when the title is empty or still
                                 // exactly equals the previous auto-filled service.
@@ -1211,13 +1244,18 @@ export default function CreateListing() {
                                   }
                                 }
                               }}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'}`}
                             >
-                              <option value="">{f.placeholder ?? 'Select'}</option>
-                              {f.options?.map((opt) => (
+                              <option value="">Cancel</option>
+                              {fieldOptions.map((opt) => (
                                 <option key={opt} value={opt}>{opt}</option>
                               ))}
                             </select>
+                            {!details[f.key] && (
+                              <span className="pointer-events-none absolute left-4 right-9 top-1/2 -translate-y-1/2 truncate text-[10px] font-semibold text-gray-900">
+                                {f.placeholder ?? 'Select'}
+                              </span>
+                            )}
                             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                           </>
                         )}
@@ -1504,7 +1542,7 @@ export default function CreateListing() {
                       return (
                         <>
                           {toggleFields.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className={`grid grid-cols-1 ${category === 'laptops' ? '' : 'sm:grid-cols-2'} gap-3`}>
                               {toggleFields.map((f) => {
                                 const val = details[f.key] ?? '';
                                 const isOn = val === f.options![1];
@@ -1552,11 +1590,16 @@ export default function CreateListing() {
                                   <div className="relative">
                                     <select
                                       value={details[f.key] ?? ''}
+                                      disabled={(f.key === 'storage' && category === 'laptops' && !details['model']) || (f.key === 'processor' && category === 'laptops' && !details['brand'])}
                                       onChange={(e) => setDetail(f.key, e.target.value)}
                                       className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                                     >
                                       <option value="">{f.placeholder ?? 'Select'}</option>
-                                      {f.options?.map((opt) => (
+                                      {((f.key === 'storage' && category === 'laptops')
+                                      ? getLaptopStorageOptions(details['brand'] ?? '', details['model'] ?? '')
+                                      : (f.key === 'processor' && category === 'laptops')
+                                        ? getLaptopProcessors(details['brand'] ?? '')
+                                        : (f.options ?? [])).map((opt) => (
                                         <option key={opt} value={opt}>{opt}</option>
                                       ))}
                                     </select>
@@ -2034,7 +2077,7 @@ export default function CreateListing() {
                                 f.key === 'kmsDriven' ? Gauge :
                                 f.key === 'ownership' ? User :
                                 f.key === 'storage' ? HardDrive :
-                                f.key === 'ram' ? Cpu :
+                                f.key === 'storage' ? Cpu :
                                 f.key === 'processor' ? Cpu :
                                 f.key === 'warranty' ? ShieldCheck :
                                 f.key === 'experience' ? Briefcase :

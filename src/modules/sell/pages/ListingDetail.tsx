@@ -909,6 +909,9 @@ export default function ListingDetail() {
                     variant: 'Variant',
                     brand: 'Brand',
                     mobileBrand: 'Brand',
+                    // Laptop picks from the sell form's Title / Description tabs
+                    model: 'Model',
+                    processor: 'Processor',
                     ram: 'RAM',
                     memory: 'Memory',
                     storage: 'Storage',

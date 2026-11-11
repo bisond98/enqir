@@ -1,3 +1,4 @@
+import { LAPTOP_BRAND_OPTIONS } from '@/constants/laptopCatalog';
 // Category-specific detail fields shown dynamically in the Create Listing form.
 // Each field declares which step it belongs to ('title' | 'description' | 'details' | 'price')
 // so inputs never overcrowd — they slot into the existing flow.
@@ -114,10 +115,9 @@ const MOBILE_BRANDS = [
   'Motorola', 'Nothing', 'Google Pixel', 'Nokia', 'iQOO', 'Asus', 'Infinix', 'Tecno', 'Other',
 ];
 
-const LAPTOP_BRANDS = [
-  'Apple MacBook', 'Dell', 'HP', 'Lenovo', 'Asus', 'Acer', 'MSI',
-  'Microsoft Surface', 'Samsung', 'Mi', 'Infinix', 'Alienware', 'Razer', 'Other',
-];
+// Keys must match the laptop catalogue, so the Model dropdown can cascade from
+// whatever brand the seller picked.
+const LAPTOP_BRANDS = LAPTOP_BRAND_OPTIONS;
 
 const YEARS = Array.from({ length: new Date().getFullYear() - 1989 }, (_, i) =>
   String(new Date().getFullYear() - i)
@@ -168,9 +168,16 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   ],
   laptops: [
     { key: 'brand', label: 'Brand', type: 'select', options: LAPTOP_BRANDS, placeholder: 'Select brand', step: 'title' },
-    { key: 'ram', label: 'RAM', type: 'select', options: ['4 GB', '8 GB', '16 GB', '32 GB', '64 GB'], placeholder: 'Select RAM', step: 'description' },
-    { key: 'processor', label: 'Processor', type: 'select', options: ['Intel i3', 'Intel i5', 'Intel i7', 'Intel i9', 'AMD Ryzen 3', 'AMD Ryzen 5', 'AMD Ryzen 7', 'AMD Ryzen 9', 'Apple M1', 'Apple M2', 'Apple M3', 'Apple M4'], placeholder: 'Select processor', step: 'description' },
-    { key: 'storage', label: 'Storage', type: 'select', options: ['128 GB', '256 GB', '512 GB', '1 TB', '2 TB'], placeholder: 'Select storage', step: 'details' },
+    // Model options follow the picked brand (Apple -> MacBooks); CreateListing
+    // resolves them with getLaptopModels().
+    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Model', step: 'title' },
+    // Processor options follow the brand picked on the Title tab (Apple -> M-series,
+    // Windows brands -> Intel / AMD / Snapdragon); CreateListing resolves them.
+    { key: 'processor', label: 'Processor', type: 'select', options: [], placeholder: 'Select processor', step: 'description' },
+    // Storage follows the brand + model picked on the Title tab (same catalogue
+    // the post-enquiry form uses), so only sizes that model came in are offered.
+    { key: 'storage', label: 'Storage', type: 'select', options: [], placeholder: 'Select storage', step: 'description' },
+
   ],
   jobs: [
     { key: 'experience', label: 'Experience required', type: 'select', options: ['Fresher', '0-1 year', '1-3 years', '3-5 years', '5-10 years', '10+ years'], placeholder: 'Select experience', step: 'description' },

@@ -3146,7 +3146,7 @@ const DEADLINE_STEP = 5;
                                     else setLaptopDetails((prev) => ({ ...prev, storage: v }));
                                   }}
                                   disabled={field.disabled}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:border-slate-300 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
                                 >
                                   <option value="">Cancel</option>
                                   {field.options.map((o) => (
@@ -3156,7 +3156,7 @@ const DEADLINE_STEP = 5;
                                 {/* Empty box: the list's top entry is "Cancel", but the
                                     box itself keeps naming the field. */}
                                 {!field.value && (
-                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none">
+                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-gray-900 pointer-events-none">
                                     {field.placeholder}
                                   </span>
                                 )}
