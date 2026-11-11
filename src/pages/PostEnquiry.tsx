@@ -2966,9 +2966,6 @@ const DEADLINE_STEP = 5;
                               <option key={s} value={s}>{s}</option>
                             ))}
                           </select>
-                          <div className="h-3">
-                            <p className="text-[8px] font-bold text-black text-center tracking-wide">electronics subcategory</p>
-                          </div>
                         </div>
                       )}
                       {/* Vehicle details — brand/year/variant above the description when a vehicle category is selected */}
