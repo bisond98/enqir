@@ -37,7 +37,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
-import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES } from "@/constants/categories";
+import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES } from "@/constants/categories";
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from "@/modules/sell/categoryBrands";
@@ -320,6 +320,7 @@ const DEADLINE_STEP = 5;
     selectedCategories.includes('entertainment-media') ||
     (category || '').toLowerCase().includes('entertainment');
   const isEvents = selectedCategories.includes('events-entertainment') || (category || '').toLowerCase() === 'events-entertainment';
+  const isFashion = selectedCategories.includes('fashion') || (category || '').toLowerCase() === 'fashion';
   const subcategoryOptions = isElectronics
     ? ELECTRONICS_SUBCATEGORIES
     : isAgriculture
@@ -352,10 +353,12 @@ const DEADLINE_STEP = 5;
                                 ? ENTERTAINMENT_SUBCATEGORIES
                                 : isEvents
                                   ? EVENTS_SUBCATEGORIES
-                                  : null;
+                                  : isFashion
+                                    ? FASHION_SUBCATEGORIES
+                                    : null;
   useEffect(() => {
     setSubcategory('');
-  }, [isElectronics, isAgriculture, isAntiques, isAppliances, isArt, isBabyKids, isBagsLuggage, isBeauty, isBicycles, isBooks, isChildcare, isCollectibles, isConstruction, isEducation, isEntertainment, isEvents]);
+  }, [isElectronics, isAgriculture, isAntiques, isAppliances, isArt, isBabyKids, isBagsLuggage, isBeauty, isBicycles, isBooks, isChildcare, isCollectibles, isConstruction, isEducation, isEntertainment, isEvents, isFashion]);
   const isAccommodationEnquiry = (cats: string[], legacy?: string) =>
     [...cats, legacy ?? ''].some((c) => c && c.toLowerCase().includes('accommodation'));
   const isAccom = isAccommodationEnquiry(selectedCategories, category);
