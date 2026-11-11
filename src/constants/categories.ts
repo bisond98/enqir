@@ -286,6 +286,39 @@ export const AGRICULTURE_SUBCATEGORIES: string[] = [
   'Other Agriculture & Specialized Equipment',
 ];
 
+// Antiques subcategory — the dropdown shown in the Description step of both
+// forms when Antiques is the chosen category. Stored as details.subcategory.
+export const ANTIQUES_SUBCATEGORIES: string[] = [
+  'Antique Arms & Armour',
+  'Antique Books & Manuscripts',
+  'Antique Clocks & Watches',
+  'Antique Coins & Currency',
+  'Antique Furniture',
+  'Antique Maps & Globes',
+  'Antique Musical Instruments',
+  'Antique Photographs & Cameras',
+  'Antique Scientific Instruments',
+  'Antique Silverware & Metalware',
+  'Antique Textiles & Fabrics',
+  'Antique Toys & Games',
+  'Architectural Salvage & Collectibles',
+  'Art & Sculptures',
+  'Ceramics, Pottery & Porcelain',
+  'Colonial & Historical Collectibles',
+  'Ethnic & Tribal Artefacts',
+  'Glassware & Crystal',
+  'Historical Memorabilia',
+  'Jewellery & Gemstones',
+  'Maritime & Nautical Antiques',
+  'Military & War Memorabilia',
+  'Religious & Spiritual Artefacts',
+  'Rugs, Carpets & Tapestries',
+  'Home Décor',
+  'Lighting & Lamps',
+  'Tools & Industrial Collectibles',
+  'Other Antiques & Rare Collectibles',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.

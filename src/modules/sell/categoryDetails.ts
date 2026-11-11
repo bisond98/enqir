@@ -4,7 +4,7 @@
 // Values are stored as a flat `details` map on the listing document.
 
 import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from './categoryBrands';
-import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES } from '@/constants/categories';
+import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES } from '@/constants/categories';
 import { THRIFT_GENDERS, THRIFT_TYPES } from '@/constants/thriftClothing';
 
 // Sneaker sizes — US and UK scales. Adults get the full run; Kids get the
@@ -214,6 +214,10 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   // Agriculture: same shared subcategory dropdown as Electronics.
   'agriculture-farming': [
     { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...AGRICULTURE_SUBCATEGORIES], placeholder: 'Select subcategory', step: 'description' },
+  ],
+  // Antiques: same shared subcategory dropdown as Electronics and Agriculture.
+  antiques: [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...ANTIQUES_SUBCATEGORIES], placeholder: 'Select subcategory', step: 'description' },
   ],
   // Thrift: three linked dropdowns in the Description step. The Item options
   // depend on the picked gender, so CreateListing resolves them with
