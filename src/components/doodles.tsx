@@ -562,8 +562,8 @@ export const DealFlowSketch = ({ className = "" }: { className?: string }) => (
     aria-hidden="true"
   >
     <g>
-      {/* the line the whole scene stands on */}
-      <path d="M6 66 C 80 62 150 67 210 64 C 264 62 310 66 354 63" strokeWidth={1.5} />
+      {/* its ground line is gone too — the viewBox and wrapper are untouched,
+          so the sketch keeps exactly the space it had */}
 
       {/* the enquiry, written out — a clay plate laid a hair off the line */}
       <g transform="translate(50 40) rotate(-3)">
@@ -690,8 +690,8 @@ export const SellListingSketch = ({ className = "" }: { className?: string }) =>
     aria-hidden="true"
   >
     <g>
-      {/* the line the whole scene stands on */}
-      <path d="M6 66 C 80 62 150 67 210 64 C 264 62 310 66 354 63" strokeWidth={1.5} />
+      {/* its ground line is gone by request — the viewBox and wrapper are
+          untouched, so the sketch keeps exactly the space it had */}
 
       {/* the thing being sold, priced by hand — solid terracotta */}
       <g transform="translate(50 38) rotate(-2)">
@@ -754,6 +754,32 @@ export const SellListingSketch = ({ className = "" }: { className?: string }) =>
       <circle cx="120" cy="18" r="1.6" fill="#3b4a7a" stroke="none" />
       <circle cx="252" cy="74" r="1.5" fill="#bf8a2e" stroke="none" />
     </g>
+  </svg>
+);
+
+// ── The price tag that sits beside the sell form's title ─────────────────────
+// Same pen as the enquiry header's magnifier: a slightly off-true tag with one
+// punched hole and a hand-written rupee, drawn in currentColor so it can sit on
+// the black header.
+export const SellTagDoodle = ({ className = "" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <g transform="rotate(-11 12 12)">
+      <path d="M10.3 3.1 C13.2 2.9 16.7 3.3 19.3 4.0 C20.1 6.9 20.4 10.7 20.2 13.7 C17.3 15.9 13.4 18.7 10.6 21.3 C8.0 18.8 4.8 15.4 2.5 12.7 C5.1 9.9 7.8 6.2 10.3 3.1 Z" />
+      <circle cx="15.6" cy="8.5" r="1.15" />
+      <path d="M9.7 11.3 H13.5" strokeWidth={0.9} />
+      <path d="M11.7 11.3 C11.7 13.4 11.2 14.9 10.1 16.2" strokeWidth={0.9} />
+      <path d="M12.9 13.1 C13.6 14.1 14.0 15.2 14.3 16.5" strokeWidth={0.9} />
+    </g>
+    <path d="M6.2 6.9 C7.1 6.3 8.0 5.9 9.0 5.7" strokeWidth={0.7} opacity={0.75} />
   </svg>
 );
 

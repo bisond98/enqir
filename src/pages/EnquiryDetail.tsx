@@ -967,7 +967,7 @@ const EnquiryDetail = () => {
                         <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mt-6 justify-center' : 'mt-5 justify-center'}`}>
                           {chips.map((c: any) => (
                             c.subcategory ? (
-                              <span key={c.value} className={`inline-flex max-w-full items-center whitespace-normal break-words rounded-full border border-neutral-300 bg-white px-3 py-[7px] text-neutral-900 ${plainLayout ? 'text-[11.5px] font-semibold leading-[1.614]' : 'text-[13px] leading-[1.6]'}`}>
+                              <span key={c.value} className={`inline-flex max-w-full items-center whitespace-normal break-words rounded-full border border-neutral-300 bg-white px-2 py-[5px] text-neutral-900 ${plainLayout ? 'text-[10px] font-medium leading-[1.4]' : 'text-[11px] leading-[1.45]'}`}>
                                 {c.value}
                               </span>
                             ) : c.big ? (
@@ -1185,15 +1185,15 @@ const EnquiryDetail = () => {
 
                   {/* Posted by */}
                   <div className={`flex gap-3 ${plainLayout ? 'mt-4 flex-col' : 'mt-5 items-center justify-between'}`}>
-                    <div className={`flex min-w-0 items-center gap-2 ${plainLayout ? 'ml-auto mr-3 w-fit justify-end rounded-full border border-black bg-white px-2.5 py-1' : ''}`}>
-                                          <span className={`flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
+                    <div className={`flex min-w-0 items-center gap-1.5 ${plainLayout ? 'ml-auto mr-3 w-fit justify-end rounded-full border border-black bg-white px-2 py-[3px]' : ''}`}>
+                                          <span className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
                                             {posterProfile?.profilePicture ? (
                                               <img loading="lazy" decoding="async" src={posterProfile.profilePicture} alt="" className="h-full w-full object-cover" />
                                             ) : (
-                                              <User className="h-3 w-3 text-white fill-white" />
+                                              <User className="h-[10px] w-[10px] text-white fill-white" />
                                             )}
                                           </span>
-                                          <p className="min-w-0 truncate text-[11px] font-normal text-neutral-500">
+                                          <p className="min-w-0 truncate text-[9.5px] font-normal text-neutral-500">
                                             Posted by <span className="font-semibold text-neutral-900">{posterProfile?.username?.trim() || shortUserId(enquiry.userId)}</span>
                                           </p>
                                         </div>

@@ -897,34 +897,6 @@ export default function CreateListing() {
     );
   }
 
-  const StepIcon = ({ active }: { active: boolean }) => {
-    const meta = STEPS[step];
-    const Icon =
-      meta.key === 'title'
-        ? Type
-        : meta.key === 'description'
-          ? AlignLeft
-          : meta.key === 'category'
-            ? LayoutGrid
-            : meta.key === 'location'
-              ? MapPin
-              : meta.key === 'details'
-                ? IndianRupee
-                : meta.key === 'price'
-                  ? IndianRupee
-                  : Upload;
-    return (
-      <div
-        className={cn(
-          'mx-auto mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-black shadow-[0_4px_0_0_rgba(0,0,0,0.2)]',
-          active ? 'bg-black text-white' : 'bg-white text-black'
-        )}
-      >
-        <Icon className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} />
-      </div>
-    );
-  };
-
   return (
     <SellShell
       title="Sell"
@@ -944,9 +916,8 @@ export default function CreateListing() {
         </CardHeader>
 
         <CardContent className="pt-6 sm:pt-8 pb-6 flex flex-col">
-          <div id="step-top">
-            <StepIcon active />
-          </div>
+          {/* Kept as the scroll anchor the step's Back button jumps to. */}
+          <div id="step-top" />
 
           {/* Picked category — carried on every step after the Category tab so the
               seller can see what the form is being filled in for. */}

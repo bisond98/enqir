@@ -2,6 +2,8 @@ import Layout from '@/components/Layout';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Store, LayoutDashboard, Tag } from 'lucide-react';
+import { SellTagDoodle } from '@/components/doodles';
+import { SellHeaderDoodles } from '@/components/sellHeaderDoodles';
 
 export default function SellShell({
   title,
@@ -42,12 +44,23 @@ export default function SellShell({
     <h1 className={`text-lg sm:text-2xl lg:text-3xl ${compactHeader ? '' : 'xl:text-4xl'} font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji`}>
       <Tag className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
       <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{title}.</span>
+      {isCreate && (
+        <SellTagDoodle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white/25" />
+      )}
     </h1>
   );
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className={`bg-black text-white ${compactHeader ? 'py-4 min-h-[116px] sm:min-h-[124px]' : 'py-6 sm:py-12 lg:py-16'} relative overflow-visible`}>
+          {/* Selling mural filling the whole black header behind the text —
+              the enquiry form's treatment, drawn for a seller. Absolutely
+              positioned, so the header keeps exactly its height. */}
+          {isCreate && (
+            <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">
+              <SellHeaderDoodles className="absolute inset-0 h-full w-full" />
+            </div>
+          )}
           {compactHeader && (
             <div className="absolute inset-0 flex items-center justify-center px-16 pointer-events-none">
               {heading}
