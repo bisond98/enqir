@@ -2654,22 +2654,16 @@ const DEADLINE_STEP = 5;
               <CardContent className="relative pt-6 sm:pt-8 pb-6 flex flex-col">
                 {/* The card is left clean: the old doodle watermark that sat
                     behind the form fields has been removed. */}
-                {/* Step Icon */}
+                {/* Step icon retired by request. What is left is an invisible
+                    spacer, trimmed twice now so every tab's title sits a little
+                    higher than it did with the icon in place. */}
                 <div id="step-top" className="scroll-mt-3">
-                  <div className="mx-auto mb-4 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border-2 border-black bg-black text-white">
-                    {step === 0 ? <Search className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 1 ? <LayoutGrid className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 2 ? <AlignLeft className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 3 ? <MapPin className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 4 ? <IndianRupee className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     step === 5 ? <CalendarIcon className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} /> :
-                     <Upload className="h-7 w-7 sm:h-8 sm:w-8" strokeWidth={2} />}
-                  </div>
+                  <div aria-hidden="true" className="mx-auto mb-3 h-6 w-6 sm:h-8 sm:w-8" />
                 </div>
 
                 {/* Step Title — styled like the "Enqir" wordmark on the phone sign-in page:
                     brush-swash stroke behind the text, no pill/background */}
-                <div id="step-title" className="text-center pt-4 mb-4">
+                <div id="step-title" className="text-center pt-2 mb-4">
                   <div className="relative mx-auto inline-flex items-center justify-center select-none px-9 sm:px-14 py-7 sm:py-9">
                     {/* Painterly brush swash — same tapered stroke as the sign-in wordmark */}
                     <svg
