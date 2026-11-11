@@ -490,6 +490,44 @@ export const BICYCLES_SUBCATEGORIES: string[] = [
   'Other Bicycles & Specialized Cycling Equipment',
 ];
 
+// Books subcategory — the dropdown shown in the Description step of both forms
+// when Books is the chosen category. Stored as details.subcategory.
+export const BOOKS_SUBCATEGORIES: string[] = [
+  'Academic & Educational Books',
+  'Art, Design & Photography Books',
+  'Biographies & Autobiographies',
+  'Business & Economics',
+  "Children's Books",
+  'Comics, Manga & Graphic Novels',
+  'Cookbooks, Food & Nutrition',
+  'Crime, Mystery & Thriller',
+  'Dictionaries & Reference Books',
+  'Engineering & Technology',
+  'Fiction & Literature',
+  'Health, Fitness & Wellness',
+  'History & Politics',
+  'Hobby, Crafts & DIY',
+  'Language & Linguistics',
+  'Law & Legal Studies',
+  'Lifestyle & Self-Help',
+  'Mathematics & Statistics',
+  'Medical & Healthcare Books',
+  'Philosophy & Psychology',
+  'Poetry & Drama',
+  'Religion & Spirituality',
+  'Romance',
+  'Science & Nature',
+  'Science Fiction & Fantasy',
+  'School & College Textbooks',
+  'Social Sciences & Sociology',
+  'Sports & Recreation',
+  'Travel & Geography',
+  'Young Adult (YA) Books',
+  'Magazines, Journals & Periodicals',
+  'Rare, Antique & Collectible Books',
+  'Other Books & Specialized Publications',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
