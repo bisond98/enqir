@@ -1051,6 +1051,46 @@ export const GARDEN_SUBCATEGORIES: string[] = [
   'Other Garden & Outdoor Products & Services',
 ];
 
+// Government subcategory — the dropdown shown in the Description step of both
+// forms when Government is the chosen category. Stored as details.subcategory.
+export const GOVERNMENT_SUBCATEGORIES: string[] = [
+  'Government Jobs & Recruitment',
+  'Government Tenders & Contracts',
+  'Public Procurement & Supplies',
+  'Government Projects & Infrastructure',
+  'Government Schemes & Subsidies',
+  'Public Services & Citizen Services',
+  'Government Departments & Ministries',
+  'Central Government Services',
+  'State Government Services',
+  'Local Government & Panchayat Services',
+  'Municipal & Corporation Services',
+  'Public Sector Undertakings (PSUs)',
+  'Government Auctions & E-Auctions',
+  'Government Land & Property',
+  'Government Housing & Accommodation',
+  'Public Transport & Mobility Services',
+  'Public Healthcare Services',
+  'Public Education & Institutions',
+  'Defence & Military Services',
+  'Police & Law Enforcement',
+  'Courts & Legal Administration',
+  'Public Safety & Emergency Services',
+  'Taxation & Revenue Services',
+  'Licences, Permits & Registrations',
+  'Public Utilities & Essential Services',
+  'Government Grants & Funding',
+  'Research & Development Institutions',
+  'Government Training & Skill Development',
+  'Public Welfare & Social Security',
+  'Environmental & Forest Services',
+  'Agriculture & Rural Development Services',
+  'Public Data, Digital Services & E-Governance',
+  'Public Notices & Announcements',
+  'Government Events & Public Consultations',
+  'Other Government Services & Opportunities',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
