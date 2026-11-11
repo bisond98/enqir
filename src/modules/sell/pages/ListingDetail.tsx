@@ -925,6 +925,8 @@ export default function ListingDetail() {
                     workMode: 'Work mode',
                     serviceMode: 'Service mode',
                     repairType: 'Service type',
+                    // Description-step subcategory (Electronics, Agriculture, Antiques, …)
+                    subcategory: 'Subcategory',
                     accommodationType: 'Stay type',
                     // Condition step
                     productCondition: 'Condition',
