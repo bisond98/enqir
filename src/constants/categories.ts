@@ -930,6 +930,48 @@ export const FOOD_SUBCATEGORIES: string[] = [
   'Other Food Products & Specialized Supplies',
 ];
 
+// Furniture subcategory — the dropdown shown in the Description step of both
+// forms when Furniture is the chosen category. Stored as details.subcategory.
+export const FURNITURE_SUBCATEGORIES: string[] = [
+  'Smart Furniture & Tech-Integrated Furniture',
+  'Modular Furniture',
+  'Space-Saving & Multifunctional Furniture',
+  'Home Furniture',
+  'Living Room Furniture',
+  'Bedroom Furniture',
+  'Dining Room Furniture',
+  'Kitchen Furniture & Cabinets',
+  'Office & Work-from-Home Furniture',
+  'Study & Educational Furniture',
+  'Gaming Furniture',
+  'Outdoor & Garden Furniture',
+  'Balcony & Patio Furniture',
+  'Commercial & Retail Furniture',
+  'Hotel & Hospitality Furniture',
+  'Restaurant & Café Furniture',
+  'Industrial & Warehouse Furniture',
+  'School & Institutional Furniture',
+  'Hospital & Healthcare Furniture',
+  "Baby & Kids' Furniture",
+  'Wardrobes & Storage Furniture',
+  'Beds, Mattresses & Bed Frames',
+  'Sofas, Recliners & Seating',
+  'Tables & Desks',
+  'Chairs & Stools',
+  'Shelving, Racks & Bookcases',
+  'Shoe Racks & Organisers',
+  'Bathroom Furniture',
+  'Prayer Room & Pooja Furniture',
+  'Traditional Indian Furniture',
+  'Antique & Vintage Furniture',
+  'Custom-Made & Bespoke Furniture',
+  'Furniture Components & Hardware',
+  'Furniture Materials & Supplies',
+  'Furniture Restoration & Repair',
+  'Furniture Rental & Leasing',
+  'Other Furniture & Specialized Furnishings',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
