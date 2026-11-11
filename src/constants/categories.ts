@@ -844,6 +844,50 @@ export const FASHION_SUBCATEGORIES: string[] = [
   'Other Fashion & Specialized Apparel',
 ];
 
+// Fitness & Gym subcategory — the dropdown shown in the Description step of both
+// forms when Fitness & Gym Equipment is the chosen category.
+export const FITNESS_SUBCATEGORIES: string[] = [
+  'Fitness Trackers & Smart Fitness Devices',
+  'Home Fitness & Workout Equipment',
+  'Commercial Gym Equipment',
+  'Strength Training Equipment',
+  'Weightlifting & Powerlifting Equipment',
+  'Cardio & Aerobic Equipment',
+  'Treadmills & Walking Pads',
+  'Exercise Bikes & Spin Bikes',
+  'Cross Trainers & Ellipticals',
+  'Rowing & Ski Training Machines',
+  'Functional Training & CrossFit Equipment',
+  'Dumbbells, Barbells & Weight Plates',
+  'Gym Benches, Racks & Smith Machines',
+  'Cable Machines & Multi-Gyms',
+  'Resistance Bands & Suspension Trainers',
+  'Yoga & Pilates Equipment',
+  'Meditation & Recovery Equipment',
+  'Boxing & Martial Arts Equipment',
+  'Sports Training & Conditioning Equipment',
+  'Gym Flooring & Infrastructure',
+  'Gym Accessories & Workout Gear',
+  'Fitness Clothing & Activewear',
+  'Sports Nutrition & Fitness Supplements',
+  'Weight Management & Bodybuilding Equipment',
+  'Physiotherapy & Rehabilitation Equipment',
+  'Outdoor Fitness & Calisthenics Equipment',
+  'Gym Setup, Installation & Maintenance',
+  'Gym Equipment Rental & Leasing',
+  'Personal Training & Fitness Coaching',
+  'Group Fitness & Workout Classes',
+  'Yoga, Pilates & Meditation Services',
+  'Dance Fitness & Aerobics',
+  'CrossFit & Functional Fitness Training',
+  'Strength & Conditioning Coaching',
+  'Sports Performance & Athletic Training',
+  'Fitness Centres & Gym Memberships',
+  "Women's Fitness & Training",
+  'Senior Fitness & Mobility Training',
+  'Other Fitness & Gym Equipment / Services',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
