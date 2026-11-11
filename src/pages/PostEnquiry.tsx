@@ -52,6 +52,13 @@ const countWords = (text: string) => (text.trim() ? text.trim().split(/\s+/).len
 const withinDescLimit = (text: string) => text.length <= MAX_DESC_CHARS && countWords(text) <= MAX_DESC_WORDS;
 import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from "@/modules/sell/categoryDetails";
+import {
+  LAPTOP_BRAND_OPTIONS,
+  LAPTOP_OTHER,
+  getLaptopModels,
+  getLaptopProcessors,
+  getLaptopStorageOptions,
+} from "@/constants/laptopCatalog";
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
@@ -254,6 +261,10 @@ const DEADLINE_STEP = 5;
   const [vehicleDetails, setVehicleDetails] = useState<{ brand: string; year: string; variant: string; transmission: string; fuelType: string }>({ brand: '', year: '', variant: '', transmission: '', fuelType: '' });
   // Mobile details (brand/RAM/memory) — filled when the mobiles category is selected
   const [mobileDetails, setMobileDetails] = useState<{ brand: string; ram: string; memory: string }>({ brand: '', ram: '', memory: '' });
+  // Laptop details (brand -> model -> processor -> storage) — filled when the laptops category is selected
+  const [laptopDetails, setLaptopDetails] = useState<{ brand: string; model: string; processor: string; storage: string }>({ brand: '', model: '', processor: '', storage: '' });
+  // Free text for a model / processor / storage that is not in the catalogue
+  const [laptopCustom, setLaptopCustom] = useState<{ model: string; processor: string; storage: string }>({ model: '', processor: '', storage: '' });
   // Sneaker details (brand) — filled when the sneakers category is selected
   const [sneakerBrand, setSneakerBrand] = useState('');
   // Sneaker audience + size (Adults is the default; Kids swaps the size scale)
@@ -286,6 +297,31 @@ const DEADLINE_STEP = 5;
   // Agriculture). The list follows the chosen category and a switch clears it.
   const [subcategory, setSubcategory] = useState('');
   const isElectronics = selectedCategories.includes('electronics') || (category || '').toLowerCase() === 'electronics';
+  // Laptops: the description step cascades brand -> model -> processor -> storage,
+  // each list narrowed by the choice above it. Switching category clears the chain.
+  const isLaptop =
+    selectedCategories.some((c) => (c || '').toLowerCase().includes('laptop')) ||
+    (category || '').toLowerCase().includes('laptop');
+  const laptopModelValue = laptopDetails.model === LAPTOP_OTHER ? laptopCustom.model.trim() : laptopDetails.model;
+  const laptopProcessorValue = laptopDetails.processor === LAPTOP_OTHER ? laptopCustom.processor.trim() : laptopDetails.processor;
+  const laptopStorageValue = laptopDetails.storage === LAPTOP_OTHER ? laptopCustom.storage.trim() : laptopDetails.storage;
+  // Each list ends with "Other", which opens a text box, so a model, chip or
+  // size the catalogue does not know about can still be recorded.
+  const laptopModelOptions = !laptopDetails.brand
+    ? []
+    : laptopDetails.brand === LAPTOP_OTHER
+      ? [LAPTOP_OTHER]
+      : [...getLaptopModels(laptopDetails.brand), LAPTOP_OTHER];
+  const laptopProcessors = laptopDetails.brand
+    ? [...getLaptopProcessors(laptopDetails.brand), LAPTOP_OTHER]
+    : [];
+  const laptopStorageOptions = laptopDetails.brand
+    ? [...getLaptopStorageOptions(laptopDetails.brand, laptopModelValue), LAPTOP_OTHER]
+    : [];
+  useEffect(() => {
+    setLaptopDetails({ brand: '', model: '', processor: '', storage: '' });
+    setLaptopCustom({ model: '', processor: '', storage: '' });
+  }, [isLaptop]);
   const isAgriculture =
     selectedCategories.includes('agriculture-farming') ||
     (category || '').toLowerCase().includes('agricultur');
@@ -676,6 +712,8 @@ const DEADLINE_STEP = 5;
         if (d.notes) setNotes(d.notes);
         if (d.vehicleDetails) setVehicleDetails(d.vehicleDetails);
         if (d.mobileDetails) setMobileDetails(d.mobileDetails);
+        if (d.laptopDetails) setLaptopDetails(d.laptopDetails);
+        if (d.laptopCustom) setLaptopCustom(d.laptopCustom);
         if (d.estateDetails) setEstateDetails(d.estateDetails);
         if (d.estateType) setEstateType(d.estateType);
         if (d.estateDealType) setEstateDealType(d.estateDealType);
@@ -1076,6 +1114,10 @@ const DEADLINE_STEP = 5;
             ...(isThriftEnquiry && thriftSize && { thriftSize }),
             ...(repairType && { repairType }),
             ...(subcategory && subcategoryOptions && { subcategory }),
+            ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
+            ...(laptopModelValue && { laptopModel: laptopModelValue }),
+            ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
+            ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
             ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
             ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
             ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -1242,6 +1284,10 @@ const DEADLINE_STEP = 5;
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(repairType && { repairType }),
           ...(subcategory && subcategoryOptions && { subcategory }),
+          ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
+          ...(laptopModelValue && { laptopModel: laptopModelValue }),
+          ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
+          ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
             ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -1416,6 +1462,10 @@ const DEADLINE_STEP = 5;
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(repairType && { repairType }),
           ...(subcategory && subcategoryOptions && { subcategory }),
+          ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
+          ...(laptopModelValue && { laptopModel: laptopModelValue }),
+          ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
+          ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
               ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -2158,6 +2208,10 @@ const DEADLINE_STEP = 5;
           ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
           ...(repairType && { repairType }),
           ...(subcategory && subcategoryOptions && { subcategory }),
+          ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
+          ...(laptopModelValue && { laptopModel: laptopModelValue }),
+          ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
+          ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
           ...(estateDetails.landArea.trim() && { landArea: `${estateDetails.landArea.trim()} ${estateDetails.landUnit}` }),
           ...(estateDetails.builtUpArea.trim() && { builtUpArea: `${estateDetails.builtUpArea.trim()} ${estateDetails.builtUpUnit}` }),
@@ -3067,6 +3121,79 @@ const DEADLINE_STEP = 5;
                           </div>
                         );
                       })()}
+                      {/* Laptop details — brand -> model -> processor -> storage.
+                          Each dropdown only offers what the pick above it comes in,
+                          and every list ends with "Other" for anything unlisted. */}
+                      {isLaptop && (
+                        <div className="mb-4">
+                          <div className="grid grid-cols-2 gap-3">
+                            {([
+                              { key: 'brand' as const, placeholder: 'Brand', value: laptopDetails.brand, options: LAPTOP_BRAND_OPTIONS, disabled: false },
+                              { key: 'model' as const, placeholder: 'Model', value: laptopDetails.model, options: laptopModelOptions, disabled: !laptopDetails.brand },
+                              { key: 'processor' as const, placeholder: 'Processor', value: laptopDetails.processor, options: laptopProcessors, disabled: !laptopDetails.brand },
+                              { key: 'storage' as const, placeholder: 'Storage', value: laptopDetails.storage, options: laptopStorageOptions, disabled: !laptopModelValue },
+                            ]).map((field) => (
+                              <div key={field.key} className="relative min-w-0">
+                                <select
+                                  value={field.value}
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    if (field.key === 'brand') {
+                                      setLaptopDetails({ brand: v, model: '', processor: '', storage: '' });
+                                      setLaptopCustom({ model: '', processor: '', storage: '' });
+                                    } else if (field.key === 'model') setLaptopDetails((prev) => ({ ...prev, model: v, storage: '' }));
+                                    else if (field.key === 'processor') setLaptopDetails((prev) => ({ ...prev, processor: v }));
+                                    else setLaptopDetails((prev) => ({ ...prev, storage: v }));
+                                  }}
+                                  disabled={field.disabled}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:border-slate-300 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
+                                >
+                                  <option value="">Cancel</option>
+                                  {field.options.map((o) => (
+                                    <option key={o} value={o}>{o}</option>
+                                  ))}
+                                </select>
+                                {/* Empty box: the list's top entry is "Cancel", but the
+                                    box itself keeps naming the field. */}
+                                {!field.value && (
+                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none">
+                                    {field.placeholder}
+                                  </span>
+                                )}
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                            ))}
+                          </div>
+                          {/* Anything the list does not cover is typed in here */}
+                          {laptopDetails.model === LAPTOP_OTHER && (
+                            <Input
+                              value={laptopCustom.model}
+                              onChange={(e) => setLaptopCustom((c) => ({ ...c, model: e.target.value }))}
+                              placeholder="Exact model name"
+                              maxLength={60}
+                              className="w-full rounded-[12px] h-12 sm:h-14 mt-3 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                            />
+                          )}
+                          {laptopDetails.processor === LAPTOP_OTHER && (
+                            <Input
+                              value={laptopCustom.processor}
+                              onChange={(e) => setLaptopCustom((c) => ({ ...c, processor: e.target.value }))}
+                              placeholder="Exact processor (e.g., Intel Core i5-13500H)"
+                              maxLength={60}
+                              className="w-full rounded-[12px] h-12 sm:h-14 mt-3 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                            />
+                          )}
+                          {laptopDetails.storage === LAPTOP_OTHER && (
+                            <Input
+                              value={laptopCustom.storage}
+                              onChange={(e) => setLaptopCustom((c) => ({ ...c, storage: e.target.value }))}
+                              placeholder="Exact storage (e.g., 3 TB)"
+                              maxLength={20}
+                              className="w-full rounded-[12px] h-12 sm:h-14 mt-3 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                            />
+                          )}
+                        </div>
+                      )}
                       {/* Subcategory — Electronics / Agriculture (description step) */}
                       {subcategoryOptions && (
                         <div className="mb-4">
@@ -3776,7 +3903,7 @@ const DEADLINE_STEP = 5;
                             type="button"
                             onClick={() => {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
-                                title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, estateDetails, estateType, estateDealType,
+                                title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, laptopDetails, laptopCustom, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
                                 referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender, thriftGender, thriftType, thriftItem, thriftSize, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
                               }));

@@ -84,7 +84,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string } | null;
 }
 
 interface UserProfile {
@@ -939,6 +939,11 @@ const EnquiryDetail = () => {
                         d.mobileBrand && { label: 'Brand', value: d.mobileBrand, icon: 'mobileBrand', logoUrl: getMobileBrandLogoUrl(d.mobileBrand), highlight: true },
                         d.ram && { label: 'RAM', value: d.ram, highlight: true },
                         d.memory && { label: 'Memory', value: d.memory, highlight: true },
+                        // Laptop picks from the post-enquiry description step
+                        d.laptopBrand && { label: 'Brand', value: String(d.laptopBrand), icon: 'brand', logoUrl: getMobileBrandLogoUrl(String(d.laptopBrand)), highlight: true },
+                        d.laptopModel && { label: 'Model', value: String(d.laptopModel), highlight: true },
+                        d.laptopProcessor && { label: 'Processor', value: String(d.laptopProcessor), highlight: true },
+                        d.laptopStorage && { label: 'Storage', value: String(d.laptopStorage), highlight: true },
                         d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },
                         (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
                         d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
