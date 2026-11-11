@@ -1091,6 +1091,51 @@ export const GOVERNMENT_SUBCATEGORIES: string[] = [
   'Other Government Services & Opportunities',
 ];
 
+// Health subcategory — the dropdown shown in the Description step of both forms
+// when Health is the chosen category. Stored as details.subcategory.
+export const HEALTH_SUBCATEGORIES: string[] = [
+  'Digital Health & Telemedicine',
+  'Health Technology & Medical AI',
+  'Mental Health & Counselling',
+  'Fitness, Wellness & Preventive Healthcare',
+  'Nutrition & Dietetics',
+  'Hospitals & Multispeciality Clinics',
+  'Clinics & Medical Centres',
+  'Doctors & Medical Specialists',
+  'Dental Care & Dentistry',
+  'Eye Care & Optometry',
+  'Skin Care & Dermatology',
+  'Physiotherapy & Rehabilitation',
+  'Ayurveda & Traditional Medicine',
+  'Homeopathy',
+  'Siddha & Unani Medicine',
+  'Yoga & Meditation',
+  'Alternative & Holistic Healthcare',
+  "Women's Healthcare",
+  'Pregnancy, Maternity & Fertility Care',
+  'Child & Paediatric Healthcare',
+  "Men's Healthcare",
+  'Senior & Geriatric Healthcare',
+  'Veterinary Healthcare',
+  'Diagnostic Laboratories & Testing',
+  'Medical Imaging & Radiology',
+  'Blood Banks & Organ Donation Services',
+  'Pharmacies & Medical Stores',
+  'Medicines & Pharmaceutical Products',
+  'Medical Equipment & Devices',
+  'Surgical Instruments & Supplies',
+  'Mobility & Assistive Healthcare Products',
+  'Home Healthcare & Nursing Services',
+  'Emergency & Ambulance Services',
+  'Occupational & Workplace Health',
+  'Public Health & Community Healthcare',
+  'Health Insurance & Medical Financing',
+  'Medical Education & Training',
+  'Healthcare Consultancy & Management',
+  'Medical Tourism & Healthcare Travel',
+  'Other Health & Specialized Medical Services',
+];
+
 // Categories where a New/Used condition makes no sense — properties, stays,
 // pure services and perishables. The Sell form hides its condition selector
 // for these and stores condition as empty.
