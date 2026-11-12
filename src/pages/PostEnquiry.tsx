@@ -37,7 +37,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
-import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES } from "@/constants/categories";
+import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES, PHOTOGRAPHY_SUBCATEGORIES, REAL_ESTATE_SERVICES_SUBCATEGORIES, RENEWABLE_ENERGY_SUBCATEGORIES, SECURITY_SUBCATEGORIES, SOUVENIRS_SUBCATEGORIES, SPORTS_SUBCATEGORIES, TECHNOLOGY_SUBCATEGORIES, TOOLS_EQUIPMENT_SUBCATEGORIES, TRANSPORTATION_SUBCATEGORIES, TRAVEL_SUBCATEGORIES, TUTORING_SUBCATEGORIES, VINTAGE_SUBCATEGORIES, WASTE_MANAGEMENT_SUBCATEGORIES, WEDDING_SUBCATEGORIES } from "@/constants/categories";
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from "@/modules/sell/categoryBrands";
@@ -59,6 +59,7 @@ import {
   getLaptopProcessors,
   getLaptopStorageOptions,
 } from "@/constants/laptopCatalog";
+import { CAMERA_BRAND_OPTIONS, CAMERA_OTHER, getCameraModels } from '@/constants/cameraCatalog';
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
@@ -263,6 +264,9 @@ const DEADLINE_STEP = 5;
   const [mobileDetails, setMobileDetails] = useState<{ brand: string; ram: string; memory: string }>({ brand: '', ram: '', memory: '' });
   // Laptop details (brand -> model -> processor -> storage) — filled when the laptops category is selected
   const [laptopDetails, setLaptopDetails] = useState<{ brand: string; model: string; processor: string; storage: string }>({ brand: '', model: '', processor: '', storage: '' });
+  // Camera details (brand -> model) — filled when the Camera category is selected
+  const [cameraDetails, setCameraDetails] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
+  const [cameraCustom, setCameraCustom] = useState<{ model: string }>({ model: '' });
   // Free text for a model / processor / storage that is not in the catalogue
   const [laptopCustom, setLaptopCustom] = useState<{ model: string; processor: string; storage: string }>({ model: '', processor: '', storage: '' });
   // Sneaker details (brand) — filled when the sneakers category is selected
@@ -322,6 +326,19 @@ const DEADLINE_STEP = 5;
     setLaptopDetails({ brand: '', model: '', processor: '', storage: '' });
     setLaptopCustom({ model: '', processor: '', storage: '' });
   }, [isLaptop]);
+  const isCamera =
+    selectedCategories.some((c) => (c || '').toLowerCase() === 'camera') ||
+    (category || '').toLowerCase() === 'camera';
+  const cameraModelValue = cameraDetails.model === CAMERA_OTHER ? cameraCustom.model.trim() : cameraDetails.model;
+  const cameraModelOptions = !cameraDetails.brand
+    ? []
+    : cameraDetails.brand === CAMERA_OTHER
+      ? [CAMERA_OTHER]
+      : [...getCameraModels(cameraDetails.brand), CAMERA_OTHER];
+  useEffect(() => {
+    setCameraDetails({ brand: '', model: '' });
+    setCameraCustom({ model: '' });
+  }, [isCamera]);
   const isAgriculture =
     selectedCategories.includes('agriculture-farming') ||
     (category || '').toLowerCase().includes('agricultur');
@@ -381,6 +398,76 @@ const DEADLINE_STEP = 5;
   const isJewellery =
     selectedCategories.includes('jewelry-accessories') ||
     (category || '').toLowerCase().includes('jewel');
+  const isKitchenDining =
+    selectedCategories.includes('kitchen-dining') ||
+    (category || '').toLowerCase() === 'kitchen-dining';
+  const isLegal =
+    selectedCategories.includes('legal-financial') ||
+    (category || '').toLowerCase().includes('legal');
+  const isMarketing =
+    selectedCategories.includes('marketing-advertising') ||
+    (category || '').toLowerCase().includes('marketing');
+  const isMedicalEquipment =
+    selectedCategories.includes('medical-equipment') ||
+    (category || '').toLowerCase().includes('medical');
+  const isMemorabilia =
+    selectedCategories.includes('memorabilia') ||
+    (category || '').toLowerCase().includes('memorabil');
+  const isMusicalAccessories =
+    selectedCategories.includes('musical-accessories') ||
+    (category || '').toLowerCase().includes('musical-accessor');
+  const isMusicalInstruments =
+    selectedCategories.includes('musical-instruments') ||
+    (category || '').toLowerCase().includes('instrument');
+  const isMusicalServices =
+    selectedCategories.includes('musical-services') ||
+    (category || '').toLowerCase().includes('musical-servic');
+  const isNonProfit =
+    selectedCategories.includes('non-profit-charity') ||
+    (category || '').toLowerCase().includes('profit');
+  const isPhotographyServices =
+    selectedCategories.includes('photography') ||
+    (category || '').toLowerCase() === 'photography';
+  const isRealEstateServices =
+    selectedCategories.includes('real-estate-services') ||
+    (category || '').toLowerCase() === 'real-estate-services';
+  const isRenewableEnergy =
+    selectedCategories.includes('renewable-energy') ||
+    (category || '').toLowerCase() === 'renewable-energy';
+  // Both the catalogue key (security-safety) and the wall's legacy "security" map here
+  const isSecurity =
+    selectedCategories.some((c) => (c || '').toLowerCase().includes('security')) ||
+    (category || '').toLowerCase().includes('security');
+  const isSouvenirs =
+    selectedCategories.some((c) => (c || '').toLowerCase().includes('souvenir')) ||
+    (category || '').toLowerCase().includes('souvenir');
+  const isSports =
+    selectedCategories.includes('sports-outdoor') ||
+    (category || '').toLowerCase() === 'sports';
+  const isTechnology =
+    selectedCategories.includes('technology') ||
+    (category || '').toLowerCase() === 'technology';
+  const isToolsEquipment =
+    selectedCategories.includes('tools-equipment') ||
+    (category || '').toLowerCase() === 'tools-equipment';
+  const isTransportation =
+    selectedCategories.includes('transportation-logistics') ||
+    (category || '').toLowerCase().includes('transportation');
+  const isTravel =
+    selectedCategories.includes('travel-tourism') ||
+    (category || '').toLowerCase().includes('travel');
+  const isTutoring =
+    selectedCategories.includes('tutoring-lessons') ||
+    (category || '').toLowerCase().includes('tutoring');
+  const isVintage =
+    selectedCategories.includes('vintage') ||
+    (category || '').toLowerCase() === 'vintage';
+  const isWasteManagement =
+    selectedCategories.includes('waste-management') ||
+    (category || '').toLowerCase().includes('waste');
+  const isWedding =
+    selectedCategories.includes('wedding-events') ||
+    (category || '').toLowerCase().includes('wedding');
   const subcategoryOptions = isElectronics
     ? ELECTRONICS_SUBCATEGORIES
     : isAgriculture
@@ -437,10 +524,56 @@ const DEADLINE_STEP = 5;
                                                         ? INSURANCE_SUBCATEGORIES
                                                         : isJewellery
                                                           ? JEWELLERY_SUBCATEGORIES
-                                                          : null;
+                                                          : isKitchenDining
+                                                            ? KITCHEN_DINING_SUBCATEGORIES
+                                                            : isLegal
+                                                              ? LEGAL_SUBCATEGORIES
+                                                              : isMarketing
+                                                                ? MARKETING_SUBCATEGORIES
+                                                                : isMedicalEquipment
+                                                                  ? MEDICAL_EQUIPMENT_SUBCATEGORIES
+                                                                  : isMemorabilia
+                                                                    ? MEMORABILIA_SUBCATEGORIES
+                                                                    : isMusicalAccessories
+                                                                      ? MUSICAL_ACCESSORIES_SUBCATEGORIES
+                                                                      : isMusicalInstruments
+                                                                        ? MUSICAL_INSTRUMENTS_SUBCATEGORIES
+                                                                        : isMusicalServices
+                                                                          ? MUSICAL_SERVICES_SUBCATEGORIES
+                                                                          : isNonProfit
+                                                                            ? NON_PROFIT_SUBCATEGORIES
+                                                                            : isPhotographyServices
+                                                                              ? PHOTOGRAPHY_SUBCATEGORIES
+                                                                              : isRealEstateServices
+                                                                                ? REAL_ESTATE_SERVICES_SUBCATEGORIES
+                                                                                : isRenewableEnergy
+                                                                                  ? RENEWABLE_ENERGY_SUBCATEGORIES
+                                                                                  : isSecurity
+                                                                                    ? SECURITY_SUBCATEGORIES
+                                                                                    : isSouvenirs
+                                                                                      ? SOUVENIRS_SUBCATEGORIES
+                                                                                      : isSports
+                                                                                        ? SPORTS_SUBCATEGORIES
+                                                                                        : isTechnology
+                                                                                          ? TECHNOLOGY_SUBCATEGORIES
+                                                                                          : isToolsEquipment
+                                                                                            ? TOOLS_EQUIPMENT_SUBCATEGORIES
+                                                                                            : isTransportation
+                                                                                              ? TRANSPORTATION_SUBCATEGORIES
+                                                                                              : isTravel
+                                                                                                ? TRAVEL_SUBCATEGORIES
+                                                                                                : isTutoring
+                                                                                                  ? TUTORING_SUBCATEGORIES
+                                                                                                  : isVintage
+                                                                                                    ? VINTAGE_SUBCATEGORIES
+                                                                                                    : isWasteManagement
+                                                                                                      ? WASTE_MANAGEMENT_SUBCATEGORIES
+                                                                                                      : isWedding
+                                                                                                        ? WEDDING_SUBCATEGORIES
+                                                                                                        : null;
   useEffect(() => {
     setSubcategory('');
-  }, [isElectronics, isAgriculture, isAntiques, isAppliances, isArt, isBabyKids, isBagsLuggage, isBeauty, isBicycles, isBooks, isChildcare, isCollectibles, isConstruction, isEducation, isEntertainment, isEvents, isFashion, isFitness, isFood, isFurniture, isGaming, isGarden, isGovernment, isHealth, isHome, isIndustrial, isInsurance, isJewellery]);
+  }, [isElectronics, isAgriculture, isAntiques, isAppliances, isArt, isBabyKids, isBagsLuggage, isBeauty, isBicycles, isBooks, isChildcare, isCollectibles, isConstruction, isEducation, isEntertainment, isEvents, isFashion, isFitness, isFood, isFurniture, isGaming, isGarden, isGovernment, isHealth, isHome, isIndustrial, isInsurance, isJewellery, isKitchenDining, isLegal, isMarketing, isMedicalEquipment, isMemorabilia, isMusicalAccessories, isMusicalInstruments, isMusicalServices, isNonProfit, isPhotographyServices, isRealEstateServices, isRenewableEnergy, isSecurity, isSouvenirs, isSports, isTechnology, isToolsEquipment, isTransportation, isTravel, isTutoring, isVintage, isWasteManagement, isWedding]);
   const isAccommodationEnquiry = (cats: string[], legacy?: string) =>
     [...cats, legacy ?? ''].some((c) => c && c.toLowerCase().includes('accommodation'));
   const isAccom = isAccommodationEnquiry(selectedCategories, category);
@@ -1116,6 +1249,8 @@ const DEADLINE_STEP = 5;
             ...(subcategory && subcategoryOptions && { subcategory }),
             ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
             ...(laptopModelValue && { laptopModel: laptopModelValue }),
+            ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
+            ...(cameraModelValue && { cameraModel: cameraModelValue }),
             ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
             ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
             ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
@@ -1286,6 +1421,8 @@ const DEADLINE_STEP = 5;
           ...(subcategory && subcategoryOptions && { subcategory }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
           ...(laptopModelValue && { laptopModel: laptopModelValue }),
+          ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
+          ...(cameraModelValue && { cameraModel: cameraModelValue }),
           ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
           ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
@@ -1464,6 +1601,8 @@ const DEADLINE_STEP = 5;
           ...(subcategory && subcategoryOptions && { subcategory }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
           ...(laptopModelValue && { laptopModel: laptopModelValue }),
+          ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
+          ...(cameraModelValue && { cameraModel: cameraModelValue }),
           ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
           ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
@@ -1803,6 +1942,8 @@ const DEADLINE_STEP = 5;
     "tools-equipment": Wrench,
     "appliances": Sofa,
     "photography-cameras": Camera,
+    "camera": Camera,
+    "photography": Camera,
     "fitness-gym-equipment": Dumbbell,
     "kitchen-dining": UtensilsCrossed,
     "garden-outdoor": TreePine,
@@ -2210,6 +2351,8 @@ const DEADLINE_STEP = 5;
           ...(subcategory && subcategoryOptions && { subcategory }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
           ...(laptopModelValue && { laptopModel: laptopModelValue }),
+          ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
+          ...(cameraModelValue && { cameraModel: cameraModelValue }),
           ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
           ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
@@ -3194,6 +3337,52 @@ const DEADLINE_STEP = 5;
                           )}
                         </div>
                       )}
+                      {/* Camera details — brand -> model, same cascade as laptops. */}
+                      {isCamera && (
+                        <div className="mb-4">
+                          <div className="grid grid-cols-2 gap-3">
+                            {([
+                              { key: 'brand' as const, placeholder: 'Brand', value: cameraDetails.brand, options: CAMERA_BRAND_OPTIONS, disabled: false },
+                              { key: 'model' as const, placeholder: 'Model', value: cameraDetails.model, options: cameraModelOptions, disabled: !cameraDetails.brand },
+                            ]).map((field) => (
+                              <div key={field.key} className="relative min-w-0">
+                                <select
+                                  value={field.value}
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    if (field.key === 'brand') {
+                                      setCameraDetails({ brand: v, model: '' });
+                                      setCameraCustom({ model: '' });
+                                    } else setCameraDetails((prev) => ({ ...prev, model: v }));
+                                  }}
+                                  disabled={field.disabled}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
+                                >
+                                  <option value="">Cancel</option>
+                                  {field.options.map((o) => (
+                                    <option key={o} value={o}>{o}</option>
+                                  ))}
+                                </select>
+                                {!field.value && (
+                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-gray-900 pointer-events-none">
+                                    {field.placeholder}
+                                  </span>
+                                )}
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                            ))}
+                          </div>
+                          {cameraDetails.model === CAMERA_OTHER && (
+                            <Input
+                              value={cameraCustom.model}
+                              onChange={(e) => setCameraCustom({ model: e.target.value })}
+                              placeholder="Exact model name"
+                              maxLength={60}
+                              className="w-full rounded-[12px] h-12 sm:h-14 mt-3 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                            />
+                          )}
+                        </div>
+                      )}
                       {/* Subcategory — Electronics / Agriculture (description step) */}
                       {subcategoryOptions && (
                         <div className="mb-4">
@@ -3202,7 +3391,7 @@ const DEADLINE_STEP = 5;
                             onChange={(e) => setSubcategory(e.target.value)}
                             className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!subcategory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                           >
-                            <option value="">Select subcategory</option>
+                            <option value="">{subcategoryOptions === KITCHEN_DINING_SUBCATEGORIES || subcategoryOptions === LEGAL_SUBCATEGORIES || subcategoryOptions === MARKETING_SUBCATEGORIES || subcategoryOptions === MEDICAL_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === MEMORABILIA_SUBCATEGORIES || subcategoryOptions === MUSICAL_ACCESSORIES_SUBCATEGORIES || subcategoryOptions === MUSICAL_INSTRUMENTS_SUBCATEGORIES || subcategoryOptions === MUSICAL_SERVICES_SUBCATEGORIES || subcategoryOptions === NON_PROFIT_SUBCATEGORIES || subcategoryOptions === PHOTOGRAPHY_SUBCATEGORIES || subcategoryOptions === REAL_ESTATE_SERVICES_SUBCATEGORIES || subcategoryOptions === RENEWABLE_ENERGY_SUBCATEGORIES || subcategoryOptions === SECURITY_SUBCATEGORIES || subcategoryOptions === SOUVENIRS_SUBCATEGORIES || subcategoryOptions === SPORTS_SUBCATEGORIES || subcategoryOptions === TECHNOLOGY_SUBCATEGORIES || subcategoryOptions === TOOLS_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === TRANSPORTATION_SUBCATEGORIES || subcategoryOptions === TRAVEL_SUBCATEGORIES || subcategoryOptions === TUTORING_SUBCATEGORIES || subcategoryOptions === VINTAGE_SUBCATEGORIES || subcategoryOptions === WASTE_MANAGEMENT_SUBCATEGORIES || subcategoryOptions === WEDDING_SUBCATEGORIES ? 'Select' : 'Select subcategory'}</option>
                             {subcategoryOptions.map((s) => (
                               <option key={s} value={s}>{s}</option>
                             ))}

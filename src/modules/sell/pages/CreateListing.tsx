@@ -15,6 +15,7 @@ import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
 import { LAPTOP_OTHER, getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
+import { getCameraModels } from '@/constants/cameraCatalog';
 import { SNEAKER_BRANDS } from '../categoryBrands';
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from '@/constants/thriftClothing';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
@@ -185,6 +186,8 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
   personal: User,
   pets: PawPrint,
   'photography-cameras': Camera,
+  'camera': Camera,
+  'photography': Camera,
   'fitness-gym-equipment': Dumbbell,
   'garden-outdoor': TreePine,
   'kitchen-dining': UtensilsCrossed,
@@ -668,7 +671,7 @@ export default function CreateListing() {
     !!details['brand'] &&
     details['brand'] !== LAPTOP_OTHER &&
     details['model'] !== LAPTOP_OTHER;
-  const effectiveTitle = title.trim() || (category === 'laptops' && laptopTitleIsReal ? laptopTitle : '');
+  const effectiveTitle = title.trim() || ((category === 'laptops' || category === 'camera') && laptopTitleIsReal ? laptopTitle : '');
 
   const canAdvanceFromStep = (s: number): boolean => {
     switch (s) {
@@ -1150,14 +1153,30 @@ export default function CreateListing() {
                     // The title writes back to the picker: deleting the whole
                     // title clears everything, deleting just the model keeps the
                     // brand and resets only what hung off the model.
+                    const typed = e.target.value.trim();
                     if (category === 'laptops') {
-                      const typed = e.target.value.trim();
                       const brand = details['brand'] ?? '';
                       if (!typed) {
                         setDetail('brand', ''); setDetail('model', ''); setDetail('storage', ''); setDetail('processor', '');
                       } else if (brand && typed.toLowerCase() === brand.toLowerCase()) {
                         setDetail('model', ''); setDetail('storage', ''); setDetail('processor', '');
                       }
+                    }
+                    if (category === 'camera') {
+                      if (!typed) {
+                        setDetail('brand', ''); setDetail('model', '');
+                      } else if (details['brand'] && typed.toLowerCase() === details['brand'].toLowerCase()) {
+                        setDetail('model', '');
+                      }
+                    }
+                    // The subcategory only stands while the title still says it —
+                    // except "Other ...", which the seller is meant to describe in
+                    // their own words, so typing there must not undo the pick.
+                    if (details['subcategory'] && (
+                      !typed ||
+                      (!details['subcategory'].startsWith('Other ') && typed.toLowerCase() !== details['subcategory'].toLowerCase())
+                    )) {
+                      setDetail('subcategory', '');
                     }
                     // If the user types a title that exactly equals another
                     // service name, switch the Service-type dropdown to it.
@@ -1196,14 +1215,18 @@ export default function CreateListing() {
                     {fieldsForCategoryStep(category, 'title').map((f) => {
                       // Laptop models are the ones the picked brand actually sells.
                       // The picked brand's models, plus Other for anything unlisted
-                      const fieldOptions = f.key === 'model' && category === 'laptops'
+                      const fieldOptions = f.key === 'model' && category === 'camera'
+                        ? (details['brand'] === 'Other'
+                            ? ['Other']
+                            : [...getCameraModels(details['brand'] ?? ''), 'Other'])
+                        : f.key === 'model' && category === 'laptops'
                         ? (details['brand'] === LAPTOP_OTHER
                             ? [LAPTOP_OTHER]
                             : [...getLaptopModels(details['brand'] ?? ''), LAPTOP_OTHER])
                         : (f.options ?? []);
                       return (
-                      <div key={f.key} className="relative w-[48%]" style={f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
-                        {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
+                      <div key={f.key} className={`relative ${f.key === 'subcategory' ? 'w-full' : 'w-[48%]'}`} style={f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
+                        {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
                           <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
                         )}
                         {f.typeable ? (
@@ -1229,7 +1252,7 @@ export default function CreateListing() {
                           <>
                             <select
                               value={details[f.key] ?? ''}
-                              disabled={f.key === 'model' && category === 'laptops' && !details['brand']}
+                              disabled={(f.key === 'model' && category === 'laptops' && !details['brand']) || (f.key === 'model' && category === 'camera' && !details['brand'])}
                               onChange={(e) => {
                                 setDetail(f.key, e.target.value);
                                 // A different brand invalidates the model and its storage
@@ -1239,10 +1262,23 @@ export default function CreateListing() {
                                   // which has no name worth filling in.
                                   setTitle(e.target.value === LAPTOP_OTHER ? '' : e.target.value);
                                 }
+                                if (f.key === 'brand' && category === 'camera') {
+                                  setDetail('model', '');
+                                  setTitle(e.target.value === 'Other' ? '' : e.target.value);
+                                }
                                 if (f.key === 'model' && category === 'laptops') {
                                   setDetail('storage', '');
                                   const unknownModel = e.target.value === LAPTOP_OTHER || details['brand'] === LAPTOP_OTHER;
                                   setTitle(unknownModel ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
+                                }
+                                if (f.key === 'model' && category === 'camera') {
+                                  const unknownCamera = e.target.value === 'Other' || details['brand'] === 'Other';
+                                  setTitle(unknownCamera ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
+                                }
+                                // Kitchen & Dining: the subcategory is the listing's name,
+                                // except "Other", which the seller has to describe themselves.
+                                if (f.key === 'subcategory') {
+                                  setTitle(e.target.value.startsWith('Other ') ? '' : e.target.value);
                                 }
                                 // Picking a service prefills the title (editable).
                                 // Only overwrite when the title is empty or still
@@ -1255,7 +1291,7 @@ export default function CreateListing() {
                                   }
                                 }
                               }}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-transparent' : f.key === 'subcategory' ? 'text-[11px] text-black' : 'text-sm sm:text-base text-black'}`}
                             >
                               <option value="">Cancel</option>
                               {fieldOptions.map((opt) => (

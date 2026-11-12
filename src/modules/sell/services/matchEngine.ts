@@ -80,6 +80,8 @@ const CATEGORY_FAMILY: Record<string, string[]> = {
   'fitness-gym-equipment': ['fitness-gym-equipment', 'sports-outdoor'],
   'musical-instruments': ['musical-instruments'],
   'photography-cameras': ['photography-cameras'],
+  'camera': ['photography-cameras'],
+  'photography': ['photography-cameras'],
 };
 
 const inSameFamily = (a: string | undefined, b: string | undefined): boolean => {

@@ -15,6 +15,8 @@ export const IMAGE_REQUIRED_CATEGORIES = new Set<string>([
   'laptops',
   'electronics',
   'photography-cameras',
+  'camera',
+  'photography',
   'appliances',
   'technology',
   'gaming-recreation',

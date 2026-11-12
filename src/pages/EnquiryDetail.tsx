@@ -84,7 +84,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string } | null;
 }
 
 interface UserProfile {
@@ -942,6 +942,9 @@ const EnquiryDetail = () => {
                         // Laptop picks from the post-enquiry description step
                         d.laptopBrand && { label: 'Brand', value: String(d.laptopBrand), icon: 'brand', logoUrl: getMobileBrandLogoUrl(String(d.laptopBrand)), highlight: true },
                         d.laptopModel && { label: 'Model', value: String(d.laptopModel), highlight: true },
+                        // Camera picks from the post-enquiry form
+                        d.cameraBrand && { label: 'Brand', value: String(d.cameraBrand), icon: 'brand', logoUrl: getMobileBrandLogoUrl(String(d.cameraBrand)), highlight: true },
+                        d.cameraModel && { label: 'Model', value: String(d.cameraModel), highlight: true },
                         d.laptopProcessor && { label: 'Processor', value: String(d.laptopProcessor), highlight: true },
                         d.laptopStorage && { label: 'Storage', value: String(d.laptopStorage), highlight: true },
                         d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },

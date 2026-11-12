@@ -1,3 +1,18 @@
+import { TOOLS_EQUIPMENT_SUBCATEGORIES } from '@/constants/categories';
+import { TRANSPORTATION_SUBCATEGORIES } from '@/constants/categories';
+import { TRAVEL_SUBCATEGORIES } from '@/constants/categories';
+import { TUTORING_SUBCATEGORIES } from '@/constants/categories';
+import { VINTAGE_SUBCATEGORIES } from '@/constants/categories';
+import { WASTE_MANAGEMENT_SUBCATEGORIES } from '@/constants/categories';
+import { WEDDING_SUBCATEGORIES } from '@/constants/categories';
+import { TECHNOLOGY_SUBCATEGORIES } from '@/constants/categories';
+import { SPORTS_SUBCATEGORIES } from '@/constants/categories';
+import { SOUVENIRS_SUBCATEGORIES } from '@/constants/categories';
+import { SECURITY_SUBCATEGORIES } from '@/constants/categories';
+import { RENEWABLE_ENERGY_SUBCATEGORIES } from '@/constants/categories';
+import { REAL_ESTATE_SERVICES_SUBCATEGORIES } from '@/constants/categories';
+import { PHOTOGRAPHY_SUBCATEGORIES } from '@/constants/categories';
+import { CAMERA_BRAND_OPTIONS } from '@/constants/cameraCatalog';
 import { LAPTOP_BRAND_OPTIONS } from '@/constants/laptopCatalog';
 // Category-specific detail fields shown dynamically in the Create Listing form.
 // Each field declares which step it belongs to ('title' | 'description' | 'details' | 'price')
@@ -5,7 +20,7 @@ import { LAPTOP_BRAND_OPTIONS } from '@/constants/laptopCatalog';
 // Values are stored as a flat `details` map on the listing document.
 
 import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from './categoryBrands';
-import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES } from '@/constants/categories';
+import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES } from '@/constants/categories';
 import { THRIFT_GENDERS, THRIFT_TYPES } from '@/constants/thriftClothing';
 
 // Sneaker sizes — US and UK scales. Adults get the full run; Kids get the
@@ -165,6 +180,103 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'brand', label: 'Brand', type: 'select', options: MOBILE_BRANDS, placeholder: 'Select brand', step: 'title' },
     { key: 'storage', label: 'Storage', type: 'select', options: ['16 GB', '32 GB', '64 GB', '128 GB', '256 GB', '512 GB', '1 TB'], placeholder: 'Select storage', step: 'title' },
     { key: 'warranty', label: 'Warranty', type: 'select', options: ['Expired', 'Under warranty'], placeholder: 'Select warranty', step: 'details' },
+  ],
+  // Kitchen & Dining: the 27 subcategories, picked on the Title tab.
+  // Non-profit: picked on the Title tab, same 23 as post enquiry.
+  'non-profit-charity': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...NON_PROFIT_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Musical services: picked on the Title tab, same 23 as post enquiry.
+  'musical-services': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...MUSICAL_SERVICES_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Musical instruments: picked on the Title tab, same 21 as post enquiry.
+  'musical-instruments': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...MUSICAL_INSTRUMENTS_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Musical accessories: picked on the Title tab, same 20 as post enquiry.
+  'musical-accessories': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...MUSICAL_ACCESSORIES_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Memorabilia: picked on the Title tab, same 22 as post enquiry.
+  'memorabilia': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...MEMORABILIA_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Medical equipment: picked on the Title tab, same 29 as post enquiry.
+  'medical-equipment': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...MEDICAL_EQUIPMENT_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Marketing: services picked on the Title tab, same 30 as post enquiry.
+  'marketing-advertising': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...MARKETING_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Legal: services picked on the Title tab, same 28 as post enquiry.
+  'legal-financial': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...LEGAL_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  'kitchen-dining': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...KITCHEN_DINING_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Tools & equipment: picked on the Title tab, same 21 as post enquiry.
+  'tools-equipment': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...TOOLS_EQUIPMENT_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Technology: picked on the Title tab, same 19 as post enquiry.
+  'technology': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...TECHNOLOGY_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Sports: picked on the Title tab, same 27 as post enquiry.
+  'sports-outdoor': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...SPORTS_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Souvenirs: picked on the Title tab, same 18 as post enquiry.
+  'souvenir': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...SOUVENIRS_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Security: picked on the Title tab, same 23 as post enquiry.
+  'security-safety': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...SECURITY_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Renewable energy: picked on the Title tab, same 20 as post enquiry.
+  'renewable-energy': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...RENEWABLE_ENERGY_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Real estate services: picked on the Title tab, same 24 as post enquiry.
+  'real-estate-services': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...REAL_ESTATE_SERVICES_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Photography: services picked on the Title tab, same 25 as post enquiry.
+  'photography': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...PHOTOGRAPHY_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Transportation: picked on the Title tab, same 21 as post enquiry.
+  'transportation-logistics': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...TRANSPORTATION_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Travel: picked on the Title tab, same 24 as post enquiry.
+  'travel-tourism': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...TRAVEL_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Tutoring: picked on the Title tab, same 24 as post enquiry.
+  'tutoring-lessons': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...TUTORING_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Vintage: picked on the Title tab, same 21 as post enquiry.
+  vintage: [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...VINTAGE_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Waste management: picked on the Title tab, same 22 as post enquiry.
+  'waste-management': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...WASTE_MANAGEMENT_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Wedding: picked on the Title tab, same 24 as post enquiry.
+  'wedding-events': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...WEDDING_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Camera: brand -> model on the Title tab, same cascade as laptops.
+  camera: [
+    { key: 'brand', label: 'Brand', type: 'select', options: [...CAMERA_BRAND_OPTIONS], placeholder: 'Brand', step: 'title' },
+    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Model', step: 'title' },
   ],
   laptops: [
     { key: 'brand', label: 'Brand', type: 'select', options: LAPTOP_BRANDS, placeholder: 'Select brand', step: 'title' },

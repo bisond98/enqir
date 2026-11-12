@@ -72,6 +72,8 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "tools-equipment": Wrench,
   "appliances": Sofa,
   "photography-cameras": Camera,
+  "camera": Camera,
+  "photography": Camera,
   "fitness-gym-equipment": Dumbbell,
   "kitchen-dining": UtensilsCrossed,
   "garden-outdoor": TreePine,

@@ -28,6 +28,8 @@ const CATEGORY_SYNONYMS: Record<string, string[]> = {
   bicycles: ['bicycle', 'cycle'],
   appliances: ['fridge', 'refrigerator', 'washing machine', 'microwave', 'ac', 'air conditioner', 'cooler', 'geyser'],
   'photography-cameras': ['camera', 'dslr', 'gopro'],
+  'camera': ['camera', 'dslr', 'gopro'],
+  'photography': ['camera', 'dslr', 'gopro'],
   electronics: ['tv', 'television', 'headphones', 'earphones', 'airpods', 'speaker', 'home theatre'],
   'gaming-recreation': ['playstation', 'ps5', 'ps4', 'xbox', 'nintendo'],
   jobs: ['job', 'jobs', 'hiring', 'vacancy', 'internship'],

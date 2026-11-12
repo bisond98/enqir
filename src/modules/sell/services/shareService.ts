@@ -35,6 +35,8 @@ function categoryIcon(cat: string): string {
     'construction-renovation': '🏗️', 'tools-equipment': '🛠️',
     'raw-materials-industrial': '🏭', 'office-supplies': '🖨️',
     'photography-cameras': '📷', 'fitness-gym-equipment': '🏋️',
+    'camera': '📷', 'fitness-gym-equipment': '🏋️',
+    'photography': '📷', 'fitness-gym-equipment': '🏋️',
     'sports-outdoor': '🏏', 'garden-outdoor': '🌱', 'gaming-recreation': '🎮',
     'entertainment-media': '🎬', 'events-entertainment': '🎪',
     books: '📚', 'books-publications': '📚', art: '🎨',

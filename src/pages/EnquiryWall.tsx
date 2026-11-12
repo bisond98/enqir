@@ -988,7 +988,8 @@ export default function EnquiryWall() {
       { value: 'musical-instruments', label: 'Musical Instruments' },
       { value: 'tools-equipment', label: 'Tools & Equipment' },
       { value: 'appliances', label: 'Appliances' },
-      { value: 'photography-cameras', label: 'Photography & Cameras' },
+      { value: 'camera', label: 'Camera' },
+      { value: 'photography', label: 'Photography' },
       { value: 'fitness-gym-equipment', label: 'Fitness & Gym Equipment' },
       { value: 'kitchen-dining', label: 'Kitchen & Dining' },
       { value: 'garden-outdoor', label: 'Garden & Outdoor' },
@@ -1347,6 +1348,8 @@ export default function EnquiryWall() {
     'books-publications': ['books-publications', 'books'],
     'home-furniture': ['home-furniture', 'furniture', 'home'],
     'photography-cameras': ['photography-cameras'],
+    'camera': ['photography-cameras'],
+    'photography': ['photography-cameras'],
   };
 
   const KNOWN_BRAND_WORDS = ['maruti suzuki', 'maruti', 'hyundai', 'tata', 'mahindra', 'toyota', 'honda', 'kia', 'renault', 'nissan', 'volkswagen', 'skoda', 'bmw', 'mercedes', 'audi', 'ford', 'fiat', 'chevrolet', 'datsun', 'porsche', 'ferrari', 'lamborghini', 'rolls royce', 'bentley', 'jaguar', 'volvo', 'hero', 'bajaj', 'tvs', 'royal enfield', 'yamaha', 'suzuki', 'ktm', 'jawa', 'yezdi', 'ather', 'ola', 'revolt', 'kawasaki', 'ducati', 'benelli', 'harley', 'apple', 'iphone', 'samsung', 'oneplus', 'xiaomi', 'redmi', 'realme', 'vivo', 'oppo', 'motorola', 'nothing', 'pixel', 'nokia', 'iqoo', 'asus', 'infinix', 'tecno', 'macbook', 'dell', 'lenovo', 'acer', 'msi'];

@@ -69,6 +69,8 @@ const CATEGORY_ICONS: Record<string, React.ComponentType<any>> = {
   'personal': User,
   'pets': PawPrint,
   'photography-cameras': Camera,
+  'camera': Camera,
+  'photography': Camera,
   'fitness-gym-equipment': Dumbbell,
   'garden-outdoor': Sprout,
   'kitchen-dining': Utensils,
