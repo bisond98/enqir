@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight, CalendarIcon, Sparkles, Flame, IndianRupee, BadgeCheck, Phone } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, Shield, ArrowLeftRight, ChevronLeft, ChevronRight, CalendarIcon, Sparkles, Flame, IndianRupee, BadgeCheck, Phone, Share2 } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -13,6 +13,8 @@ import { profileDisplayName, trustedName } from "../lib/userDisplayName";
 import { db } from "../firebase";
 import { collection, query, where, doc, updateDoc, deleteDoc, orderBy, getDocs, getDoc, onSnapshot, limit, serverTimestamp, arrayRemove, documentId } from "firebase/firestore";
 import VerifiedUser from "../components/VerifiedUser";
+import ShareMenu from "../components/ShareMenu";
+import { buildEnquiryShareText } from "../lib/enquiryShare";
 import { toast } from "../hooks/use-toast";
 import { useUsage } from "../contexts/UsageContext";
 import { Crown } from "lucide-react";
@@ -127,6 +129,14 @@ const Dashboard = () => {
   const [selectedEnquiryForUpgrade, setSelectedEnquiryForUpgrade] = useState<Enquiry | null>(null);
   const [currentPlan, setCurrentPlan] = useState<string>('free');
   const [deletedEnquiries, setDeletedEnquiries] = useState<Set<string>>(new Set()); // Track deleted enquiry IDs
+  // Share — one menu instance, anchored to whichever card's Share button was tapped
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [shareMenuEnquiryId, setShareMenuEnquiryId] = useState<string | null>(null);
+  const shareAnchorRef = useRef<HTMLElement | null>(null);
+  const shareEnquiry = useMemo(
+    () => (shareMenuEnquiryId ? enquiries.find((e) => e.id === shareMenuEnquiryId) ?? null : null),
+    [enquiries, shareMenuEnquiryId]
+  );
   // Call Buyer — popup shows the buyer's number directly (Connect already paid on the response form)
   const [showCallPopup, setShowCallPopup] = useState(false);
   // Scam-alert caution overlay — shown before Call/Chat on responded enquiries (seller side);
@@ -2223,7 +2233,7 @@ const Dashboard = () => {
                               
                               {/* Enquiry Details Section - Visible on all screens, wider on mobile */}
 
-                              {/* Delete Button - Desktop Only */}
+                              {/* Share + Delete Buttons - Desktop Only */}
                                   <div className="hidden lg:flex items-center gap-2 xl:gap-2.5">
                                     <Button 
                                       variant="destructive" 
@@ -2235,11 +2245,28 @@ const Dashboard = () => {
                                         }
                                       }}
                                       disabled={expiredFlag}
-                                      className="flex-shrink-0 !border-[0.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-[10px] xl:text-xs px-2.5 xl:px-3 py-1 xl:py-1.5 h-auto lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] !transition-all !duration-200 !transform hover:!scale-[1.02] active:!scale-[0.98] disabled:!opacity-50 disabled:!cursor-not-allowed group/delete flex items-center justify-center lg:min-w-[75px] xl:min-w-[85px]"
+                                      aria-label="Delete enquiry"
+                                      title="Delete"
+                                      className="group/delete flex h-8 w-8 xl:h-9 xl:w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-md !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
                                     >
-                                      <Trash2 className="h-2.5 w-2.5 xl:h-3 xl:w-3 mr-1 xl:mr-1.5 flex-shrink-0 group-hover/delete:scale-110 transition-transform" />
-                                      <span className="tracking-tight whitespace-nowrap">Delete</span>
+                                      <Trash2 className="h-[15px] w-[15px] xl:h-[17px] xl:w-[17px] group-hover/delete:scale-110 transition-transform" />
                                     </Button>
+                                    {/* Share — right of Delete, same green round share as the enquiry detail page */}
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        e.preventDefault();
+                                        shareAnchorRef.current = e.currentTarget;
+                                        setShareMenuEnquiryId(enquiry.id);
+                                        setShareMenuOpen(true);
+                                      }}
+                                      aria-label="Share enquiry"
+                                      title="Share"
+                                      className="flex h-8 w-8 xl:h-9 xl:w-9 flex-shrink-0 items-center justify-center rounded-full bg-green-700 text-white transition-colors hover:bg-green-800 active:scale-95 touch-manipulation"
+                                    >
+                                      <Share2 className="h-[15px] w-[15px] xl:h-[17px] xl:w-[17px]" strokeWidth={1.8} />
+                                    </button>
                                   </div>
                                   
 
@@ -2286,8 +2313,8 @@ const Dashboard = () => {
                                   )}
                               </Button>
                               
-                                {/* Delete Button - Mobile/Tablet Only */}
-                                <div className="lg:hidden flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+                                {/* Share + Delete Buttons - Mobile/Tablet Only */}
+                                <div className="lg:hidden flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
                                   <Button 
                                     variant="destructive" 
                                     size="sm" 
@@ -2298,11 +2325,28 @@ const Dashboard = () => {
                                       }
                                     }}
                                     disabled={expiredFlag}
-                                    className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
+                                    aria-label="Delete enquiry"
+                                    title="Delete"
+                                    className="group/delete flex h-9 w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-md !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
                                   >
-                                    <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 relative z-10" />
-                                    <span className="tracking-tight whitespace-nowrap relative z-10">Delete</span>
+                                    <Trash2 className="h-[17px] w-[17px] group-hover/delete:scale-110 transition-transform" />
                                   </Button>
+                                  {/* Share — pushed to the right edge of the row (detail page's green round share) */}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      e.preventDefault();
+                                      shareAnchorRef.current = e.currentTarget;
+                                      setShareMenuEnquiryId(enquiry.id);
+                                      setShareMenuOpen(true);
+                                    }}
+                                    aria-label="Share enquiry"
+                                    title="Share"
+                                    className="ml-auto flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-green-700 text-white transition-colors hover:bg-green-800 active:scale-95 touch-manipulation"
+                                  >
+                                    <Share2 className="h-[17px] w-[17px]" strokeWidth={1.8} />
+                                  </button>
                                 </div>
                             </div>
                             </div>
@@ -2310,6 +2354,19 @@ const Dashboard = () => {
                         );
                         })
                       })()}
+
+                      {/* Share menu for the enquiry card's Share button (portal-based) */}
+                      {shareEnquiry && (
+                        <ShareMenu
+                          open={shareMenuOpen}
+                          onClose={() => { setShareMenuOpen(false); setShareMenuEnquiryId(null); }}
+                          anchorRef={shareAnchorRef}
+                          title={shareEnquiry.title}
+                          text={buildEnquiryShareText(shareEnquiry, `${window.location.origin}/enquiry/${shareEnquiry.id}`)}
+                          url={`${window.location.origin}/enquiry/${shareEnquiry.id}`}
+                          imageUrl={(shareEnquiry as any).referenceImages?.[0]}
+                        />
+                      )}
 
                       {/* View All Button - Professional Design */}
                 {enquiries.length > 3 && (
