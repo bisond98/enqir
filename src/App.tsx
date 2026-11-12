@@ -131,14 +131,22 @@ if (typeof window !== 'undefined') {
   // React mounts) so boot never flashes the route spinner at all.
   import("./pages/Landing").catch(() => {});
 
-  const prefetchCommonRoutes = () => {
+  // Two tiers, so warming routes never competes with the first paint:
+  //   tier 1 — the handful of routes most sessions open next (idle, early)
+  //   tier 2 — everything else (idle again, once the page has loaded)
+  // Intent (first tap/keypress) warms the whole set immediately, since a
+  // navigation is imminent by then anyway.
+  const prefetchPrimaryRoutes = () => {
     import("./pages/Dashboard").catch(() => {});
     import("./pages/EnquiryWall").catch(() => {});
-    import("./pages/PostEnquiry").catch(() => {});
-    import("./pages/EnquiryDetail").catch(() => {});
-    import("./pages/MyChats").catch(() => {});
-    import("./pages/Notifications").catch(() => {});
     import("./modules/sell/pages/Marketplace").catch(() => {});
+    import("./pages/PostEnquiry").catch(() => {});
+    import("./pages/MyChats").catch(() => {});
+  };
+
+  const prefetchSecondaryRoutes = () => {
+    import("./pages/EnquiryDetail").catch(() => {});
+    import("./pages/Notifications").catch(() => {});
     import("./pages/SellerResponse").catch(() => {});
     import("./pages/Profile").catch(() => {});
     import("./pages/MyEnquiries").catch(() => {});
@@ -151,13 +159,44 @@ if (typeof window !== 'undefined') {
     // Map picker (Leaflet) — prefetched so opening a location picker is instant
     import("./components/MapLocationPicker").catch(() => {});
   };
-  // Idle with a SHORT timeout: the old 10s timeout meant the first
-  // navigation to any page often beat the prefetch and hit the spinner.
-  if ('requestIdleCallback' in window) {
-    (window as any).requestIdleCallback(prefetchCommonRoutes, { timeout: 2500 });
-  } else {
-    setTimeout(prefetchCommonRoutes, 400);
+
+  const prefetchCommonRoutes = () => {
+    prefetchPrimaryRoutes();
+    prefetchSecondaryRoutes();
+  };
+
+  // Respect data-saver / very slow connections: warming chunks there costs
+  // real bandwidth and delay the page the user actually asked for. Routes
+  // still lazy-load exactly as before on navigation.
+  const connection: any = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+  const isDataSaver = connection?.saveData === true;
+  const isSlowNetwork = /(^|-)2g$/.test(String(connection?.effectiveType || ''));
+  const canPrefetch = !isDataSaver && !isSlowNetwork;
+
+  const onIdle = (fn: () => void, timeout: number) => {
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(fn, { timeout });
+    } else {
+      setTimeout(fn, Math.min(timeout, 1200));
+    }
+  };
+
+  if (canPrefetch) {
+    // Tier 1 once the first paint's own chunk waterfall has cleared, so the
+    // next-likely routes are warm well before anyone can click — without
+    // taking bandwidth from the page being drawn.
+    setTimeout(() => onIdle(prefetchPrimaryRoutes, 2500), 1200);
+    // Tier 2 a few seconds after the page itself has finished loading, so the
+    // landing page never queues behind a dozen chunks it does not use. Any
+    // navigation before then simply lazy-loads its chunk, as it always has.
+    const queueSecondary = () => setTimeout(() => onIdle(prefetchSecondaryRoutes, 8000), 4000);
+    if (document.readyState === 'complete') {
+      queueSecondary();
+    } else {
+      window.addEventListener('load', queueSecondary, { once: true });
+    }
   }
+
   // First tap/keypress almost always precedes navigation — warm on intent.
   window.addEventListener('pointerdown', prefetchCommonRoutes, { once: true, passive: true });
   window.addEventListener('keydown', prefetchCommonRoutes, { once: true });
