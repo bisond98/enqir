@@ -10,6 +10,7 @@ import type { SellListing, SellListingResponse } from '../types';
 import { Link } from 'react-router-dom';
 import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail } from 'lucide-react';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
+import ShareButton from '../components/ShareButton';
 
 export default function SellerDashboard({ minimal = false }: { minimal?: boolean } = {}) {
   const { user } = useAuth();
@@ -278,19 +279,28 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                     </div>
                   </div>
                   {/* Action buttons */}
-                  <div className="flex border-t border-gray-200 mx-4 mb-4 mt-0 rounded-b-2xl overflow-hidden">
+                  <div className="flex items-center justify-between gap-2 border-t border-gray-200 mx-4 mb-4 mt-0 pt-3">
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                      className="relative flex-1 py-2.5 text-[11px] font-black text-slate-900 !border-[1.5px] !border-slate-200 !rounded-[12px] mx-2 my-2 flex items-center justify-center gap-1.5 !transition-all !duration-200 !bg-white hover:!bg-white !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.14),0_0_8px_rgba(0,0,0,0.08)] active:!translate-y-[2px] focus-visible:!border-black focus-visible:!ring-3 focus-visible:!ring-black/15 overflow-hidden group/edit touch-manipulation select-none"
+                      aria-label="Edit listing"
+                      title="Edit"
+                      className="group/edit flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-white border-[1.5px] border-black/25 text-slate-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14)] active:translate-y-[2px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.14)] transition-all duration-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 touch-manipulation select-none"
                     >
-                      <Pencil className="h-3 w-3 relative z-10" /><span className="relative z-10">Edit</span>
+                      <Pencil className="h-4 w-4 group-hover/edit:scale-110 transition-transform" />
                     </button>
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
-                      className="relative flex-1 py-2.5 text-[11px] font-black text-white !border-[1.5px] !border-[#6b0019] !rounded-[12px] mx-2 my-2 flex items-center justify-center gap-1.5 !transition-all !duration-200 !bg-[#800020] hover:!bg-[#6b0019] !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.14),0_0_8px_rgba(0,0,0,0.08)] active:!translate-y-[2px] focus-visible:!ring-3 focus-visible:!ring-black/15 overflow-hidden group/del touch-manipulation select-none"
+                      aria-label="Delete listing"
+                      title="Delete"
+                      className="group/del flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#800020] hover:bg-[#6b0019] text-white shadow-[0_3px_0_0_rgba(0,0,0,0.14)] active:translate-y-[2px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.14)] transition-all duration-200 focus-visible:ring-3 focus-visible:ring-black/15 touch-manipulation select-none"
                     >
-                      <Trash2 className="h-3 w-3 relative z-10" /><span className="relative z-10">Delete</span>
+                      <Trash2 className="h-4 w-4 group-hover/del:scale-110 transition-transform" />
                     </button>
+                    {/* Share — same green round share as the listing detail page */}
+                    <ShareButton
+                      listing={l}
+                      className="!w-9 !h-9 !p-0 !rounded-full !bg-green-700 hover:!bg-green-800 !text-white !border-[1.5px] !border-black flex items-center justify-center shadow-[0_3px_0_0_rgba(0,0,0,0.14)] active:!translate-y-[2px] [&>svg]:!h-4 [&>svg]:!w-4"
+                    />
                   </div>
                 </Link>
               )}
