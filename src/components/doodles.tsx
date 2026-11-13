@@ -1316,3 +1316,235 @@ export const SellerCartoon = ({ className = "" }: { className?: string }) => (
     <circle cx="192" cy="82" r="2" fill={GRAY} stroke="none" opacity="0.4" />
   </svg>
 );
+
+// Interests-card doodles — a dense field of small, quiet marks that tell the
+// buying story: safe (shields, locks, verified ticks), easy (bags, chats,
+// one-tap cards, trucks) and quality (stars, medals, ribbons, tags).
+// Deliberately many small glyphs so the card body reads as a filled pattern
+// rather than a few large pictures. Same thin grey line-art as the app.
+const TrustGlyph = ({ kind, x, y, rot = 0 }: { kind: string; x: number; y: number; rot?: number }) => {
+  const body = (() => {
+    switch (kind) {
+      case 'shield':
+        return (
+          <>
+            <path d="M0 -9 l8 3 v6 c0 5-4 8-8 10 c-4-2-8-5-8-10 v-6 z" />
+            <path d="M-4 -1 l3 3 5-6" />
+          </>
+        );
+      case 'lock':
+        return (
+          <>
+            <path d="M-6 0 h12 v9 h-12 z" />
+            <path d="M-3 0 v-3 a3 3 0 0 1 6 0 v3" />
+          </>
+        );
+      case 'check':
+        return (
+          <>
+            <circle cx="0" cy="0" r="8" />
+            <path d="M-4 0 l3 3 6-7" />
+          </>
+        );
+      case 'bag':
+        return (
+          <>
+            <path d="M-6 -4 h12 l2 12 h-16 z" />
+            <path d="M-3 -4 v-2 a3 3 0 0 1 6 0 v2" />
+            <path d="M-3 3 l2 2 4-4" />
+          </>
+        );
+      case 'chat':
+        return (
+          <>
+            <path d="M-8 -6 h16 a3 3 0 0 1 3 3 v6 a3 3 0 0 1 -3 3 H2 l-5 5 v-5 h-5 a3 3 0 0 1 -3 -3 v-6 a3 3 0 0 1 3 -3 z" />
+            <path d="M-4 -1 l2 2 5-5" />
+          </>
+        );
+      case 'cursor':
+        return (
+          <>
+            <path d="M-4 -8 l11 9 -5 1 2 5 -3 1 -2-5 -3 3 z" />
+          </>
+        );
+      case 'truck':
+        return (
+          <>
+            <path d="M-9 3 v-10 h10 v10" />
+            <path d="M1 3 v-6 h4 l4 4 v2 z" />
+            <circle cx="-5" cy="5" r="2" />
+            <circle cx="5" cy="5" r="2" />
+          </>
+        );
+      case 'star':
+        return <path d="M0 -9 l2.6 5.6 6 .6 -4.5 4.2 1.2 6 -5.3-3 -5.3 3 1.2-6 -4.5-4.2 6-.6 z" />;
+      case 'medal':
+        return (
+          <>
+            <circle cx="0" cy="-2" r="6.5" />
+            <path d="M-3 4 l-3 7 6-3 6 3 -3-7" />
+            <path d="M-3 -2 l2 2 4-4" />
+          </>
+        );
+      case 'tag':
+        return (
+          <>
+            <path d="M-8 -5 h8 l7 7 -7 7 -8-8 z" />
+            <circle cx="-4" cy="-1" r="1.2" />
+          </>
+        );
+      case 'coin':
+        return (
+          <>
+            <circle cx="0" cy="0" r="8" />
+            <path d="M-3 -3 h6 M-3 0 h6 M2 -3 c0 3-2 4-5 4 l4 4" />
+          </>
+        );
+      case 'search':
+        return (
+          <>
+            <circle cx="-2" cy="-2" r="6" />
+            <path d="M3 3 l6 6" />
+          </>
+        );
+      case 'sparkle':
+        return <path d="M0 -9 l2 6 6 2 -6 2 -2 6 -2-6 -6-2 6-2 z" />;
+      case 'thumb':
+        return (
+          <>
+            <path d="M-7 8 v-8 h4 v8 z" />
+            <path d="M-3 0 c2-1 2-3 3-6 l2-2 1 2 -1 4 h4 a2 2 0 0 1 2 2 l-1 5 a2 2 0 0 1 -2 1 h-8" />
+          </>
+        );
+      default:
+        return null;
+    }
+  })();
+  return <g transform={`translate(${x} ${y}) rotate(${rot})`}>{body}</g>;
+};
+
+// slot grid: 5 columns x 7 rows of small marks, each hand-jittered
+const TRUST_MARKS: Array<{ kind: string; x: number; y: number; rot: number }> = [
+  { kind: 'shield', x: 42, y: 44, rot: -8 },
+  { kind: 'bag', x: 104, y: 38, rot: 6 },
+  { kind: 'star', x: 162, y: 46, rot: -3 },
+  { kind: 'check', x: 224, y: 38, rot: 5 },
+  { kind: 'medal', x: 282, y: 46, rot: -6 },
+  { kind: 'chat', x: 44, y: 104, rot: 4 },
+  { kind: 'coin', x: 106, y: 98, rot: -5 },
+  { kind: 'lock', x: 168, y: 106, rot: 3 },
+  { kind: 'sparkle', x: 226, y: 100, rot: -7 },
+  { kind: 'tag', x: 284, y: 108, rot: 6 },
+  { kind: 'thumb', x: 40, y: 166, rot: 5 },
+  { kind: 'truck', x: 102, y: 160, rot: -4 },
+  { kind: 'shield', x: 164, y: 168, rot: 7 },
+  { kind: 'star', x: 222, y: 162, rot: -6 },
+  { kind: 'bag', x: 282, y: 170, rot: 3 },
+  { kind: 'check', x: 44, y: 226, rot: -5 },
+  { kind: 'cursor', x: 104, y: 222, rot: 6 },
+  { kind: 'medal', x: 166, y: 230, rot: -3 },
+  { kind: 'chat', x: 224, y: 224, rot: 5 },
+  { kind: 'search', x: 282, y: 232, rot: -6 },
+  { kind: 'sparkle', x: 42, y: 288, rot: 4 },
+  { kind: 'tag', x: 104, y: 282, rot: -6 },
+  { kind: 'lock', x: 164, y: 290, rot: 5 },
+  { kind: 'coin', x: 224, y: 284, rot: -3 },
+  { kind: 'thumb', x: 282, y: 292, rot: 6 },
+  { kind: 'star', x: 44, y: 348, rot: -7 },
+  { kind: 'shield', x: 106, y: 342, rot: 5 },
+  { kind: 'cursor', x: 166, y: 350, rot: -4 },
+  { kind: 'check', x: 224, y: 344, rot: 6 },
+  { kind: 'truck', x: 282, y: 352, rot: -5 },
+  { kind: 'bag', x: 42, y: 408, rot: 6 },
+  { kind: 'search', x: 104, y: 402, rot: -5 },
+  { kind: 'medal', x: 164, y: 410, rot: 4 },
+  { kind: 'sparkle', x: 224, y: 404, rot: -6 },
+  { kind: 'shield', x: 282, y: 412, rot: 5 },
+];
+
+export const TrustDoodles = ({ className = "" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 320 460"
+    preserveAspectRatio="xMidYMid slice"
+    className={className}
+    aria-hidden="true"
+    fill="none"
+    stroke={INK}
+    strokeWidth={1.1}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {/* faint contacts so the marks read as one woven sheet */}
+    <path d="M24 70 C 110 92, 210 82, 300 74" strokeDasharray="2 8" strokeWidth={0.8} />
+    <path d="M24 132 C 110 152, 210 142, 300 134" strokeDasharray="2 8" strokeWidth={0.8} />
+    <path d="M24 196 C 110 214, 210 204, 300 196" strokeDasharray="2 8" strokeWidth={0.8} />
+    <path d="M24 258 C 110 278, 210 268, 300 260" strokeDasharray="2 8" strokeWidth={0.8} />
+    <path d="M24 320 C 110 338, 210 328, 300 320" strokeDasharray="2 8" strokeWidth={0.8} />
+    <path d="M24 380 C 110 398, 210 388, 300 380" strokeDasharray="2 8" strokeWidth={0.8} />
+    {TRUST_MARKS.map((m, i) => (
+      <TrustGlyph key={i} kind={m.kind} x={m.x} y={m.y} rot={m.rot} />
+    ))}
+  </svg>
+);
+
+// Doodle strip — the same white line-markings the Live Enquiries cards carry
+// in their black header, tiled into a small repeating field so a whole black
+// band can be filled rather than carrying one row of marks.
+const STRIP_MARKS = (
+  <>
+    {/* umbrella — safe from anything */}
+    <path d="M6 12a6 6 0 0112 0z" />
+    <path d="M12 12v6.5a2.4 2.4 0 004.6 0" />
+    {/* shield + tick — trusted */}
+    <path d="M26 6h8v4.4c0 3.2-3 5.3-4 5.9-1-.6-4-2.7-4-5.9z" />
+    <path d="M28 9.2l1.6 1.6 2.7-2.9" />
+    {/* lightning — easy, fast */}
+    <path d="M45 5l-4 7h3l-1.6 6 5.6-8h-3z" />
+    {/* lifebuoy — safety cover */}
+    <circle cx="62" cy="12" r="6" />
+    <circle cx="62" cy="12" r="2.3" />
+    <path d="M62 6v3.7M62 14.3V18M56 12h3.7M64.3 12H68" />
+    {/* check circle — simple */}
+    <circle cx="80" cy="12" r="5" />
+    <path d="M77.8 12l1.6 1.6 3.1-3.4" />
+    {/* padlock — secure */}
+    <rect x="92" y="11" width="9.5" height="7.5" rx="1.6" />
+    <path d="M94.1 11V8.4a2.6 2.6 0 015.2 0V11" />
+    {/* sparkle — good deal */}
+    <path d="M112 6.5l1.2 2.6 2.6 1.2-2.6 1.2-1.2 2.6-1.2-2.6-2.6-1.2 2.6-1.2z" />
+    {/* asterisk texture */}
+    <path d="M128 8v8m-3.4-6l6.8 4m0-4l-6.8 4" />
+    {/* two arrows meeting — deal done */}
+    <path d="M142 12h6.5m-2.3-2.3l2.3 2.3-2.3 2.3" />
+    <path d="M160 12h-6.5m2.3-2.3l-2.3 2.3 2.3 2.3" />
+    {/* ticks, wave and dots to bleed to both edges */}
+    <path d="M170 15l1.8 1.8 4-4.6" />
+    <path d="M180 9.5c1.7-1.5 3.4 1.5 5.1 0" />
+    <circle cx="192" cy="13" r="1.1" />
+    <circle cx="1.5" cy="9" r="0.9" />
+  </>
+);
+
+export const TrustStripDoodles = ({ className = "" }: { className?: string }) => (
+  <svg
+    aria-hidden="true"
+    viewBox="0 0 340 156"
+    preserveAspectRatio="xMidYMid slice"
+    className={className}
+    fill="none"
+    stroke="#ffffff"
+    strokeWidth="1.3"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {[0, 26, 52, 78, 104, 130].map((y, row) => {
+      const shift = row % 2 === 0 ? -4 : -42;
+      return (
+        <g key={y} transform={`translate(${shift} ${y})`}>
+          {STRIP_MARKS}
+          <g transform="translate(200 0)">{STRIP_MARKS}</g>
+        </g>
+      );
+    })}
+  </svg>
+);

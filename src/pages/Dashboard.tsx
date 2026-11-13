@@ -28,6 +28,7 @@ import { X } from "lucide-react";
 import CallNumberPopup from "@/components/CallNumberPopup";
 import ScamAlertOverlay from "@/components/ScamAlertOverlay";
 import { LoadingAnimation } from "../components/LoadingAnimation";
+import { TrustStripDoodles } from "../components/doodles";
 import { listMyListings, listResponsesForSeller } from "../modules/sell/services/sellDb";
 import SellerDashboard from "../modules/sell/pages/SellerDashboard";
 import type { SellListing, SellListingResponse } from "../modules/sell/types";
@@ -1869,27 +1870,27 @@ const Dashboard = () => {
                   </div>
                   {/* 3-Way Toggle: Buy | Sell | Listings */}
                   <div className="flex justify-center mt-4 sm:mt-5">
-                    <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                    <div className="inline-flex items-center bg-gradient-to-b from-gray-200 via-gray-100 to-white rounded-full p-1.5 gap-1 !border-[0.5px] !border-black !shadow-none">
                       {([
-                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: '!bg-blue-600 !text-white', unread: buyUnreadCount },
-                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: '!bg-blue-600 !text-white', unread: sellUnreadCount },
-                        { key: 'matches' as const, label: 'AI', icon: Sparkles, activeColor: '!bg-blue-600 !text-white', unread: matchDotCount || 0 },
+                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white', unread: buyUnreadCount },
+                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white', unread: sellUnreadCount },
+                        { key: 'matches' as const, label: 'AI', icon: Sparkles, activeColor: '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white', unread: matchDotCount || 0 },
                       ]).map(({ key, label, icon: Icon, activeColor, unread }) => (
                         <motion.button
                           key={key}
                           type="button"
                           onClick={() => handleToggleView(key)}
                           className={cn(
-                            'relative flex items-center gap-1.5 sm:gap-1.5 lg:gap-2 px-5 sm:px-5 lg:px-6 py-1.5 sm:py-1.5 rounded-full text-[11px] sm:text-[10px] lg:text-xs font-black !transition-all !duration-150 whitespace-nowrap touch-manipulation select-none origin-center',
+                            'relative flex items-center gap-2 sm:gap-2.5 lg:gap-3 px-5 sm:px-6 lg:px-7 py-3 sm:py-3.5 rounded-full text-[15px] sm:text-base font-bold !transition-all !duration-200 whitespace-nowrap touch-manipulation select-none origin-center',
                             viewMode === key
-                              ? `${activeColor} !text-[13px] sm:!text-[14px] lg:!text-[15px] z-10`
-                              : 'text-black hover:text-black hover:bg-gray-100'
+                              ? `${activeColor} z-10`
+                              : '!bg-gradient-to-b !from-white !to-slate-100 text-slate-700 hover:!to-slate-200'
                           )}
                           whileTap={{ scale: 0.95 }}
-                          animate={viewMode === key ? { scale: 1.13, y: -1 } : { scale: 1, y: 0 }}
+                          animate={{ scale: 1, y: 0 }}
                           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         >
-                          <Icon className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5" />
+                          <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
                           <span>{label}</span>
                           {unread > 0 && (
                             <motion.span
@@ -1956,7 +1957,7 @@ const Dashboard = () => {
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Enquiries / Interests / Saved toggle - styled like Buy/Sell/Listings toggle */}
                 <div className="flex justify-center mt-8 sm:mt-10 lg:mt-9 mb-8 sm:mb-10 lg:mb-9">
-                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-none">
+                  <div className="inline-flex items-center w-full bg-gradient-to-b from-gray-200 via-gray-100 to-white rounded-full p-1.5 gap-1 !border-[0.5px] !border-black !shadow-none">
                     {([
                       { key: 'enquiries' as const, label: 'Enquiries', unread: buyUnreadCount },
                       { key: 'interests' as const, label: 'Interests', unread: visibleInterestListings.length > 0 && localStorage.getItem(`interests_viewed_${user?.uid}`) === null ? visibleInterestListings.length : (visibleInterestListings.length > parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) ? visibleInterestListings.length - parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) : 0) },
@@ -1975,10 +1976,10 @@ const Dashboard = () => {
                         animate={enquiryView === key ? { scale: 1.03 } : { scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         className={cn(
-                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-1 sm:px-3 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black !transition-all !duration-150 whitespace-nowrap touch-manipulation select-none',
+                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-2 sm:px-4 py-3.5 sm:py-4 rounded-full text-[15px] sm:text-base font-bold !transition-all !duration-200 whitespace-nowrap touch-manipulation select-none',
                           enquiryView === key
-                            ? '!bg-blue-600 text-white'
-                            : 'text-black hover:text-black hover:bg-gray-100'
+                            ? '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white'
+                            : '!bg-gradient-to-b !from-white !to-slate-100 text-slate-700 hover:!to-slate-200'
                         )}
                       >
                         <span>{label}</span>
@@ -2395,12 +2396,12 @@ const Dashboard = () => {
                             </div>
 
                             {/* White Content Area - matching enquiry card */}
-                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 overflow-visible min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
-                              <div className="text-center mt-8 sm:mt-10 lg:mt-8 xl:mt-10 mb-2 sm:mb-2.5">
-                                <h5 className="block w-full text-center text-2xl sm:text-2xl font-['Plus_Jakarta_Sans'] font-extrabold text-gray-900 leading-snug tracking-tight truncate pt-[54px] sm:pt-[58px] mb-1.5">
+                            <div className="relative flex flex-col bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 overflow-visible min-h-[290px] sm:min-h-[330px] lg:min-h-[320px] xl:min-h-[350px]">
+                              <div className="relative z-10 text-center mt-14 sm:mt-16 lg:mt-16 xl:mt-20 mb-2 sm:mb-3">
+                                <h5 className="block w-full text-center text-2xl sm:text-2xl font-['Plus_Jakarta_Sans'] font-extrabold text-gray-900 leading-snug tracking-tight truncate pt-1 mb-1">
                                   {listing.title}
                                 </h5>
-                                <p className="mt-[13px] sm:mt-[31px] lg:mt-[31px] xl:mt-[47px] inline-flex items-center justify-center rounded-full border-0 bg-transparent px-1 py-1 text-base sm:text-lg font-chip font-extrabold text-black leading-snug tracking-tight">
+                                <p className="mt-1.5 inline-flex items-center justify-center rounded-full border-0 bg-transparent px-1 py-1 text-base sm:text-lg font-chip font-extrabold text-black leading-snug tracking-tight">
                                   {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
                                 </p>
                                 {listing.location && (
@@ -2412,10 +2413,12 @@ const Dashboard = () => {
                               </div>
 
                               {/* Spacer to maintain card height - matching enquiry card */}
-                              <div className="mb-[26px] sm:mb-[42px] lg:mb-[18px]"></div>
+                              <div className="flex-1 min-h-[12px]"></div>
 
                               {/* Remove (left) + Chat (right) — round icon buttons */}
-                              <div className="flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+                              <div className="mt-auto -mx-5 sm:-mx-6 -mb-5 sm:-mb-6 relative overflow-hidden rounded-b-2xl sm:rounded-b-3xl bg-black px-5 sm:px-6 pt-3 pb-5 sm:pb-6">
+                                <TrustStripDoodles className="pointer-events-none select-none absolute inset-0 !z-0 h-full w-full opacity-[0.22]" />
+                                <div className="relative z-10 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
                                 <Button
                                   variant="destructive"
                                   size="sm"
@@ -2434,6 +2437,7 @@ const Dashboard = () => {
                                 >
                                   <MessageSquare className="h-[14px] w-[14px] group-hover/chat:scale-110 transition-transform" />
                                 </Link>
+                              </div>
                               </div>
                             </div>
                           </motion.div>
@@ -2553,7 +2557,7 @@ const Dashboard = () => {
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Responses | Listings toggle - styled like Enquiries/Interests/Saved toggle */}
                 <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
-                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-none">
+                  <div className="inline-flex items-center w-full bg-gradient-to-b from-gray-200 via-gray-100 to-white rounded-full p-1.5 gap-1 !border-[0.5px] !border-black !shadow-none">
                     {([
                       { key: 'responses' as const, label: 'Responses', unread: responsesUnread },
                       { key: 'listings' as const, label: 'Listings', unread: sellUnreadCount },
@@ -2568,16 +2572,16 @@ const Dashboard = () => {
                           if (key === 'listings') setSellUnreadCount(0);
                         }}
                         whileTap={{ scale: 0.95 }}
-                        animate={sellerView === key ? { scale: 1.03 } : { scale: 1 }}
+                        animate={{ scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         className={cn(
-                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-1 sm:px-3 py-2.5 rounded-full text-xs sm:text-[10px] lg:text-xs font-black !transition-all !duration-150 whitespace-nowrap touch-manipulation select-none',
+                          'relative flex items-center justify-center gap-2 flex-1 px-3 sm:px-5 py-3.5 sm:py-4 rounded-full text-[15px] sm:text-base font-bold !transition-all !duration-200 whitespace-nowrap touch-manipulation select-none',
                           sellerView === key
-                            ? '!bg-blue-600 text-white'
-                            : 'text-black hover:text-black hover:bg-gray-100'
+                            ? '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white'
+                            : '!bg-gradient-to-b !from-white !to-slate-100 text-slate-700 hover:!to-slate-200'
                         )}
                       >
-                        <span>{label}</span>
+                        <span className="relative z-10">{label}</span>
                         {unread > 0 && (
                           <motion.span
                             className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
@@ -2598,52 +2602,6 @@ const Dashboard = () => {
                   <SellerDashboard minimal />
                 ) : (
                 <>
-                {/* Professional Stats Grid - Circular Design */}
-                <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[20%] max-w-[112px] aspect-square sm:max-w-none sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
-                        {responsesReady ? responsesSummary.length : '—'}
-                      </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Responses</p>
-                    </div>
-                  </div>
-                  
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[20%] max-w-[112px] aspect-square sm:max-w-none sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
-                        {responsesReady ? responsesSummary.filter(s => s.status === 'approved').length : '—'}
-                      </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Approved</p>
-                    </div>
-                  </div>
-                  
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[20%] max-w-[112px] aspect-square sm:max-w-none sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
-                        {responsesReady ? responsesSummary.filter(s => s.status === 'pending').length : '—'}
-                      </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Pending</p>
-                    </div>
-                  </div>
-                  
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[20%] max-w-[112px] aspect-square sm:max-w-none sm:w-20 sm:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28">
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-base sm:text-lg lg:text-2xl xl:text-3xl font-black text-black mb-0.5 leading-none">
-                        {responsesReady ? responsesSummary.filter(s => s.status === 'rejected').length : '—'}
-                      </h3>
-                      <p className="text-[7px] sm:text-[8px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Rejected</p>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Professional Submissions Section */}
                 <div className="mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
@@ -2876,10 +2834,10 @@ const Dashboard = () => {
                                 }}
                                   aria-label="Delete response"
                                   title="Delete"
-                                  className="group/delete flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
+                                  className="group/delete flex !h-9 !w-9 !min-h-9 !min-w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
-                                  <Trash2 className="!h-5 !w-5 group-hover/delete:scale-110 transition-transform" />
+                                  <Trash2 className="!h-4 !w-4 group-hover/delete:scale-110 transition-transform" />
                               </Button>
                               {/* Submitted date & time — between Delete and View Details */}
                               <div className="flex flex-1 min-w-0 items-center justify-center px-1">
@@ -2901,10 +2859,10 @@ const Dashboard = () => {
                                 }}
                                   aria-label="View Details"
                                   title="View Details"
-                                  className="group/btn flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
+                                  className="group/btn flex !h-9 !w-9 !min-h-9 !min-w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
-                                  <Eye className="!h-5 !w-5 group-hover/btn:scale-110 transition-transform" />
+                                  <Eye className="!h-4 !w-4 group-hover/btn:scale-110 transition-transform" />
                               </Button>
                               </div>
                             </div>
