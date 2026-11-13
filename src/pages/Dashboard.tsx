@@ -1953,7 +1953,7 @@ const Dashboard = () => {
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Enquiries / Interests / Saved toggle - styled like Buy/Sell/Listings toggle */}
-                <div className="flex justify-center mt-8 sm:mt-10 lg:mt-9 mb-8 sm:mb-10 lg:mb-9">
+                <div className="flex justify-center bg-black -mx-4 sm:-mx-6 lg:-mx-5 xl:-mx-6 -mt-4 sm:-mt-6 lg:-mt-5 xl:-mt-6 px-4 sm:px-6 lg:px-5 xl:px-6 pt-4 sm:pt-6 lg:pt-5 xl:pt-6 pb-5 sm:pb-6 mb-6 sm:mb-8">
                   <div className="inline-flex items-center w-full bg-white rounded-full p-1 gap-1 !border-[1.5px] !border-black !shadow-none">
                     {([
                       { key: 'enquiries' as const, label: 'Enquiries', unread: buyUnreadCount },
@@ -2548,9 +2548,9 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
+              <CardContent className="p-0 relative z-10">
                 {/* Responses | Listings toggle - styled like Enquiries/Interests/Saved toggle */}
-                <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
+                <div className="flex justify-center bg-black px-4 sm:px-6 lg:px-5 xl:px-6 pt-4 sm:pt-6 lg:pt-5 xl:pt-6 pb-5 sm:pb-6">
                   <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 !border-[1.5px] !border-black !shadow-none">
                     {([
                       { key: 'responses' as const, label: 'Responses', unread: responsesUnread },
@@ -2596,6 +2596,7 @@ const Dashboard = () => {
                   <SellerDashboard minimal />
                 ) : (
                 <>
+                <div className="px-4 sm:px-6 lg:px-5 xl:px-6 pt-6 sm:pt-7 pb-4 sm:pb-6">
 
                 {/* Professional Submissions Section */}
                 <div className="mb-4 sm:mb-6 lg:mb-5 xl:mb-6">
@@ -2884,6 +2885,7 @@ const Dashboard = () => {
                     </Button>
                   </div>
                 )}
+                </div>
                 </>
                 )}
               </CardContent>

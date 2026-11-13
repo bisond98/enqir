@@ -8,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { listMyListings, listResponsesForSeller, softDeleteListing, updateListing } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
 import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail } from 'lucide-react';
+import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail, User } from 'lucide-react';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import ShareButton from '../components/ShareButton';
 
@@ -133,7 +133,8 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
   const shellContent = (
       <>
       {/* Tab Toggle */}
-      <div className="flex gap-1 mb-8 sm:mb-10 bg-white p-1 rounded-full !border-[1.5px] !border-black !shadow-none">
+      <div className={minimal ? 'bg-black px-4 sm:px-6 pb-5 sm:pb-6' : ''}>
+      <div className="flex w-fit mx-auto gap-1 bg-white p-0.5 rounded-full !border-[1.5px] !border-black !shadow-none">
         {([
           { key: 'listings' as const, label: 'My Listings', count: listings.length, unread: listingsUnread },
           { key: 'responses' as const, label: 'Buyers', count: responses.length, unread: responsesUnread },
@@ -145,7 +146,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
               if (key === 'listings') { setListingsUnread(0); localStorage.setItem(`sd_listings_viewed_${user?.uid}`, String(listings.length)); }
               if (key === 'responses') { setResponsesUnread(0); localStorage.setItem(`sd_responses_viewed_${user?.uid}`, String(responses.length)); }
             }}
-            className={`relative flex-1 py-2 sm:py-2.5 px-3 sm:px-4 text-[11px] sm:text-xs font-bold !rounded-full !transition-all !duration-200 touch-manipulation select-none ${
+            className={`relative py-1 sm:py-1.5 px-12 sm:px-14 text-[9px] sm:text-[10px] font-bold whitespace-nowrap !rounded-full !transition-all !duration-200 touch-manipulation select-none ${
               activeTab === key
                 ? '!bg-blue-600 !text-white'
                 : 'text-black hover:bg-gray-100'
@@ -165,6 +166,9 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           </button>
         ))}
       </div>
+      </div>
+
+      <div className={minimal ? 'px-4 sm:px-6 pt-5 sm:pt-6 pb-2' : 'pt-5 sm:pt-6'}>
 
       {/* Listings Tab */}
       {activeTab === 'listings' && (
@@ -192,7 +196,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           )}
 
           {!loading && paginatedListings.map((l) => (
-            <div key={l.id} className="group rounded-2xl border border-black bg-white overflow-hidden transition-colors !shadow-none">
+            <div key={l.id} className="group rounded-2xl border-2 border-black bg-white overflow-hidden transition-colors !shadow-none">
               {editingId === l.id ? (
                 <div className="p-4 space-y-3" onClick={(e) => e.preventDefault()}>
                   {/* Price */}
@@ -247,18 +251,29 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       </div>
                       <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1 mt-2">
                         {l.price != null && (
-                          <span className="inline-flex items-center text-xs font-bold text-white bg-gray-900 rounded-full px-2.5 py-1">
+                          <span className="inline-flex items-center text-xs font-bold text-black bg-white border border-black rounded-full px-2.5 py-1">
                             ₹{l.price.toLocaleString('en-IN')}
                           </span>
                         )}
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 bg-gray-50 border border-gray-200 rounded-full px-2.5 py-1">
-                          <MapPin className="h-3 w-3 text-gray-400" />{l.location}
+                        <span className="inline-flex items-center gap-0.5 text-[7px] font-bold text-white bg-red-500 border border-red-500 rounded-full px-1 py-[1px]">
+                          <MapPin className="h-1.5 w-1.5 text-white" />{l.location}
                         </span>
                       </div>
                     </div>
                   </div>
                   {/* Action buttons */}
-                  <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-3.5 py-2.5">
+                  <div className="flex items-center gap-2 border-t border-gray-100 px-3.5 py-2.5">
+                    {l.createdAt && (
+                      <span className="mr-auto inline-flex items-center truncate rounded-full bg-black px-1 py-0 text-[7px] font-semibold text-white">
+                        Posted on {(() => {
+                          try {
+                            const d = typeof l.createdAt?.toDate === 'function' ? l.createdAt.toDate() : new Date(l.createdAt);
+                            if (isNaN(d.getTime())) return '';
+                            return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                          } catch { return ''; }
+                        })()}
+                      </span>
+                    )}
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
                       aria-label="Edit listing"
@@ -349,14 +364,11 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="font-bold text-[15px] text-gray-900 leading-snug line-clamp-2 min-w-0">{listing?.title ?? 'Listing'}</p>
-                      <span className="flex-shrink-0 inline-flex items-center gap-1 rounded-full bg-green-500 border border-green-500 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white">
-                        <Mail className="h-3 w-3" />Buyer's Message
-                      </span>
-                    </div>
-                    {((r.offeredPrice != null && !isNaN(r.offeredPrice)) || r.message) && (
-                      <div className="mt-2 space-y-1.5">
+                    <div className="flex items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-[15px] text-gray-900 leading-snug line-clamp-2">{listing?.title ?? 'Listing'}</p>
+                        {((r.offeredPrice != null && !isNaN(r.offeredPrice)) || r.message) && (
+                      <div className="mt-1 space-y-1">
                         {r.offeredPrice != null && !isNaN(r.offeredPrice) && (
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-2.5 py-1">
                             <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">offer</span>
@@ -371,6 +383,17 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                         )}
                       </div>
                     )}
+                      </div>
+                      <div className="flex-shrink-0 flex flex-col items-end gap-1">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 border border-emerald-600 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white">
+                          <Mail className="h-3 w-3" />Buyer's Message
+                        </span>
+                        <span className="inline-flex max-w-[130px] items-center gap-1 truncate rounded-full bg-gray-100 border border-black px-2 py-1 text-[9px] font-bold text-black">
+                          <User className="h-2.5 w-2.5 flex-shrink-0" />
+                          <span className="truncate">Posted by {(r as any).buyerName || 'Buyer'}</span>
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -402,6 +425,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           )}
         </div>
       )}
+      </div>
   </>
   );
 
