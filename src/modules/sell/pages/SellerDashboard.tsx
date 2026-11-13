@@ -196,7 +196,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           )}
 
           {!loading && paginatedListings.map((l) => (
-            <div key={l.id} className="group relative rounded-2xl border-0 bg-white overflow-hidden transition-all duration-200 shadow-[0_-5px_0_0_rgba(17,24,39,0.13),-5px_0_0_0_rgba(17,24,39,0.17),5px_0_0_0_rgba(17,24,39,0.17),0_6px_0_0_rgba(17,24,39,0.30),0_14px_22px_-10px_rgba(17,24,39,0.30)] hover:-translate-y-[5px] hover:shadow-[0_-5px_0_0_rgba(17,24,39,0.13),-5px_0_0_0_rgba(17,24,39,0.20),5px_0_0_0_rgba(17,24,39,0.20),0_10px_0_0_rgba(17,24,39,0.32),0_22px_28px_-12px_rgba(17,24,39,0.32)]">
+            <div key={l.id} className="group relative rounded-2xl border-0 bg-white overflow-hidden transition-all duration-200 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)]">
               {editingId === l.id ? (
                 <div className="p-4 space-y-3" onClick={(e) => e.preventDefault()}>
                   {/* Price */}
@@ -251,29 +251,29 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       </div>
                       <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1 mt-2">
                         {l.price != null && (
-                          <span className="inline-flex items-center text-xs font-bold text-black bg-white border border-black rounded-full px-2.5 py-1">
+                          <span className="inline-flex items-center text-xs font-bold text-white bg-black border border-black rounded-full px-2.5 py-1">
                             ₹{l.price.toLocaleString('en-IN')}
                           </span>
                         )}
-                        <span className="inline-flex items-center gap-0.5 text-[7px] font-bold text-white bg-red-500 border border-red-500 rounded-full px-1 py-[1px]">
-                          <MapPin className="h-1.5 w-1.5 text-white" />{l.location}
-                        </span>
+                        {l.createdAt && (
+                          <span className="inline-flex items-center truncate rounded-full bg-black px-1.5 py-[1px] text-[7px] font-bold text-white">
+                            Posted on {(() => {
+                              try {
+                                const d = typeof l.createdAt?.toDate === 'function' ? l.createdAt.toDate() : new Date(l.createdAt);
+                                if (isNaN(d.getTime())) return '';
+                                return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                              } catch { return ''; }
+                            })()}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
                   {/* Action buttons */}
                   <div className="flex items-center gap-2 border-t border-gray-100 px-3.5 py-2.5">
-                    {l.createdAt && (
-                      <span className="mr-auto inline-flex items-center truncate rounded-full bg-black px-1 py-0 text-[7px] font-semibold text-white">
-                        Posted on {(() => {
-                          try {
-                            const d = typeof l.createdAt?.toDate === 'function' ? l.createdAt.toDate() : new Date(l.createdAt);
-                            if (isNaN(d.getTime())) return '';
-                            return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-                          } catch { return ''; }
-                        })()}
-                      </span>
-                    )}
+                    <span className="mr-auto inline-flex items-center gap-0.5 text-[7px] font-bold text-white bg-red-500 border border-red-500 rounded-full px-1 py-[1px]">
+                      <MapPin className="h-1.5 w-1.5 text-white" />{l.location}
+                    </span>
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
                       aria-label="Edit listing"
@@ -354,7 +354,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
 
           {!loading && paginatedResponses.map((r) => {
             const listing = listings.find((l) => l.id === r.listingId);
-            return (              <Link to={`/sell/listing/${r.listingId}?buyer=${r.buyerId}`} key={r.id} className="block relative rounded-2xl border-0 bg-white overflow-hidden group transition-all duration-200 shadow-[0_-5px_0_0_rgba(17,24,39,0.13),-5px_0_0_0_rgba(17,24,39,0.17),5px_0_0_0_rgba(17,24,39,0.17),0_6px_0_0_rgba(17,24,39,0.30),0_14px_22px_-10px_rgba(17,24,39,0.30)] hover:-translate-y-[5px] hover:shadow-[0_-5px_0_0_rgba(17,24,39,0.13),-5px_0_0_0_rgba(17,24,39,0.20),5px_0_0_0_rgba(17,24,39,0.20),0_10px_0_0_rgba(17,24,39,0.32),0_22px_28px_-12px_rgba(17,24,39,0.32)]">
+            return (              <Link to={`/sell/listing/${r.listingId}?buyer=${r.buyerId}`} key={r.id} className="block relative rounded-2xl border-0 bg-white overflow-hidden group transition-all duration-200 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)]">
                 <div className="flex gap-3.5 p-3.5">
                   {listing?.images?.[0] ? (
                     <img src={listing.images[0]} alt="" loading="lazy" decoding="async" className="w-[76px] h-[76px] rounded-xl object-cover flex-shrink-0 border border-gray-200" />
