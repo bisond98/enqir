@@ -271,7 +271,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   </div>
                   {/* Action buttons */}
                   <div className="flex items-center gap-2 border-t border-gray-100 px-3.5 py-2.5">
-                    <span className="mr-auto inline-flex items-center gap-0.5 text-[7px] font-bold text-white bg-red-500 border border-red-500 rounded-full px-1 py-[1px]">
+                    <span className="mr-auto inline-flex items-center gap-0.5 text-[7px] font-bold text-white bg-black border border-black rounded-full px-1.5 py-[1px]">
                       <MapPin className="h-1.5 w-1.5 text-white" />{l.location}
                     </span>
                     <button
