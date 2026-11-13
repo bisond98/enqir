@@ -2553,7 +2553,7 @@ const Dashboard = () => {
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Responses | Listings toggle - styled like Enquiries/Interests/Saved toggle */}
                 <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
-                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-none">
                     {([
                       { key: 'responses' as const, label: 'Responses', unread: responsesUnread },
                       { key: 'listings' as const, label: 'Listings', unread: sellUnreadCount },

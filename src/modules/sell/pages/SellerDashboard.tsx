@@ -132,27 +132,8 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
 
   const shellContent = (
       <>
-      {/* Stats Row */}
-      <div className="flex items-center justify-center gap-3 sm:gap-5 mb-5">
-        {[
-          { label: 'Listings', count: listings.length },
-          { label: 'Active', count: liveCount },
-          { label: 'Buyers', count: responses.length },
-        ].map(({ label, count }) => (
-          <div key={label} className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[70px] h-[70px] sm:w-20 sm:h-20 lg:w-24 lg:h-24">
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-              <h3 className="text-base sm:text-lg lg:text-2xl font-black text-black mb-0 leading-none">
-                {loading ? '—' : count}
-              </h3>
-              <p className="text-[7px] sm:text-[8px] lg:text-[9px] text-black font-black uppercase">{label}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Tab Toggle */}
-      <div className="flex gap-1 mb-4 bg-white p-1 rounded-full !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+      <div className="flex gap-1 mb-8 sm:mb-10 bg-white p-1 rounded-full !border-[1.5px] !border-black !shadow-none">
         {([
           { key: 'listings' as const, label: 'My Listings', count: listings.length, unread: listingsUnread },
           { key: 'responses' as const, label: 'Buyers', count: responses.length, unread: responsesUnread },
@@ -200,7 +181,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
               <p className="text-sm font-bold text-gray-500 mb-1">No listings yet.</p>
               <p className="text-xs text-gray-400 mb-4">Start selling to see your listings here.</p>
               <Link to="/sell/new">
-                <Button className="relative !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black/20 !shadow-[0_8px_0_0_rgba(0,0,0,0.25)] hover:!shadow-[0_8px_0_0_rgba(0,0,0,0.3),inset_0_-2px_4px_rgba(0,0,0,0.06)] active:!shadow-[0_2px_0_0_rgba(0,0,0,0.25)] active:!translate-y-[4px] !transition-all !duration-200 !overflow-hidden group font-black text-xs px-4">
+                <Button className="relative !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-0 !shadow-none hover:!shadow-none active:!shadow-none !transition-all !duration-200 !overflow-hidden group font-black text-xs px-4">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none rounded-2xl" />
                   <Plus className="h-3 w-3 mr-1.5 relative z-10" />
@@ -284,7 +265,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
                       aria-label="Edit listing"
                       title="Edit"
-                      className="group/edit flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-white border-[1.5px] border-black/25 text-slate-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14)] active:translate-y-[2px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.14)] transition-all duration-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 touch-manipulation select-none"
+                      className="group/edit flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-white border-[1.5px] border-black/25 text-slate-900 shadow-none transition-all duration-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 touch-manipulation select-none"
                     >
                       <Pencil className="h-4 w-4 group-hover/edit:scale-110 transition-transform" />
                     </button>
@@ -292,14 +273,14 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
                       aria-label="Delete listing"
                       title="Delete"
-                      className="group/del flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#800020] hover:bg-[#6b0019] text-white shadow-[0_3px_0_0_rgba(0,0,0,0.14)] active:translate-y-[2px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.14)] transition-all duration-200 focus-visible:ring-3 focus-visible:ring-black/15 touch-manipulation select-none"
+                      className="group/del flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#800020] hover:bg-[#6b0019] text-white shadow-none transition-all duration-200 focus-visible:ring-3 focus-visible:ring-black/15 touch-manipulation select-none"
                     >
                       <Trash2 className="h-4 w-4 group-hover/del:scale-110 transition-transform" />
                     </button>
                     {/* Share — same green round share as the listing detail page */}
                     <ShareButton
                       listing={l}
-                      className="!w-9 !h-9 !p-0 !rounded-full !bg-green-700 hover:!bg-green-800 !text-white !border-[1.5px] !border-black flex items-center justify-center shadow-[0_3px_0_0_rgba(0,0,0,0.14)] active:!translate-y-[2px] [&>svg]:!h-4 [&>svg]:!w-4"
+                      className="!w-9 !h-9 !p-0 !rounded-full !bg-green-700 hover:!bg-green-800 !text-white !border-0 flex items-center justify-center !shadow-none [&>svg]:!h-4 [&>svg]:!w-4"
                     />
                   </div>
                 </Link>
@@ -333,7 +314,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           {/* Create Listing CTA */}
           {!loading && listings.length > 0 && (
             <Link to="/sell/new" className="block">
-              <Button className="w-full h-11 !bg-black text-white !border-[1.5px] !border-black font-black text-sm !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 touch-manipulation select-none">
+              <Button className="w-full h-11 !bg-black text-white !border-0 font-black text-sm !rounded-2xl !shadow-none hover:!shadow-none active:!shadow-none !transition-all !duration-150 touch-manipulation select-none">
                 <Plus className="h-4 w-4 mr-2" />Create New Listing
               </Button>
             </Link>

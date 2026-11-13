@@ -6676,7 +6676,7 @@ export default function EnquiryWall() {
                                   </Button>
                                 ) : (
                                   <Button 
-                                    className="w-full sm:w-auto h-8 sm:h-10 md:h-12 px-2 sm:px-4 md:px-6 text-[9px] sm:text-xs md:text-sm font-black !text-white !rounded-xl !border-[1.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
+                                    className="w-full sm:w-auto h-8 sm:h-10 md:h-12 px-2 sm:px-4 md:px-6 text-[9px] sm:text-xs md:text-sm font-black !text-white !rounded-xl !border-0 !bg-black hover:!bg-gray-900 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
                                     onClick={() => window.location.href = `/respond/${enquiry.id}`}
                                   >
                                     <span className="relative z-10 flex items-center">
@@ -6745,7 +6745,7 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button 
-                                className="w-full h-10 text-[11px] font-black !text-white !rounded-xl !border-[1.5px] !border-black !bg-black hover:!bg-gray-900 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
+                                className="w-full h-10 text-[11px] font-black !text-white !rounded-xl !border-0 !bg-black hover:!bg-gray-900 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 !relative !overflow-hidden touch-manipulation select-none"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
                                 <span className="relative z-10 flex items-center">
@@ -6869,7 +6869,7 @@ export default function EnquiryWall() {
                                 </Button>
                               ) : (
                               <Button
-                                className="w-full h-10 rounded-xl !bg-[#0b1b33] hover:!bg-[#12294d] !border !border-black text-[10px] sm:text-[11px] font-bold !text-white transition-colors touch-manipulation select-none"
+                                className="w-full h-10 rounded-xl !bg-[#0b1b33] hover:!bg-[#12294d] !border-0 text-[10px] sm:text-[11px] font-bold !text-white transition-colors touch-manipulation select-none"
                                 onClick={() => window.location.href = `/respond/${enquiry.id}`}
                               >
                                 <span className="flex items-center gap-1.5">
