@@ -196,7 +196,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           )}
 
           {!loading && paginatedListings.map((l) => (
-            <div key={l.id} className="group rounded-2xl border-2 border-black bg-white overflow-hidden transition-colors !shadow-none">
+            <div key={l.id} className="group relative rounded-2xl border-0 bg-white overflow-hidden transition-all duration-200 shadow-[0_-5px_0_0_rgba(17,24,39,0.13),-5px_0_0_0_rgba(17,24,39,0.17),5px_0_0_0_rgba(17,24,39,0.17),0_6px_0_0_rgba(17,24,39,0.30),0_14px_22px_-10px_rgba(17,24,39,0.30)] hover:-translate-y-[5px] hover:shadow-[0_-5px_0_0_rgba(17,24,39,0.13),-5px_0_0_0_rgba(17,24,39,0.20),5px_0_0_0_rgba(17,24,39,0.20),0_10px_0_0_rgba(17,24,39,0.32),0_22px_28px_-12px_rgba(17,24,39,0.32)]">
               {editingId === l.id ? (
                 <div className="p-4 space-y-3" onClick={(e) => e.preventDefault()}>
                   {/* Price */}
@@ -354,7 +354,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
 
           {!loading && paginatedResponses.map((r) => {
             const listing = listings.find((l) => l.id === r.listingId);
-            return (              <Link to={`/sell/listing/${r.listingId}?buyer=${r.buyerId}`} key={r.id} className="block rounded-2xl border border-black bg-white overflow-hidden transition-colors hover:border-gray-800 !shadow-none group">
+            return (              <Link to={`/sell/listing/${r.listingId}?buyer=${r.buyerId}`} key={r.id} className="block relative rounded-2xl border-0 bg-white overflow-hidden group transition-all duration-200 shadow-[0_-5px_0_0_rgba(17,24,39,0.13),-5px_0_0_0_rgba(17,24,39,0.17),5px_0_0_0_rgba(17,24,39,0.17),0_6px_0_0_rgba(17,24,39,0.30),0_14px_22px_-10px_rgba(17,24,39,0.30)] hover:-translate-y-[5px] hover:shadow-[0_-5px_0_0_rgba(17,24,39,0.13),-5px_0_0_0_rgba(17,24,39,0.20),5px_0_0_0_rgba(17,24,39,0.20),0_10px_0_0_rgba(17,24,39,0.32),0_22px_28px_-12px_rgba(17,24,39,0.32)]">
                 <div className="flex gap-3.5 p-3.5">
                   {listing?.images?.[0] ? (
                     <img src={listing.images[0]} alt="" loading="lazy" decoding="async" className="w-[76px] h-[76px] rounded-xl object-cover flex-shrink-0 border border-gray-200" />
