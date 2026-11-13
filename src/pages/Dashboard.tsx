@@ -2074,8 +2074,8 @@ const Dashboard = () => {
                             transition={{ duration: 0.3 }}
                             className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px] ${
                               expiredFlag
-                                ? 'opacity-50 grayscale bg-gray-50 border-2 border-black !shadow-none cursor-not-allowed'
-                                : 'bg-white border-2 border-black hover:border-black !shadow-none cursor-pointer transform hover:-translate-y-1.5'
+                                ? 'opacity-50 grayscale bg-gray-50 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] cursor-not-allowed'
+                                : 'bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5'
                             }`}
                             onClick={expiredFlag ? (e) => {
                               e.stopPropagation();
@@ -2373,7 +2373,7 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-2 border-black hover:border-black !shadow-none cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px]"
+                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px]"
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
                           >
                             {/* Premium Black Header - matching enquiry card */}
@@ -2658,8 +2658,8 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[230px] sm:min-h-[250px] lg:min-h-[240px] xl:min-h-[260px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
-                              ? 'opacity-50 grayscale pointer-events-none bg-gray-50 border border-black !shadow-none'
-                              : 'bg-white border border-black hover:border-gray-800 !shadow-none cursor-pointer'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gray-50 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)]'
+                              : 'bg-white border-0 hover:border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer'
                           }`}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -2752,7 +2752,7 @@ const Dashboard = () => {
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 w-full pt-1">
+                                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 w-full pt-16 sm:pt-20">
                                     <span className={`text-base sm:text-lg font-bold text-center w-full ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
@@ -2775,9 +2775,20 @@ const Dashboard = () => {
                               </div>
                             </div>
 
+                            {/* Submitted date & time — above the action divider, right side on mobile */}
+                            <div className="flex justify-end sm:justify-start pb-2 sm:pb-2.5">
+                              <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-2 py-0.5">
+                                <Clock className="h-2.5 w-2.5 flex-shrink-0 text-gray-500" />
+                                <span className="text-[9px] font-bold text-gray-700 truncate">
+                                  {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
+                                </span>
+                              </span>
+                            </div>
+
                             {/* Action Buttons */}
                               <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-6 sm:gap-6 lg:gap-4 xl:gap-5 relative z-10 border-t border-gray-200 pt-3 sm:pt-3.5 flex-wrap lg:flex-nowrap">
                                 {/* Call + Chat — side by side, Call first */}
+                                <div className="flex flex-col gap-2 w-full sm:w-auto">
                                 <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 w-full sm:w-auto">
                                 {submission.status === 'approved' && !isEnquiryDeleted && !isEnquiryExpired && (() => {
                                   const respondedEnquiry = respondedEnquiriesById[submission.enquiryId];
@@ -2815,6 +2826,7 @@ const Dashboard = () => {
                                 </Button>
                               )}
                                 </div>
+                                </div>
                               
                               {/* Delete (left) + View Details (right) — round icon buttons */}
                               <div className="flex items-center justify-between w-full pt-3 sm:pt-4" onClick={(e) => e.stopPropagation()}>
@@ -2829,20 +2841,11 @@ const Dashboard = () => {
                                 }}
                                   aria-label="Delete response"
                                   title="Delete"
-                                  className="group/delete flex !h-9 !w-9 !min-h-9 !min-w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-red-700 hover:!bg-red-800 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
+                                  className="group/delete flex !h-9 !w-9 !min-h-9 !min-w-9 flex-shrink-0 items-center justify-center !rounded-full !border !border-red-700 !bg-red-700 hover:!bg-red-800 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
-                                  <Trash2 className="!h-4 !w-4 group-hover/delete:scale-110 transition-transform" />
+                                  <Trash2 className="!h-3.5 !w-3.5 group-hover/delete:scale-110 transition-transform" />
                               </Button>
-                              {/* Submitted date & time — between Delete and View Details */}
-                              <div className="flex flex-1 min-w-0 items-center justify-center px-1">
-                                <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-black bg-white px-2 py-0.5">
-                                  <Clock className="h-2.5 w-2.5 flex-shrink-0 text-gray-500" />
-                                  <span className="text-[9px] font-bold text-gray-800 truncate">
-                                    {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
-                                  </span>
-                                </span>
-                              </div>
                               <Button 
                                 variant="outline" 
                                 size="sm" 
