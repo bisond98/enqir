@@ -856,17 +856,17 @@ export default function ListingDetail() {
                 return (
                   <>
                     {showDealChip && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-green-600 text-white border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-green-600 text-white border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                         For {detailsRec.listingFor}
                       </span>
                     )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                         {d.houseBhk}
                       </span>
                     )}
@@ -875,11 +875,11 @@ export default function ListingDetail() {
               })()}
 
               {listing.priceType === 'discussion' ? (
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-600 text-white border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-600 text-white border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <IndianRupee className="h-3.5 w-3.5 text-white" /> Open to discussion
                 </span>
               ) : (
-                <span className="bg-white text-black border-[1.5px] border-black/60 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center gap-1.5">
+                <span className="bg-white text-black border border-black/60 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center gap-1.5">
                   {listing.category === 'jobs' && (
                     <span className="text-[8px] sm:text-[9px] text-gray-400 font-bold uppercase tracking-wide">Salary:</span>
                   )}
@@ -887,11 +887,11 @@ export default function ListingDetail() {
                   ₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}
                 </span>
               )}                {listing.condition && !NO_CONDITION_CATEGORIES.has(listing.category || '') && listing.category !== 'jobs' && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
                   {listing.condition}
                 </span>
               )}
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><MapPin className="h-2.5 w-2.5 text-white" /></span>{listing.location}
                 </span>
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
@@ -948,8 +948,8 @@ export default function ListingDetail() {
                     return (
                       <span key={`${val}-${i}`} className={key === 'subcategory'
                         // Subcategory has no title tab and borrows the description's type.
-                        ? "max-w-full inline-flex items-center text-left text-[11px] font-bold font-chip bg-white text-black border-[1.5px] border-black/60 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed"
-                        : "inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl"}>
+                        ? "max-w-full inline-flex items-center text-left text-[11px] font-bold font-chip bg-white text-black border border-black/60 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed"
+                        : "inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl"}>
                         {key === 'transmission' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Joystick className="h-2.5 w-2.5 text-white" /></span>}
                         {key === 'fuel' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Fuel className="h-2.5 w-2.5 text-white" /></span>}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">{label}:</span>}
@@ -965,20 +965,20 @@ export default function ListingDetail() {
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                     {tag}
                   </span>
                 ))
               )}
               {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border-[1.5px] border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
                   <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Calendar className="h-2.5 w-2.5 text-white" /></span>Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
               {/* Description as a chip in the same row — short ones shrink to fit,
                   long ones wrap inside the chip. */}
               {listing.description && (
-                <span className="max-w-full inline-flex flex-col items-center gap-0.5 text-left text-[11px] font-bold font-chip bg-white text-black border-[1.5px] border-black/60 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed">
+                <span className="max-w-full inline-flex flex-col items-center gap-0.5 text-left text-[11px] font-bold font-chip bg-white text-black border border-black/60 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed">
                   <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap flex-shrink-0 text-center">Description:</span>
                   {listing.description}
                 </span>
@@ -1007,7 +1007,7 @@ export default function ListingDetail() {
                   </span>
                 )}
                 <div className="relative w-full flex flex-row-reverse items-center justify-between gap-2.5 sm:w-auto sm:flex-col sm:items-start sm:justify-start sm:mx-0 sm:ml-auto">
-                  <ShareButton listing={listing} className="[&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!text-white !text-white !bg-green-700 hover:!bg-green-800 !w-11 !h-11 !p-0 !rounded-full !border-[1.5px] !border-black flex items-center justify-center" />
+                  <ShareButton listing={listing} className="[&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!text-white !text-white !bg-green-700 hover:!bg-green-800 !w-10 !h-10 !p-0 !rounded-full !border-0 flex items-center justify-center" />
                   <button
                     ref={moreBtnRef}
                     onClick={() => {
@@ -1032,7 +1032,7 @@ export default function ListingDetail() {
                     aria-label="More actions"
                     aria-expanded={moreMenuOpen}
                     title="More"
-                    className="w-11 h-11 rounded-full border-[1.5px] border-black bg-green-700 text-white flex items-center justify-center hover:bg-green-800 transition-all active:scale-95 touch-manipulation"
+                    className="w-10 h-10 rounded-full bg-green-700 text-white flex items-center justify-center hover:bg-green-800 transition-all active:scale-95 touch-manipulation"
                   >
                     <MoreHorizontal className="h-5 w-5" />
                   </button>
@@ -1303,10 +1303,14 @@ function MessageSellerInline({
       <div className="text-center mb-1 sm:mb-2">
         <h3 className="text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black">
           <span className="flex items-center justify-center gap-2 sm:gap-3">
-            <span className="inline-flex items-center justify-center w-8 h-8 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full bg-green-600 shrink-0"><MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" /></span>
-            Connect
+            <span className="inline-flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full border-2 border-black bg-black shrink-0"><Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" strokeWidth={2.5} /></span>
+            <span className="inline-flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 rounded-full border-2 border-black bg-black shrink-0"><MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" strokeWidth={2.5} /></span>
+            {/* Connect / Seller stack left-aligned, so the C and the S line up */}
+            <span className="flex flex-col items-start text-left">
+              <span>Connect</span>
+              <span>Seller</span>
+            </span>
           </span>
-          <span className="block">Seller</span>
         </h3>
       </div>
       <div>
@@ -1415,7 +1419,7 @@ function MessageSellerInline({
       </div>
       <Button
         variant="outline"
-        className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-xl !border !border-black !relative !overflow-hidden transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
+        className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-xl !border-0 !relative !overflow-hidden transition-all !duration-200 !shadow-none hover:!shadow-none active:!shadow-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
         onClick={() => { if (user) { submitResponse(); } else { sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller'); navigate('/signin'); } }}
         disabled={sending}
       >
