@@ -2373,7 +2373,7 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-[0.5px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px]"
+                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-2 border-black hover:border-black !shadow-none cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px]"
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
                           >
                             {/* Premium Black Header - matching enquiry card */}
@@ -2381,11 +2381,11 @@ const Dashboard = () => {
                               <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
                               <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                               <div className="relative flex items-start justify-between gap-2">
-                                <span className="text-[10px] font-bold lowercase tracking-wide text-white border border-white/40 rounded-full px-2 py-0.5 leading-none">
-                                  connect
+                                <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/70 leading-none">
+                                  interest
                                 </span>
                                 <div className="flex-shrink-0 flex items-center gap-1.5">
-                                  <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-green-500 rounded-full border-2 border-black shadow-md ring-2 ring-white/20 group-hover:scale-110 transition-transform">
+                                  <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white/10 rounded-full border border-white/25 group-hover:scale-110 transition-transform">
                                     <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white" />
                                   </div>
                                 </div>
@@ -2393,17 +2393,17 @@ const Dashboard = () => {
                             </div>
 
                             {/* White Content Area - matching enquiry card */}
-                            <div className="relative flex flex-col bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 overflow-visible min-h-[190px] sm:min-h-[210px] lg:min-h-[200px] xl:min-h-[220px]">
+                            <div className="relative flex flex-col bg-white p-5 sm:p-6 overflow-visible min-h-[190px] sm:min-h-[210px] lg:min-h-[200px] xl:min-h-[220px]">
                               <div className="relative z-10 text-center mt-4 sm:mt-5 mb-2">
-                                <h5 className="block w-fit max-w-full mx-auto text-center text-base sm:text-lg font-['Plus_Jakarta_Sans'] font-bold text-gray-700 leading-snug tracking-tight truncate rounded-xl border border-gray-500 bg-gray-200 px-3 py-1 mb-1">
+                                <h5 className="block w-fit max-w-full mx-auto text-center text-base sm:text-lg font-['Plus_Jakarta_Sans'] font-bold text-gray-700 leading-snug tracking-tight truncate text-gray-900 leading-tight mb-2">
                                   {listing.title}
                                 </h5>
-                                <p className="mt-1.5 inline-flex items-center justify-center rounded-full border border-gray-500 bg-gray-200 px-3 py-0.5 text-sm sm:text-base font-chip font-bold text-gray-700 leading-snug tracking-tight">
+                                <p className="mt-1.5 inline-flex items-center justify-center rounded-full bg-gray-900 px-3.5 py-1 text-sm sm:text-base font-chip font-bold text-white leading-snug tracking-tight">
                                   {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
                                 </p>
                                 {listing.location && (
-                                  <p className="inline-flex items-center justify-center rounded-full border-0 bg-red-500 px-2 py-0.5 text-[8px] sm:text-[9px] font-bold text-white gap-1 mt-1.5">
-                                    <MapPin className="h-2 w-2 flex-shrink-0 text-white" />
+                                  <p className="inline-flex items-center justify-center rounded-full bg-gray-100 border border-gray-200 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold text-gray-600 gap-1 mt-2">
+                                    <MapPin className="h-2.5 w-2.5 flex-shrink-0 text-gray-500" />
                                     {listing.location}
                                   </p>
                                 )}
@@ -2413,14 +2413,14 @@ const Dashboard = () => {
                               <div className="flex-1 min-h-[12px]"></div>
 
                               {/* Remove (left) + Chat (right) — round icon buttons */}
-                              <div className="relative flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+                              <div className="relative flex items-center justify-between border-t border-gray-200 pt-3" onClick={(e) => e.stopPropagation()}>
                                 <Button
                                   variant="destructive"
                                   size="sm"
                                   onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeInterest(listing.id); }}
                                   aria-label="Remove from interests"
                                   title="Remove"
-                                  className="group/delete flex h-14 w-14 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-gray-200 !bg-white hover:!bg-gray-50 !text-[#800020] !p-0 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                 >
                                   <Trash2 className="!h-[14px] !w-[14px] group-hover/delete:scale-110 transition-transform" />
                                 </Button>
@@ -2428,7 +2428,7 @@ const Dashboard = () => {
                                   to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
                                   aria-label="Chat with Seller"
                                   title="Chat with Seller"
-                                  className="group/chat flex h-14 w-14 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-green-500 hover:!bg-green-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  className="group/chat flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-green-500 hover:!bg-green-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                 >
                                   <MessageSquare className="h-[14px] w-[14px] group-hover/chat:scale-110 transition-transform" />
                                 </Link>
