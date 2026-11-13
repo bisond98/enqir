@@ -133,7 +133,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
   const shellContent = (
       <>
       {/* Tab Toggle */}
-      <div className="flex gap-1 mb-8 sm:mb-10 bg-gradient-to-b from-gray-200 via-gray-100 to-white p-1.5 rounded-full !border-[0.5px] !border-black !shadow-none">
+      <div className="flex gap-1 mb-8 sm:mb-10 bg-white p-1 rounded-full !border-[1.5px] !border-black !shadow-none">
         {([
           { key: 'listings' as const, label: 'My Listings', count: listings.length, unread: listingsUnread },
           { key: 'responses' as const, label: 'Buyers', count: responses.length, unread: responsesUnread },
@@ -145,10 +145,10 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
               if (key === 'listings') { setListingsUnread(0); localStorage.setItem(`sd_listings_viewed_${user?.uid}`, String(listings.length)); }
               if (key === 'responses') { setResponsesUnread(0); localStorage.setItem(`sd_responses_viewed_${user?.uid}`, String(responses.length)); }
             }}
-            className={`relative flex-1 py-3.5 sm:py-4 px-3 sm:px-5 text-[15px] sm:text-base font-bold !rounded-full !transition-all !duration-200 touch-manipulation select-none ${
+            className={`relative flex-1 py-2 sm:py-2.5 px-3 sm:px-4 text-[11px] sm:text-xs font-bold !rounded-full !transition-all !duration-200 touch-manipulation select-none ${
               activeTab === key
-                ? '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white'
-                : '!bg-gradient-to-b !from-white !to-slate-100 text-slate-700 hover:!to-slate-200'
+                ? '!bg-blue-600 !text-white'
+                : 'text-black hover:bg-gray-100'
             }`}
           >
             {label} ({count})

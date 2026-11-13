@@ -28,7 +28,6 @@ import { X } from "lucide-react";
 import CallNumberPopup from "@/components/CallNumberPopup";
 import ScamAlertOverlay from "@/components/ScamAlertOverlay";
 import { LoadingAnimation } from "../components/LoadingAnimation";
-import { TrustStripDoodles } from "../components/doodles";
 import { listMyListings, listResponsesForSeller } from "../modules/sell/services/sellDb";
 import SellerDashboard from "../modules/sell/pages/SellerDashboard";
 import type { SellListing, SellListingResponse } from "../modules/sell/types";
@@ -1869,28 +1868,28 @@ const Dashboard = () => {
                     </h2>
                   </div>
                   {/* 3-Way Toggle: Buy | Sell | Listings */}
-                  <div className="flex justify-center mt-4 sm:mt-5">
+                    <div className="inline-flex items-center bg-white rounded-full p-1 gap-1 !border-[1.5px] !border-black !shadow-none">
                     <div className="inline-flex items-center bg-gradient-to-b from-gray-200 via-gray-100 to-white rounded-full p-1.5 gap-1 !border-[0.5px] !border-black !shadow-none">
                       {([
-                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white', unread: buyUnreadCount },
-                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white', unread: sellUnreadCount },
-                        { key: 'matches' as const, label: 'AI', icon: Sparkles, activeColor: '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white', unread: matchDotCount || 0 },
+                        { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: '!bg-blue-600 !text-white', unread: buyUnreadCount },
+                        { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: '!bg-blue-600 !text-white', unread: sellUnreadCount },
+                        { key: 'matches' as const, label: 'AI', icon: Sparkles, activeColor: '!bg-blue-600 !text-white', unread: matchDotCount || 0 },
                       ]).map(({ key, label, icon: Icon, activeColor, unread }) => (
                         <motion.button
                           key={key}
                           type="button"
                           onClick={() => handleToggleView(key)}
                           className={cn(
-                            'relative flex items-center gap-2 sm:gap-2.5 lg:gap-3 px-5 sm:px-6 lg:px-7 py-3 sm:py-3.5 rounded-full text-[15px] sm:text-base font-bold !transition-all !duration-200 whitespace-nowrap touch-manipulation select-none origin-center',
+                            'relative flex items-center gap-1.5 sm:gap-2 px-4 sm:px-4 lg:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold !transition-all !duration-150 whitespace-nowrap touch-manipulation select-none origin-center',
                             viewMode === key
                               ? `${activeColor} z-10`
-                              : '!bg-gradient-to-b !from-white !to-slate-100 text-slate-700 hover:!to-slate-200'
+                              : 'text-black hover:text-black hover:bg-gray-100'
                           )}
                           whileTap={{ scale: 0.95 }}
-                          animate={{ scale: 1, y: 0 }}
+                          animate={viewMode === key ? { scale: 1.13, y: -1 } : { scale: 1, y: 0 }}
                           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         >
-                          <Icon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
+                          <Icon className="h-3 w-3" />
                           <span>{label}</span>
                           {unread > 0 && (
                             <motion.span
@@ -1957,7 +1956,7 @@ const Dashboard = () => {
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Enquiries / Interests / Saved toggle - styled like Buy/Sell/Listings toggle */}
                 <div className="flex justify-center mt-8 sm:mt-10 lg:mt-9 mb-8 sm:mb-10 lg:mb-9">
-                  <div className="inline-flex items-center w-full bg-gradient-to-b from-gray-200 via-gray-100 to-white rounded-full p-1.5 gap-1 !border-[0.5px] !border-black !shadow-none">
+                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 gap-1 !border-[1.5px] !border-black !shadow-none">
                     {([
                       { key: 'enquiries' as const, label: 'Enquiries', unread: buyUnreadCount },
                       { key: 'interests' as const, label: 'Interests', unread: visibleInterestListings.length > 0 && localStorage.getItem(`interests_viewed_${user?.uid}`) === null ? visibleInterestListings.length : (visibleInterestListings.length > parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) ? visibleInterestListings.length - parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) : 0) },
@@ -1976,10 +1975,10 @@ const Dashboard = () => {
                         animate={enquiryView === key ? { scale: 1.03 } : { scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         className={cn(
-                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-2 sm:px-4 py-3.5 sm:py-4 rounded-full text-[15px] sm:text-base font-bold !transition-all !duration-200 whitespace-nowrap touch-manipulation select-none',
+                          'relative flex items-center justify-center gap-1.5 sm:gap-2 flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold !transition-all !duration-200 whitespace-nowrap touch-manipulation select-none',
                           enquiryView === key
-                            ? '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white'
-                            : '!bg-gradient-to-b !from-white !to-slate-100 text-slate-700 hover:!to-slate-200'
+                            ? '!bg-blue-600 !text-white'
+                            : 'text-black hover:bg-gray-100'
                         )}
                       >
                         <span>{label}</span>
@@ -2416,9 +2415,7 @@ const Dashboard = () => {
                               <div className="flex-1 min-h-[12px]"></div>
 
                               {/* Remove (left) + Chat (right) — round icon buttons */}
-                              <div className="mt-auto -mx-5 sm:-mx-6 -mb-5 sm:-mb-6 relative overflow-hidden rounded-b-2xl sm:rounded-b-3xl bg-black px-5 sm:px-6 pt-3 pb-5 sm:pb-6">
-                                <TrustStripDoodles className="pointer-events-none select-none absolute inset-0 !z-0 h-full w-full opacity-[0.22]" />
-                                <div className="relative z-10 flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+                              <div className="relative flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
                                 <Button
                                   variant="destructive"
                                   size="sm"
@@ -2437,7 +2434,6 @@ const Dashboard = () => {
                                 >
                                   <MessageSquare className="h-[14px] w-[14px] group-hover/chat:scale-110 transition-transform" />
                                 </Link>
-                              </div>
                               </div>
                             </div>
                           </motion.div>
@@ -2557,7 +2553,7 @@ const Dashboard = () => {
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Responses | Listings toggle - styled like Enquiries/Interests/Saved toggle */}
                 <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
-                  <div className="inline-flex items-center w-full bg-gradient-to-b from-gray-200 via-gray-100 to-white rounded-full p-1.5 gap-1 !border-[0.5px] !border-black !shadow-none">
+                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 !border-[1.5px] !border-black !shadow-none">
                     {([
                       { key: 'responses' as const, label: 'Responses', unread: responsesUnread },
                       { key: 'listings' as const, label: 'Listings', unread: sellUnreadCount },
@@ -2575,10 +2571,10 @@ const Dashboard = () => {
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         className={cn(
-                          'relative flex items-center justify-center gap-2 flex-1 px-3 sm:px-5 py-3.5 sm:py-4 rounded-full text-[15px] sm:text-base font-bold !transition-all !duration-200 whitespace-nowrap touch-manipulation select-none',
+                          'relative flex items-center justify-center gap-2 flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold !transition-all !duration-200 whitespace-nowrap touch-manipulation select-none',
                           sellerView === key
-                            ? '!bg-gradient-to-b !from-blue-500 !via-blue-600 !to-blue-800 !text-white'
-                            : '!bg-gradient-to-b !from-white !to-slate-100 text-slate-700 hover:!to-slate-200'
+                            ? '!bg-blue-600 !text-white'
+                            : 'text-black hover:bg-gray-100'
                         )}
                       >
                         <span className="relative z-10">{label}</span>
