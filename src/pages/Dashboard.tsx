@@ -2074,8 +2074,8 @@ const Dashboard = () => {
                             transition={{ duration: 0.3 }}
                             className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px] ${
                               expiredFlag
-                                ? 'opacity-50 grayscale bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm cursor-not-allowed'
-                                : 'bg-white border-[0.5px] border-black hover:border-black hover:shadow-2xl shadow-lg cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] lg:hover:scale-[1.005]'
+                                ? 'opacity-50 grayscale bg-gray-50 border-2 border-black !shadow-none cursor-not-allowed'
+                                : 'bg-white border-2 border-black hover:border-black !shadow-none cursor-pointer transform hover:-translate-y-1.5'
                             }`}
                             onClick={expiredFlag ? (e) => {
                               e.stopPropagation();
@@ -2143,7 +2143,7 @@ const Dashboard = () => {
                                        userProfile?.trustBadge || 
                                        userProfile?.isIdentityVerified) || 
                                       (enquiry as any).idFrontImage || (enquiry as any).idBackImage) && (
-                                      <div className={`flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 lg:w-5 lg:h-5 xl:w-6 xl:h-6 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 ${
+                                      <div className={`flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 lg:w-5 lg:h-5 xl:w-6 xl:h-6 rounded-full flex-shrink-0 !shadow-none ${
                                         expiredFlag ? 'bg-gray-500' : 'bg-blue-500'
                                 }`}>
                                         <CheckCircle className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 text-white" />
@@ -2153,7 +2153,7 @@ const Dashboard = () => {
                                   
                                   {/* Status Badge - More Refined */}
                               {expiredFlag && (
-                                    <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 lg:px-3 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1 bg-red-500/25 border border-red-400/40 rounded-md backdrop-blur-sm shadow-sm mt-0.5">
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 lg:px-3 xl:px-3 py-1 sm:py-1.5 lg:py-1 xl:py-1 bg-red-50 border border-red-200 rounded-md mt-0.5">
                                       <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></span>
                                       <span className="text-[10px] sm:text-xs lg:text-xs xl:text-xs text-red-200 font-semibold tracking-wide">Expired</span>
                                     </div>
@@ -2171,7 +2171,7 @@ const Dashboard = () => {
                                     }
                                     if (isNaN(deadlineDate.getTime())) return null;
                                     return (
-                                      <Badge className="flex items-center gap-1 px-2 sm:px-3 py-1 rounded-md shadow-sm border border-red-500 bg-red-500 text-white flex-shrink-0">
+                                      <Badge className="flex items-center gap-1 px-2 sm:px-3 py-1 rounded-md !shadow-none border border-red-200 bg-red-50 text-red-600 flex-shrink-0">
                                         <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                         <span className="text-[8px] sm:text-[9px] font-bold whitespace-nowrap tracking-wide">
                                           {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
@@ -2186,13 +2186,13 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Premium Content Area with Better Structure */}
-                            <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-5 xl:p-6 overflow-visible min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
+                            <div className="relative bg-white p-5 sm:p-6 lg:p-5 xl:p-6 overflow-visible min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
                               {/* Subtle background texture */}
                               <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
                               {/* Enquiry Title - Centered in card */}
                               <div className="relative z-10 mt-8 sm:mt-10 lg:mt-8 xl:mt-10 mb-2 sm:mb-2.5 lg:mb-2 xl:mb-2.5 text-center">
-                                <h5 className={`text-sm sm:text-base lg:text-xs xl:text-sm font-black leading-snug tracking-tight ${
+                                <h5 className={`text-base sm:text-lg font-bold leading-snug tracking-tight ${
                                   expiredFlag ? 'text-gray-500' : 'text-gray-900'
                                 }`}>
                                   {enquiry.title}
@@ -2215,7 +2215,7 @@ const Dashboard = () => {
                                       disabled={expiredFlag}
                                       aria-label="Delete enquiry"
                                       title="Delete"
-                                      className="group/delete flex h-8 w-8 xl:h-9 xl:w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-md !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
+                                      className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-gray-200 !bg-white hover:!bg-gray-50 !text-[#800020] !p-0 !shadow-none !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
                                     >
                                       <Trash2 className="h-[15px] w-[15px] xl:h-[17px] xl:w-[17px] group-hover/delete:scale-110 transition-transform" />
                                     </Button>
@@ -2231,7 +2231,7 @@ const Dashboard = () => {
                                       }}
                                       aria-label="Share enquiry"
                                       title="Share"
-                                      className="flex h-8 w-8 xl:h-9 xl:w-9 flex-shrink-0 items-center justify-center rounded-full bg-green-700 text-white transition-colors hover:bg-green-800 active:scale-95 touch-manipulation"
+                                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
                                     >
                                       <Share2 className="h-[15px] w-[15px] xl:h-[17px] xl:w-[17px]" strokeWidth={1.8} />
                                     </button>
@@ -2249,7 +2249,7 @@ const Dashboard = () => {
 
                               {/* Premium Action Buttons - Perfectly Aligned */}
                               <div 
-                                className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5 flex-wrap lg:flex-nowrap"
+                                className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 border-t border-gray-200 pt-3 sm:pt-3.5 flex-wrap lg:flex-nowrap"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
@@ -2295,7 +2295,7 @@ const Dashboard = () => {
                                     disabled={expiredFlag}
                                     aria-label="Delete enquiry"
                                     title="Delete"
-                                    className="group/delete flex h-9 w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-md !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
+                                    className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-gray-200 !bg-white hover:!bg-gray-50 !text-[#800020] !p-0 !shadow-none !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
                                   >
                                     <Trash2 className="h-[17px] w-[17px] group-hover/delete:scale-110 transition-transform" />
                                   </Button>
@@ -2311,7 +2311,7 @@ const Dashboard = () => {
                                     }}
                                     aria-label="Share enquiry"
                                     title="Share"
-                                    className="ml-auto flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-green-700 text-white transition-colors hover:bg-green-800 active:scale-95 touch-manipulation"
+                                    className="ml-auto flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
                                   >
                                     <Share2 className="h-[17px] w-[17px]" strokeWidth={1.8} />
                                   </button>
@@ -2428,7 +2428,7 @@ const Dashboard = () => {
                                   to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
                                   aria-label="Chat with Seller"
                                   title="Chat with Seller"
-                                  className="group/chat flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-green-500 hover:!bg-green-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  className="group/chat flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                 >
                                   <MessageSquare className="h-[14px] w-[14px] group-hover/chat:scale-110 transition-transform" />
                                 </Link>
@@ -2655,10 +2655,10 @@ const Dashboard = () => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
-                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px] ${
+                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[230px] sm:min-h-[250px] lg:min-h-[240px] xl:min-h-[260px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm'
-                              : 'bg-white border-[0.5px] border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gray-50 border border-black !shadow-none'
+                              : 'bg-white border border-black hover:border-gray-800 !shadow-none cursor-pointer'
                           }`}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -2692,29 +2692,29 @@ const Dashboard = () => {
                                 <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
                                 {/* Enquiry Deleted Badge */}
                                 {isEnquiryDeleted && (
-                                  <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-red-500/25 text-red-200 border border-red-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
+                                  <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-red-500/25 text-red-200 border border-red-400/40 whitespace-nowrap backdrop-blur-sm !shadow-none">
                                     Enquiry Deleted
                                   </Badge>
                                 )}
                                 {/* Deal Closed Badge */}
                                 {!isEnquiryDeleted && isDealClosed && (
-                                  <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-purple-500/25 text-purple-200 border border-purple-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
+                                  <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-purple-500/25 text-purple-200 border border-purple-400/40 whitespace-nowrap backdrop-blur-sm !shadow-none">
                                     Deal Closed
                                   </Badge>
                                 )}
                                 {/* Enquiry Expired Badge */}
                                 {!isEnquiryDeleted && !isDealClosed && isEnquiryExpired && (
-                                  <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-orange-500/25 text-orange-200 border border-orange-400/40 whitespace-nowrap backdrop-blur-sm shadow-sm">
+                                  <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-orange-500/25 text-orange-200 border border-orange-400/40 whitespace-nowrap backdrop-blur-sm !shadow-none">
                                     Enquiry Expired
                                   </Badge>
                                 )}
                               {/* Status indicator — approved shows a green live dot instead of a text badge */}
                                 {submission.status === 'approved' ? (
                                   !isEnquiryDeleted && !isDealClosed && !isEnquiryExpired && (
-                                    <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-emerald-500 border border-black shadow-sm flex-shrink-0" title="Live" />
+                                    <span className="w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-emerald-500 border border-black !shadow-none flex-shrink-0" title="Live" />
                                   )
                                 ) : (
-                                  <Badge className={`text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 whitespace-nowrap backdrop-blur-sm shadow-sm ${
+                                  <Badge className={`text-[10px] sm:text-xs lg:text-[9px] xl:text-[10px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 whitespace-nowrap backdrop-blur-sm !shadow-none ${
                                     submission.status === 'pending'
                                       ? 'bg-amber-500/30 text-amber-50 border-amber-400/40'
                                       : 'bg-red-500/30 text-red-50 border-red-400/40'
@@ -2729,7 +2729,7 @@ const Dashboard = () => {
                           </div>
                           
                           {/* Premium Content Area */}
-                          <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 lg:p-5 xl:p-6 min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
+                          <div className="relative bg-white p-4 sm:p-5 min-h-[180px] sm:min-h-[195px] lg:min-h-[190px] xl:min-h-[205px]">
                             {/* Subtle background texture */}
                             <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                             
@@ -2751,8 +2751,8 @@ const Dashboard = () => {
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 w-full pt-8 sm:pt-10 lg:pt-9 xl:pt-10">
-                                    <span className={`text-lg sm:text-xl lg:text-lg xl:text-xl font-black text-center w-full ${
+                                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 w-full pt-1">
+                                    <span className={`text-base sm:text-lg font-bold text-center w-full ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
                                 {submission.title}
@@ -2775,7 +2775,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* Action Buttons */}
-                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-6 sm:gap-6 lg:gap-4 xl:gap-5 relative z-10 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5 flex-wrap lg:flex-nowrap">
+                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-6 sm:gap-6 lg:gap-4 xl:gap-5 relative z-10 border-t border-gray-200 pt-3 sm:pt-3.5 flex-wrap lg:flex-nowrap">
                                 {/* Call + Chat — side by side, Call first */}
                                 <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 w-full sm:w-auto">
                                 {submission.status === 'approved' && !isEnquiryDeleted && !isEnquiryExpired && (() => {
@@ -2807,7 +2807,7 @@ const Dashboard = () => {
                                     e.stopPropagation();
                                     setScamAlertPending({ action: 'chat', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                   }}
-                                    className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-emerald-500 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
+                                    className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
                                 >
                                     <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Chat</span>
