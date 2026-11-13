@@ -2393,12 +2393,12 @@ const Dashboard = () => {
                             </div>
 
                             {/* White Content Area - matching enquiry card */}
-                            <div className="relative flex flex-col bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 overflow-visible min-h-[290px] sm:min-h-[330px] lg:min-h-[320px] xl:min-h-[350px]">
-                              <div className="relative z-10 text-center mt-14 sm:mt-16 lg:mt-16 xl:mt-20 mb-2 sm:mb-3">
-                                <h5 className="block w-full text-center text-2xl sm:text-2xl font-['Plus_Jakarta_Sans'] font-extrabold text-gray-900 leading-snug tracking-tight truncate pt-1 mb-1">
+                            <div className="relative flex flex-col bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 overflow-visible min-h-[190px] sm:min-h-[210px] lg:min-h-[200px] xl:min-h-[220px]">
+                              <div className="relative z-10 text-center mt-4 sm:mt-5 mb-2">
+                                <h5 className="block w-fit max-w-full mx-auto text-center text-base sm:text-lg font-['Plus_Jakarta_Sans'] font-bold text-gray-700 leading-snug tracking-tight truncate rounded-xl border border-gray-500 bg-gray-200 px-3 py-1 mb-1">
                                   {listing.title}
                                 </h5>
-                                <p className="mt-1.5 inline-flex items-center justify-center rounded-full border-0 bg-transparent px-1 py-1 text-base sm:text-lg font-chip font-extrabold text-black leading-snug tracking-tight">
+                                <p className="mt-1.5 inline-flex items-center justify-center rounded-full border border-gray-500 bg-gray-200 px-3 py-0.5 text-sm sm:text-base font-chip font-bold text-gray-700 leading-snug tracking-tight">
                                   {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
                                 </p>
                                 {listing.location && (
