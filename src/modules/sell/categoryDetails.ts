@@ -14,6 +14,7 @@ import { REAL_ESTATE_SERVICES_SUBCATEGORIES } from '@/constants/categories';
 import { PHOTOGRAPHY_SUBCATEGORIES } from '@/constants/categories';
 import { CAMERA_BRAND_OPTIONS } from '@/constants/cameraCatalog';
 import { LAPTOP_BRAND_OPTIONS } from '@/constants/laptopCatalog';
+import { WATCH_BRAND_OPTIONS } from '@/constants/watchCatalog';
 // Category-specific detail fields shown dynamically in the Create Listing form.
 // Each field declares which step it belongs to ('title' | 'description' | 'details' | 'price')
 // so inputs never overcrowd — they slot into the existing flow.
@@ -272,6 +273,13 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   // Wedding: picked on the Title tab, same 24 as post enquiry.
   'wedding-events': [
     { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...WEDDING_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Watches: brand -> model on the Title tab, same cascade as laptops/camera.
+  // Model options follow the picked brand; CreateListing resolves them with
+  // getWatchModels().
+  watches: [
+    { key: 'brand', label: 'Brand', type: 'select', options: [...WATCH_BRAND_OPTIONS, 'Other'], placeholder: 'Brand', step: 'title' },
+    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Model', step: 'title' },
   ],
   // Camera: brand -> model on the Title tab, same cascade as laptops.
   camera: [

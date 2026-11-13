@@ -15,6 +15,7 @@ import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
 import { LAPTOP_OTHER, getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
+import { WATCH_OTHER, getWatchModels } from '@/constants/watchCatalog';
 import { getCameraModels } from '@/constants/cameraCatalog';
 import { SNEAKER_BRANDS } from '../categoryBrands';
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from '@/constants/thriftClothing';
@@ -115,6 +116,7 @@ import {
   Pen,
   Loader2,
   Globe,
+  Watch,
 } from 'lucide-react';
 
 // H-pattern stick-shift (manual gearbox) icon
@@ -146,6 +148,7 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
   car: Car,
   bike: Bike,
   laptops: Laptop,
+  watches: Watch,
   furniture: Armchair,
   home: Home,
   fashion: Shirt,
@@ -671,7 +674,7 @@ export default function CreateListing() {
     !!details['brand'] &&
     details['brand'] !== LAPTOP_OTHER &&
     details['model'] !== LAPTOP_OTHER;
-  const effectiveTitle = title.trim() || ((category === 'laptops' || category === 'camera') && laptopTitleIsReal ? laptopTitle : '');
+  const effectiveTitle = title.trim() || ((category === 'laptops' || category === 'camera' || category === 'watches') && laptopTitleIsReal ? laptopTitle : '');
 
   const canAdvanceFromStep = (s: number): boolean => {
     switch (s) {
@@ -1169,6 +1172,13 @@ export default function CreateListing() {
                         setDetail('model', '');
                       }
                     }
+                    if (category === 'watches') {
+                      if (!typed) {
+                        setDetail('brand', ''); setDetail('model', '');
+                      } else if (details['brand'] && typed.toLowerCase() === details['brand'].toLowerCase()) {
+                        setDetail('model', '');
+                      }
+                    }
                     // The subcategory only stands while the title still says it —
                     // except "Other ...", which the seller is meant to describe in
                     // their own words, so typing there must not undo the pick.
@@ -1219,6 +1229,10 @@ export default function CreateListing() {
                         ? (details['brand'] === 'Other'
                             ? ['Other']
                             : [...getCameraModels(details['brand'] ?? ''), 'Other'])
+                        : f.key === 'model' && category === 'watches'
+                        ? (details['brand'] === WATCH_OTHER
+                            ? [WATCH_OTHER]
+                            : [...getWatchModels(details['brand'] ?? ''), WATCH_OTHER])
                         : f.key === 'model' && category === 'laptops'
                         ? (details['brand'] === LAPTOP_OTHER
                             ? [LAPTOP_OTHER]
@@ -1252,7 +1266,7 @@ export default function CreateListing() {
                           <>
                             <select
                               value={details[f.key] ?? ''}
-                              disabled={(f.key === 'model' && category === 'laptops' && !details['brand']) || (f.key === 'model' && category === 'camera' && !details['brand'])}
+                              disabled={(f.key === 'model' && category === 'laptops' && !details['brand']) || (f.key === 'model' && category === 'camera' && !details['brand']) || (f.key === 'model' && category === 'watches' && !details['brand'])}
                               onChange={(e) => {
                                 setDetail(f.key, e.target.value);
                                 // A different brand invalidates the model and its storage
@@ -1265,6 +1279,14 @@ export default function CreateListing() {
                                 if (f.key === 'brand' && category === 'camera') {
                                   setDetail('model', '');
                                   setTitle(e.target.value === 'Other' ? '' : e.target.value);
+                                }
+                                if (f.key === 'brand' && category === 'watches') {
+                                  setDetail('model', '');
+                                  setTitle(e.target.value === WATCH_OTHER ? '' : e.target.value);
+                                }
+                                if (f.key === 'model' && category === 'watches') {
+                                  const unknownWatch = e.target.value === WATCH_OTHER || details['brand'] === WATCH_OTHER;
+                                  setTitle(unknownWatch ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
                                 }
                                 if (f.key === 'model' && category === 'laptops') {
                                   setDetail('storage', '');

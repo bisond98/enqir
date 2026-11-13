@@ -1269,8 +1269,15 @@ export default function Layout({ children, showNavigation = true }: { children: 
       {/* Action Menu Popup */}
       {showActionMenu && (
         <>
-          <div className="fixed inset-0 z-[49]" onClick={() => setShowActionMenu(false)} />
-          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex items-end gap-6">
+          {/* Dim + blur the page behind the three circles, same as the listing share popup */}
+          <div
+            className="fixed inset-0 z-[49] bg-black/20 backdrop-blur-[3px]"
+            onClick={() => setShowActionMenu(false)}
+            aria-hidden="true"
+          />
+          {/* Pyramid: enqir on top, Sell + Buy centred beneath it */}
+          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-3 min-[360px]:gap-4 sm:gap-6">
+            {/* Post an enquiry */}
             <button
               onClick={() => {
                 setShowActionMenu(false);
@@ -1279,12 +1286,15 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 } else {
                   navigate("/post-enquiry");
                 }
-              }}              className="w-24 h-24 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
+              }}
+              className="w-[88px] h-[88px] min-[360px]:w-[108px] min-[360px]:h-[108px] sm:w-32 sm:h-32 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
               style={{ animation: 'popupLeft 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' }}
             >
-              <span className="text-sm font-black text-white">Buy</span>
+              <span className="text-base min-[360px]:text-lg sm:text-xl font-black text-white">enqir</span>
             </button>
 
+            <div className="flex items-center gap-3 min-[360px]:gap-4 sm:gap-6">
+            {/* List something for sale */}
             <button
               onClick={() => {
                 setShowActionMenu(false);
@@ -1294,11 +1304,24 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/sell/new");
                 }
               }}
-              className="w-24 h-24 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
-              style={{ animation: 'popupRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.05s forwards' }}
+              className="w-[88px] h-[88px] min-[360px]:w-[108px] min-[360px]:h-[108px] sm:w-32 sm:h-32 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
+              style={{ animation: 'popupLeft 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.05s forwards' }}
             >
-              <span className="text-sm font-black text-white">Sell</span>
+              <span className="text-base min-[360px]:text-lg sm:text-xl font-black text-white">Sell</span>
             </button>
+
+            {/* Browse the marketplace */}
+            <button
+              onClick={() => {
+                setShowActionMenu(false);
+                navigate("/sell/marketplace");
+              }}
+              className="w-[88px] h-[88px] min-[360px]:w-[108px] min-[360px]:h-[108px] sm:w-32 sm:h-32 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
+              style={{ animation: 'popupRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s forwards' }}
+            >
+              <span className="text-base min-[360px]:text-lg sm:text-xl font-black text-white">Buy</span>
+            </button>
+            </div>
           </div>
         </>
       )}

@@ -22,6 +22,7 @@ export const APP_CATEGORIES: AppCategory[] = [
   { value: 'car', label: 'Car' },
   { value: 'bike', label: 'Motorcycle' },
   { value: 'laptops', label: 'Laptops' },
+  { value: 'watches', label: 'Watches' },
   { value: 'furniture', label: 'Furniture' },
   { value: 'home', label: 'Home' },
   { value: 'fashion', label: 'Fashion' },

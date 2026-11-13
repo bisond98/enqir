@@ -13,7 +13,7 @@ import { MapLocationPickerLazy as MapLocationPicker } from "@/components/MapLoca
 import { CleaningTypeMultiSelect } from "@/components/CleaningTypeMultiSelect";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints, Globe } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints, Globe, Watch } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -60,6 +60,7 @@ import {
   getLaptopStorageOptions,
 } from "@/constants/laptopCatalog";
 import { CAMERA_BRAND_OPTIONS, CAMERA_OTHER, getCameraModels } from '@/constants/cameraCatalog';
+import { WATCH_BRAND_OPTIONS, WATCH_OTHER, getWatchModels } from '@/constants/watchCatalog';
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
@@ -269,6 +270,9 @@ const DEADLINE_STEP = 5;
   const [cameraCustom, setCameraCustom] = useState<{ model: string }>({ model: '' });
   // Free text for a model / processor / storage that is not in the catalogue
   const [laptopCustom, setLaptopCustom] = useState<{ model: string; processor: string; storage: string }>({ model: '', processor: '', storage: '' });
+  // Watches details (brand -> model) — filled when the watches category is selected
+  const [watchDetails, setWatchDetails] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
+  const [watchCustom, setWatchCustom] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
   // Sneaker details (brand) — filled when the sneakers category is selected
   const [sneakerBrand, setSneakerBrand] = useState('');
   // Sneaker audience + size (Adults is the default; Kids swaps the size scale)
@@ -326,6 +330,24 @@ const DEADLINE_STEP = 5;
     setLaptopDetails({ brand: '', model: '', processor: '', storage: '' });
     setLaptopCustom({ model: '', processor: '', storage: '' });
   }, [isLaptop]);
+  // Watches: brand -> model only, the model list follows the chosen brand.
+  const isWatch =
+    selectedCategories.some((c) => (c || '').toLowerCase() === 'watches') ||
+    (category || '').toLowerCase() === 'watches';
+  const watchBrandValue = watchDetails.brand === WATCH_OTHER ? watchCustom.brand.trim() : watchDetails.brand;
+  const watchModelValue = watchDetails.model === WATCH_OTHER ? watchCustom.model.trim() : watchDetails.model;
+  // "Other" sits at the end of both lists so an unlisted brand or model can be
+  // typed in; a custom brand has no catalogue models, so only "Other" is offered.
+  const watchBrandOptions = [...WATCH_BRAND_OPTIONS, WATCH_OTHER];
+  const watchModelOptions = !watchDetails.brand
+    ? []
+    : watchDetails.brand === WATCH_OTHER
+      ? [WATCH_OTHER]
+      : [...getWatchModels(watchDetails.brand), WATCH_OTHER];
+  useEffect(() => {
+    setWatchDetails({ brand: '', model: '' });
+    setWatchCustom({ brand: '', model: '' });
+  }, [isWatch]);
   const isCamera =
     selectedCategories.some((c) => (c || '').toLowerCase() === 'camera') ||
     (category || '').toLowerCase() === 'camera';
@@ -847,6 +869,8 @@ const DEADLINE_STEP = 5;
         if (d.mobileDetails) setMobileDetails(d.mobileDetails);
         if (d.laptopDetails) setLaptopDetails(d.laptopDetails);
         if (d.laptopCustom) setLaptopCustom(d.laptopCustom);
+        if (d.watchDetails) setWatchDetails(d.watchDetails);
+        if (d.watchCustom) setWatchCustom(d.watchCustom);
         if (d.estateDetails) setEstateDetails(d.estateDetails);
         if (d.estateType) setEstateType(d.estateType);
         if (d.estateDealType) setEstateDealType(d.estateDealType);
@@ -1249,6 +1273,8 @@ const DEADLINE_STEP = 5;
             ...(subcategory && subcategoryOptions && { subcategory }),
             ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
             ...(laptopModelValue && { laptopModel: laptopModelValue }),
+            ...(watchBrandValue && { watchBrand: watchBrandValue }),
+            ...(watchModelValue && { watchModel: watchModelValue }),
             ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
             ...(cameraModelValue && { cameraModel: cameraModelValue }),
             ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
@@ -1421,6 +1447,8 @@ const DEADLINE_STEP = 5;
           ...(subcategory && subcategoryOptions && { subcategory }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
           ...(laptopModelValue && { laptopModel: laptopModelValue }),
+          ...(watchBrandValue && { watchBrand: watchBrandValue }),
+          ...(watchModelValue && { watchModel: watchModelValue }),
           ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
           ...(cameraModelValue && { cameraModel: cameraModelValue }),
           ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
@@ -1601,6 +1629,8 @@ const DEADLINE_STEP = 5;
           ...(subcategory && subcategoryOptions && { subcategory }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
           ...(laptopModelValue && { laptopModel: laptopModelValue }),
+          ...(watchBrandValue && { watchBrand: watchBrandValue }),
+          ...(watchModelValue && { watchModel: watchModelValue }),
           ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
           ...(cameraModelValue && { cameraModel: cameraModelValue }),
           ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
@@ -1895,6 +1925,7 @@ const DEADLINE_STEP = 5;
     "bike": Bike,
     "mobiles": Smartphone,
     "laptops": Monitor,
+    "watches": Watch,
     "furniture": Sofa,
     "vehicles": Car,
     "baby-kids": Baby,
@@ -2351,6 +2382,8 @@ const DEADLINE_STEP = 5;
           ...(subcategory && subcategoryOptions && { subcategory }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
           ...(laptopModelValue && { laptopModel: laptopModelValue }),
+          ...(watchBrandValue && { watchBrand: watchBrandValue }),
+          ...(watchModelValue && { watchModel: watchModelValue }),
           ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
           ...(cameraModelValue && { cameraModel: cameraModelValue }),
           ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
@@ -3337,6 +3370,62 @@ const DEADLINE_STEP = 5;
                           )}
                         </div>
                       )}
+                      {/* Watch details — brand -> model, same cascade as laptops.
+                          The model list only ever shows models that brand makes. */}
+                      {isWatch && (
+                        <div className="mb-4">
+                          <div className="grid grid-cols-2 gap-3">
+                            {([
+                              { key: 'brand' as const, placeholder: 'Brand', value: watchDetails.brand, options: watchBrandOptions, disabled: false },
+                              { key: 'model' as const, placeholder: 'Model', value: watchDetails.model, options: watchModelOptions, disabled: !watchDetails.brand },
+                            ]).map((field) => (
+                              <div key={field.key} className="relative min-w-0">
+                                <select
+                                  value={field.value}
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    if (field.key === 'brand') {
+                                      setWatchDetails({ brand: v, model: '' });
+                                      setWatchCustom({ brand: '', model: '' });
+                                    } else setWatchDetails((prev) => ({ ...prev, model: v }));
+                                  }}
+                                  disabled={field.disabled}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
+                                >
+                                  <option value="">Cancel</option>
+                                  {field.options.map((o) => (
+                                    <option key={o} value={o}>{o}</option>
+                                  ))}
+                                </select>
+                                {!field.value && (
+                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-gray-900 pointer-events-none">
+                                    {field.placeholder}
+                                  </span>
+                                )}
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                            ))}
+                          </div>
+                          {watchDetails.brand === WATCH_OTHER && (
+                            <Input
+                              value={watchCustom.brand}
+                              onChange={(e) => setWatchCustom((c) => ({ ...c, brand: e.target.value }))}
+                              placeholder="Exact brand name"
+                              maxLength={60}
+                              className="w-full rounded-[12px] h-12 sm:h-14 mt-3 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                            />
+                          )}
+                          {watchDetails.model === WATCH_OTHER && (
+                            <Input
+                              value={watchCustom.model}
+                              onChange={(e) => setWatchCustom({ model: e.target.value })}
+                              placeholder="Exact model name"
+                              maxLength={60}
+                              className="w-full rounded-[12px] h-12 sm:h-14 mt-3 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                            />
+                          )}
+                        </div>
+                      )}
                       {/* Camera details — brand -> model, same cascade as laptops. */}
                       {isCamera && (
                         <div className="mb-4">
@@ -4092,7 +4181,7 @@ const DEADLINE_STEP = 5;
                             type="button"
                             onClick={() => {
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
-                                title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, laptopDetails, laptopCustom, estateDetails, estateType, estateDealType,
+                                title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, laptopDetails, laptopCustom, watchDetails, watchCustom, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
                                 referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender, thriftGender, thriftType, thriftItem, thriftSize, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
                               }));
