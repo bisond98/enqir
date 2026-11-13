@@ -1869,7 +1869,6 @@ const Dashboard = () => {
                   </div>
                   {/* 3-Way Toggle: Buy | Sell | Listings */}
                     <div className="inline-flex items-center bg-white rounded-full p-1 gap-1 !border-[1.5px] !border-black !shadow-none">
-                    <div className="inline-flex items-center bg-gradient-to-b from-gray-200 via-gray-100 to-white rounded-full p-1.5 gap-1 !border-[0.5px] !border-black !shadow-none">
                       {([
                         { key: 'buyer' as const, label: 'Buy', icon: ShoppingCart, activeColor: '!bg-blue-600 !text-white', unread: buyUnreadCount },
                         { key: 'seller' as const, label: 'Sell', icon: Reply, activeColor: '!bg-blue-600 !text-white', unread: sellUnreadCount },
@@ -1903,7 +1902,6 @@ const Dashboard = () => {
                           )}
                         </motion.button>
                       ))}
-                    </div>
                   </div>
                 </div>
               </div>
