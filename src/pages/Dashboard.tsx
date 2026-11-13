@@ -1954,39 +1954,9 @@ const Dashboard = () => {
               </div>
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
-                {/* Professional Stats Grid - Circular Design */}
-                <div className="flex items-center justify-center gap-2 sm:gap-4 lg:gap-5 xl:gap-6 mb-4 sm:mb-6 lg:mb-4">
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[28%] max-w-[128px] aspect-square sm:max-w-none sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{allEnquiriesForStats.length || enquiries.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Enquiries</p>
-                    </div>
-                  </div>
-                  
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[28%] max-w-[128px] aspect-square sm:max-w-none sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{visibleInterestListings.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Interests</p>
-                    </div>
-                  </div>
-                  
-                  <div className="relative flex flex-col items-center justify-center border-3 border-black bg-white rounded-full overflow-hidden shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] w-[28%] max-w-[128px] aspect-square sm:max-w-none sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
-                    {/* Physical button depth effect */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-full pointer-events-none" />
-                    <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                      <h3 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-black mb-0.5 sm:mb-1 leading-none">{savedEnquiries.length + savedListings.length}</h3>
-                      <p className="text-[8px] sm:text-[10px] lg:text-[9px] xl:text-[10px] text-black font-black uppercase">Saved</p>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Enquiries / Interests / Saved toggle - styled like Buy/Sell/Listings toggle */}
-                <div className="flex justify-center mb-8 sm:mb-10 lg:mb-9">
-                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)]">
+                <div className="flex justify-center mt-8 sm:mt-10 lg:mt-9 mb-8 sm:mb-10 lg:mb-9">
+                  <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 sm:gap-1 !border-[1.5px] !border-black !shadow-none">
                     {([
                       { key: 'enquiries' as const, label: 'Enquiries', unread: buyUnreadCount },
                       { key: 'interests' as const, label: 'Interests', unread: visibleInterestListings.length > 0 && localStorage.getItem(`interests_viewed_${user?.uid}`) === null ? visibleInterestListings.length : (visibleInterestListings.length > parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) ? visibleInterestListings.length - parseInt(localStorage.getItem(`interests_viewed_${user?.uid}`) || '0', 10) : 0) },
@@ -2413,9 +2383,9 @@ const Dashboard = () => {
                               <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
                               <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                               <div className="relative flex items-start justify-between gap-2">
-                                <h5 className="text-sm font-bold text-white leading-snug tracking-tight truncate flex-1 min-w-0 drop-shadow-sm">
-                                  {listing.title}
-                                </h5>
+                                <span className="text-[10px] font-bold lowercase tracking-wide text-white border border-white/40 rounded-full px-2 py-0.5 leading-none">
+                                  connect
+                                </span>
                                 <div className="flex-shrink-0 flex items-center gap-1.5">
                                   <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-green-500 rounded-full border-2 border-black shadow-md ring-2 ring-white/20 group-hover:scale-110 transition-transform">
                                     <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white" />
@@ -2427,40 +2397,43 @@ const Dashboard = () => {
                             {/* White Content Area - matching enquiry card */}
                             <div className="relative bg-gradient-to-br from-white via-white to-gray-50/30 p-5 sm:p-6 overflow-visible min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
                               <div className="text-center mt-8 sm:mt-10 lg:mt-8 xl:mt-10 mb-2 sm:mb-2.5">
-                                <p className="text-base sm:text-lg font-black text-gray-900 leading-snug tracking-tight">
+                                <h5 className="block w-full text-center text-2xl sm:text-2xl font-['Plus_Jakarta_Sans'] font-extrabold text-gray-900 leading-snug tracking-tight truncate pt-[54px] sm:pt-[58px] mb-1.5">
+                                  {listing.title}
+                                </h5>
+                                <p className="mt-[13px] sm:mt-[31px] lg:mt-[31px] xl:mt-[47px] inline-flex items-center justify-center rounded-full border-0 bg-transparent px-1 py-1 text-base sm:text-lg font-chip font-extrabold text-black leading-snug tracking-tight">
                                   {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
                                 </p>
                                 {listing.location && (
-                                  <p className="text-[10px] sm:text-xs font-bold text-gray-600 flex items-center justify-center gap-1 mt-1.5">
-                                    <MapPin className="h-3 w-3 flex-shrink-0" />
+                                  <p className="inline-flex items-center justify-center rounded-full border-0 bg-red-500 px-2 py-0.5 text-[8px] sm:text-[9px] font-bold text-white gap-1 mt-1.5">
+                                    <MapPin className="h-2 w-2 flex-shrink-0 text-white" />
                                     {listing.location}
                                   </p>
                                 )}
                               </div>
 
                               {/* Spacer to maintain card height - matching enquiry card */}
-                              <div className="mb-16 sm:mb-20 lg:mb-14 xl:mb-18"></div>
+                              <div className="mb-[26px] sm:mb-[42px] lg:mb-[18px]"></div>
 
-                              {/* Chat + Remove buttons - 3D style matching enquiry card buttons */}
-                              <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
-                                <Link
-                                  to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
-                                  className="w-full flex items-center justify-center !border-[1.5px] !border-black !bg-green-500 hover:!bg-green-600 !text-white text-xs sm:text-sm px-3.5 py-2 h-9 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/chat touch-manipulation select-none"
-                                >
-                                  <MessageSquare className="h-3.5 w-3.5 mr-1.5 flex-shrink-0 relative z-10" />
-                                  <span className="tracking-tight whitespace-nowrap relative z-10">Chat with Seller</span>
-                                </Link>
-                              </div>
-                              <div className="flex justify-center mt-2.5" onClick={(e) => e.stopPropagation()}>
+                              {/* Remove (left) + Chat (right) — round icon buttons */}
+                              <div className="flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
                                 <Button
                                   variant="destructive"
                                   size="sm"
                                   onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeInterest(listing.id); }}
-                                  className="w-full flex-1 flex-shrink-0 !border-[1.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/delete flex items-center justify-center !relative !overflow-hidden touch-manipulation select-none"
+                                  aria-label="Remove from interests"
+                                  title="Remove"
+                                  className="group/delete flex h-14 w-14 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                 >
-                                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 relative z-10" />
-                                  <span className="tracking-tight whitespace-nowrap relative z-10">Remove</span>
+                                  <Trash2 className="!h-[14px] !w-[14px] group-hover/delete:scale-110 transition-transform" />
                                 </Button>
+                                <Link
+                                  to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
+                                  aria-label="Chat with Seller"
+                                  title="Chat with Seller"
+                                  className="group/chat flex h-14 w-14 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-green-500 hover:!bg-green-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                >
+                                  <MessageSquare className="h-[14px] w-[14px] group-hover/chat:scale-110 transition-transform" />
+                                </Link>
                               </div>
                             </div>
                           </motion.div>
@@ -2491,7 +2464,7 @@ const Dashboard = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={(e) => { e.stopPropagation(); navigate(`/sell/listing/${listing.id}`); }}
-                                className="w-full mt-2 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 touch-manipulation select-none"
+                                className="w-full mt-2 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                               >
                                 Buy
                               </Button>
@@ -2525,7 +2498,7 @@ const Dashboard = () => {
                               variant="outline"
                               size="sm"
                               onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${enquiry.id}`); }}
-                              className="w-full mt-2 !border-[1.5px] !border-black !bg-green-500 hover:!bg-green-600 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 touch-manipulation select-none"
+                              className="w-full mt-2 !border-[1.5px] !border-black !bg-green-500 hover:!bg-green-600 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                             >
                               Connect
                             </Button>
@@ -2732,8 +2705,8 @@ const Dashboard = () => {
                           transition={{ duration: 0.3 }}
                           className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
-                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border border-black shadow-sm'
-                              : 'bg-white border border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
+                              ? 'opacity-50 grayscale pointer-events-none bg-gradient-to-br from-gray-50 to-gray-100 border-[0.5px] border-black shadow-sm'
+                              : 'bg-white border-[0.5px] border-black hover:border-black hover:shadow-xl shadow-lg cursor-pointer transform hover:-translate-y-1 hover:scale-[1.01]'
                           }`}
                           onClick={(e) => {
                             e.stopPropagation();
@@ -2799,13 +2772,7 @@ const Dashboard = () => {
                                 )}
                               </div>
                               </div>
-                              {/* Submitted Date in Header */}
-                              <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2">
-                                <Clock className="h-2 w-2 sm:h-2.5 sm:w-2.5 lg:h-2 lg:w-2 xl:h-2.5 xl:w-2.5 text-gray-300 flex-shrink-0" />
-                                <span className="text-[7px] sm:text-[8px] lg:text-[7px] xl:text-[8px] text-gray-300 font-medium">
-                                  Submitted: {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
-                                </span>
-                              </div>
+
                             </div>
                           </div>
                           
@@ -2856,7 +2823,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* Action Buttons */}
-                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5 flex-wrap lg:flex-nowrap">
+                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-6 sm:gap-6 lg:gap-4 xl:gap-5 relative z-10 pt-1 sm:pt-1.5 lg:pt-1 xl:pt-1.5 flex-wrap lg:flex-nowrap">
                                 {/* Call + Chat — side by side, Call first */}
                                 <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 w-full sm:w-auto">
                                 {submission.status === 'approved' && !isEnquiryDeleted && !isEnquiryExpired && (() => {
@@ -2871,7 +2838,7 @@ const Dashboard = () => {
                                         e.stopPropagation();
                                         setScamAlertPending({ action: 'call', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                       }}
-                                      className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/call flex items-center justify-center sm:min-w-[110px] lg:min-w-[100px] xl:min-w-[110px] relative overflow-hidden touch-manipulation select-none"
+                                      className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/call flex items-center justify-center sm:min-w-[110px] lg:min-w-[100px] xl:min-w-[110px] relative overflow-hidden touch-manipulation select-none"
                                     >
                                       <span className="w-5 h-5 rounded-full border-[1.5px] border-white flex items-center justify-center mr-1.5 lg:mr-1 flex-shrink-0 relative z-10">
                                         <Phone className="h-2.5 w-2.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
@@ -2888,7 +2855,7 @@ const Dashboard = () => {
                                     e.stopPropagation();
                                     setScamAlertPending({ action: 'chat', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                   }}
-                                    className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-emerald-500 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
+                                    className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-emerald-500 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
                                 >
                                     <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Chat</span>
@@ -2896,24 +2863,8 @@ const Dashboard = () => {
                               )}
                                 </div>
                               
-                              {/* View Details & Delete - Stacked (Delete under View Details) */}
-                              <div className="flex flex-col items-stretch gap-2.5 sm:gap-3 w-full sm:w-auto">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={(e) => { 
-                                  e.stopPropagation(); 
-                                  navigate('/my-responses', {
-                                    state: { highlightSubmissionId: submission.id }
-                                  });
-                                }}
-                                  className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 disabled:opacity-50 disabled:cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden disabled:grayscale touch-manipulation select-none"
-                                  disabled={isEnquiryDeleted || isEnquiryExpired}
-                              >
-                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
-                                  <span className="tracking-tight whitespace-nowrap relative z-10">View Details</span>
-                              </Button>
-                              
+                              {/* Delete (left) + View Details (right) — round icon buttons */}
+                              <div className="flex items-center justify-between w-full pt-3 sm:pt-4" onClick={(e) => e.stopPropagation()}>
                               <Button 
                                 variant="destructive" 
                                 size="sm" 
@@ -2923,11 +2874,37 @@ const Dashboard = () => {
                                     deleteResponse(submission.id);
                                   }
                                 }}
-                                  className="flex-1 sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-[#800020] hover:!bg-[#6b0019] !text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2 sm:py-2 h-auto sm:h-9 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 disabled:opacity-50 disabled:cursor-not-allowed group/delete flex items-center justify-center sm:min-w-[90px] relative overflow-hidden disabled:grayscale touch-manipulation select-none"
+                                  aria-label="Delete response"
+                                  title="Delete"
+                                  className="group/delete flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
-                                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 flex-shrink-0 relative z-10" />
-                                  <span className="tracking-tight whitespace-nowrap relative z-10">Delete</span>
+                                  <Trash2 className="!h-5 !w-5 group-hover/delete:scale-110 transition-transform" />
+                              </Button>
+                              {/* Submitted date & time — between Delete and View Details */}
+                              <div className="flex flex-1 min-w-0 items-center justify-center px-1">
+                                <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-black bg-white px-2 py-0.5">
+                                  <Clock className="h-2.5 w-2.5 flex-shrink-0 text-gray-500" />
+                                  <span className="text-[9px] font-bold text-gray-800 truncate">
+                                    {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
+                                  </span>
+                                </span>
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  navigate('/my-responses', {
+                                    state: { highlightSubmissionId: submission.id }
+                                  });
+                                }}
+                                  aria-label="View Details"
+                                  title="View Details"
+                                  className="group/btn flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
+                                  disabled={isEnquiryDeleted || isEnquiryExpired}
+                              >
+                                  <Eye className="!h-5 !w-5 group-hover/btn:scale-110 transition-transform" />
                               </Button>
                               </div>
                             </div>

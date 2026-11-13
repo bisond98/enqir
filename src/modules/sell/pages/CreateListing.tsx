@@ -2259,13 +2259,13 @@ export default function CreateListing() {
                 variant="outline"
                 onClick={goBack}
                 aria-label="Back"
-                className={`!p-0 ${step === totalSteps - 1 ? '!w-12 !h-12 sm:!w-14 sm:!h-14' : '!w-16 !h-16 sm:!w-20 sm:!h-20'} !rounded-full !bg-gradient-to-b !from-white !via-gray-50 !to-gray-200 hover:!via-gray-100 hover:!to-gray-300 !text-gray-900 !border !border-black relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none`}
+                className={`!p-0 ${step === totalSteps - 1 ? '!w-12 !h-12 sm:!w-14 sm:!h-14' : '!w-16 !h-16 sm:!w-20 sm:!h-20'} !rounded-full !bg-gradient-to-b !from-white !via-gray-50 !to-gray-200 hover:!via-gray-100 hover:!to-gray-300 !text-gray-900 !border-0 relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none`}
               >
                 <ChevronLeft className={`${step === totalSteps - 1 ? '!h-5 !w-5 sm:!h-6 sm:!w-6' : '!h-7 !w-7 sm:!h-9 sm:!w-9'} relative z-10`} />
               </Button>
             )}
             {step < totalSteps - 1 ? (
-              <Button type="button" onClick={goNext} aria-label="Next" className="!p-0 !w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-full !bg-gradient-to-r !from-pal-blue !to-blue-600 hover:!from-blue-500 hover:!to-blue-700 !text-white !border !border-black relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none">
+              <Button type="button" onClick={goNext} aria-label="Next" className="!p-0 !w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-full !bg-gradient-to-r !from-pal-blue !to-blue-600 hover:!from-blue-500 hover:!to-blue-700 !text-white !border-0 relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none">
                 <ChevronRight className="!h-7 !w-7 sm:!h-9 sm:!w-9 relative z-10" />
               </Button>
             ) : (
