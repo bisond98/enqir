@@ -2829,7 +2829,7 @@ const Dashboard = () => {
                                 }}
                                   aria-label="Delete response"
                                   title="Delete"
-                                  className="group/delete flex !h-9 !w-9 !min-h-9 !min-w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
+                                  className="group/delete flex !h-9 !w-9 !min-h-9 !min-w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-red-700 hover:!bg-red-800 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
                                   <Trash2 className="!h-4 !w-4 group-hover/delete:scale-110 transition-transform" />

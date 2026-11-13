@@ -251,12 +251,12 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       </div>
                       <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1 mt-2">
                         {l.price != null && (
-                          <span className="inline-flex items-center text-xs font-bold text-white bg-black border border-black rounded-full px-2.5 py-1">
+                          <span className="inline-flex items-center text-xs font-bold text-gray-700 bg-gray-100 border border-gray-300 rounded-full px-2.5 py-1">
                             ₹{l.price.toLocaleString('en-IN')}
                           </span>
                         )}
                         {l.createdAt && (
-                          <span className="inline-flex items-center truncate rounded-full bg-black px-1.5 py-[1px] text-[7px] font-bold text-white">
+                          <span className="inline-flex items-center truncate rounded-full bg-gray-100 border border-gray-300 px-1.5 py-[1px] text-[7px] font-bold text-gray-700">
                             Posted on {(() => {
                               try {
                                 const d = typeof l.createdAt?.toDate === 'function' ? l.createdAt.toDate() : new Date(l.createdAt);
@@ -271,8 +271,8 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                   </div>
                   {/* Action buttons */}
                   <div className="flex items-center gap-2 border-t border-gray-100 px-3.5 py-2.5">
-                    <span className="mr-auto inline-flex items-center gap-0.5 text-[7px] font-bold text-white bg-black border border-black rounded-full px-1.5 py-[1px]">
-                      <MapPin className="h-1.5 w-1.5 text-white" />{l.location}
+                    <span className="mr-auto inline-flex items-center gap-0.5 text-[7px] font-bold text-gray-700 bg-gray-100 border border-gray-300 rounded-full px-1.5 py-[1px]">
+                      <MapPin className="h-1.5 w-1.5 text-gray-500" />{l.location}
                     </span>
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
@@ -286,7 +286,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
                       aria-label="Delete listing"
                       title="Delete"
-                      className="group/del flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-red-500 border border-red-500 text-white hover:bg-red-600 transition-colors focus-visible:border-red-600 touch-manipulation select-none"
+                      className="group/del flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-red-700 border border-red-700 text-white hover:bg-red-800 transition-colors focus-visible:border-red-800 touch-manipulation select-none"
                     >
                       <Trash2 className="h-3.5 w-3.5 group-hover/del:scale-110 transition-transform" />
                     </button>
