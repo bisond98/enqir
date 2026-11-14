@@ -17,7 +17,7 @@ import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown, ArrowUpDown, Sparkles, Loader2, WifiOff } from "lucide-react";
+import { FileText, MapPin, Clock, MessageSquare, ArrowRight, Search, Filter, X, CheckCircle, Grid3X3, List, Check, ArrowLeft, ChevronDown, ArrowUpDown, Sparkles, Loader2, WifiOff, ChevronLeft, ChevronRight } from "lucide-react";
 import { parseNLSearch, isNLSearchQuery, type NLFilters } from "@/modules/sell/services/nlSearch";
 import {
   DropdownMenu,
@@ -5318,35 +5318,28 @@ export default function EnquiryWall() {
         }}
       >
         {/* Header - Matching Seller Form Background - Full Width - Dark High Depth Black */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
-            {/* Spacer Section to Match Dashboard/Profile */}
-            <div className="mb-4 sm:mb-6">
-              <div className="flex items-center justify-between">
-                <div className="w-10 h-10"></div>
-              </div>
-            </div>
-            
-            {/* Live Enquiries Heading in Black Header */}
-            <div className="flex justify-center items-center mb-4 sm:mb-6">
+        <div className="bg-black text-white py-4 min-h-[116px] sm:min-h-[124px] relative overflow-visible flex items-center justify-center px-4">
+            {/* Back — returns to wherever the user came from */}
+            <button
+              type="button"
+              onClick={() => {
+                if ((window.history.state as any)?.idx > 0) navigate(-1);
+                else navigate('/');
+              }}
+              aria-label="Back"
+              title="Back"
+              className="absolute left-3 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-full text-white hover:bg-white/15 active:scale-95 transition-colors touch-manipulation select-none"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            {/* Page heading — same treatment as the Marketplace / For Sale header title */}
+            <div className="flex justify-center items-center pointer-events-none">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                      <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5 rounded-full bg-green-500 flex-shrink-0"></span>
-                      <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Live Enquiries.</span>
+                <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5 rounded-full bg-green-500 flex-shrink-0"></span>
+                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Live Enquiries.</span>
               </h1>
-                  </div>
-            
-            {/* Content Card - Black Background */}
-            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
-              <div className="text-center">
-                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
-                  <p className="text-[10px] sm:text-xs lg:text-sm text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                    respect the tastebuds.
-                  </p>
-                </div>
-                </div>
-              </div>
             </div>
-          </div>
+        </div>
 
         <div className="container mx-auto px-1 sm:px-4 py-4 sm:py-8">
           {/* Search and Filters - marketplace layout */}
@@ -6901,16 +6894,18 @@ export default function EnquiryWall() {
                 <button
                   onClick={prevPage}
                   disabled={currentPage <= 1}
-                  className="px-6 py-2.5 text-xs font-bold bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0"
+                  aria-label="Previous page"
+                  className="!w-14 !h-14 sm:!w-16 sm:!h-16 !rounded-full !bg-gradient-to-b !from-gray-100 !via-gray-200 !to-gray-300 hover:!via-gray-200 hover:!to-gray-400 !text-gray-900 !border-0 relative transition-all duration-200 hover:scale-[1.04] active:scale-[0.95] disabled:hover:scale-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 touch-manipulation select-none"
                 >
-                  ← Previous
+                  <ChevronLeft className="h-7 w-7 sm:h-8 sm:w-8 relative z-10" />
                 </button>
                 <button
                   onClick={nextPage}
                   disabled={!hasMore}
-                  className="px-6 py-2.5 text-xs font-bold bg-black text-white border-2 border-black rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.2)] hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.2)] active:translate-y-0.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0"
+                  aria-label="Next page"
+                  className="!w-14 !h-14 sm:!w-16 sm:!h-16 !rounded-full !bg-gradient-to-r !from-pal-blue !to-blue-600 hover:!from-blue-500 hover:!to-blue-700 !text-white !border-0 relative transition-all duration-200 hover:scale-[1.04] active:scale-[0.95] disabled:hover:scale-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0 touch-manipulation select-none"
                 >
-                  Next →
+                  <ChevronRight className="h-7 w-7 sm:h-8 sm:w-8 relative z-10" />
                 </button>
               </div>
             )}
