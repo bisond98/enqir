@@ -1243,7 +1243,7 @@ const Profile = () => {
         <div className="mt-24 sm:mt-28" />
 
         {/* Trust Badge Section - SIMPLE & CLEAN */}
-        <Card className={`mt-4 sm:mt-6 ${verifyingId ? '' : 'border-[2px] border-black'} shadow-lg rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px]`}>
+        <Card className="mt-4 sm:mt-6 border-0 rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px] transition-all duration-200 !shadow-[0_-2px_0_0_rgba(17,24,39,0.10),-2px_0_0_0_rgba(17,24,39,0.12),2px_0_0_0_rgba(17,24,39,0.12),0_4px_0_0_rgba(17,24,39,0.20),0_10px_18px_-8px_rgba(17,24,39,0.22)] hover:!shadow-[0_-2px_0_0_rgba(17,24,39,0.12),-2px_0_0_0_rgba(17,24,39,0.14),2px_0_0_0_rgba(17,24,39,0.14),0_6px_0_0_rgba(17,24,39,0.24),0_16px_26px_-10px_rgba(17,24,39,0.30)] hover:-translate-y-[2px]">
           {/* Card Header - White Background */}
           <div className="bg-white px-4 sm:px-4 py-4 sm:py-5 lg:px-5 lg:py-6 rounded-t-3xl sm:rounded-t-2xl">
             <div className="flex flex-col items-center justify-center gap-2">

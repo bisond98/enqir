@@ -26,7 +26,7 @@ const SectionHeader = ({ icon, title, description, iconClass }: {
   iconClass: string;
 }) => (
   <div className="flex items-start gap-3 mb-4 sm:mb-5">
-    <span className={`w-10 h-10 rounded-xl border-2 border-black shadow-[0_3px_0_0_rgba(0,0,0,0.85)] flex items-center justify-center flex-shrink-0 ${iconClass}`}>
+    <span className={`w-10 h-10 rounded-xl border-0 flex items-center justify-center flex-shrink-0 ${iconClass}`}>
       {icon}
     </span>
     <div className="min-w-0">
@@ -44,21 +44,18 @@ const Settings = () => {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   // Shared card shell — one consistent container for every settings group:
-  // thick black border + hard bottom shadow, matching the app's neobrutalist
-  // button/card language.
-  const sectionCard = "bg-white border-2 border-black rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.85)] p-4 sm:p-6";
+  // thick black border only, flat card shell for every settings group.
+  const sectionCard = "bg-white border-0 rounded-2xl p-4 sm:p-6 transition-all duration-200 !shadow-[0_-2px_0_0_rgba(17,24,39,0.10),-2px_0_0_0_rgba(17,24,39,0.12),2px_0_0_0_rgba(17,24,39,0.12),0_4px_0_0_rgba(17,24,39,0.20),0_10px_18px_-8px_rgba(17,24,39,0.22)] hover:!shadow-[0_-2px_0_0_rgba(17,24,39,0.12),-2px_0_0_0_rgba(17,24,39,0.14),2px_0_0_0_rgba(17,24,39,0.14),0_6px_0_0_rgba(17,24,39,0.24),0_16px_26px_-10px_rgba(17,24,39,0.30)] hover:-translate-y-[2px]";
 
   // Action buttons take the Profile page's mobile-number input geometry:
-  // 12px radius, 1.5px border, input height, the same layered lift shadow
-  // on hover and the same focus ring. Button colours are unchanged — each
-  // action keeps its original background, text and icon colour.
+  // 12px radius, 1.5px border, input height and the same focus ring. Buttons
+  // are flat (no lift shadow). Button colours are unchanged — each action
+  // keeps its original background, text and icon colour.
   const fieldLikeBtn =
-    "!w-full !bg-none !h-10 sm:!h-12 !min-h-[44px] !rounded-[12px] !border-[1.5px] !border-black !text-sm sm:!text-base !font-bold " +
-    "!shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] " +
-    "hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] " +
+    "!w-full !bg-none !h-10 sm:!h-12 !min-h-[44px] !rounded-[12px] !border-0 !text-sm sm:!text-base !font-bold " +
+    "!shadow-none hover:!shadow-none active:!shadow-none " +
     "focus-visible:!ring-3 focus-visible:!ring-black/15 " +
-    "active:!translate-y-[2px] active:!scale-100 hover:!translate-y-0 active:!shadow-[0_1px_0_0_rgba(0,0,0,0.14),0_0_6px_rgba(0,0,0,0.07),0_3px_8px_rgba(0,0,0,0.1)] " +
-    "!transition-all !duration-200";
+    "!transition-colors !duration-200";
 
   return (
     <Layout>
@@ -73,7 +70,7 @@ const Settings = () => {
                   variant="ghost"
                   type="button"
                   onClick={() => window.history.back()}
-                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
+                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50 !shadow-none hover:!shadow-none"
                 >
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </Button>
@@ -180,7 +177,7 @@ const Settings = () => {
             </Card>
 
             {/* Account Management — destructive actions last */}
-            <Card className="p-4 sm:p-6 border-2 border-black rounded-2xl shadow-[0_4px_0_0_rgba(0,0,0,0.85)] bg-red-50/60">
+            <Card className="p-4 sm:p-6 border-0 rounded-2xl bg-red-50/60 transition-all duration-200 !shadow-[0_-2px_0_0_rgba(17,24,39,0.10),-2px_0_0_0_rgba(17,24,39,0.12),2px_0_0_0_rgba(17,24,39,0.12),0_4px_0_0_rgba(17,24,39,0.20),0_10px_18px_-8px_rgba(17,24,39,0.22)] hover:!shadow-[0_-2px_0_0_rgba(17,24,39,0.12),-2px_0_0_0_rgba(17,24,39,0.14),2px_0_0_0_rgba(17,24,39,0.14),0_6px_0_0_rgba(17,24,39,0.24),0_16px_26px_-10px_rgba(17,24,39,0.30)] hover:-translate-y-[2px]">
               <SectionHeader
                 icon={<Trash2 className="h-5 w-5 text-white" />}
                 iconClass="bg-red-600"

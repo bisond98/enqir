@@ -381,16 +381,16 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                         {((r.offeredPrice != null && !isNaN(r.offeredPrice)) || r.message) && (
                       <div className="mt-1 space-y-1">
                         {r.offeredPrice != null && !isNaN(r.offeredPrice) && (
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-2.5 py-1">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">offer</span>
-                            <span className="text-xs font-bold text-white">₹{r.offeredPrice.toLocaleString('en-IN')}</span>
+                          <span className="inline-flex items-center gap-1 rounded-full bg-gray-900 px-1.5 py-[1px]">
+                            <span className="text-[7px] font-bold uppercase tracking-wider text-white/60">offer</span>
+                            <span className="text-[10px] font-bold text-white">₹{r.offeredPrice.toLocaleString('en-IN')}</span>
                           </span>
                         )}
                       </div>
                     )}
                       </div>
                       <div className="flex-shrink-0 flex flex-col items-end gap-1">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 border border-emerald-600 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-700 border border-emerald-700 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white">
                           <Mail className="h-3 w-3" />Buyer's Message
                         </span>
                         <span className="inline-flex max-w-[130px] items-center gap-1 truncate rounded-full bg-gray-100 border border-black px-2 py-1 text-[9px] font-bold text-black">

@@ -1,7 +1,7 @@
 // src/firebase.ts
 import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getFirestore, connectFirestoreEmulator, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator, initializeFirestore, memoryLocalCache } from "firebase/firestore";
 // If you want analytics, you can also import this:
 // import { getAnalytics } from "firebase/analytics";
 
@@ -29,15 +29,21 @@ export const auth = getAuth(app);
 // Firestore reads (blocked-email/user checks, profile listeners) noticeably
 // slower, especially on localhost.
 //
-// ⚡ Performance: persistent offline cache — enquiries, chats, listings and
-// profiles are stored locally, so returning to Dashboard / My Chats /
-// Marketplace / Live Enquiries renders INSTANTLY from cache while Firestore
-// syncs in the background (onSnapshot listeners still deliver live updates,
-// so real-time behavior is unchanged). Multiple tabs are supported.
+// Cache: in-memory only, per tab.
+//
+// This used to be `persistentLocalCache({ tabManager: persistentMultipleTabManager() })`,
+// which kept an IndexedDB cache shared through a multi-tab lease. That cache is
+// what made a SECOND tab of the app hang: while another tab holds the primary
+// lease (an older bundle running after a deploy, or a background-throttled tab
+// that never releases it), the new tab's first Firestore snapshot never
+// resolves, so Dashboard / Live Enquiries / Marketplace sat on their loading
+// state forever. An in-memory cache has no cross-tab lease and no IndexedDB
+// schema to clash over, so every tab fetches on its own. Live updates still
+// arrive through onSnapshot as before.
 export const db = initializeFirestore(app, {
   experimentalAutoDetectLongPolling: {},
   useFetchStreams: false,
-  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+  localCache: memoryLocalCache(),
 });
 
 // Add debugging for Firebase initialization

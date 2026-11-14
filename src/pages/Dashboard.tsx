@@ -2808,7 +2808,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* Action Buttons */}
-                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 relative z-10 border-t border-gray-200 pt-2 sm:pt-2.5 flex-wrap lg:flex-nowrap">
+                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 relative z-10 pt-2 sm:pt-2.5 flex-wrap lg:flex-nowrap">
                                 {/* Call + Chat — side by side, Call first */}
                                 <div className="flex flex-col gap-2 w-full sm:w-auto">
                                 <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 w-full sm:w-auto">
@@ -2841,7 +2841,7 @@ const Dashboard = () => {
                                     e.stopPropagation();
                                     setScamAlertPending({ action: 'chat', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                   }}
-                                    className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
+                                    className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-emerald-700 hover:!bg-emerald-800 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
                                 >
                                     <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Chat</span>
