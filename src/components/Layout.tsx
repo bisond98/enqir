@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "next-themes";
-import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, MessageCircle, ChevronDown, Crown, Moon, Sun, Store, Heart } from "lucide-react";
+import { Menu, X, Home, Search, Plus, User, Settings, LogOut, BarChart3, FileText, MessageSquare, MessageCircle, ChevronDown, Crown, Moon, Sun, Store, Heart, Tag, ShoppingBag } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { lazy, Suspense } from "react";
 // Lazy load heavy non-critical components to reduce initial bundle size
@@ -27,6 +27,74 @@ import { usePerformanceOptimizations } from "@/hooks/use-performance";
 
 // Lazy load Mobile AI Controller to improve performance
 const MobileAIController = lazy(() => import("./MobileAIController"));
+
+/** Hand-drawn doodle ring for the white border of the + menu circles:
+ *  a sketchy double ring, stitched dashes, little ticks and dots. */
+function PopupBorderDoodle({ accent = '#111827', rotate = 0 }: { accent?: string; rotate?: number }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 100 100"
+      className="pointer-events-none absolute inset-0 h-full w-full"
+      style={{ transform: `rotate(${rotate}deg)` }}
+    >
+      {/* soft inner guide so the ring reads as part of the border */}
+      <circle cx="50" cy="50" r="48.6" fill="none" stroke="#ffffff" strokeWidth="0.9" />
+      {/* sketchy outer ring — uneven dashes, rounded caps */}
+      <circle
+        cx="50.4"
+        cy="49.7"
+        r="47.2"
+        fill="none"
+        stroke={accent}
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeDasharray="4.5 3 1.2 3.4 6 2.6 2 3.8"
+        opacity="0.85"
+      />
+      {/* second pass, slightly offset, for the hand-drawn double-line look */}
+      <circle
+        cx="49.7"
+        cy="50.3"
+        r="47.4"
+        fill="none"
+        stroke={accent}
+        strokeWidth="1.1"
+        strokeLinecap="round"
+        strokeDasharray="0.8 11 5 6 1 9"
+        opacity="0.45"
+      />
+      {/* tick marks at the compass points */}
+      <g stroke={accent} strokeWidth="1.8" strokeLinecap="round" opacity="0.95">
+        <path d="M49.6 1.6v4.2" />
+        <path d="M50.5 94.2v4" />
+        <path d="M1.8 50.4h4" />
+        <path d="M94.2 49.6h4" />
+      </g>
+      {/* little arcs on the diagonals */}
+      <g stroke={accent} strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.75">
+        <path d="M78.5 13.4a3 3 0 0 1 4 1.6" />
+        <path d="M17.5 85a3 3 0 0 1 4-1.4" />
+        <path d="M86.2 76.8a3 3 0 0 0 2.6 3.6" />
+        <path d="M11.4 22.4a3 3 0 0 0 2.8-3.4" />
+      </g>
+      {/* scattered dots */}
+      <g fill={accent} opacity="0.7">
+        <circle cx="63" cy="6.2" r="1.1" />
+        <circle cx="37" cy="93.6" r="1.1" />
+        <circle cx="93.6" cy="62.6" r="1.1" />
+        <circle cx="6.4" cy="37.4" r="1.1" />
+        <circle cx="72" cy="88" r="0.9" />
+        <circle cx="28" cy="12" r="0.9" />
+      </g>
+      {/* tiny cross marks */}
+      <g stroke={accent} strokeWidth="1.1" strokeLinecap="round" opacity="0.55">
+        <path d="M67.5 30.5l2.4-2.4M69.9 30.5l-2.4-2.4" />
+        <path d="M30.1 69.5l2.4 2.4M32.5 69.5l-2.4 2.4" />
+      </g>
+    </svg>
+  );
+}
 
 export default function Layout({ children, showNavigation = true }: { children: React.ReactNode; showNavigation?: boolean }) {
   const { user, signOut, isProfileVerified, profileVerificationStatus, loading: authLoading, savedFullName, savedUsername } = useAuth();
@@ -1189,8 +1257,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         : "text-gray-900 hover:text-black hover:bg-gray-100"
                     }`}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
+                    <Icon className="h-4 w-4" />
+                    <span className="text-[9px] font-medium truncate leading-tight">{item.label}</span>
                   </div>
                 );
               }
@@ -1210,7 +1278,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         : "text-gray-900 hover:text-black hover:bg-gray-100"
                     }`}
                   >
-                    <Icon className="h-8 w-8" />
+                    <Icon className="h-10 w-10" strokeWidth={3} />
                   </div>
                 ) : (
                   (item as any).isGlobalSearch ? (
@@ -1223,8 +1291,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                           : "text-gray-900 hover:text-black hover:bg-gray-100"
                       }`}
                     >
-                      <Icon className="h-5 w-5" />
-                      <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
+                      <Icon className="h-4 w-4" />
+                      <span className="text-[9px] font-medium truncate leading-tight">{item.label}</span>
                     </div>
                   ) : (
                   <Link
@@ -1236,8 +1304,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         : "text-gray-900 hover:text-black hover:bg-gray-100"
                     }`}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span className="text-[10px] font-medium truncate leading-tight">{item.label}</span>
+                    <Icon className="h-4 w-4" />
+                    <span className="text-[9px] font-medium truncate leading-tight">{item.label}</span>
                   </Link>
                   )
                 )}
@@ -1259,8 +1327,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   : "text-gray-900 hover:text-black hover:bg-gray-100"
               }`}
             >
-              <Settings className="h-5 w-5" />
-              <span className="text-[10px] font-medium truncate leading-tight">Settings</span>
+              <Settings className="h-4 w-4" />
+              <span className="text-[9px] font-medium truncate leading-tight">Settings</span>
             </div>
           </div>
         </div>
@@ -1287,10 +1355,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/post-enquiry");
                 }
               }}
-              className="w-[88px] h-[88px] min-[360px]:w-[108px] min-[360px]:h-[108px] sm:w-32 sm:h-32 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
+              aria-label="Post an enquiry"
+              className="w-[88px] h-[88px] min-[360px]:w-[108px] min-[360px]:h-[108px] sm:w-32 sm:h-32 bg-black hover:bg-gray-900 relative rounded-full border-[6px] border-white flex items-center justify-center shadow-[0_10px_24px_rgba(0,0,0,0.28)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors"
               style={{ animation: 'popupLeft 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' }}
             >
-              <span className="text-base min-[360px]:text-lg sm:text-xl font-black text-white">enqir</span>
+              <PopupBorderDoodle rotate={0} />
+              <span className="relative text-base min-[360px]:text-lg sm:text-xl font-black text-white leading-none">enqir</span>
             </button>
 
             <div className="flex items-center gap-3 min-[360px]:gap-4 sm:gap-6">
@@ -1304,10 +1374,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   navigate("/sell/new");
                 }
               }}
-              className="w-[88px] h-[88px] min-[360px]:w-[108px] min-[360px]:h-[108px] sm:w-32 sm:h-32 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
+              aria-label="List something for sale"
+              className="w-[88px] h-[88px] min-[360px]:w-[108px] min-[360px]:h-[108px] sm:w-32 sm:h-32 bg-black hover:bg-gray-900 relative rounded-full border-[6px] border-white flex items-center justify-center shadow-[0_10px_24px_rgba(0,0,0,0.28)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors"
               style={{ animation: 'popupLeft 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.05s forwards' }}
             >
-              <span className="text-base min-[360px]:text-lg sm:text-xl font-black text-white">Sell</span>
+              <PopupBorderDoodle rotate={14} />
+              <span className="relative text-base min-[360px]:text-lg sm:text-xl font-black text-white leading-none">Sell</span>
             </button>
 
             {/* Browse the marketplace */}
@@ -1316,10 +1388,12 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 setShowActionMenu(false);
                 navigate("/sell/marketplace");
               }}
-              className="w-[88px] h-[88px] min-[360px]:w-[108px] min-[360px]:h-[108px] sm:w-32 sm:h-32 bg-black hover:bg-gray-900 rounded-full shadow-xl border-[6px] border-white flex items-center justify-center active:scale-95"
+              aria-label="Browse the marketplace"
+              className="w-[88px] h-[88px] min-[360px]:w-[108px] min-[360px]:h-[108px] sm:w-32 sm:h-32 bg-black hover:bg-gray-900 relative rounded-full border-[6px] border-white flex items-center justify-center shadow-[0_10px_24px_rgba(0,0,0,0.28)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 transition-colors"
               style={{ animation: 'popupRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s forwards' }}
             >
-              <span className="text-base min-[360px]:text-lg sm:text-xl font-black text-white">Buy</span>
+              <PopupBorderDoodle rotate={-11} />
+              <span className="relative text-base min-[360px]:text-lg sm:text-xl font-black text-white leading-none">Buy</span>
             </button>
             </div>
           </div>

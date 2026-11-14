@@ -587,7 +587,7 @@ export default function Marketplace() {
   }, [totalPages, page]);
 
   return (
-    <SellShell title="Marketplace" filterOpen={filterOpen} onToggleFilter={() => setFilterOpen(v => !v)}>
+    <SellShell title="Marketplace" compactHeader filterOpen={filterOpen} onToggleFilter={() => setFilterOpen(v => !v)}>
       <MapLocationPicker
         open={mapPickerOpen}
         onOpenChange={setMapPickerOpen}

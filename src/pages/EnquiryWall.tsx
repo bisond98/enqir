@@ -5328,9 +5328,9 @@ export default function EnquiryWall() {
               }}
               aria-label="Back"
               title="Back"
-              className="absolute left-3 top-2 z-20 flex h-7 w-7 items-center justify-center rounded-full text-white hover:bg-white/15 active:scale-95 transition-colors touch-manipulation select-none"
+              className="absolute left-3 top-2 z-20 inline-flex items-center justify-center p-2 hover:bg-white/10 rounded-xl text-white border border-white/20 active:scale-95 transition-colors touch-manipulation select-none"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             {/* Page heading — same treatment as the Marketplace / For Sale header title */}
             <div className="flex justify-center items-center pointer-events-none">
