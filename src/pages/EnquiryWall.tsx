@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { APP_CATEGORIES } from "@/constants/categories";
 import { SlidersHorizontal, IndianRupee, LayoutGrid, Map as MapIcon, Navigation } from "lucide-react";
+import { EnquiryTrustDoodles } from "@/components/enquiryTrustDoodles";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -5318,7 +5319,11 @@ export default function EnquiryWall() {
         }}
       >
         {/* Header - Matching Seller Form Background - Full Width - Dark High Depth Black */}
-        <div className="bg-black text-white py-4 min-h-[116px] sm:min-h-[124px] relative overflow-visible flex items-center justify-center px-4">
+        <div className="bg-black text-white py-4 min-h-[116px] sm:min-h-[124px] relative overflow-hidden flex items-center justify-center px-4">
+            {/* Trust mural filling the band behind the title — safe selling, fair payment */}
+            <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 text-white/20">
+              <EnquiryTrustDoodles className="absolute inset-0 h-full w-full" />
+            </div>
             {/* Back — returns to wherever the user came from */}
             <button
               type="button"
@@ -5333,10 +5338,10 @@ export default function EnquiryWall() {
               <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
             {/* Page heading — same treatment as the Marketplace / For Sale header title */}
-            <div className="flex justify-center items-center pointer-events-none">
+            <div className="relative z-10 flex justify-center items-center pointer-events-none">
               <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
                 <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 xl:w-3.5 xl:h-3.5 rounded-full bg-green-500 flex-shrink-0"></span>
-                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Live Enquiries.</span>
+                <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Enquiries.</span>
               </h1>
             </div>
         </div>

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Store, LayoutDashboard, Tag } from 'lucide-react';
 import { SellTagDoodle } from '@/components/doodles';
 import { SellHeaderDoodles } from '@/components/sellHeaderDoodles';
+import { EnquiryTrustDoodles } from '@/components/enquiryTrustDoodles';
 
 export default function SellShell({
   title,
@@ -59,6 +60,13 @@ export default function SellShell({
           {isCreate && (
             <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">
               <SellHeaderDoodles className="absolute inset-0 h-full w-full" />
+            </div>
+          )}
+          {/* The marketplace band gets the same trust doodle field the enquiries
+              header uses — safe selling, fair payment, filled edge to edge. */}
+          {isShop && (
+            <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">
+              <EnquiryTrustDoodles className="absolute inset-0 h-full w-full" />
             </div>
           )}
           {compactHeader && (

@@ -1278,7 +1278,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                         : "text-gray-900 hover:text-black hover:bg-gray-100"
                     }`}
                   >
-                    <Icon className="h-10 w-10" strokeWidth={3} />
+                    <Icon className="h-7 w-7" strokeWidth={3} />
                   </div>
                 ) : (
                   (item as any).isGlobalSearch ? (
