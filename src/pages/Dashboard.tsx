@@ -1889,7 +1889,7 @@ const Dashboard = () => {
                           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         >
                           <Icon className="h-3 w-3" />
-                          <span className={viewMode === key ? 'text-[15px] sm:text-base' : ''}>{label}</span>
+                          <span>{label}</span>
                           {unread > 0 && (
                             <motion.span
                               className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
@@ -1979,7 +1979,7 @@ const Dashboard = () => {
                             : 'text-black hover:bg-gray-100'
                         )}
                       >
-                        <span className={enquiryView === key ? 'text-[15px] sm:text-base' : ''}>{label}</span>
+                        <span>{label}</span>
                         {unread > 0 && (
                           <motion.span
                             className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
@@ -2597,7 +2597,7 @@ const Dashboard = () => {
                             : 'text-black hover:bg-gray-100'
                         )}
                       >
-                        <span className={`relative z-10 ${sellerView === key ? 'text-[15px] sm:text-base' : ''}`}>{label}</span>
+                        <span className="relative z-10">{label}</span>
                         {unread > 0 && (
                           <motion.span
                             className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"

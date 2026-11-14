@@ -152,7 +152,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                 : 'text-black hover:bg-gray-100'
             }`}
           >
-            <span className={activeTab === key ? 'text-[12px] sm:text-[13px]' : ''}>{label} ({count})</span>
+            {label} ({count})
             {unread > 0 && (
               <motion.span
                 className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
@@ -356,13 +356,24 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
             const listing = listings.find((l) => l.id === r.listingId);
             return (              <Link to={`/sell/listing/${r.listingId}?buyer=${r.buyerId}`} key={r.id} className="block relative rounded-2xl border-0 bg-white overflow-hidden group transition-all duration-200 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)]">
                 <div className="flex gap-3.5 p-3.5">
-                  {listing?.images?.[0] ? (
-                    <img src={listing.images[0]} alt="" loading="lazy" decoding="async" className="w-[76px] h-[76px] rounded-xl object-cover flex-shrink-0 border border-gray-200" />
-                  ) : (
-                    <div className="w-[76px] h-[76px] rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-200">
-                      <Package className="h-6 w-6 text-gray-300" />
-                    </div>
-                  )}
+                  <div className="flex-shrink-0 flex flex-col items-start gap-1.5 w-[76px]">
+                    {listing?.images?.[0] ? (
+                      <img src={listing.images[0]} alt="" loading="lazy" decoding="async" className="w-[76px] h-[76px] rounded-xl object-cover flex-shrink-0 border border-gray-200" />
+                    ) : (
+                      <div className="w-[76px] h-[76px] rounded-xl bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-200">
+                        <Package className="h-6 w-6 text-gray-300" />
+                      </div>
+                    )}
+                    {r.message && (
+                      <span
+                        title={r.message}
+                        className="inline-flex w-max max-w-[150px] items-center gap-1 rounded-full bg-gray-100 border border-gray-300 px-1.5 py-[1px] text-[7px] font-semibold text-gray-700"
+                      >
+                        <Mail className="h-2 w-2 flex-shrink-0 text-gray-500" />
+                        <span className="truncate">{r.message}</span>
+                      </span>
+                    )}
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
@@ -374,12 +385,6 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                             <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">offer</span>
                             <span className="text-xs font-bold text-white">₹{r.offeredPrice.toLocaleString('en-IN')}</span>
                           </span>
-                        )}
-                        {r.message && (
-                          <div className="flex items-start gap-1.5">
-                            <Mail className="h-3.5 w-3.5 text-gray-400 flex-shrink-0 mt-[1px]" />
-                            <p className="text-xs text-gray-600 font-medium line-clamp-2 leading-relaxed">{r.message}</p>
-                          </div>
                         )}
                       </div>
                     )}
