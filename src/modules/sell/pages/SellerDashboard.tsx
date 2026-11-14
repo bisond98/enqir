@@ -8,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { listMyListings, listResponsesForSeller, softDeleteListing, updateListing } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
 import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail, User } from 'lucide-react';
+import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail, User, Clock } from 'lucide-react';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import ShareButton from '../components/ShareButton';
 
@@ -152,7 +152,7 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                 : 'text-black hover:bg-gray-100'
             }`}
           >
-            {label} ({count})
+            <span className={activeTab === key ? 'text-[12px] sm:text-[13px]' : ''}>{label} ({count})</span>
             {unread > 0 && (
               <motion.span
                 className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
@@ -391,6 +391,19 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                         <span className="inline-flex max-w-[130px] items-center gap-1 truncate rounded-full bg-gray-100 border border-black px-2 py-1 text-[9px] font-bold text-black">
                           <User className="h-2.5 w-2.5 flex-shrink-0" />
                           <span className="truncate">Posted by {(r as any).buyerName || 'Buyer'}</span>
+                        </span>
+                        <span className="inline-flex max-w-[130px] items-center gap-1 truncate rounded-full bg-gray-50 border border-gray-300 px-1.5 py-[1px] text-[7px] font-semibold text-gray-600">
+                          <Clock className="h-2 w-2 flex-shrink-0" />
+                          <span className="truncate">
+                            Posted on {(() => {
+                              try {
+                                const raw = (r as any).createdAt;
+                                const d = raw?.toDate ? raw.toDate() : new Date(raw);
+                                if (isNaN(d.getTime())) return '—';
+                                return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                              } catch { return '—'; }
+                            })()}
+                          </span>
                         </span>
                       </div>
                     </div>

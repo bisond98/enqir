@@ -1879,7 +1879,7 @@ const Dashboard = () => {
                           type="button"
                           onClick={() => handleToggleView(key)}
                           className={cn(
-                            'relative flex items-center gap-1.5 sm:gap-2 px-4 sm:px-4 lg:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold !transition-all !duration-150 whitespace-nowrap touch-manipulation select-none origin-center',
+                            'relative flex items-center gap-1.5 sm:gap-2 px-7 sm:px-9 lg:px-10 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-bold !transition-all !duration-150 whitespace-nowrap touch-manipulation select-none origin-center',
                             viewMode === key
                               ? `${activeColor} z-10`
                               : 'text-black hover:text-black hover:bg-gray-100'
@@ -1889,7 +1889,7 @@ const Dashboard = () => {
                           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                         >
                           <Icon className="h-3 w-3" />
-                          <span>{label}</span>
+                          <span className={viewMode === key ? 'text-[15px] sm:text-base' : ''}>{label}</span>
                           {unread > 0 && (
                             <motion.span
                               className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
@@ -1979,7 +1979,7 @@ const Dashboard = () => {
                             : 'text-black hover:bg-gray-100'
                         )}
                       >
-                        <span>{label}</span>
+                        <span className={enquiryView === key ? 'text-[15px] sm:text-base' : ''}>{label}</span>
                         {unread > 0 && (
                           <motion.span
                             className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
@@ -2072,7 +2072,7 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px] ${
+                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full min-h-[200px] sm:min-h-[214px] lg:min-h-[208px] xl:min-h-[224px] ${
                               expiredFlag
                                 ? 'opacity-50 grayscale bg-gray-50 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] cursor-not-allowed'
                                 : 'bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5'
@@ -2186,12 +2186,12 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Premium Content Area with Better Structure */}
-                            <div className="relative bg-white p-5 sm:p-6 lg:p-5 xl:p-6 overflow-visible min-h-[220px] sm:min-h-[250px] lg:min-h-[230px] xl:min-h-[260px]">
+                            <div className="relative bg-white p-3.5 sm:p-4 overflow-visible min-h-[150px] sm:min-h-[160px] lg:min-h-[156px] xl:min-h-[168px]">
                               {/* Subtle background texture */}
                               <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
                               {/* Enquiry Title - Centered in card */}
-                              <div className="relative z-10 mt-8 sm:mt-10 lg:mt-8 xl:mt-10 mb-2 sm:mb-2.5 lg:mb-2 xl:mb-2.5 text-center">
+                              <div className="relative z-10 mt-1 sm:mt-2 mb-1.5 sm:mb-2 text-center">
                                 <h5 className={`text-base sm:text-lg font-bold leading-snug tracking-tight ${
                                   expiredFlag ? 'text-gray-500' : 'text-gray-900'
                                 }`}>
@@ -2240,7 +2240,7 @@ const Dashboard = () => {
 
 
                               {/* Spacer to maintain card height */}
-                              <div className="mb-16 sm:mb-20 lg:mb-14 xl:mb-18"></div>
+                              <div className="mb-2 sm:mb-3"></div>
 
                               {/* Plan Notice - Hidden since all listings are now paid */}
                               {(() => {
@@ -2268,7 +2268,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
+                                  className="w-full sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
                               >
                                   <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">
@@ -2340,15 +2340,15 @@ const Dashboard = () => {
                 {enquiries.length > 3 && (
                         <div className="flex justify-center pt-5 sm:pt-7 lg:pt-8 mt-5 sm:mt-6 lg:mt-8 border-t-2 border-gray-200/60">
                           <Button 
-                            variant="outline" 
                             onClick={(e) => { 
                               e.stopPropagation(); 
                               navigate('/my-enquiries'); 
                             }} 
-                            className="group/btn border border-black bg-white hover:bg-gray-50 hover:border-black text-gray-700 hover:text-gray-900 font-bold text-sm sm:text-base lg:text-lg px-8 sm:px-10 lg:px-12 py-3.5 sm:py-4 lg:py-5 h-auto sm:h-12 lg:h-14 rounded-xl lg:rounded-2xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
+                            aria-label="View All Enquiries"
+                            title="View All Enquiries"
+                            className="!p-0 !w-16 !h-16 sm:!w-20 sm:!h-20 !rounded-full !bg-gradient-to-r !from-pal-blue !to-blue-600 hover:!from-blue-500 hover:!to-blue-700 !text-white !border-0 relative transition-all !duration-200 hover:scale-[1.04] active:scale-[0.95] flex items-center justify-center flex-shrink-0 touch-manipulation select-none"
                           >
-                            <span className="mr-2 tracking-tight">View All Enquiries</span>
-                            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 group-hover/btn:translate-x-1 transition-transform flex-shrink-0" />
+                            <ChevronRight className="!h-7 !w-7 sm:!h-9 sm:!w-9 relative z-10" />
                     </Button>
                   </div>
                 )}
@@ -2393,7 +2393,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* White Content Area - matching enquiry card */}
-                            <div className="relative flex flex-col bg-white p-5 sm:p-6 overflow-visible min-h-[190px] sm:min-h-[210px] lg:min-h-[200px] xl:min-h-[220px]">
+                            <div className="relative flex flex-col bg-white px-5 pt-5 pb-2.5 sm:px-6 sm:pt-6 sm:pb-3 overflow-visible min-h-[190px] sm:min-h-[210px] lg:min-h-[200px] xl:min-h-[220px]">
                               <div className="relative z-10 text-center mt-4 sm:mt-5 mb-2">
                                 <h5 className="block w-fit max-w-full mx-auto text-center text-base sm:text-lg font-['Plus_Jakarta_Sans'] font-bold text-gray-700 leading-snug tracking-tight truncate text-gray-900 leading-tight mb-2">
                                   {listing.title}
@@ -2413,7 +2413,7 @@ const Dashboard = () => {
                               <div className="flex-1 min-h-[12px]"></div>
 
                               {/* Remove (left) + Chat (right) — round icon buttons */}
-                              <div className="relative flex items-center justify-between border-t border-gray-200 pt-3" onClick={(e) => e.stopPropagation()}>
+                              <div className="relative flex items-center justify-between border-t border-gray-200 pt-4" onClick={(e) => e.stopPropagation()}>
                                 <Button
                                   variant="destructive"
                                   size="sm"
@@ -2446,7 +2446,17 @@ const Dashboard = () => {
                   <div className="mb-6 sm:mb-12 lg:mb-8">
                     {savedListings.length > 0 && (
                       <div className="mb-5">
-                        <p className="w-fit mx-auto block text-xs sm:text-sm font-black text-white bg-black uppercase tracking-wide mb-4 text-center rounded-md px-3 py-1.5">Saved Listings</p>
+                        <div className="mb-3 flex items-end justify-between gap-3 border-b border-gray-200 pb-2">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-black text-white">
+                              <Bookmark className="h-4 w-4" />
+                            </span>
+                            <div className="min-w-0">
+                              <h3 className="text-[15px] sm:text-base font-black tracking-tight leading-tight text-black">Saved listings</h3>
+                                                          </div>
+                          </div>
+                          <span className="flex-shrink-0 whitespace-nowrap text-[10px] font-bold text-gray-600">{savedListings.length} saved</span>
+                        </div>
                         <div className="space-y-3 max-h-[250px] overflow-y-auto snap-y snap-proximity rounded-2xl p-1.5 -mx-2 sm:-mx-3 lg:-mx-4 xl:-mx-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
                           {savedListings.map((listing) => (
                             <div key={listing.id} onClick={() => navigate(`/sell/listing/${listing.id}`)} className="bg-white border-[0.5px] border-black rounded-xl p-3 shadow-sm hover:shadow-md transition-all snap-start cursor-pointer">
@@ -2455,14 +2465,14 @@ const Dashboard = () => {
                                 <span className="flex-shrink-0 inline-flex items-center text-[9px] font-black text-white bg-red-600 border-[0.5px] border-black rounded-md px-1.5 py-0.5 uppercase tracking-wide">For Sale</span>
                               </div>
                               <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                <span className="text-[10px] font-black text-gray-900 bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">{(listing as any).priceType === 'discussion' ? 'Open to discussion' : listing.price ? `₹${listing.price.toLocaleString('en-IN')}` : 'Price on request'}</span>
-                                {listing.location && <span className="text-[10px] font-bold text-black bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">• {listing.location}</span>}
+                                <span className="text-[10px] font-black text-gray-700 bg-gray-100 border border-gray-300 rounded-md px-1.5 py-0.5">{(listing as any).priceType === 'discussion' ? 'Open to discussion' : listing.price ? `₹${listing.price.toLocaleString('en-IN')}` : 'Price on request'}</span>
+                                {listing.location && <span className="text-[10px] font-bold text-gray-700 bg-gray-100 border border-gray-300 rounded-md px-1.5 py-0.5">• {listing.location}</span>}
                               </div>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={(e) => { e.stopPropagation(); navigate(`/sell/listing/${listing.id}`); }}
-                                className="w-full mt-2 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                className="w-full mt-2 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                               >
                                 Buy
                               </Button>
@@ -2479,7 +2489,19 @@ const Dashboard = () => {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        {savedEnquiries.length > 0 && <p className="w-fit mx-auto block text-xs sm:text-sm font-black text-white bg-black uppercase tracking-wide text-center rounded-md px-3 py-1.5">Saved Enquiries</p>}
+                        {savedEnquiries.length > 0 && (
+                          <div className="mb-3 flex items-end justify-between gap-3 border-b border-gray-200 pb-2">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-black text-white">
+                                <Bookmark className="h-4 w-4" />
+                              </span>
+                              <div className="min-w-0">
+                                <h3 className="text-[15px] sm:text-base font-black tracking-tight leading-tight text-black">Saved enquiries</h3>
+                                                              </div>
+                            </div>
+                            <span className="flex-shrink-0 whitespace-nowrap text-[10px] font-bold text-gray-600">{savedEnquiries.length} saved</span>
+                          </div>
+                        )}
                         <div className="space-y-3 max-h-[250px] overflow-y-auto snap-y snap-proximity rounded-2xl p-1.5 -mx-2 sm:-mx-3 lg:-mx-4 xl:-mx-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full">
                         {savedEnquiries.slice(0, 5).map((enquiry) => (
                           <div key={enquiry.id} onClick={() => navigate(`/enquiry/${enquiry.id}`)} className="bg-white border-[0.5px] border-black rounded-xl p-3 shadow-sm hover:shadow-md transition-all snap-start cursor-pointer">
@@ -2489,14 +2511,14 @@ const Dashboard = () => {
                             </div>
                             <div className="flex items-center gap-2 mt-1 flex-wrap">
                               <Badge variant="secondary" className="text-[9px] px-2 py-0.5 bg-gray-100 text-gray-900 border border-black font-bold">{enquiry.category}</Badge>
-                              <span className="text-[10px] font-black text-gray-900 bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
-                              {enquiry.location && <span className="text-[10px] font-bold text-black bg-white border-[0.5px] border-black rounded-md px-1.5 py-0.5">• {enquiry.location}</span>}
+                              <span className="text-[10px] font-black text-gray-700 bg-gray-100 border border-gray-300 rounded-md px-1.5 py-0.5">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
+                              {enquiry.location && <span className="text-[10px] font-bold text-gray-700 bg-gray-100 border border-gray-300 rounded-md px-1.5 py-0.5">• {enquiry.location}</span>}
                             </div>
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={(e) => { e.stopPropagation(); navigate(`/enquiry/${enquiry.id}`); }}
-                              className="w-full mt-2 !border-[1.5px] !border-black !bg-green-500 hover:!bg-green-600 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                              className="w-full mt-2 !border-0 !bg-green-500 hover:!bg-green-600 !text-white text-[10px] font-black !rounded-2xl h-8 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                             >
                               Connect
                             </Button>
@@ -2575,7 +2597,7 @@ const Dashboard = () => {
                             : 'text-black hover:bg-gray-100'
                         )}
                       >
-                        <span className="relative z-10">{label}</span>
+                        <span className={`relative z-10 ${sellerView === key ? 'text-[15px] sm:text-base' : ''}`}>{label}</span>
                         {unread > 0 && (
                           <motion.span
                             className="absolute -top-1.5 -right-1 bg-red-500 text-white text-[8px] font-black rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 border border-white shadow-sm z-10 pointer-events-none"
@@ -2656,7 +2678,7 @@ const Dashboard = () => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
-                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[230px] sm:min-h-[250px] lg:min-h-[240px] xl:min-h-[260px] ${
+                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[178px] sm:min-h-[190px] lg:min-h-[184px] xl:min-h-[196px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
                               ? 'opacity-50 grayscale pointer-events-none bg-gray-50 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)]'
                               : 'bg-white border-0 hover:border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer'
@@ -2672,7 +2694,7 @@ const Dashboard = () => {
                           }}
                         >
                           {/* Premium Header with Sophisticated Design */}
-                          <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2.5 xl:py-3 ${
+                          <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2 sm:py-2.5 ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
                           }`}>
                             {/* Elegant pattern overlay */}
@@ -2730,11 +2752,11 @@ const Dashboard = () => {
                           </div>
                           
                           {/* Premium Content Area */}
-                          <div className="relative bg-white p-4 sm:p-5 min-h-[180px] sm:min-h-[195px] lg:min-h-[190px] xl:min-h-[205px]">
+                          <div className="relative bg-white p-3 sm:p-4 min-h-[146px] sm:min-h-[154px] lg:min-h-[150px] xl:min-h-[160px]">
                             {/* Subtle background texture */}
                             <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                             
-                            <div className="relative space-y-2.5 sm:space-y-3 lg:space-y-2.5 xl:space-y-3">
+                            <div className="relative space-y-1.5 sm:space-y-1.5">
                               {/* Submission Status */}
                               <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
                                 {isEnquiryDeleted ? (
@@ -2752,8 +2774,8 @@ const Dashboard = () => {
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 w-full pt-16 sm:pt-20">
-                                    <span className={`text-base sm:text-lg font-bold text-center w-full ${
+                                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 w-full pt-1 sm:pt-2">
+                                    <span className={`text-lg sm:text-xl font-bold text-center w-full ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
                                 {submission.title}
@@ -2766,7 +2788,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* Details preview removed — placeholder keeps the tile size unchanged */}
-                              <div className="invisible flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg" aria-hidden="true">
+                              <div className="hidden items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 px-2.5 sm:px-3 lg:px-2.5 xl:px-3 py-1.5 sm:py-2 lg:py-1.5 xl:py-2 bg-gray-50/80 border border-gray-200/60 rounded-lg lg:rounded-md xl:rounded-lg" aria-hidden="true">
                                 <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-3.5 lg:w-3.5 xl:h-4 xl:w-4 text-black flex-shrink-0" />
                                 <div className="flex-1 min-w-0">
                                   <span className="text-[10px] sm:text-xs lg:text-[10px] xl:text-xs text-black font-bold truncate">
@@ -2776,7 +2798,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* Submitted date & time — above the action divider, right side on mobile */}
-                            <div className="flex justify-end sm:justify-start pb-2 sm:pb-2.5">
+                            <div className="flex justify-end sm:justify-start pb-0">
                               <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-2 py-0.5">
                                 <Clock className="h-2.5 w-2.5 flex-shrink-0 text-gray-500" />
                                 <span className="text-[9px] font-bold text-gray-700 truncate">
@@ -2786,7 +2808,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* Action Buttons */}
-                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-6 sm:gap-6 lg:gap-4 xl:gap-5 relative z-10 border-t border-gray-200 pt-3 sm:pt-3.5 flex-wrap lg:flex-nowrap">
+                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 relative z-10 border-t border-gray-200 pt-2 sm:pt-2.5 flex-wrap lg:flex-nowrap">
                                 {/* Call + Chat — side by side, Call first */}
                                 <div className="flex flex-col gap-2 w-full sm:w-auto">
                                 <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 w-full sm:w-auto">
@@ -2802,7 +2824,7 @@ const Dashboard = () => {
                                         e.stopPropagation();
                                         setScamAlertPending({ action: 'call', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                       }}
-                                      className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/call flex items-center justify-center sm:min-w-[110px] lg:min-w-[100px] xl:min-w-[110px] relative overflow-hidden touch-manipulation select-none"
+                                      className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/call flex items-center justify-center sm:min-w-[110px] lg:min-w-[100px] xl:min-w-[110px] relative overflow-hidden touch-manipulation select-none"
                                     >
                                       <span className="w-5 h-5 rounded-full border-[1.5px] border-white flex items-center justify-center mr-1.5 lg:mr-1 flex-shrink-0 relative z-10">
                                         <Phone className="h-2.5 w-2.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
@@ -2819,7 +2841,7 @@ const Dashboard = () => {
                                     e.stopPropagation();
                                     setScamAlertPending({ action: 'chat', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                   }}
-                                    className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-2 sm:py-2 lg:py-1.5 xl:py-2 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
+                                    className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
                                 >
                                     <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Chat</span>
@@ -2829,7 +2851,7 @@ const Dashboard = () => {
                                 </div>
                               
                               {/* Delete (left) + View Details (right) — round icon buttons */}
-                              <div className="flex items-center justify-between w-full pt-3 sm:pt-4" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-center w-full pt-1.5" onClick={(e) => e.stopPropagation()}>
                               <Button 
                                 variant="destructive" 
                                 size="sm" 
@@ -2841,27 +2863,12 @@ const Dashboard = () => {
                                 }}
                                   aria-label="Delete response"
                                   title="Delete"
-                                  className="group/delete flex !h-9 !w-9 !min-h-9 !min-w-9 flex-shrink-0 items-center justify-center !rounded-full !border !border-red-700 !bg-red-700 hover:!bg-red-800 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
+                                  className="group/delete flex !h-8 !w-8 !min-h-8 !min-w-8 flex-shrink-0 items-center justify-center !rounded-full !border !border-red-700 !bg-red-700 hover:!bg-red-800 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
                                   <Trash2 className="!h-3.5 !w-3.5 group-hover/delete:scale-110 transition-transform" />
                               </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={(e) => { 
-                                  e.stopPropagation(); 
-                                  navigate('/my-responses', {
-                                    state: { highlightSubmissionId: submission.id }
-                                  });
-                                }}
-                                  aria-label="View Details"
-                                  title="View Details"
-                                  className="group/btn flex !h-9 !w-9 !min-h-9 !min-w-9 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
-                                  disabled={isEnquiryDeleted || isEnquiryExpired}
-                              >
-                                  <Eye className="!h-4 !w-4 group-hover/btn:scale-110 transition-transform" />
-                              </Button>
+
                               </div>
                             </div>
                           </div>
