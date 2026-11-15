@@ -737,7 +737,7 @@ export default function MyChats() {
                                 ? 'w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8' 
                                 : 'w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14'
                             } ${
-                              isDisabled ? 'bg-gray-400' : 'bg-gradient-to-br from-emerald-500 via-green-500 to-emerald-600'
+                              isDisabled ? 'bg-gray-400' : 'bg-emerald-700'
                             } flex items-center justify-center border-[0.5px] border-black shadow-[0_1px_2px_rgba(0,0,0,0.2),0_2px_5px_rgba(0,0,0,0.15)] relative overflow-hidden`}
                           >
                             <MessageSquare className={`text-white relative z-10 ${
