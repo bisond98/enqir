@@ -164,9 +164,14 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     // Vehicle type (truck, lorry, pickup, tractor …) sits before Brand, then the
     // maker list covers cars, trucks, earthmovers and tractors.
     { key: 'vehicleType', label: 'Type', type: 'select', options: VEHICLE_TYPES, placeholder: 'Select type', step: 'title' },
-    { key: 'brand', label: 'Brand', type: 'select', options: VEHICLE_BRANDS, placeholder: 'Select brand', step: 'title' },
-    { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year', typeable: true, step: 'title' },
-    { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'title' },
+    // Brand options follow the picked type (Bus -> bus makers); CreateListing
+    // resolves them with getVehicleBrandsForType().
+    { key: 'brand', label: 'Brand', type: 'select', options: [], placeholder: 'Select brand', step: 'title' },
+    // Year and variant sit on the Description tab; the Title tab keeps only the
+    // vehicle's identity — type and brand.
+    { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., variants of lorry, pickup, truck', step: 'description' },
+    // Typed year, not a dropdown: a 4-digit box on the Description tab.
+    { key: 'year', label: 'Year of manufacture', type: 'number', placeholder: 'e.g., 2021', min: 1950, step: 'description' },
     { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
     { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
@@ -426,9 +431,10 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   'food-beverage': [
     { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...FOOD_SUBCATEGORIES], placeholder: 'Select subcategory', step: 'description' },
   ],
-  // Furniture: same shared subcategory dropdown as the other categories.
+  // Furniture: the shared subcategory dropdown, picked on the Title tab so the
+  // sub-type sits next to the listing name (same list as post enquiry).
   furniture: [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...FURNITURE_SUBCATEGORIES], placeholder: 'Select subcategory', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...FURNITURE_SUBCATEGORIES], placeholder: 'Select type', step: 'title' },
   ],
   // Gaming: same shared subcategory dropdown as the other categories.
   'gaming-recreation': [

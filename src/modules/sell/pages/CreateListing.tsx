@@ -17,6 +17,8 @@ import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
 import { LAPTOP_OTHER, getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
 import { AUDIO_OTHER, getAudioModels } from '@/constants/audioCatalog';
 import { CAR_MODEL_OTHER, getCarModels, getCarVariants } from '@/constants/carCatalog';
+import { getVehicleBrandsForType } from '../categoryBrands';
+import { VEHICLE_MODEL_OTHER, getVehicleModels } from '@/constants/vehicleCatalog';
 import { WATCH_OTHER, getWatchModels } from '@/constants/watchCatalog';
 import { getCameraModels } from '@/constants/cameraCatalog';
 import { SNEAKER_BRANDS } from '../categoryBrands';
@@ -1198,6 +1200,19 @@ export default function CreateListing() {
                         setDetail('model', '');
                       }
                     }
+                    // Vehicles: deleting the title drops the type + brand picks, and
+                    // trimming it back to just one of them drops the other.
+                    if (category === 'vehicles') {
+                      if (!typed) {
+                        setDetail('vehicleType', ''); setDetail('brand', '');
+                      } else if (details['brand'] && typed.toLowerCase() === details['brand'].toLowerCase()) {
+                        // Only the maker is left ("Ashok Leyland"), so the body type
+                        // was the part that got deleted — drop the type, keep the brand.
+                        setDetail('vehicleType', '');
+                      } else if (details['vehicleType'] && typed.toLowerCase() === details['vehicleType'].toLowerCase()) {
+                        setDetail('brand', '');
+                      }
+                    }
                     // Car: deleting the title drops the brand + model picks, and
                     // trimming it back to just the brand drops only the model.
                     if (category === 'car') {
@@ -1253,7 +1268,9 @@ export default function CreateListing() {
                     {fieldsForCategoryStep(category, 'title').map((f) => {
                       // Laptop models are the ones the picked brand actually sells.
                       // The picked brand's models, plus Other for anything unlisted
-                      const fieldOptions = f.key === 'model' && category === 'car'
+                      const fieldOptions = f.key === 'brand' && category === 'vehicles'
+                        ? getVehicleBrandsForType(details['vehicleType'] ?? '')
+                        : f.key === 'model' && category === 'car'
                         ? (details['brand'] === CAR_MODEL_OTHER
                             ? [CAR_MODEL_OTHER]
                             : [...getCarModels(details['brand'] ?? ''), CAR_MODEL_OTHER])
@@ -1287,7 +1304,7 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
                             placeholder={f.placeholder ?? 'Type year'}
-                            className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white text-black placeholder:text-gray-900 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' ? 'pl-3 pr-3 placeholder:text-[8px] placeholder:tracking-tight' : 'pl-4 pr-4 placeholder:text-[11px]'}`}
+                            className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium ${category === 'vehicles' && f.key === 'year' ? 'border-2 border-gray-800' : 'border-[1.5px] border-slate-200'} focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white text-black placeholder:text-gray-900 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' ? 'pl-3 pr-3 placeholder:text-[8px] placeholder:tracking-tight' : 'pl-4 pr-4 placeholder:text-[11px]'}`}
                           />
                         ) : f.type === 'text' ? (
                           <Input
@@ -1311,6 +1328,16 @@ export default function CreateListing() {
                                   // The title mirrors the picker — except for "Other",
                                   // which has no name worth filling in.
                                   setTitle(e.target.value === LAPTOP_OTHER ? '' : e.target.value);
+                                }
+                                if (f.key === 'vehicleType' && category === 'vehicles') {
+                                  setDetail('brand', ''); setDetail('variant', '');
+                                  // Maker first, then the body type — "Ashok Leyland Lorry",
+                                  // the way people name commercial vehicles.
+                                  setTitle(e.target.value === 'Other' ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
+                                }
+                                if (f.key === 'brand' && category === 'vehicles') {
+                                  setDetail('variant', '');
+                                  setTitle(e.target.value === 'Other' ? '' : [e.target.value, details['vehicleType']].filter(Boolean).join(' '));
                                 }
                                 if (f.key === 'brand' && category === 'car') {
                                   setDetail('model', ''); setDetail('variant', '');
@@ -1366,7 +1393,7 @@ export default function CreateListing() {
                                   }
                                 }
                               }}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-transparent' : f.key === 'subcategory' ? 'text-[11px] text-black' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-transparent' : f.key === 'vehicleType' ? 'text-sm sm:text-base !font-bold text-black' : f.key === 'subcategory' ? 'text-[11px] text-black' : 'text-sm sm:text-base text-black'}`}
                             >
                               <option value="">Cancel</option>
                               {fieldOptions.map((opt) => (
@@ -1712,8 +1739,23 @@ export default function CreateListing() {
                               {selectFields.map((f) => (
                                 // On mobile the year box sits at the top of the tab;
                                 // from sm upwards it keeps its array position.
-                                <div key={f.key} className={`space-y-2 ${f.key === 'year' ? 'order-first sm:order-none' : ''}`}>
-                                  {category === 'car' && f.key === 'variant' && getCarVariants(details['brand'] ?? '', details['model'] ?? '').length > 0 ? (
+                                <div key={f.key} className={`space-y-2 ${f.key === 'year' && category !== 'vehicles' ? 'order-first sm:order-none' : ''}`}>
+                                  {category === 'vehicles' && f.key === 'variant' && getVehicleModels(details['brand'] ?? '', details['vehicleType'] ?? '').length > 0 ? (
+                                    <div className="relative">
+                                      <select
+                                        value={details[f.key] ?? ''}
+                                        onChange={(e) => setDetail(f.key, e.target.value)}
+                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                                      >
+                                        <option value="">Select model</option>
+                                        {getVehicleModels(details['brand'] ?? '', details['vehicleType'] ?? '').map((opt) => (
+                                          <option key={opt} value={opt}>{opt}</option>
+                                        ))}
+                                        <option value={VEHICLE_MODEL_OTHER}>Other</option>
+                                      </select>
+                                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                    </div>
+                                  ) : category === 'car' && f.key === 'variant' && getCarVariants(details['brand'] ?? '', details['model'] ?? '').length > 0 ? (
                                     <div className="relative">
                                       <select
                                         value={details[f.key] ?? ''}
@@ -1735,7 +1777,9 @@ export default function CreateListing() {
                                       maxLength={f.type === 'number' ? 4 : 40}
                                       value={details[f.key] ?? ''}
                                       onChange={(e) => setDetail(f.key, f.type === 'number' ? e.target.value.replace(/[^0-9]/g, '').slice(0, 4) : e.target.value)}
-                                      placeholder={f.placeholder ?? 'Type here'}
+                                      placeholder={category === 'vehicles' && f.key === 'variant'
+                                        ? (details['brand'] ? 'Enter model name' : 'Select brand first')
+                                        : f.placeholder ?? 'Type here'}
                                       className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 pl-4 pr-4 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                                     />
                                   ) : (

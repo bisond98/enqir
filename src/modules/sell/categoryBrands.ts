@@ -64,6 +64,129 @@ export const VEHICLE_BRANDS = Array.from(
 // Vehicle body types for the enquiry form — trucks and commercial bodies first,
 // 'Other' stays last so the free choice sits where people expect it.
 export const VEHICLE_TYPES = [
-  'Truck', 'Lorry', 'Pickup', 'Mini Truck', 'Tipper', 'Tanker', 'Trailer',
-  'Tempo', 'Van', 'Bus', 'Tractor', 'JCB / Construction', 'Other',
+  // Goods & haulage
+  'Truck', 'Lorry', 'Container Truck', 'Flatbed', 'Pickup', 'Mini Truck',
+  'Tipper', 'Tanker', 'Trailer',
+  // Passenger & light commercial
+  'Tempo', 'Van', 'Cargo Van', 'Bus', 'Mini Bus', 'School Bus', 'Ambulance',
+  'Auto Rickshaw', 'E-Rickshaw', 'Three Wheeler',
+  // Farm & construction
+  'Tractor', 'Power Tiller', 'Tractor Trolley', 'Harvester', 'JCB / Construction',
+  'Excavator', 'Dumper', 'Bulldozer', 'Road Roller', 'Crane', 'Forklift',
+  'Fire Truck',
+  // Era marker that spans every make
+  'Vintage / Classic',
+  'Other',
 ];
+
+// Which makers actually build each body type, so picking "Bus" only offers bus
+// makers. Anything not listed here falls back to the full vehicle brand list.
+const VEHICLE_BRANDS_BY_TYPE: Record<string, string[]> = {
+  Truck: [
+    'AMW', 'Ashok Leyland', 'BharatBenz', 'DAF', 'Eicher', 'Force', 'Freightliner',
+    'Hino', 'International', 'Isuzu', 'Iveco', 'Kamaz', 'Kenworth', 'Mack', 'MAN',
+    'Mitsubishi Fuso', 'Peterbilt', 'Piaggio', 'Scania', 'SML Isuzu', 'Tata',
+    'UD Trucks', 'Volvo',
+  ],
+  Lorry: [
+    'AMW', 'Ashok Leyland', 'BharatBenz', 'DAF', 'Eicher', 'Hino', 'Isuzu',
+    'Kamaz', 'MAN', 'Scania', 'SML Isuzu', 'Tata', 'UD Trucks', 'Volvo',
+  ],
+  Pickup: [
+    'Ashok Leyland', 'Force', 'Isuzu', 'Mahindra', 'Maruti Suzuki', 'Nissan',
+    'Tata', 'Toyota',
+  ],
+  'Mini Truck': [
+    'Altigreen', 'Ashok Leyland', 'Bajaj', 'Eicher', 'Etrio', 'Euler Motors',
+    'Force', 'Mahindra', 'Maruti Suzuki', 'Piaggio', 'SML Isuzu', 'Tata',
+    'YC Electric',
+  ],
+  Tipper: [
+    'AMW', 'Ashok Leyland', 'BharatBenz', 'Eicher', 'MAN', 'Scania', 'Tata', 'Volvo',
+  ],
+  Tanker: ['Ashok Leyland', 'BharatBenz', 'Eicher', 'MAN', 'Scania', 'Tata', 'Volvo'],
+  Trailer: [
+    'Ashok Leyland', 'BharatBenz', 'DAF', 'Freightliner', 'Kenworth', 'Mack',
+    'MAN', 'Peterbilt', 'Scania', 'Tata', 'Volvo',
+  ],
+  // Tempo / auto-rickshaw makers only — Maruti Suzuki sells mini trucks, not tempos.
+  Tempo: ['Ashok Leyland', 'Bajaj', 'Force', 'Mahindra', 'Piaggio', 'Tata'],
+  Van: ['Ashok Leyland', 'Force', 'Mahindra', 'Maruti Suzuki', 'Tata'],
+  Bus: [
+    'Ashok Leyland', 'BharatBenz', 'Eicher', 'Force', 'Hino', 'JBM Auto', 'MAN',
+    'Olectra', 'Scania', 'SML Isuzu', 'Switch Mobility', 'Tata', 'Volvo',
+  ],
+  Tractor: [
+    'Captain', 'Claas', 'Deutz-Fahr', 'Escorts', 'Farmtrac', 'John Deere', 'Kubota',
+    'Mahindra', 'Massey Ferguson', 'New Holland', 'Powertrac', 'Sonalika', 'Swaraj',
+    'TAFE', 'VST', 'Yanmar',
+  ],
+  'JCB / Construction': [
+    'ACE', 'Ajax Fiori', 'Bobcat', 'Case', 'Caterpillar', 'Doosan', 'Hitachi', 'JCB',
+    'Kobelco', 'Komatsu', 'LiuGong', 'SANY', 'Schwing Stetter', 'Takeuchi', 'XCMG',
+    'Yanmar',
+  ],
+  'Container Truck': [
+    'Ashok Leyland', 'BharatBenz', 'DAF', 'Eicher', 'Freightliner', 'MAN', 'Scania',
+    'Tata', 'Volvo',
+  ],
+  Flatbed: [
+    'Ashok Leyland', 'BharatBenz', 'Eicher', 'MAN', 'Scania', 'Tata', 'Volvo',
+  ],
+  'School Bus': [
+    'Ashok Leyland', 'BharatBenz', 'Eicher', 'Force', 'JBM Auto', 'Olectra',
+    'SML Isuzu', 'Switch Mobility', 'Tata', 'Volvo',
+  ],
+  Ambulance: ['Ashok Leyland', 'Force', 'Mahindra', 'Maruti Suzuki', 'Tata', 'Toyota'],
+  'Auto Rickshaw': ['Bajaj', 'Mahindra', 'Piaggio', 'YC Electric'],
+  'Three Wheeler': ['Bajaj', 'Mahindra', 'Piaggio', 'YC Electric'],
+  'Tractor Trolley': [
+    'Captain', 'Escorts', 'Farmtrac', 'John Deere', 'Mahindra', 'Massey Ferguson',
+    'Powertrac', 'Sonalika', 'Swaraj', 'TAFE', 'VST',
+  ],
+  Harvester: ['Claas', 'John Deere', 'Kubota', 'New Holland', 'Yanmar'],
+  Excavator: [
+    'ACE', 'Case', 'Caterpillar', 'Doosan', 'Hitachi', 'JCB', 'Kobelco', 'Komatsu',
+    'LiuGong', 'SANY', 'Takeuchi', 'XCMG',
+  ],
+  Bulldozer: ['Caterpillar', 'Hitachi', 'JCB', 'Komatsu', 'LiuGong', 'SANY', 'XCMG'],
+  Crane: ['ACE', 'Ajax Fiori', 'Caterpillar', 'JCB', 'Schwing Stetter', 'Tata'],
+  Forklift: ['Caterpillar', 'Doosan', 'JCB', 'Komatsu', 'Takeuchi', 'Toyota', 'Yanmar'],
+  'Fire Truck': [
+    'Ashok Leyland', 'BharatBenz', 'Eicher', 'MAN', 'Scania', 'Tata', 'Volvo',
+  ],
+  'Cargo Van': ['Ashok Leyland', 'Force', 'Mahindra', 'Maruti Suzuki', 'Tata'],
+  'Mini Bus': [
+    'Ashok Leyland', 'Force', 'Mahindra', 'Maruti Suzuki', 'SML Isuzu', 'Tata',
+  ],
+  'E-Rickshaw': ['Bajaj', 'Mahindra', 'Piaggio', 'YC Electric'],
+  Dumper: [
+    'ACE', 'Ashok Leyland', 'BharatBenz', 'Caterpillar', 'Doosan', 'JCB',
+    'Komatsu', 'Tata',
+  ],
+  'Power Tiller': ['Captain', 'Kubota', 'Mahindra', 'VST', 'Yanmar'],
+  'Road Roller': ['ACE', 'Case', 'Caterpillar', 'Hitachi', 'JCB', 'Komatsu'],
+};
+
+/** Makers for one body type, restricted to brands the dropdown already knows,
+ *  with "Other" last. No type picked → the full vehicle list. */
+/** Placeholder for the Vehicles variant box, worded for the picked body type:
+ *  "e.g., variants of lorries", "e.g., variants of buses". */
+export function getVehicleVariantHint(type: string): string {
+  if (!type) return 'e.g., variants of lorry, pickup, truck';
+  const lower = type.toLowerCase();
+  const plural = lower.endsWith('y')
+    ? `${lower.slice(0, -1)}ies`
+    : lower.endsWith('s') ? (lower === 'bus' ? 'buses' : lower) : `${lower}s`;
+  return `e.g., variants of ${plural}`;
+}
+
+export function getVehicleBrandsForType(type: string): string[] {
+  const all = VEHICLE_BRANDS.filter((b) => b !== 'Other');
+  const wanted = type ? VEHICLE_BRANDS_BY_TYPE[type] : undefined;
+  if (!wanted || wanted.length === 0) return VEHICLE_BRANDS;
+  const allowed = new Set(wanted);
+  const filtered = all.filter((b) => allowed.has(b));
+  return filtered.length > 0 ? [...filtered, 'Other'] : VEHICLE_BRANDS;
+}
+

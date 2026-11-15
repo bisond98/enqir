@@ -40,7 +40,8 @@ import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES, PHOTOGRAPHY_SUBCATEGORIES, REAL_ESTATE_SERVICES_SUBCATEGORIES, RENEWABLE_ENERGY_SUBCATEGORIES, SECURITY_SUBCATEGORIES, SOUVENIRS_SUBCATEGORIES, SPORTS_SUBCATEGORIES, TECHNOLOGY_SUBCATEGORIES, TOOLS_EQUIPMENT_SUBCATEGORIES, TRANSPORTATION_SUBCATEGORIES, TRAVEL_SUBCATEGORIES, TUTORING_SUBCATEGORIES, VINTAGE_SUBCATEGORIES, WASTE_MANAGEMENT_SUBCATEGORIES, WEDDING_SUBCATEGORIES, DIGITAL_IT_SUBCATEGORIES } from "@/constants/categories";
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
-import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from "@/modules/sell/categoryBrands";
+import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES, getVehicleBrandsForType } from "@/modules/sell/categoryBrands";
+import { VEHICLE_MODEL_OTHER, getVehicleModels } from "@/constants/vehicleCatalog";
 import { AUDIO_BRAND_OPTIONS, AUDIO_OTHER, getAudioModels } from "@/constants/audioCatalog";
 
 // Description limits — every category shares one description field.
@@ -261,7 +262,9 @@ const DEADLINE_STEP = 5;
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan | null>(() => PAYMENT_PLANS.find(p => p.id === 'premium') || null);
   const [notes, setNotes] = useState("");
   // Vehicle details (brand/year/variant + transmission/fuel for cars) — filled when a vehicle category is selected
-  const [vehicleDetails, setVehicleDetails] = useState<{ brand: string; year: string; variant: string; transmission: string; fuelType: string }>({ brand: '', year: '', variant: '', transmission: '', fuelType: '' });
+  // `type` is the body type (truck, lorry, pickup …) for the Vehicles category, so
+  // `variant` is free to hold the real model — the same split as the sell form.
+  const [vehicleDetails, setVehicleDetails] = useState<{ type: string; brand: string; year: string; variant: string; transmission: string; fuelType: string }>({ type: '', brand: '', year: '', variant: '', transmission: '', fuelType: '' });
   // Mobile details (brand/RAM/memory) — filled when the mobiles category is selected
   const [mobileDetails, setMobileDetails] = useState<{ brand: string; ram: string; memory: string }>({ brand: '', ram: '', memory: '' });
   // Laptop details (brand -> model -> processor -> storage) — filled when the laptops category is selected
@@ -1111,7 +1114,8 @@ const DEADLINE_STEP = 5;
             notes: notes.trim() || null,
             mobileNumber: mobileNumber.trim() || null,
             details: {
-              ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+              ...(vehicleDetails.type && { vehicleType: vehicleDetails.type }),
+          ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
               ...(vehicleDetails.year && { year: vehicleDetails.year }),
               ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
               ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
@@ -1277,7 +1281,8 @@ const DEADLINE_STEP = 5;
           notes: notes.trim() || null,
           mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
           details: {
-            ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+            ...(vehicleDetails.type && { vehicleType: vehicleDetails.type }),
+          ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
             ...(vehicleDetails.year && { year: vehicleDetails.year }),
             ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
             ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
@@ -1457,7 +1462,8 @@ const DEADLINE_STEP = 5;
           notes: notes.trim() || null,
           mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
           details: {
-            ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+            ...(vehicleDetails.type && { vehicleType: vehicleDetails.type }),
+          ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
             ...(vehicleDetails.year && { year: vehicleDetails.year }),
             ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
             ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
@@ -1643,7 +1649,8 @@ const DEADLINE_STEP = 5;
         userName: safeUserName,
         notes: notes.trim() || null,
         mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,            details: {
-              ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
+              ...(vehicleDetails.type && { vehicleType: vehicleDetails.type }),
+          ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
               ...(vehicleDetails.year && { year: vehicleDetails.year }),
               ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
               ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
@@ -2045,7 +2052,7 @@ const DEADLINE_STEP = 5;
   // changes so answers typed for the previous category can't ride along into
   // the new enquiry and show up on its detail page.
   const clearCategoryDetails = () => {
-    setVehicleDetails({ brand: '', year: '', variant: '', transmission: '', fuelType: '' });
+    setVehicleDetails({ type: '', brand: '', year: '', variant: '', transmission: '', fuelType: '' });
     setMobileDetails({ brand: '', ram: '', memory: '' });
     setSneakerBrand('');
     setSneakerAudience('Adults');
@@ -2393,6 +2400,7 @@ const DEADLINE_STEP = 5;
         userLikes: [],
         notes: notes.trim(),
         details: {
+          ...(vehicleDetails.type && { vehicleType: vehicleDetails.type }),
           ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
           ...(vehicleDetails.year && { year: vehicleDetails.year }),
           ...(vehicleDetails.variant && { variant: vehicleDetails.variant }),
@@ -3572,7 +3580,7 @@ const DEADLINE_STEP = 5;
                             onChange={(e) => setSubcategory(e.target.value)}
                             className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!subcategory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                           >
-                            <option value="">{subcategoryOptions === DIGITAL_IT_SUBCATEGORIES || subcategoryOptions === KITCHEN_DINING_SUBCATEGORIES || subcategoryOptions === LEGAL_SUBCATEGORIES || subcategoryOptions === MARKETING_SUBCATEGORIES || subcategoryOptions === MEDICAL_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === MEMORABILIA_SUBCATEGORIES || subcategoryOptions === MUSICAL_ACCESSORIES_SUBCATEGORIES || subcategoryOptions === MUSICAL_INSTRUMENTS_SUBCATEGORIES || subcategoryOptions === MUSICAL_SERVICES_SUBCATEGORIES || subcategoryOptions === NON_PROFIT_SUBCATEGORIES || subcategoryOptions === PHOTOGRAPHY_SUBCATEGORIES || subcategoryOptions === REAL_ESTATE_SERVICES_SUBCATEGORIES || subcategoryOptions === RENEWABLE_ENERGY_SUBCATEGORIES || subcategoryOptions === SECURITY_SUBCATEGORIES || subcategoryOptions === SOUVENIRS_SUBCATEGORIES || subcategoryOptions === SPORTS_SUBCATEGORIES || subcategoryOptions === TECHNOLOGY_SUBCATEGORIES || subcategoryOptions === TOOLS_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === TRANSPORTATION_SUBCATEGORIES || subcategoryOptions === TRAVEL_SUBCATEGORIES || subcategoryOptions === TUTORING_SUBCATEGORIES || subcategoryOptions === VINTAGE_SUBCATEGORIES || subcategoryOptions === WASTE_MANAGEMENT_SUBCATEGORIES || subcategoryOptions === WEDDING_SUBCATEGORIES ? 'Select' : 'Select subcategory'}</option>
+                            <option value="">{subcategoryOptions === FURNITURE_SUBCATEGORIES ? 'Select type' : subcategoryOptions === DIGITAL_IT_SUBCATEGORIES || subcategoryOptions === KITCHEN_DINING_SUBCATEGORIES || subcategoryOptions === LEGAL_SUBCATEGORIES || subcategoryOptions === MARKETING_SUBCATEGORIES || subcategoryOptions === MEDICAL_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === MEMORABILIA_SUBCATEGORIES || subcategoryOptions === MUSICAL_ACCESSORIES_SUBCATEGORIES || subcategoryOptions === MUSICAL_INSTRUMENTS_SUBCATEGORIES || subcategoryOptions === MUSICAL_SERVICES_SUBCATEGORIES || subcategoryOptions === NON_PROFIT_SUBCATEGORIES || subcategoryOptions === PHOTOGRAPHY_SUBCATEGORIES || subcategoryOptions === REAL_ESTATE_SERVICES_SUBCATEGORIES || subcategoryOptions === RENEWABLE_ENERGY_SUBCATEGORIES || subcategoryOptions === SECURITY_SUBCATEGORIES || subcategoryOptions === SOUVENIRS_SUBCATEGORIES || subcategoryOptions === SPORTS_SUBCATEGORIES || subcategoryOptions === TECHNOLOGY_SUBCATEGORIES || subcategoryOptions === TOOLS_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === TRANSPORTATION_SUBCATEGORIES || subcategoryOptions === TRAVEL_SUBCATEGORIES || subcategoryOptions === TUTORING_SUBCATEGORIES || subcategoryOptions === VINTAGE_SUBCATEGORIES || subcategoryOptions === WASTE_MANAGEMENT_SUBCATEGORIES || subcategoryOptions === WEDDING_SUBCATEGORIES ? 'Select' : 'Select subcategory'}</option>
                             {subcategoryOptions.map((s) => (
                               <option key={s} value={s}>{s}</option>
                             ))}
@@ -3596,11 +3604,17 @@ const DEADLINE_STEP = 5;
                             <div className="relative">
                               <select
                                 value={vehicleDetails.brand}
-                                onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value }))}
+                                onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value, ...(isTruckLike ? { variant: '' } : {}) }))}
                                 className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                               >
                                 <option value="">Brand</option>
-                                {(isBikeOnly ? BIKE_BRANDS.filter(b => b !== 'Other') : isCar ? CAR_BRANDS.filter(b => b !== 'Other') : VEHICLE_BRANDS.filter(b => b !== 'Other')).map((b) => (
+                                {(isBikeOnly
+                                  ? BIKE_BRANDS.filter(b => b !== 'Other')
+                                  : isCar
+                                    ? CAR_BRANDS.filter(b => b !== 'Other')
+                                    : isTruckLike
+                                      ? getVehicleBrandsForType(vehicleDetails.type).filter(b => b !== 'Other')
+                                      : VEHICLE_BRANDS.filter(b => b !== 'Other')).map((b) => (
                                   <option key={b} value={b}>{b}</option>
                                 ))}
                                 <option value="Other">Other</option>
@@ -3619,9 +3633,9 @@ const DEADLINE_STEP = 5;
                                 <div className="flex-1 min-w-0">
                                   <div className="relative">
                                     <select
-                                      value={vehicleDetails.variant}
-                                      onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                      value={vehicleDetails.type}
+                                      onChange={(e) => setVehicleDetails(v => ({ ...v, type: e.target.value, brand: '', variant: '' }))}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.type ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base !font-bold text-black'}`}
                                     >
                                       <option value="">Type</option>
                                       {VEHICLE_TYPES.map((t) => (
@@ -3645,7 +3659,7 @@ const DEADLINE_STEP = 5;
                                   value={vehicleDetails.year}
                                   onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
                                   placeholder="Year"
-                                  className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                                  className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-2 border-gray-800 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
                                 />
                                 <div className="h-3">
                                 </div>
@@ -3667,6 +3681,40 @@ const DEADLINE_STEP = 5;
                               )}
                               {isTruckLike && brandField}
                             </div>
+                            {/* Model — real models of the picked maker (Signa 2823.K, Yodha 2.0 …) */}
+                            {isTruckLike && (() => {
+                              const models = getVehicleModels(vehicleDetails.brand, vehicleDetails.type);
+                              if (models.length === 0) {
+                                return (
+                                  <div className="mt-3">
+                                    <Input
+                                      type="text"
+                                      maxLength={40}
+                                      value={vehicleDetails.variant}
+                                      onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
+                                      placeholder={vehicleDetails.brand ? 'Variant (enter model)' : 'Variant (select brand first)'}
+                                      className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                                    />
+                                  </div>
+                                );
+                              }
+                              return (
+                                <div className="relative mt-3">
+                                  <select
+                                    value={vehicleDetails.variant}
+                                    onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
+                                    className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                  >
+                                    <option value="">Variant</option>
+                                    {models.map((m) => (
+                                      <option key={m} value={m}>{m}</option>
+                                    ))}
+                                    <option value={VEHICLE_MODEL_OTHER}>Other</option>
+                                  </select>
+                                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                                </div>
+                              );
+                            })()}
                             {/* Transmission / Fuel Type / Ownership — cars & automobiles only */}
                             {isCarLike && (
                               <div className="flex items-start justify-between gap-3 mt-3">
