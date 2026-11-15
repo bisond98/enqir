@@ -2262,6 +2262,52 @@ html.razorpay-open {
   background: #1a1a1a;
 }
 
+/* Phones: the page uses the short pill indicator instead of the full-height
+   system scrollbar, so hide the native one on small screens only. */
+@media (max-width: 640px) {
+  html,
+  body {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Thin app-wide scrollbar — the right-hand scroller on long forms (Post Enquiry
+   steps etc.) stays small and light instead of the chunky OS default. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.45) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.45);
+  border-radius: 999px;
+  /* Transparent borders trim the painted handle, so the bar stays short instead
+     of running the full scroll height. */
+  border-top: 28px solid transparent;
+  border-bottom: 28px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.65);
+}
+
 /* Fix iOS Safari double-tap zoom on sign in/sign up page */
 .signin-container,
 .signin-container * {

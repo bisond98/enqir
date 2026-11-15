@@ -160,6 +160,20 @@ export default function PostEnquiry() {
   
   // Force component remount on version change
   useEffect(() => {
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollRatio(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       console.log('PostEnquiry v2.1 loaded - Categories: Business, Personal, Service at top');
     }
@@ -261,6 +275,8 @@ const DEADLINE_STEP = 5;
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan | null>(() => PAYMENT_PLANS.find(p => p.id === 'premium') || null);
   const [notes, setNotes] = useState("");
+  // Scroll progress (0–1) for the short mobile scroll pill on the right edge.
+  const [scrollRatio, setScrollRatio] = useState(0);
   // Vehicle details (brand/year/variant + transmission/fuel for cars) — filled when a vehicle category is selected
   // `type` is the body type (truck, lorry, pickup …) for the Vehicles category, so
   // `variant` is free to hold the real model — the same split as the sell form.
@@ -2798,6 +2814,17 @@ const DEADLINE_STEP = 5;
   return (
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+        {/* Mobile scroll pill — a short, thin handle on the right edge instead of
+            the full-height system scrollbar. */}
+        <div
+          aria-hidden="true"
+          className="sm:hidden pointer-events-none fixed right-1 top-1/2 -translate-y-1/2 z-40 h-24 w-1 rounded-full bg-black/10 overflow-hidden"
+        >
+          <div
+            className="w-full h-8 rounded-full bg-black/45 transition-transform duration-150 ease-out"
+            style={{ transform: `translateY(${scrollRatio * 64}px)` }}
+          />
+        </div>
         {/* Header - Matching Live Enquiries - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
           {/* Mural doodle filling the whole black header behind the text.
@@ -2913,7 +2940,7 @@ const DEADLINE_STEP = 5;
 
           {/* Main Form - Multi-step wizard (matching sell listing) */}
           {!isSubmitted && (
-            <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
+            <Card className="border-2 border-black rounded-2xl sm:rounded-3xl bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_-4px_0_0_rgba(0,0,0,0.18),4px_0_0_0_rgba(0,0,0,0.18),-4px_0_0_0_rgba(0,0,0,0.18),0_0_18px_rgba(0,0,0,0.14),0_0_34px_rgba(0,0,0,0.08)] overflow-hidden">
               <div className="space-y-2 border-b border-black/10 pb-4 px-5 sm:px-6 lg:px-8 pt-4">
                 <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
                   <div
@@ -3001,7 +3028,7 @@ const DEADLINE_STEP = 5;
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder=""
-                        className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
+                        className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-[1.5px] border-black shadow-none hover:shadow-none focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-none transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
                         maxLength={1000}
                         autoFocus
                       />
