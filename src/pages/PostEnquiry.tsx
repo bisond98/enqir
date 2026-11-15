@@ -2940,7 +2940,7 @@ const DEADLINE_STEP = 5;
 
           {/* Main Form - Multi-step wizard (matching sell listing) */}
           {!isSubmitted && (
-            <Card className="border-2 border-black rounded-2xl sm:rounded-3xl bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_-4px_0_0_rgba(0,0,0,0.18),4px_0_0_0_rgba(0,0,0,0.18),-4px_0_0_0_rgba(0,0,0,0.18),0_0_18px_rgba(0,0,0,0.14),0_0_34px_rgba(0,0,0,0.08)] overflow-hidden">
+            <Card className="border border-black rounded-2xl sm:rounded-3xl bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_-4px_0_0_rgba(0,0,0,0.18),4px_0_0_0_rgba(0,0,0,0.18),-4px_0_0_0_rgba(0,0,0,0.18),0_0_18px_rgba(0,0,0,0.14),0_0_34px_rgba(0,0,0,0.08)] overflow-hidden">
               <div className="space-y-2 border-b border-black/10 pb-4 px-5 sm:px-6 lg:px-8 pt-4">
                 <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
                   <div
@@ -3028,7 +3028,7 @@ const DEADLINE_STEP = 5;
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder=""
-                        className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-[1.5px] border-black shadow-none hover:shadow-none focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-none transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
+                        className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-0 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
                         maxLength={1000}
                         autoFocus
                       />
