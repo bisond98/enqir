@@ -1890,6 +1890,11 @@ export default function CreateListing() {
                     setLocation(text);
                     setLocationSearch(text);
                     setLocationDropdownOpen(false);
+                    // Mobile: the map sheet leaves the page scrolled mid-form, so glide
+                    // back to the top to reveal the chosen location card in place.
+                    if (window.matchMedia('(max-width: 640px)').matches) {
+                      window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 150);
+                    }
                   }}
                 />
               </div>

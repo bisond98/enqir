@@ -4184,6 +4184,10 @@ const DEADLINE_STEP = 5;
                           const text = addr.formatted_address || addr.city || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
                           setLocation(text);
                           setShowLocationSuggestions(false);
+                          // Mobile: scroll back up so the picked location card is in view
+                          if (window.matchMedia('(max-width: 640px)').matches) {
+                            window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 150);
+                          }
                         }}
                       />
                     </div>

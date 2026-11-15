@@ -3334,14 +3334,6 @@ const Landing = () => {
               <p className="text-slate-600 font-medium text-[8px] sm:text-[9px] md:text-[10px] mb-6 sm:mb-12 leading-tight">
                 Post what you sell, share — AI is here to find the best deals for your match.
               </p>
-              <h3 className="text-2xl font-black text-black tracking-tight leading-none">
-                Why Enqir<span className="text-gray-300">.</span>
-              </h3>
-              <div className="mt-3 flex items-center justify-center gap-1.5">
-                <span className="h-px w-8 bg-black/15"></span>
-                <span className="h-[3px] w-[3px] rounded-full bg-black/70"></span>
-                <span className="h-px w-8 bg-black/15"></span>
-              </div>
             </div>
             {/* Shield tile — same footprint and 28px black border as the globe
                 above it, so the two read as a pair. One info drops in from the
@@ -3409,17 +3401,6 @@ const Landing = () => {
       {/* How It Works Section - Animated 2D Flow */}
       <section className="py-10 sm:py-16 relative bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header — same size, weight and rule treatment as "Why Enqir." */}
-          <div className="text-center mb-4 sm:mb-12">
-            <h2 className="text-2xl font-black text-black tracking-tight leading-none">
-              How It Works<span className="text-gray-300">.</span>
-            </h2>
-            <div className="mt-3 flex items-center justify-center gap-1.5">
-              <span className="h-px w-8 bg-black/15"></span>
-              <span className="h-[3px] w-[3px] rounded-full bg-black/70"></span>
-              <span className="h-px w-8 bg-black/15"></span>
-            </div>
-          </div>
 
           {/* Animated SVG Flow — border weight now matches the shield above (28px) */}
           <div 
