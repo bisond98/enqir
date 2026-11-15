@@ -17,6 +17,8 @@ export class AISearchService {
     'childcare-family',
     'collectibles',
     'construction-renovation',
+    'digital-it-services',
+    'audio-headphones',
     'education-training',
     'electronics-gadgets',
     'entertainment-media',
@@ -78,6 +80,8 @@ export class AISearchService {
     'jewelry-accessories': 'Jewelry, watches, accessories, precious metals, gemstones',
     'legal-financial': 'Legal services, lawyers, legal advice, legal consultation, law services, financial services',
     'marketing-advertising': 'Marketing services, advertising, promotional services, branding',
+    'audio-headphones': 'headphones, earphones, earbuds, TWS, neckbands, bluetooth speakers, soundbars and audio accessories from brands like Apple, Sony, JBL, Bose, boAt and Noise.',
+    'digital-it-services': 'SEO, SEM, PPC, digital marketing, social media marketing, email and influencer marketing, website and app development, software, UI/UX design, branding, graphic design, video editing, IT consulting, cloud, cybersecurity, data analytics, AI and automation, IT support',
     'memorabilia': 'Memorabilia, collectibles, souvenirs, keepsakes, historical items',
     'non-profit-charity': 'Non-profit services, charity, donations, social services, community services',
     'pets': 'Pet services, pet care, pet supplies, veterinary services, pet products',
@@ -248,6 +252,10 @@ export class AISearchService {
       'marketing-advertising': [
         /\b(marketing|advertising|advertise|promotion|promotions|branding|brand|brands)\b/,
         /\b(publicity|public relations|pr|social media|digital marketing|marketing services)\b/
+      ],
+      'digital-it-services': [
+        /\b(seo|sem|ppc|ads|adwords|google ads|digital marketing|social media marketing|email marketing|influencer|affiliate)\b/,
+        /\b(website|web design|web development|app development|software|ui ux|it consulting|cloud|cyber ?security|data analytics|automation|it support)\b/
       ],
       'memorabilia': [
         /\b(memorabilia|souvenir|souvenirs|keepsake|keepsakes|memento|mementos|trophy|trophies)\b/,

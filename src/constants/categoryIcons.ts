@@ -7,8 +7,7 @@ import {
   Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse,
   ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory,
   Home, Zap, Lock, MapPin, Dumbbell, Truck, Mic, Camera, TreePine, FileText,
-  Sparkles, Music, MoreHorizontal, LayoutGrid, Footprints, Watch,
-} from "lucide-react";
+  Sparkles, Music, MoreHorizontal, LayoutGrid, Footprints, Watch, Headphones} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -51,6 +50,8 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "jewelry-accessories": Gem,
   "legal-financial": Scale,
   "marketing-advertising": Megaphone,
+  "digital-it-services": Monitor,
+  "audio-headphones": Headphones,
   "memorabilia": Stamp,
   "non-profit-charity": HandHeart,
   "pets": PawPrint,

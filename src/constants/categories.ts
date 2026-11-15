@@ -5,6 +5,8 @@
 // followed by the most-used product categories.
 
 import { THRIFT_SEARCH_ITEMS } from './thriftClothing';
+import { CATEGORY_BRAND_KEYWORDS } from './brandSearchKeywords';
+import { AUDIO_SUBCATEGORIES } from './audioCatalog';
 
 export interface AppCategory {
   value: string;
@@ -17,6 +19,7 @@ export const APP_CATEGORIES: AppCategory[] = [
   { value: 'personal', label: 'Personal' },
   { value: 'service', label: 'Service' },
   // Popular product categories
+  { value: 'audio-headphones', label: 'Audio & Headphones' },
   { value: 'electronics', label: 'Electronics' },
   { value: 'mobiles', label: 'Mobiles' },
   { value: 'car', label: 'Car' },
@@ -39,6 +42,7 @@ export const APP_CATEGORIES: AppCategory[] = [
   { value: 'childcare-family', label: 'Childcare' },
   { value: 'collectibles', label: 'Collectibles' },
   { value: 'construction-renovation', label: 'Construction' },
+  { value: 'digital-it-services', label: 'Digital & IT Services' },
   { value: 'education-training', label: 'Education' },
   { value: 'entertainment-media', label: 'Entertainment' },
   { value: 'events-entertainment', label: 'Events' },
@@ -1983,6 +1987,7 @@ export const NO_CONDITION_CATEGORIES = new Set([
   'events-entertainment',
   'legal-financial',
   'marketing-advertising',
+  'digital-it-services',
   'souvenir',
   'sneakers',
   'thrift',
@@ -2035,6 +2040,37 @@ const SECOND_HAND_WORDS: string[] = [
  * synonyms; multi-word items are matched as phrases in matchStrength. */
 const THRIFT_SINGLE_WORD_ITEMS = THRIFT_SEARCH_ITEMS.filter((item) => !item.includes(' '));
 
+// Digital & IT Services subcategories — offered on the Post Enquiry form
+// (description step) and the Sell form (title step), identical list in both.
+export const DIGITAL_IT_SUBCATEGORIES: string[] = [
+  "SEO Services",
+  "Digital Marketing",
+  "Social Media Marketing",
+  "Search Engine Marketing (SEM)",
+  "Google Ads & PPC Management",
+  "Content Marketing",
+  "Email Marketing",
+  "Influencer Marketing",
+  "Affiliate Marketing",
+  "Website Development",
+  "Web Design & UI/UX",
+  "App Development",
+  "Software Development",
+  "E-commerce Solutions",
+  "Branding & Brand Strategy",
+  "Graphic Design",
+  "Video Editing & Production",
+  "Search Engine Optimization Consulting",
+  "IT Consulting",
+  "Cloud Computing Services",
+  "Cybersecurity Services",
+  "Data Analytics & Business Intelligence",
+  "AI & Automation Services",
+  "IT Support & Maintenance",
+  "All-in-One Digital & IT Solutions",
+  "Other Digital & IT Services",
+];
+
 export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   // Every repair/home-service type is a search keyword for Service, so typing
   // "plumber" or "ac repair" in the category search surfaces Service. Direct
@@ -2046,6 +2082,15 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   mobiles: ['phone', 'phones', 'smartphone', 'mobile phone', 'iphone', 'android', 'redmi', 'samsung phone', 'vivo', 'oppo', 'realme', 'oneplus'],
   laptops: ['computer', 'notebook', 'macbook', 'laptop', 'desktop', 'pc', 'imac'],
   electronics: ['tv', 'headphones', 'earphones', 'speaker', 'gadget', 'airpods', 'earbuds', 'headphone', 'smartwatch', 'smart watch', 'led tv', 'home theatre', 'soundbar', 'printer', 'projector'],
+  // Audio & Headphones — every sub-type is searchable, plus the words people
+  // actually type ("airpods", "tws", "neckband", "soundbar", "party speaker").
+  'audio-headphones': [
+    ...AUDIO_SUBCATEGORIES.map((s) => s.toLowerCase()),
+    'headphone', 'headphones', 'earphone', 'earphones', 'earbuds', 'earbud',
+    'tws', 'true wireless', 'neckband', 'neckbands', 'speaker', 'speakers',
+    'bluetooth speaker', 'party speaker', 'soundbar', 'soundbars', 'home theatre',
+    'airpods', 'headset', 'gaming headset', 'audio',
+  ],
   bicycles: ['cycle', 'cycles', 'bicycle', 'bicycles', 'mtb', 'gear cycle'],
   car: ['vehicle', 'four wheeler', 'four-wheeler', '4 wheeler', '4-wheeler', 'car', 'cars', 'sedan', 'suv', 'hatchback'],
   vehicles: ['vehicle', 'vehicles', 'car', 'cars', 'four wheeler', 'four-wheeler', '4 wheeler', '4-wheeler', 'bike', 'motorcycle', 'two wheeler', 'auto rickshaw', 'autorickshaw', 'rikshaw', 'tempo', 'van', 'truck', 'lorry', 'bus', 'jeep', 'automobile', 'automobiles'],
@@ -2079,7 +2124,7 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   'construction-renovation': ['builder', 'contractor', 'renovation', 'interior work', 'painting', 'civil work'],
   'events-entertainment': ['birthday', 'party', 'event management', 'stage', 'decorator', 'anchor', 'band'],
   'wedding-events': ['marriage', 'wedding hall', 'catering', 'wedding photographer', 'bridal makeup', 'mehndi'],
-  'food-beverage': ['tiffin', 'catering', 'home food', 'bakery', 'cake', 'food delivery', 'breakfast', 'meals'],
+  'food-beverage': ['tiffin', 'catering', 'home food', 'bakery', 'cake', 'apple', 'fruits', 'food delivery', 'breakfast', 'meals'],
   'transportation-logistics': ['movers', 'packers and movers', 'tempo', 'goods transport', 'shifting', 'logistics', 'delivery service', 'lorry', 'taxi', 'cab', 'cab service', 'taxi service'],
   'travel-tourism': ['tour package', 'taxi', 'cab', 'tempo traveller', 'travel agency', 'rental', 'trip'],
   'agriculture-farming': ['tractor', 'farm equipment', 'farming', 'livestock', 'poultry', 'seeds', 'fertilizer', 'coconut', 'rubber', 'arecanut'],
@@ -2090,6 +2135,20 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   'legal-financial': ['lawyer', 'advocate', 'chartered accountant', 'loan', 'tax filing'],
   'insurance-services': ['insurance', 'life insurance', 'term plan', 'policy'],
   'marketing-advertising': ['digital marketing', 'advertising', 'seo', 'social media marketing', 'branding'],
+  // Digital & IT Services — every subcategory label is searchable, alongside the
+  // shorthand people type ("sem", "ppc", "seo", "web design", "app dev"…).
+  'digital-it-services': [
+    ...DIGITAL_IT_SUBCATEGORIES.map((s) => s.toLowerCase()),
+    'seo', 'sem', 'ppc', 'google ads', 'adwords', 'ads', 'paid ads',
+    'social media', 'social media ads', 'instagram marketing', 'facebook ads',
+    'website', 'websites', 'web development', 'web design', 'ui ux', 'ui/ux',
+    'app', 'app development', 'software', 'software development',
+    'ecommerce', 'e-commerce', 'online store', 'shopify', 'branding', 'logo',
+    'logo design', 'graphic design', 'video editing', 'content writing',
+    'email marketing', 'influencer', 'affiliate', 'it', 'it support',
+    'cloud', 'aws', 'cyber security', 'cybersecurity', 'data analytics',
+    'business intelligence', 'ai', 'automation', 'digital', 'digital services',
+  ],
   'security-safety': ['cctv', 'security camera', 'security guard', 'alarm', 'door lock'],
   'renewable-energy': ['solar', 'solar panel', 'solar inverter', 'solar water heater'],
   'garden-outdoor': ['plants', 'garden tools', 'lawn', 'pots', 'seeds'],
@@ -2117,6 +2176,65 @@ export const CATEGORY_SEARCH_SYNONYMS: Record<string, string[]> = {
   'technology': ['tech', 'software', 'app development', 'website', 'it services'],
   'business': ['business for sale', 'franchise', 'partnership', 'investor'],
   'art': ['painting', 'artwork', 'sketch', 'portrait'],
+};
+
+/** Every category's dropdown options, keyed by category value. Used by the
+ *  category search so typing any dropdown option ("sem", "plumber",
+ *  "wedding car") surfaces that category ahead of looser matches. */
+export const CATEGORY_SUBCATEGORY_OPTIONS: Record<string, string[]> = {
+  'antiques': ANTIQUES_SUBCATEGORIES,
+  'appliances': APPLIANCE_SUBCATEGORIES,
+  'art': ART_SUBCATEGORIES,
+  'agriculture-farming': AGRICULTURE_SUBCATEGORIES,
+  'baby-kids': BABY_KIDS_SUBCATEGORIES,
+  'bags-luggage': BAGS_LUGGAGE_SUBCATEGORIES,
+  'beauty-products': BEAUTY_SUBCATEGORIES,
+  'bicycles': BICYCLES_SUBCATEGORIES,
+  'books-publications': BOOKS_SUBCATEGORIES,
+  'childcare-family': CHILDCARE_SUBCATEGORIES,
+  'collectibles': COLLECTIBLES_SUBCATEGORIES,
+  'construction-renovation': CONSTRUCTION_SUBCATEGORIES,
+  'digital-it-services': DIGITAL_IT_SUBCATEGORIES,
+  'education-training': EDUCATION_SUBCATEGORIES,
+  'electronics': ELECTRONICS_SUBCATEGORIES,
+  'audio-headphones': AUDIO_SUBCATEGORIES,
+  'entertainment-media': ENTERTAINMENT_SUBCATEGORIES,
+  'events-entertainment': EVENTS_SUBCATEGORIES,
+  'fashion': FASHION_SUBCATEGORIES,
+  'fitness-gym-equipment': FITNESS_SUBCATEGORIES,
+  'food-beverage': FOOD_SUBCATEGORIES,
+  'furniture': FURNITURE_SUBCATEGORIES,
+  'gaming-recreation': GAMING_SUBCATEGORIES,
+  'garden-outdoor': GARDEN_SUBCATEGORIES,
+  'government-public': GOVERNMENT_SUBCATEGORIES,
+  'health-beauty': HEALTH_SUBCATEGORIES,
+  'home': HOME_SUBCATEGORIES,
+  'raw-materials-industrial': INDUSTRIAL_SUBCATEGORIES,
+  'insurance-services': INSURANCE_SUBCATEGORIES,
+  'jewelry-accessories': JEWELLERY_SUBCATEGORIES,
+  'kitchen-dining': KITCHEN_DINING_SUBCATEGORIES,
+  'legal-financial': LEGAL_SUBCATEGORIES,
+  'marketing-advertising': MARKETING_SUBCATEGORIES,
+  'medical-equipment': MEDICAL_EQUIPMENT_SUBCATEGORIES,
+  'memorabilia': MEMORABILIA_SUBCATEGORIES,
+  'musical-accessories': MUSICAL_ACCESSORIES_SUBCATEGORIES,
+  'musical-instruments': MUSICAL_INSTRUMENTS_SUBCATEGORIES,
+  'musical-services': MUSICAL_SERVICES_SUBCATEGORIES,
+  'non-profit-charity': NON_PROFIT_SUBCATEGORIES,
+  'photography': PHOTOGRAPHY_SUBCATEGORIES,
+  'real-estate-services': REAL_ESTATE_SERVICES_SUBCATEGORIES,
+  'renewable-energy': RENEWABLE_ENERGY_SUBCATEGORIES,
+  'security-safety': SECURITY_SUBCATEGORIES,
+  'souvenir': SOUVENIRS_SUBCATEGORIES,
+  'sports-outdoor': SPORTS_SUBCATEGORIES,
+  'technology': TECHNOLOGY_SUBCATEGORIES,
+  'tools-equipment': TOOLS_EQUIPMENT_SUBCATEGORIES,
+  'transportation-logistics': TRANSPORTATION_SUBCATEGORIES,
+  'travel-tourism': TRAVEL_SUBCATEGORIES,
+  'tutoring-lessons': TUTORING_SUBCATEGORIES,
+  'vintage': VINTAGE_SUBCATEGORIES,
+  'waste-management': WASTE_MANAGEMENT_SUBCATEGORIES,
+  'wedding-events': WEDDING_SUBCATEGORIES,
 };
 
 /**
@@ -2162,6 +2280,87 @@ function singularWords(s: string): string {
  * 1 = whole-word match on value or a synonym, 2 = query starts the word
  * (only for 4+ letter queries, so "car" ≠ "care"), 3+ = fuzzy typo match.
  * -1 = no match. Used to rank categories so exact hits always come first. */
+/** Searchable option text for a category: its dropdown options plus the brands
+ *  and models those dropdowns offer. Cached once per category because the brand
+ *  and model lists are long and this runs on every keystroke. */
+const SEARCH_OPTIONS_CACHE = new Map<string, string[]>();
+const SEARCH_WORDS_CACHE = new Map<string, string[]>();
+const SEARCH_NORMS_CACHE = new Map<string, string[]>();
+
+function searchOptionsFor(value: string): string[] {
+  const cached = SEARCH_OPTIONS_CACHE.get(value);
+  if (cached) return cached;
+  const all = [
+    ...(CATEGORY_SUBCATEGORY_OPTIONS[value] ?? []),
+    ...(CATEGORY_BRAND_KEYWORDS[value] ?? []),
+  ];
+  SEARCH_OPTIONS_CACHE.set(value, all);
+  return all;
+}
+
+function searchWordsFor(value: string): string[] {
+  const cached = SEARCH_WORDS_CACHE.get(value);
+  if (cached) return cached;
+  const words = searchOptionsFor(value).flatMap(o => o.toLowerCase().split(/[^a-z0-9]+/)).filter(Boolean);
+  SEARCH_WORDS_CACHE.set(value, words);
+  return words;
+}
+
+/** The order brand-carrying categories appear in for a brand search. A brand
+ *  that lives in several dropdowns (Apple is in phones, laptops, watches and
+ *  audio) shows every one of them, in this order. */
+const BRAND_SEARCH_PRIORITY = [
+  'mobiles',
+  'laptops',
+  'audio-headphones',
+  'electronics',
+  'watches',
+  'camera',
+  'photography',
+  'photography-cameras',
+  'car',
+  'vehicles',
+  'bike',
+  'sneakers',
+];
+
+function brandTierFor(categoryValue: string, audioQuery: boolean): number {
+  // Audio words ("airpods", "earbuds") make the Audio & Headphones option in
+  // Electronics the closest match, ahead of the phone categories.
+  if (audioQuery && categoryValue === 'electronics') return 1.395;
+  const index = BRAND_SEARCH_PRIORITY.indexOf(categoryValue);
+  return 1.4 + Math.max(0, Math.min(index, 9)) * 0.005;
+}
+
+const BRAND_WORDS_CACHE = new Map<string, string[]>();
+const BRAND_NORMS_CACHE = new Map<string, string[]>();
+
+function brandWordsFor(value: string): string[] {
+  const cached = BRAND_WORDS_CACHE.get(value);
+  if (cached) return cached;
+  const words = (CATEGORY_BRAND_KEYWORDS[value] ?? [])
+    .flatMap(b => b.toLowerCase().split(/[^a-z0-9]+/))
+    .filter(Boolean);
+  BRAND_WORDS_CACHE.set(value, words);
+  return words;
+}
+
+function brandNormsFor(value: string): string[] {
+  const cached = BRAND_NORMS_CACHE.get(value);
+  if (cached) return cached;
+  const norms = (CATEGORY_BRAND_KEYWORDS[value] ?? []).map(normalizeWords);
+  BRAND_NORMS_CACHE.set(value, norms);
+  return norms;
+}
+
+function searchNormsFor(value: string): string[] {
+  const cached = SEARCH_NORMS_CACHE.get(value);
+  if (cached) return cached;
+  const norms = searchOptionsFor(value).map(normalizeWords);
+  SEARCH_NORMS_CACHE.set(value, norms);
+  return norms;
+}
+
 function matchStrength(c: AppCategory, q: string): number {
   const labelLower = c.label.toLowerCase();
   const labelWords = labelLower.split(/[^a-z0-9]+/).filter(Boolean);
@@ -2183,6 +2382,69 @@ function matchStrength(c: AppCategory, q: string): number {
   // ahead of service-keyword matches means "mobile" shows Mobiles first and
   // Service (via "Mobile repair") second.
   if (q.length >= 3 && labelWords.some(w => w.startsWith(q))) return 1;
+  // Brands and models the form's own dropdowns offer rank above generic
+  // wording, so a brand search lands on the categories that carry it:
+  // "one plus" → Mobiles (not Service), "casio" → Watches, "macbook" →
+  // Laptops. Mobiles leads the earphone brands too — Electronics carries them
+  // as well but ranks a step lower.
+  if (q.length >= 3) {
+    const brandNorms = brandNormsFor(c.value);
+    if (brandNorms.length > 0) {
+      // A brand that sits in several dropdowns surfaces all of them, in a
+      // stable order: "apple" → Mobiles, Laptops, Electronics, Watches (the
+      // fruit Food still follows, just after the brand categories).
+      const audioQuery = /\b(earphone|earphones|airdopes|airpods|headphone|headphones|earbuds|buds|tws|speaker|audio)\b/.test(qNorm);
+      const brandTier = brandTierFor(c.value, audioQuery);
+      if (brandWordsFor(c.value).includes(q)) return brandTier;
+      const qTokens = qNorm.split(' ').filter(Boolean);
+      if (qNorm.includes(' ')) {
+        const squashed = qNorm.replace(/ /g, '');
+        if (brandNorms.some(n => n.includes(qNorm) || n.replace(/ /g, '') === squashed)) return brandTier;
+        // Brand followed by a model: "one plus nord" is still OnePlus.
+        if (brandNorms.some(n => n.length >= 4 && qNorm.startsWith(n + ' '))) return brandTier;
+      }
+      if (qTokens.length > 1) {
+        const stem = (w: string) => (w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w);
+        const wanted = qTokens.map(stem);
+        // Every token must come from the SAME brand: "one plus" has to hit
+        // "OnePlus", not one brand called One and another with Plus in it.
+        const oneBrandCovers = brandNorms.some((b) => {
+          const tokens = new Set(b.split(' ').filter(Boolean).map(stem));
+          return wanted.every((t) => tokens.has(t));
+        });
+        if (oneBrandCovers) return brandTier;
+      }
+    }
+  }
+  // A query that names one of this category's own dropdown options ranks the
+  // category above generic synonym and fuzzy hits (1.5), so searching "sem"
+  // leads with Digital & IT Services, "wedding car" with Wedding, and so on.
+  if (q.length >= 3) {
+    const subOptions = searchOptionsFor(c.value);
+    if (subOptions.length > 0) {
+      const subWords = searchWordsFor(c.value);
+      if (subWords.includes(q)) return 1.5;
+      const subNorms = searchNormsFor(c.value);
+      if (qNorm.includes(' ') && subNorms.some(n => n.includes(qNorm))) return 1.5;
+      // Typed phrases that name the same idea as an option in different words
+      // ("wedding car" → "Wedding Transportation & Car Rental"): every token
+      // has to be present, ignoring plurals and word order.
+      const qTokens = qNorm.split(' ').filter(Boolean);
+      if (qTokens.length > 1) {
+        const stem = (w: string) => (w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w);
+        const wanted = qTokens.map(stem);
+        // Every token has to come from the SAME option: "wedding car" must hit
+        // "Wedding Transportation & Car Rental", not one "Wedding" option plus
+        // an unrelated "Car" option elsewhere in the list.
+        const oneOptionCovers = subNorms.some((o) => {
+          const tokens = new Set(o.split(' ').filter(Boolean).map(stem));
+          return wanted.every((t) => tokens.has(t));
+        });
+        if (oneOptionCovers) return 1.6;
+      }
+      if (q.length >= 4 && subWords.some(w => w.length > 3 && w.startsWith(q))) return 1.75;
+    }
+  }
   if (otherWords.includes(q)) return 2;
   // Multi-word synonyms/phrases: "four wheeler" should match the full phrase,
   // not just its individual words.
@@ -2243,6 +2505,40 @@ export const SERVICE_PRIORITY_CATEGORIES: string[] = [
  * always have somewhere to post — e.g. "taxi" shows Travel, Transportation
  * AND Service.
  */
+/** Resolve a typed search query to the category it names, using the same
+ *  matching the category pickers use. Returns null unless the query genuinely
+ *  names a category or one of its dropdown options — fuzzy typo matches and
+ *  the Service/Business catch-alls never widen a search on their own. */
+export function categoryForQuery(query: string): string | null {
+  const q = query.trim();
+  if (!q) return null;
+  let best: { value: string; score: number } | null = null;
+  for (const c of APP_CATEGORIES) {
+    const score = matchStrength(c, q);
+    if (score < 0) continue;
+    if (!best || score < best.score) best = { value: c.value, score };
+  }
+  return best && best.score <= 1.75 ? best.value : null;
+}
+
+/** True when a post belongs to the category, whether it stored that category
+ *  directly or one of the category's dropdown options as its subcategory — so
+ *  searching "software development" also finds an "All-in-One Digital & IT
+ *  Solutions" post, because that option sits inside Digital & IT Services. */
+export function postInCategory(
+  item: { category?: string | null; categories?: string[] | null; details?: Record<string, unknown> | null },
+  category: string,
+): boolean {
+  if (item.category === category) return true;
+  if (Array.isArray(item.categories) && item.categories.includes(category)) return true;
+  const raw = item.details && typeof item.details.subcategory === 'string' ? item.details.subcategory : '';
+  if (!raw) return false;
+  const options = CATEGORY_SUBCATEGORY_OPTIONS[category] ?? [];
+  const norm = (v: string) => v.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, ' ').trim();
+  const wanted = norm(raw);
+  return options.some((o) => norm(o) === wanted);
+}
+
 export function filterCategoriesBySearch<T extends AppCategory>(categories: T[], query: string, minResults = 3): T[] {
   const q = query.trim().toLowerCase();
   if (!q) return categories;
@@ -2302,6 +2598,19 @@ export function filterCategoriesBySearch<T extends AppCategory>(categories: T[],
   // in canonical order: Service, Musical Services, Real Estate Services,
   // Cleaning Services. Product queries ("mobile", "shoes") match a non-service
   // category directly and keep their natural ranking untouched.
+  // Digital & IT Services is the umbrella for SEO/SEM/PPC/design queries. When
+  // one of those leads the list, keep its closest neighbours (Technology,
+  // Marketing) immediately underneath instead of leaving a one-item list.
+  if (result[0]?.value === 'digital-it-services') {
+    const neighbours = ['technology', 'marketing-advertising']
+      .map((v) => categories.find((c) => c.value === v))
+      .filter((c): c is T => Boolean(c) && !chosen.has((c as T).value));
+    if (neighbours.length > 0) {
+      for (const n of neighbours) chosen.add(n.value);
+      result = [result[0], ...neighbours, ...result.slice(1)];
+    }
+  }
+
   const priorityValues = new Set<string>(SERVICE_PRIORITY_CATEGORIES);
   const hasNonServiceDirect = scored.some(x => !priorityValues.has(x.c.value));
   if (!hasNonServiceDirect) {

@@ -42,6 +42,8 @@ const CATEGORY_SYNONYMS: Record<string, string[]> = {
   'musical-instruments': ['guitar', 'piano', 'drums', 'violin', 'flute', 'harmonium'],
   'baby-kids': ['stroller', 'pram', 'crib', 'toys', 'toy'],
   'tools-equipment': ['drill', 'ladder', 'screwdriver'],
+  'digital-it-services': ['seo', 'sem', 'ppc', 'google ads', 'digital marketing', 'social media marketing', 'website', 'web design', 'web development', 'app development', 'software', 'graphic design', 'video editing', 'it support', 'cybersecurity', 'data analytics'],
+  'audio-headphones': ['headphone', 'earphone', 'earbuds', 'tws', 'neckband', 'speaker', 'soundbar', 'airpods', 'audio'],
 };
 
 // ---- City aliases → SELL_LOCATIONS values ----

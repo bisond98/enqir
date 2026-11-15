@@ -10,7 +10,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { APP_CATEGORIES } from "@/constants/categories";
+import { APP_CATEGORIES, categoryForQuery, postInCategory } from "@/constants/categories";
 import { SlidersHorizontal, IndianRupee, LayoutGrid, Map as MapIcon, Navigation } from "lucide-react";
 import { EnquiryTrustDoodles } from "@/components/enquiryTrustDoodles";
 import { useAuth } from "@/contexts/AuthContext";
@@ -1297,10 +1297,28 @@ export default function EnquiryWall() {
 
   // Memoize filtered enquiries for better performance
   const filteredEnquiries = useMemo(() => {
-    return Array.from(
+    const base = Array.from(
       new Map(finalResults.map(enquiry => [enquiry.id, enquiry])).values()
     );
-  }, [finalResults]);
+    // Category-aware search: when the typed words name a category or one of its
+    // dropdown options ("software development"), that category's enquiries are
+    // direct hits too, so they join the top of the list even when their own text
+    // never says it. The scoring above is untouched — this only appends the
+    // category hits that the text search did not already return.
+    const typed = searchTerm.trim();
+    if (!typed) return base;
+    const searchCategory = categoryForQuery(typed);
+    if (!searchCategory) return base;
+    const seen = new Set(base.map(enquiry => enquiry.id));
+    const categoryHits = enquiries.filter(enquiry =>
+      !seen.has(enquiry.id)
+      && (selectedCategory === "all"
+        || enquiry.category === selectedCategory
+        || (enquiry.categories && enquiry.categories.includes(selectedCategory)))
+      && postInCategory(enquiry as any, searchCategory)
+    );
+    return categoryHits.length > 0 ? [...base, ...categoryHits] : base;
+  }, [finalResults, enquiries, searchTerm, selectedCategory]);
 
   // Check if we need to show "no enquiries in category" message and fallback to all
   const showCategoryFallback = useMemo(() => {

@@ -44,6 +44,7 @@ import CountdownTimer from '@/components/CountdownTimer';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
+import { getAudioBrandLogoUrl } from '@/lib/audioBrandLogos';
 import PaymentPlanSelector from '@/components/PaymentPlanSelector';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
@@ -84,7 +85,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string; audioBrand?: string; audioModel?: string } | null;
 }
 
 interface UserProfile {
@@ -711,10 +712,13 @@ const EnquiryDetail = () => {
   const plainLayout = true;
   // Divider between rows is an inset hairline (via ::before) so it stops short
   // of the card's left and right edges instead of running edge to edge.
-  const plainRowCls = 'relative flex items-center gap-3 border-x border-black bg-white px-5 py-3.5 '
+  const plainRowCls = 'relative flex items-center gap-3 bg-white px-5 py-3.5 shadow-[-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10)] '
     + 'before:absolute before:left-6 before:right-6 before:top-0 before:h-px before:bg-black/[0.09] before:content-[\'\']';
-  const plainLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full border-[0.5px] border-black/80 px-1.5 py-[2px] text-[8px] font-bold uppercase tracking-[0.08em] text-neutral-900';
-  const pillLabelCls = 'inline-flex items-center whitespace-nowrap rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase leading-none tracking-[0.06em] text-white';
+  // Label chips match the "for sale" detail page: borderless white chips with a
+  // solid extruded edge (no outline), so the detail pages share one chip language.
+  const labelChip3d = 'shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]';
+  const plainLabelCls = `inline-flex items-center whitespace-nowrap rounded-xl border-0 bg-white px-2.5 py-1 text-[9px] font-black uppercase leading-none tracking-[0.06em] text-neutral-900 ${labelChip3d}`;
+  const pillLabelCls = `inline-flex items-center whitespace-nowrap rounded-xl border-0 bg-white px-2.5 py-1 text-[9px] font-black uppercase leading-none tracking-[0.06em] text-neutral-900 ${labelChip3d}`;
   const discCls = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600';
   const glyphCls = 'text-white';
 
@@ -856,7 +860,7 @@ const EnquiryDetail = () => {
                 {/* Card Content - Enhanced White Background */}
                 <CardContent className="relative z-10 p-1 sm:p-6 lg:p-7">
                   {/* Title block — LOOKING FOR pill, title, reference image, spec chips */}
-                  <div className={`${plainLayout ? 'rounded-t-[18px] rounded-b-none border border-black border-b-0 bg-white px-5 pb-2 pt-5' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
+                  <div className={`${plainLayout ? 'rounded-t-[18px] rounded-b-none bg-white px-5 pb-2 pt-5 shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10)]' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
                     <div className="flex items-start gap-3">
                       <div className="min-w-0 flex-1">
                         {plainLayout ? (
@@ -945,6 +949,9 @@ const EnquiryDetail = () => {
                         // Camera picks from the post-enquiry form
                         d.cameraBrand && { label: 'Brand', value: String(d.cameraBrand), icon: 'brand', logoUrl: getMobileBrandLogoUrl(String(d.cameraBrand)), highlight: true },
                         d.cameraModel && { label: 'Model', value: String(d.cameraModel), highlight: true },
+                        // Audio & Headphones picks from the post-enquiry description step
+                        d.audioBrand && { label: 'Brand', value: String(d.audioBrand), icon: 'brand', logoUrl: getAudioBrandLogoUrl(String(d.audioBrand)), highlight: true },
+                        d.audioModel && { label: 'Model', value: String(d.audioModel), highlight: true },
                         d.laptopProcessor && { label: 'Processor', value: String(d.laptopProcessor), highlight: true },
                         d.laptopStorage && { label: 'Storage', value: String(d.laptopStorage), highlight: true },
                         d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },
@@ -1002,7 +1009,7 @@ const EnquiryDetail = () => {
                         <FileText className={`h-[15px] w-[15px] ${glyphCls}`} aria-hidden="true" />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="inline-flex items-center whitespace-nowrap rounded-full border-[0.5px] border-black/80 px-1.5 py-[2px] text-[8px] font-bold uppercase tracking-[0.08em] text-neutral-900">Description</p>
+                        <p className={plainLabelCls}>Description</p>
                         <p className="mt-1 whitespace-pre-line break-words text-[11.5px] font-semibold leading-[1.614] text-neutral-900">{enquiry.description}</p>
                       </div>
                     </div>
@@ -1010,7 +1017,7 @@ const EnquiryDetail = () => {
                     <div className="mt-3.5 rounded-[14px] border border-black/[0.08] bg-white p-4">
                       <div className="mb-2.5 flex items-center gap-2">
                         <FileText className="h-[15px] w-[15px] text-neutral-900" aria-hidden="true" />
-                        <h2 className="inline-flex items-center whitespace-nowrap rounded-full bg-red-600 px-2.5 py-1 text-[9px] font-bold uppercase leading-none tracking-[0.06em] text-white">Description</h2>
+                        <h2 className={pillLabelCls}>Description</h2>
                       </div>
                       <p className="whitespace-pre-line break-words text-[13px] leading-[1.6] text-neutral-700">{enquiry.description}</p>
                     </div>
@@ -1147,7 +1154,7 @@ const EnquiryDetail = () => {
 
                   
                   {/* Share / more — last row of the card, under Additional notes */}
-                  <div className={`${plainRowCls} justify-between rounded-b-[18px] border-b`}>
+                  <div className={`${plainRowCls} justify-between rounded-b-[18px] !shadow-[-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]`}>
                     <div className={`relative flex shrink-0 items-center gap-2 ${plainLayout ? 'w-full flex-row-reverse justify-between' : ''}`}>
                       <button
                         ref={shareBtnRef}
@@ -1289,7 +1296,7 @@ const EnquiryDetail = () => {
                           <Button
                             onClick={handleRespond}
                             disabled={responding || enquiry.status !== 'live' || isExpired}
-                            className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none"
+                            className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-0 !shadow-none active:!shadow-none !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none"
                           >
                             {responding ? (
                               <div className="flex items-center justify-center space-x-2 relative z-10">

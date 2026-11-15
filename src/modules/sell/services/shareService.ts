@@ -43,6 +43,8 @@ function categoryIcon(cat: string): string {
     antiques: '🏺', collectibles: '🏺', memorabilia: '🏺', vintage: '🏺',
     souvenir: '🎁', thrift: '🛍️', business: '🏢', personal: '👤',
     'legal-financial': '⚖️', 'marketing-advertising': '📣',
+    'digital-it-services': '💻',
+    'audio-headphones': '🎧',
     'government-public': '🏛️', 'non-profit-charity': '🤝',
     'renewable-energy': '☀️', 'security-safety': '🔒',
     'waste-management': '♻️', other: '🏷️',

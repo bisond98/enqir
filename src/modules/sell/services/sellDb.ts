@@ -1,4 +1,5 @@
 import { db } from '@/firebase';
+import { categoryForQuery, postInCategory } from '@/constants/categories';
 import {
   addDoc,
   collection,
@@ -168,10 +169,21 @@ export async function listMarketplace(params: {
 
     const s = (params.search ?? '').trim().toLowerCase();
     if (s) {
-      listings = listings.filter((l) => {
+      // Category-aware search: posts whose own words match always qualify.
+      // Where the query names a category or one of its dropdown options
+      // ("software development"), that category's posts qualify too — the
+      // option implies the topic. Everything else is filtered exactly as
+      // before, and the newest-first order from above is preserved inside
+      // each group, with text hits above category-only hits.
+      const searchCategory = categoryForQuery(s);
+      const inQueryCategory = (l: SellListing): boolean =>
+        !!searchCategory && postInCategory(l as any, searchCategory);
+      const isTextHit = (l: SellListing): boolean => {
         const hay = `${l.title ?? ''} ${l.description ?? ''} ${(l.tags ?? []).join(' ')} ${l.category ?? ''}`.toLowerCase();
         return hay.includes(s);
-      });
+      };
+      const kept = listings.filter((l) => isTextHit(l) || inQueryCategory(l));
+      listings = [...kept.filter(isTextHit), ...kept.filter((l) => !isTextHit(l))];
     }
     return listings;
   };

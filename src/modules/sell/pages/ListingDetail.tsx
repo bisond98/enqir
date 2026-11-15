@@ -24,6 +24,7 @@ import { PAYMENT_PLANS } from '@/config/paymentPlans';
 import { uploadToCloudinaryAuto } from '@/integrations/cloudinary';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
+import { getAudioBrandLogoUrl } from '@/lib/audioBrandLogos';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import { friendlyError } from '@/utils/friendlyError';
 import { NO_CONDITION_CATEGORIES } from '@/constants/categories';
@@ -671,7 +672,7 @@ export default function ListingDetail() {
     const expired = !!listing && (deadlinePassed || listing.status === 'expired');
     return (
       <SellShell title="For Sale" hidePanel compactHeader hideQuickNav>
-        <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)]">
+        <Card className="border-0 rounded-2xl bg-white transition-all duration-300 !shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:!shadow-[0_-2px_0_0_rgba(17,24,39,0.09),-2px_0_0_0_rgba(17,24,39,0.12),2px_0_0_0_rgba(17,24,39,0.12),0_3px_0_0_rgba(17,24,39,0.18),0_10px_18px_-8px_rgba(17,24,39,0.24)]">
           <CardContent className="py-16 text-center">
             <p className="text-sm font-semibold text-gray-700">
               {expired
@@ -738,7 +739,7 @@ export default function ListingDetail() {
       )}
       <div className="space-y-4 pb-6">
         {/* Unified Listing Card — image + details in one card, single border around the whole block */}
-        <div className="relative rounded-2xl overflow-hidden border border-black">
+        <div className="relative rounded-2xl overflow-hidden border-0 bg-white transition-all duration-300 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.09),-2px_0_0_0_rgba(17,24,39,0.12),2px_0_0_0_rgba(17,24,39,0.12),0_3px_0_0_rgba(17,24,39,0.18),0_10px_18px_-8px_rgba(17,24,39,0.24)]">
         {/* Image Gallery */}
         {listing.images && listing.images.length > 0 && (
           <div className="relative">
@@ -856,17 +857,17 @@ export default function ListingDetail() {
                 return (
                   <>
                     {showDealChip && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-green-600 text-white border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-green-600 text-white border-0 px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] uppercase">
                         For {detailsRec.listingFor}
                       </span>
                     )}
                     {isSqft && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
                         {areaVal}
                       </span>
                     )}
                     {d.houseBhk && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
                         {d.houseBhk}
                       </span>
                     )}
@@ -875,11 +876,11 @@ export default function ListingDetail() {
               })()}
 
               {listing.priceType === 'discussion' ? (
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-600 text-white border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-600 text-white border-0 px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
                   <IndianRupee className="h-3.5 w-3.5 text-white" /> Open to discussion
                 </span>
               ) : (
-                <span className="bg-white text-black border border-black/60 font-black font-chip text-[13px] sm:text-base rounded-xl px-3 py-1 sm:py-1.5 inline-flex items-center gap-1.5">
+                <span className="bg-white text-black border-0 font-black font-chip text-[13px] sm:text-base rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] px-3 py-1 sm:py-1.5 inline-flex items-center gap-1.5">
                   {listing.category === 'jobs' && (
                     <span className="text-[8px] sm:text-[9px] text-gray-400 font-bold uppercase tracking-wide">Salary:</span>
                   )}
@@ -887,11 +888,11 @@ export default function ListingDetail() {
                   ₹ {listing.price != null ? listing.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"}
                 </span>
               )}                {listing.condition && !NO_CONDITION_CATEGORIES.has(listing.category || '') && listing.category !== 'jobs' && !/-services$/.test(listing.category || '') && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl uppercase">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] uppercase">
                   {listing.condition}
                 </span>
               )}
-                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
                   <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><MapPin className="h-2.5 w-2.5 text-white" /></span>{listing.location}
                 </span>
               {listing.details && Object.entries(listing.details).filter(([, val]) => !!val).length > 0 && (
@@ -944,18 +945,22 @@ export default function ListingDetail() {
                   const entries = Object.entries(listing.details).filter(([key, val]) => !!val && !key.includes('Area') && !['listingFor', 'houseBhk'].includes(key));
                   return entries.map(([key, val], i) => {
                     const label = key in detailLabels ? detailLabels[key] : '';
-                    const brandLogo = key === 'sneakerBrand' ? getSneakerBrandLogoUrl(String(val)) : key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val)) : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
+                    const brandLogo = key === 'sneakerBrand' ? getSneakerBrandLogoUrl(String(val))
+                      : key === 'mobileBrand' || (key === 'brand' && ['mobiles', 'laptops'].includes(listing.category || '')) ? getMobileBrandLogoUrl(String(val))
+                      // Audio & Headphones picks resolve to their own brand marks.
+                      : key === 'brand' && listing.category === 'audio-headphones' ? getAudioBrandLogoUrl(String(val))
+                      : key === 'brand' ? getCarBrandLogoUrl(String(val)) : null;
                     return (
                       <span key={`${val}-${i}`} className={key === 'subcategory'
                         // Subcategory has no title tab and borrows the description's type.
-                        ? "max-w-full inline-flex items-center text-left text-[11px] font-bold font-chip bg-white text-black border border-black/60 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed"
-                        : "inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl"}>
+                        ? "max-w-full inline-flex items-center text-left text-[11px] font-bold font-chip bg-white text-black border-0 px-3 py-1.5 sm:py-2 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] whitespace-pre-wrap break-words leading-relaxed"
+                        : "inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]"}>
                         {key === 'transmission' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Joystick className="h-2.5 w-2.5 text-white" /></span>}
                         {key === 'fuel' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Fuel className="h-2.5 w-2.5 text-white" /></span>}
-                        {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">{label}:</span>}
+                        {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-0 rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">{label}:</span>}
                         {brandLogo && <img decoding="async" src={brandLogo} alt="" className="h-3.5 w-3.5 object-contain flex-shrink-0" loading="lazy" />}
-                        {key === 'facing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Facing:</span>}
-                        {key === 'furnishing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Furnishing:</span>}
+                        {key === 'facing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-0 rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Facing:</span>}
+                        {key === 'furnishing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-0 rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Furnishing:</span>}
                         {String(val)}
                         {key === 'furnishing' && <Sofa className="h-3 w-3 text-black flex-shrink-0" />}
                       </span>
@@ -965,21 +970,21 @@ export default function ListingDetail() {
               )}
               {listing.tags && listing.tags.length > 0 && (
                 listing.tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                  <span key={tag} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
                     {tag}
                   </span>
                 ))
               )}
               {formatPostedDate(listing.createdAt) && (
-                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border border-black/60 px-2.5 py-1 sm:py-1.5 rounded-xl">
+                <span className="inline-flex items-center gap-1 text-[11px] sm:text-[13px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
                   <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Calendar className="h-2.5 w-2.5 text-white" /></span>Posted on {formatPostedDate(listing.createdAt)}
                 </span>
               )}
               {/* Description as a chip in the same row — short ones shrink to fit,
                   long ones wrap inside the chip. */}
               {listing.description && (
-                <span className="max-w-full inline-flex flex-col items-center gap-0.5 text-left text-[11px] font-bold font-chip bg-white text-black border border-black/60 px-3 py-1.5 sm:py-2 rounded-xl whitespace-pre-wrap break-words leading-relaxed">
-                  <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border border-black rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap flex-shrink-0 text-center">Description:</span>
+                <span className="max-w-full inline-flex flex-col items-center gap-0.5 text-left text-[11px] font-bold font-chip bg-white text-black border-0 px-3 py-1.5 sm:py-2 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] whitespace-pre-wrap break-words leading-relaxed">
+                  <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-0 rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap flex-shrink-0 text-center">Description:</span>
                   {listing.description}
                 </span>
               )}
@@ -1109,7 +1114,7 @@ export default function ListingDetail() {
                   )}
                   <Button
                     variant="outline"
-                    className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[0.5px] !border-green-700 transition-colors duration-150"
+                    className="relative w-full !h-14 !text-lg !font-black !bg-emerald-700 hover:!bg-emerald-800 !text-white !rounded-2xl !border-[0.5px] !border-emerald-800 transition-colors duration-150"
                     onClick={() => setScamAlertPending({ action: 'chat' })}
                   >
                     <MessageSquare className="h-4 w-4 mr-2 relative z-10" />
@@ -1419,7 +1424,7 @@ function MessageSellerInline({
       </div>
       <Button
         variant="outline"
-        className="relative w-full !h-14 !text-lg !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-xl !border-0 !relative !overflow-hidden transition-all !duration-200 !shadow-none hover:!shadow-none active:!shadow-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
+        className="relative w-full !h-14 !text-lg !font-black !bg-emerald-700 hover:!bg-emerald-800 !text-white !rounded-xl !border-0 !relative !overflow-hidden transition-all !duration-200 !shadow-none hover:!shadow-none active:!shadow-none disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
         onClick={() => { if (user) { submitResponse(); } else { sessionStorage.setItem('returnAfterSignIn', window.location.pathname + '#message-seller'); navigate('/signin'); } }}
         disabled={sending}
       >

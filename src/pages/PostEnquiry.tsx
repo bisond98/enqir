@@ -13,7 +13,7 @@ import { MapLocationPickerLazy as MapLocationPicker } from "@/components/MapLoca
 import { CleaningTypeMultiSelect } from "@/components/CleaningTypeMultiSelect";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints, Globe, Watch } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Headphones, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints, Globe, Watch } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -37,10 +37,11 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
-import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES, PHOTOGRAPHY_SUBCATEGORIES, REAL_ESTATE_SERVICES_SUBCATEGORIES, RENEWABLE_ENERGY_SUBCATEGORIES, SECURITY_SUBCATEGORIES, SOUVENIRS_SUBCATEGORIES, SPORTS_SUBCATEGORIES, TECHNOLOGY_SUBCATEGORIES, TOOLS_EQUIPMENT_SUBCATEGORIES, TRANSPORTATION_SUBCATEGORIES, TRAVEL_SUBCATEGORIES, TUTORING_SUBCATEGORIES, VINTAGE_SUBCATEGORIES, WASTE_MANAGEMENT_SUBCATEGORIES, WEDDING_SUBCATEGORIES } from "@/constants/categories";
+import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES, PHOTOGRAPHY_SUBCATEGORIES, REAL_ESTATE_SERVICES_SUBCATEGORIES, RENEWABLE_ENERGY_SUBCATEGORIES, SECURITY_SUBCATEGORIES, SOUVENIRS_SUBCATEGORIES, SPORTS_SUBCATEGORIES, TECHNOLOGY_SUBCATEGORIES, TOOLS_EQUIPMENT_SUBCATEGORIES, TRANSPORTATION_SUBCATEGORIES, TRAVEL_SUBCATEGORIES, TUTORING_SUBCATEGORIES, VINTAGE_SUBCATEGORIES, WASTE_MANAGEMENT_SUBCATEGORIES, WEDDING_SUBCATEGORIES, DIGITAL_IT_SUBCATEGORIES } from "@/constants/categories";
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from "@/modules/sell/categoryBrands";
+import { AUDIO_BRAND_OPTIONS, AUDIO_OTHER, getAudioModels } from "@/constants/audioCatalog";
 
 // Description limits — every category shares one description field.
 // Cap is 8000 words; MAX_DESC_CHARS is only a hard safety ceiling so a paste of
@@ -268,6 +269,9 @@ const DEADLINE_STEP = 5;
   // Camera details (brand -> model) — filled when the Camera category is selected
   const [cameraDetails, setCameraDetails] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
   const [cameraCustom, setCameraCustom] = useState<{ model: string }>({ model: '' });
+  // Audio & Headphones details (brand -> model) — filled when that category is selected
+  const [audioDetails, setAudioDetails] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
+  const [audioCustom, setAudioCustom] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
   // Free text for a model / processor / storage that is not in the catalogue
   const [laptopCustom, setLaptopCustom] = useState<{ model: string; processor: string; storage: string }>({ model: '', processor: '', storage: '' });
   // Watches details (brand -> model) — filled when the watches category is selected
@@ -361,6 +365,23 @@ const DEADLINE_STEP = 5;
     setCameraDetails({ brand: '', model: '' });
     setCameraCustom({ model: '' });
   }, [isCamera]);
+  // Audio & Headphones: brand -> model only, the model list follows the brand.
+  const isAudio =
+    selectedCategories.some((c) => (c || '').toLowerCase() === 'audio-headphones') ||
+    (category || '').toLowerCase() === 'audio-headphones';
+  const audioBrandValue = audioDetails.brand === AUDIO_OTHER ? audioCustom.brand.trim() : audioDetails.brand;
+  const audioModelValue = audioDetails.model === AUDIO_OTHER ? audioCustom.model.trim() : audioDetails.model;
+  // "Other" sits at the end of both lists so an unlisted brand or model can be
+  // typed in; a custom brand has no catalogue models, so only "Other" is offered.
+  const audioModelOptions = !audioDetails.brand
+    ? []
+    : audioDetails.brand === AUDIO_OTHER
+      ? [AUDIO_OTHER]
+      : [...getAudioModels(audioDetails.brand), AUDIO_OTHER];
+  useEffect(() => {
+    setAudioDetails({ brand: '', model: '' });
+    setAudioCustom({ brand: '', model: '' });
+  }, [isAudio]);
   const isAgriculture =
     selectedCategories.includes('agriculture-farming') ||
     (category || '').toLowerCase().includes('agricultur');
@@ -490,7 +511,12 @@ const DEADLINE_STEP = 5;
   const isWedding =
     selectedCategories.includes('wedding-events') ||
     (category || '').toLowerCase().includes('wedding');
-  const subcategoryOptions = isElectronics
+  const isDigitalIT =
+    selectedCategories.includes('digital-it-services') ||
+    (category || '').toLowerCase().includes('digital-it');
+  const subcategoryOptions = isDigitalIT
+    ? DIGITAL_IT_SUBCATEGORIES
+    : isElectronics
     ? ELECTRONICS_SUBCATEGORIES
     : isAgriculture
       ? AGRICULTURE_SUBCATEGORIES
@@ -595,7 +621,7 @@ const DEADLINE_STEP = 5;
                                                                                                         : null;
   useEffect(() => {
     setSubcategory('');
-  }, [isElectronics, isAgriculture, isAntiques, isAppliances, isArt, isBabyKids, isBagsLuggage, isBeauty, isBicycles, isBooks, isChildcare, isCollectibles, isConstruction, isEducation, isEntertainment, isEvents, isFashion, isFitness, isFood, isFurniture, isGaming, isGarden, isGovernment, isHealth, isHome, isIndustrial, isInsurance, isJewellery, isKitchenDining, isLegal, isMarketing, isMedicalEquipment, isMemorabilia, isMusicalAccessories, isMusicalInstruments, isMusicalServices, isNonProfit, isPhotographyServices, isRealEstateServices, isRenewableEnergy, isSecurity, isSouvenirs, isSports, isTechnology, isToolsEquipment, isTransportation, isTravel, isTutoring, isVintage, isWasteManagement, isWedding]);
+  }, [isDigitalIT, isElectronics, isAgriculture, isAntiques, isAppliances, isArt, isBabyKids, isBagsLuggage, isBeauty, isBicycles, isBooks, isChildcare, isCollectibles, isConstruction, isEducation, isEntertainment, isEvents, isFashion, isFitness, isFood, isFurniture, isGaming, isGarden, isGovernment, isHealth, isHome, isIndustrial, isInsurance, isJewellery, isKitchenDining, isLegal, isMarketing, isMedicalEquipment, isMemorabilia, isMusicalAccessories, isMusicalInstruments, isMusicalServices, isNonProfit, isPhotographyServices, isRealEstateServices, isRenewableEnergy, isSecurity, isSouvenirs, isSports, isTechnology, isToolsEquipment, isTransportation, isTravel, isTutoring, isVintage, isWasteManagement, isWedding]);
   const isAccommodationEnquiry = (cats: string[], legacy?: string) =>
     [...cats, legacy ?? ''].some((c) => c && c.toLowerCase().includes('accommodation'));
   const isAccom = isAccommodationEnquiry(selectedCategories, category);
@@ -884,6 +910,7 @@ const DEADLINE_STEP = 5;
         if (d.thriftItem) setThriftItem(d.thriftItem);
         if (d.thriftSize) setThriftSize(d.thriftSize);
         if (d.repairType) setRepairType(d.repairType);
+        if (d.subcategory) setSubcategory(d.subcategory);
         if (Array.isArray(d.cleaningTypes)) setCleaningTypes(d.cleaningTypes);
         if (d.sneakerAudience) setSneakerAudience(d.sneakerAudience);
         if (d.sneakerSize) setSneakerSize(d.sneakerSize);
@@ -1277,6 +1304,8 @@ const DEADLINE_STEP = 5;
             ...(watchModelValue && { watchModel: watchModelValue }),
             ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
             ...(cameraModelValue && { cameraModel: cameraModelValue }),
+            ...(audioBrandValue && { audioBrand: audioBrandValue }),
+            ...(audioModelValue && { audioModel: audioModelValue }),
             ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
             ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
             ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
@@ -1451,6 +1480,8 @@ const DEADLINE_STEP = 5;
           ...(watchModelValue && { watchModel: watchModelValue }),
           ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
           ...(cameraModelValue && { cameraModel: cameraModelValue }),
+          ...(audioBrandValue && { audioBrand: audioBrandValue }),
+          ...(audioModelValue && { audioModel: audioModelValue }),
           ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
           ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
@@ -1633,6 +1664,8 @@ const DEADLINE_STEP = 5;
           ...(watchModelValue && { watchModel: watchModelValue }),
           ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
           ...(cameraModelValue && { cameraModel: cameraModelValue }),
+          ...(audioBrandValue && { audioBrand: audioBrandValue }),
+          ...(audioModelValue && { audioModel: audioModelValue }),
           ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
           ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
@@ -1925,6 +1958,7 @@ const DEADLINE_STEP = 5;
     "bike": Bike,
     "mobiles": Smartphone,
     "laptops": Monitor,
+    "audio-headphones": Headphones,
     "watches": Watch,
     "furniture": Sofa,
     "vehicles": Car,
@@ -1936,6 +1970,7 @@ const DEADLINE_STEP = 5;
     "childcare-family": Users,
     "collectibles": Trophy,
     "construction-renovation": HardHat,
+    "digital-it-services": Monitor,
     "education-training": GraduationCap,
     "electronics-gadgets": Monitor,
     "entertainment-media": Film,
@@ -2386,6 +2421,8 @@ const DEADLINE_STEP = 5;
           ...(watchModelValue && { watchModel: watchModelValue }),
           ...(cameraDetails.brand && { cameraBrand: cameraDetails.brand }),
           ...(cameraModelValue && { cameraModel: cameraModelValue }),
+          ...(audioBrandValue && { audioBrand: audioBrandValue }),
+          ...(audioModelValue && { audioModel: audioModelValue }),
           ...(laptopProcessorValue && { laptopProcessor: laptopProcessorValue }),
           ...(laptopStorageValue && { laptopStorage: laptopStorageValue }),
           ...(cleaningTypes.length > 0 && { cleaningTypes: cleaningTypes.join(', ') }),
@@ -3472,6 +3509,61 @@ const DEADLINE_STEP = 5;
                           )}
                         </div>
                       )}
+                      {/* Audio & Headphones details — brand -> model, same cascade as cameras. */}
+                      {isAudio && (
+                        <div className="mb-4">
+                          <div className="grid grid-cols-2 gap-3">
+                            {([
+                              { key: 'brand' as const, placeholder: 'Brand', value: audioDetails.brand, options: AUDIO_BRAND_OPTIONS, disabled: false },
+                              { key: 'model' as const, placeholder: 'Model', value: audioDetails.model, options: audioModelOptions, disabled: !audioDetails.brand },
+                            ]).map((field) => (
+                              <div key={field.key} className="relative min-w-0">
+                                <select
+                                  value={field.value}
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    if (field.key === 'brand') {
+                                      setAudioDetails({ brand: v, model: '' });
+                                      setAudioCustom((c) => ({ ...c, model: '' }));
+                                    } else setAudioDetails((prev) => ({ ...prev, model: v }));
+                                  }}
+                                  disabled={field.disabled}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
+                                >
+                                  <option value=""></option>
+                                  {field.options.map((o) => (
+                                    <option key={o} value={o}>{o}</option>
+                                  ))}
+                                </select>
+                                {!field.value && (
+                                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-gray-900 pointer-events-none">
+                                    {field.placeholder}
+                                  </span>
+                                )}
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                            ))}
+                          </div>
+                          {audioDetails.brand === AUDIO_OTHER && (
+                            <Input
+                              value={audioCustom.brand}
+                              onChange={(e) => setAudioCustom((c) => ({ ...c, brand: e.target.value }))}
+                              placeholder="Exact brand name"
+                              maxLength={60}
+                              className="w-full rounded-[12px] h-12 sm:h-14 mt-3 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                            />
+                          )}
+                          {audioDetails.model === AUDIO_OTHER && (
+                            <Input
+                              value={audioCustom.model}
+                              onChange={(e) => setAudioCustom((c) => ({ ...c, model: e.target.value }))}
+                              placeholder="Exact model name"
+                              maxLength={60}
+                              className="w-full rounded-[12px] h-12 sm:h-14 mt-3 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                            />
+                          )}
+                        </div>
+                      )}
                       {/* Subcategory — Electronics / Agriculture (description step) */}
                       {subcategoryOptions && (
                         <div className="mb-4">
@@ -3480,7 +3572,7 @@ const DEADLINE_STEP = 5;
                             onChange={(e) => setSubcategory(e.target.value)}
                             className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!subcategory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
                           >
-                            <option value="">{subcategoryOptions === KITCHEN_DINING_SUBCATEGORIES || subcategoryOptions === LEGAL_SUBCATEGORIES || subcategoryOptions === MARKETING_SUBCATEGORIES || subcategoryOptions === MEDICAL_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === MEMORABILIA_SUBCATEGORIES || subcategoryOptions === MUSICAL_ACCESSORIES_SUBCATEGORIES || subcategoryOptions === MUSICAL_INSTRUMENTS_SUBCATEGORIES || subcategoryOptions === MUSICAL_SERVICES_SUBCATEGORIES || subcategoryOptions === NON_PROFIT_SUBCATEGORIES || subcategoryOptions === PHOTOGRAPHY_SUBCATEGORIES || subcategoryOptions === REAL_ESTATE_SERVICES_SUBCATEGORIES || subcategoryOptions === RENEWABLE_ENERGY_SUBCATEGORIES || subcategoryOptions === SECURITY_SUBCATEGORIES || subcategoryOptions === SOUVENIRS_SUBCATEGORIES || subcategoryOptions === SPORTS_SUBCATEGORIES || subcategoryOptions === TECHNOLOGY_SUBCATEGORIES || subcategoryOptions === TOOLS_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === TRANSPORTATION_SUBCATEGORIES || subcategoryOptions === TRAVEL_SUBCATEGORIES || subcategoryOptions === TUTORING_SUBCATEGORIES || subcategoryOptions === VINTAGE_SUBCATEGORIES || subcategoryOptions === WASTE_MANAGEMENT_SUBCATEGORIES || subcategoryOptions === WEDDING_SUBCATEGORIES ? 'Select' : 'Select subcategory'}</option>
+                            <option value="">{subcategoryOptions === DIGITAL_IT_SUBCATEGORIES || subcategoryOptions === KITCHEN_DINING_SUBCATEGORIES || subcategoryOptions === LEGAL_SUBCATEGORIES || subcategoryOptions === MARKETING_SUBCATEGORIES || subcategoryOptions === MEDICAL_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === MEMORABILIA_SUBCATEGORIES || subcategoryOptions === MUSICAL_ACCESSORIES_SUBCATEGORIES || subcategoryOptions === MUSICAL_INSTRUMENTS_SUBCATEGORIES || subcategoryOptions === MUSICAL_SERVICES_SUBCATEGORIES || subcategoryOptions === NON_PROFIT_SUBCATEGORIES || subcategoryOptions === PHOTOGRAPHY_SUBCATEGORIES || subcategoryOptions === REAL_ESTATE_SERVICES_SUBCATEGORIES || subcategoryOptions === RENEWABLE_ENERGY_SUBCATEGORIES || subcategoryOptions === SECURITY_SUBCATEGORIES || subcategoryOptions === SOUVENIRS_SUBCATEGORIES || subcategoryOptions === SPORTS_SUBCATEGORIES || subcategoryOptions === TECHNOLOGY_SUBCATEGORIES || subcategoryOptions === TOOLS_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === TRANSPORTATION_SUBCATEGORIES || subcategoryOptions === TRAVEL_SUBCATEGORIES || subcategoryOptions === TUTORING_SUBCATEGORIES || subcategoryOptions === VINTAGE_SUBCATEGORIES || subcategoryOptions === WASTE_MANAGEMENT_SUBCATEGORIES || subcategoryOptions === WEDDING_SUBCATEGORIES ? 'Select' : 'Select subcategory'}</option>
                             {subcategoryOptions.map((s) => (
                               <option key={s} value={s}>{s}</option>
                             ))}
@@ -4183,7 +4275,7 @@ const DEADLINE_STEP = 5;
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
                                 title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, laptopDetails, laptopCustom, watchDetails, watchCustom, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
-                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, accommodationGender, thriftGender, thriftType, thriftItem, thriftSize, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
+                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, subcategory, accommodationGender, thriftGender, thriftType, thriftItem, thriftSize, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
                               }));
                               navigate('/profile?returnTo=/post-enquiry');
                             }}

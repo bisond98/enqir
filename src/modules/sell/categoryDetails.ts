@@ -1,4 +1,5 @@
-import { TOOLS_EQUIPMENT_SUBCATEGORIES } from '@/constants/categories';
+import { TOOLS_EQUIPMENT_SUBCATEGORIES, DIGITAL_IT_SUBCATEGORIES } from '@/constants/categories';
+import { AUDIO_BRAND_OPTIONS } from '@/constants/audioCatalog';
 import { TRANSPORTATION_SUBCATEGORIES } from '@/constants/categories';
 import { TRAVEL_SUBCATEGORIES } from '@/constants/categories';
 import { TUTORING_SUBCATEGORIES } from '@/constants/categories';
@@ -141,13 +142,18 @@ const YEARS = Array.from({ length: new Date().getFullYear() - 1989 }, (_, i) =>
 
 export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   car: [
+    // The Title tab carries only the identity of the car — brand and model.
     { key: 'brand', label: 'Brand', type: 'select', options: CAR_BRANDS, placeholder: 'Select brand', step: 'title' },
-    // Title step renders type:'select' as a native dropdown (the 2-option
-    // toggle only exists in the description step), so moving it here both
-    // converts transmission to a dropdown and places it under Brand.
-    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'title' },
-    { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year of manufacture', typeable: true, step: 'title' },
-    { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'title' },
+    // Model options follow the picked brand (Maruti Suzuki -> Swift, Baleno …);
+    // CreateListing resolves them with getCarModels().
+    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Select model', step: 'title' },
+    // Transmission, year of manufacture and variant moved to the Description
+    // tab. Description renders select fields as dropdowns too, so transmission
+    // stays a picker (Manual / Automatic) and year a list plus typed entry.
+    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
+    { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'description' },
+    // Typed, not a dropdown: the year is a 4-digit box on the Description tab.
+    { key: 'year', label: 'Year of manufacture', type: 'number', placeholder: 'e.g., 2021', min: 1950, step: 'description' },
     { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },
@@ -206,6 +212,10 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   // Medical equipment: picked on the Title tab, same 29 as post enquiry.
   'medical-equipment': [
     { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...MEDICAL_EQUIPMENT_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
+  // Digital & IT Services: picked on the Title tab, same 26 as post enquiry.
+  'digital-it-services': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...DIGITAL_IT_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Marketing: services picked on the Title tab, same 30 as post enquiry.
   'marketing-advertising': [
@@ -279,6 +289,12 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   // getWatchModels().
   watches: [
     { key: 'brand', label: 'Brand', type: 'select', options: [...WATCH_BRAND_OPTIONS, 'Other'], placeholder: 'Brand', step: 'title' },
+    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Model', step: 'title' },
+  ],
+  // Audio & Headphones: brand -> model on the Title tab, model list follows
+  // the brand (boAt -> Rockerz / Airdopes / Stone).
+  'audio-headphones': [
+    { key: 'brand', label: 'Brand', type: 'select', options: [...AUDIO_BRAND_OPTIONS], placeholder: 'Brand', step: 'title' },
     { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Model', step: 'title' },
   ],
   // Camera: brand -> model on the Title tab, same cascade as laptops.

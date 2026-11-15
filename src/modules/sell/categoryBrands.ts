@@ -6,7 +6,7 @@ export const CAR_BRANDS = [
   'Aston Martin', 'Audi', 'Bentley', 'BMW', 'BYD', 'Chevrolet', 'Citroën',
   'Datsun', 'Ferrari', 'Fiat', 'Force', 'Ford', 'Hindustan Motors', 'Honda',
   'Hyundai', 'Isuzu', 'Jaguar', 'Jeep', 'Kia', 'Lamborghini', 'Land Rover',
-  'Lexus', 'Maruti Suzuki', 'Maserati', 'Mercedes-Benz', 'MG', 'Mini',
+  'Lexus', 'Mahindra', 'Maruti Suzuki', 'Maserati', 'Mercedes-Benz', 'MG', 'Mini',
   'Mitsubishi', 'Nissan', 'Opel', 'Porsche', 'Premier', 'Renault',
   'Rolls-Royce', 'Skoda', 'Tata', 'Tesla', 'Toyota', 'VinFast', 'Volkswagen',
   'Volvo', 'Other',

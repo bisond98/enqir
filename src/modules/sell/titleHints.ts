@@ -35,6 +35,22 @@ const VEHICLE_TITLE_HINTS: string[] = [
 ];
 
 const CATEGORY_TITLE_HINTS: Record<string, string[]> = {
+  // Audio & Headphones: only headphones, earphones, earbuds / TWS, neckbands and
+  // speakers — no phone/laptop examples while this category is selected.
+  'audio-headphones': [
+    'e.g., boAt Airdopes 141 TWS earbuds',
+    'e.g., Sony WH-1000XM4 headphones',
+    'e.g., Apple AirPods Pro 2',
+    'e.g., JBL Flip 6 bluetooth speaker',
+    'e.g., Noise Buds VS104',
+    'e.g., OnePlus Bullets Wireless Z2 neckband',
+    'e.g., Samsung Galaxy Buds2 Pro',
+    'e.g., JBL PartyBox 110 party speaker',
+    'e.g., Sony SRS-XB100 speaker',
+    'e.g., Boult Audio W40 headphones',
+    'e.g., Marshall Emberton II speaker',
+    'e.g., boAt Rockerz 450 headphones',
+  ],
   electronics: [
     'e.g., Samsung 55" 4K smart TV',
     'e.g., Sony WH-1000XM4 headphones',
@@ -606,6 +622,15 @@ const CATEGORY_TITLE_HINTS: Record<string, string[]> = {
     'e.g., Income tax filing',
     'e.g., Loan documentation',
     'e.g., Trademark registration',
+  ],
+  'digital-it-services': [
+    'e.g., SEO audit and on-page optimisation',
+    'e.g., Google Ads campaign management',
+    'e.g., Instagram and Facebook page handling',
+    'e.g., Business website with booking form',
+    'e.g., Android app development',
+    'e.g., Logo, brochure and brand kit design',
+    'e.g., CRM and workflow automation setup',
   ],
   'marketing-advertising': [
     'e.g., Social media management for shops',

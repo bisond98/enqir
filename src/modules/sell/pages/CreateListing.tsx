@@ -15,6 +15,8 @@ import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
 import { LAPTOP_OTHER, getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
+import { AUDIO_OTHER, getAudioModels } from '@/constants/audioCatalog';
+import { CAR_MODEL_OTHER, getCarModels, getCarVariants } from '@/constants/carCatalog';
 import { WATCH_OTHER, getWatchModels } from '@/constants/watchCatalog';
 import { getCameraModels } from '@/constants/cameraCatalog';
 import { SNEAKER_BRANDS } from '../categoryBrands';
@@ -117,6 +119,7 @@ import {
   Loader2,
   Globe,
   Watch,
+  Headphones
 } from 'lucide-react';
 
 // H-pattern stick-shift (manual gearbox) icon
@@ -180,6 +183,8 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
   'jewelry-accessories': Gem,
   'legal-financial': Scale,
   'marketing-advertising': Megaphone,
+  'digital-it-services': Globe,
+  'audio-headphones': Headphones,
   memorabilia: Stamp,
   'musical-instruments': Mic,
   'musical-accessories': Music,
@@ -674,7 +679,14 @@ export default function CreateListing() {
     !!details['brand'] &&
     details['brand'] !== LAPTOP_OTHER &&
     details['model'] !== LAPTOP_OTHER;
-  const effectiveTitle = title.trim() || ((category === 'laptops' || category === 'camera' || category === 'watches') && laptopTitleIsReal ? laptopTitle : '');
+  // Audio & Headphones uses the same "brand + model stands in for the title"
+  // rule; "Other" never counts because the catalogue has no name for it.
+  const audioTitle = [details['brand'], details['model']].filter(Boolean).join(' ');
+  const audioTitleIsReal =
+    !!details['brand'] &&
+    details['brand'] !== AUDIO_OTHER &&
+    details['model'] !== AUDIO_OTHER;
+  const effectiveTitle = title.trim() || ((category === 'laptops' || category === 'camera' || category === 'watches') && laptopTitleIsReal ? laptopTitle : (category === 'audio-headphones' && audioTitleIsReal ? audioTitle : ''));
 
   const canAdvanceFromStep = (s: number): boolean => {
     switch (s) {
@@ -1179,6 +1191,22 @@ export default function CreateListing() {
                         setDetail('model', '');
                       }
                     }
+                    if (category === 'audio-headphones') {
+                      if (!typed) {
+                        setDetail('brand', ''); setDetail('model', '');
+                      } else if (details['brand'] && typed.toLowerCase() === details['brand'].toLowerCase()) {
+                        setDetail('model', '');
+                      }
+                    }
+                    // Car: deleting the title drops the brand + model picks, and
+                    // trimming it back to just the brand drops only the model.
+                    if (category === 'car') {
+                      if (!typed) {
+                        setDetail('brand', ''); setDetail('model', '');
+                      } else if (details['brand'] && typed.toLowerCase() === details['brand'].toLowerCase()) {
+                        setDetail('model', '');
+                      }
+                    }
                     // The subcategory only stands while the title still says it —
                     // except "Other ...", which the seller is meant to describe in
                     // their own words, so typing there must not undo the pick.
@@ -1225,7 +1253,15 @@ export default function CreateListing() {
                     {fieldsForCategoryStep(category, 'title').map((f) => {
                       // Laptop models are the ones the picked brand actually sells.
                       // The picked brand's models, plus Other for anything unlisted
-                      const fieldOptions = f.key === 'model' && category === 'camera'
+                      const fieldOptions = f.key === 'model' && category === 'car'
+                        ? (details['brand'] === CAR_MODEL_OTHER
+                            ? [CAR_MODEL_OTHER]
+                            : [...getCarModels(details['brand'] ?? ''), CAR_MODEL_OTHER])
+                        : f.key === 'model' && category === 'audio-headphones'
+                        ? (details['brand'] === AUDIO_OTHER
+                            ? [AUDIO_OTHER]
+                            : [...getAudioModels(details['brand'] ?? ''), AUDIO_OTHER])
+                        : f.key === 'model' && category === 'camera'
                         ? (details['brand'] === 'Other'
                             ? ['Other']
                             : [...getCameraModels(details['brand'] ?? ''), 'Other'])
@@ -1266,7 +1302,7 @@ export default function CreateListing() {
                           <>
                             <select
                               value={details[f.key] ?? ''}
-                              disabled={(f.key === 'model' && category === 'laptops' && !details['brand']) || (f.key === 'model' && category === 'camera' && !details['brand']) || (f.key === 'model' && category === 'watches' && !details['brand'])}
+                              disabled={(f.key === 'model' && category === 'car' && !details['brand']) || (f.key === 'model' && category === 'audio-headphones' && !details['brand']) || (f.key === 'model' && category === 'laptops' && !details['brand']) || (f.key === 'model' && category === 'camera' && !details['brand']) || (f.key === 'model' && category === 'watches' && !details['brand'])}
                               onChange={(e) => {
                                 setDetail(f.key, e.target.value);
                                 // A different brand invalidates the model and its storage
@@ -1275,6 +1311,23 @@ export default function CreateListing() {
                                   // The title mirrors the picker — except for "Other",
                                   // which has no name worth filling in.
                                   setTitle(e.target.value === LAPTOP_OTHER ? '' : e.target.value);
+                                }
+                                if (f.key === 'brand' && category === 'car') {
+                                  setDetail('model', ''); setDetail('variant', '');
+                                  setTitle(e.target.value === CAR_MODEL_OTHER ? '' : e.target.value);
+                                }
+                                if (f.key === 'model' && category === 'car') {
+                                  setDetail('variant', '');
+                                  const unknownCar = e.target.value === CAR_MODEL_OTHER || details['brand'] === CAR_MODEL_OTHER;
+                                  setTitle(unknownCar ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
+                                }
+                                if (f.key === 'brand' && category === 'audio-headphones') {
+                                  setDetail('model', '');
+                                  setTitle(e.target.value === AUDIO_OTHER ? '' : e.target.value);
+                                }
+                                if (f.key === 'model' && category === 'audio-headphones') {
+                                  const unknownAudio = e.target.value === AUDIO_OTHER || details['brand'] === AUDIO_OTHER;
+                                  setTitle(unknownAudio ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
                                 }
                                 if (f.key === 'brand' && category === 'camera') {
                                   setDetail('model', '');
@@ -1606,8 +1659,10 @@ export default function CreateListing() {
                       const descFields = fieldsForCategoryStep(category, 'description')
                         .filter((f) => !isFieldHiddenForDetails(f, details))
                         .filter((f) => !['sneakerBrand', 'sneakerAudience', 'sneakerSize', 'cleaningTypes', 'thriftGender', 'thriftType', 'thriftItem', 'thriftSize'].includes(f.key));
-                      const toggleFields = descFields.filter((f) => (f.options?.length ?? 0) === 2);
-                      const selectFields = descFields.filter((f) => (f.options?.length ?? 0) !== 2);
+                      // Car transmission is a 2-option field but it belongs here as a
+                      // dropdown, not the on/off toggle the other 2-option fields use.
+                      const toggleFields = descFields.filter((f) => (f.options?.length ?? 0) === 2 && f.key !== 'transmission');
+                      const selectFields = descFields.filter((f) => (f.options?.length ?? 0) !== 2 || f.key === 'transmission');
                       return (
                         <>
                           {toggleFields.length > 0 && (
@@ -1655,7 +1710,35 @@ export default function CreateListing() {
                           {selectFields.length > 0 && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               {selectFields.map((f) => (
-                                <div key={f.key} className="space-y-2">
+                                // On mobile the year box sits at the top of the tab;
+                                // from sm upwards it keeps its array position.
+                                <div key={f.key} className={`space-y-2 ${f.key === 'year' ? 'order-first sm:order-none' : ''}`}>
+                                  {category === 'car' && f.key === 'variant' && getCarVariants(details['brand'] ?? '', details['model'] ?? '').length > 0 ? (
+                                    <div className="relative">
+                                      <select
+                                        value={details[f.key] ?? ''}
+                                        onChange={(e) => setDetail(f.key, e.target.value)}
+                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                                      >
+                                        <option value="">Select variant</option>
+                                        {getCarVariants(details['brand'] ?? '', details['model'] ?? '').map((opt) => (
+                                          <option key={opt} value={opt}>{opt}</option>
+                                        ))}
+                                        <option value="Other">Other</option>
+                                      </select>
+                                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                    </div>
+                                  ) : f.type === 'text' || f.type === 'number' ? (
+                                    <Input
+                                      type="text"
+                                      inputMode={f.type === 'number' ? 'numeric' : 'text'}
+                                      maxLength={f.type === 'number' ? 4 : 40}
+                                      value={details[f.key] ?? ''}
+                                      onChange={(e) => setDetail(f.key, f.type === 'number' ? e.target.value.replace(/[^0-9]/g, '').slice(0, 4) : e.target.value)}
+                                      placeholder={f.placeholder ?? 'Type here'}
+                                      className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 pl-4 pr-4 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
+                                    />
+                                  ) : (
                                   <div className="relative">
                                     <select
                                       value={details[f.key] ?? ''}
@@ -1674,6 +1757,7 @@ export default function CreateListing() {
                                     </select>
                                     <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                                   </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
