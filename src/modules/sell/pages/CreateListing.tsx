@@ -29,7 +29,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapLocationPickerLazy as MapLocationPicker } from '@/components/MapLocationPickerLazy';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
-import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES } from '../categoryDetails';
+import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES, ANTIQUE_CONDITIONS, ANTIQUE_DAMAGE_TYPES, ANTIQUE_FUNCTIONAL_STATUSES } from '../categoryDetails';
 import { titleHintsFor } from '../titleHints';
 import { CleaningTypeMultiSelect } from '@/components/CleaningTypeMultiSelect';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
@@ -324,6 +324,11 @@ export default function CreateListing() {
   // Categories where New/Used condition makes no sense (properties, stays,
   // services, perishables & live animals) — hides the selector and chips
   const hideCondition = NO_CONDITION_CATEGORIES.has(category) || /-services$/.test(category);
+  // Antiques reuse the Condition step but with age/patina/restoration wording.
+  const isAntiqueCategory = category === 'antiques';
+  const conditionGrades = isAntiqueCategory ? ANTIQUE_CONDITIONS : PRODUCT_CONDITIONS;
+  const damageTypeOptions = isAntiqueCategory ? ANTIQUE_DAMAGE_TYPES : DAMAGE_TYPES;
+  const functionalStatusOptions = isAntiqueCategory ? ANTIQUE_FUNCTIONAL_STATUSES : FUNCTIONAL_STATUSES;
   // Deadline-enabled categories (DEADLINE_CATEGORIES) show the countdown
   // timer on the Condition step (step index 4). Food and jobs hide the New/Used
   // chips (food via NO_CONDITION_CATEGORIES, jobs via the explicit check in the
@@ -1934,10 +1939,11 @@ export default function CreateListing() {
                 )}
 
                 {/* Product condition grade + visible damage. These grades (with
-                    tags, like new, vintage, wear %) are built for Thrift, so they
-                    stay on Thrift's Condition step only. Every other category —
-                    vehicles included — keeps just its New/Used chips. */}
-                {category === 'thrift' && (
+                    tags, like new, vintage, wear %) are built for Thrift and
+                    Antiques, so they show on those Condition steps only. Every
+                    other category — vehicles included — keeps just its
+                    New/Used chips. */}
+                {(category === 'thrift' || category === 'antiques') && (
                   <div className="space-y-2">
                     <div className="relative">
                       <select
@@ -1946,7 +1952,7 @@ export default function CreateListing() {
                         className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['productCondition'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                       >
                         <option value="" disabled>Product Condition</option>
-                        {PRODUCT_CONDITIONS.map((c) => (
+                        {conditionGrades.map((c) => (
                           <option key={c} value={c}>{c}</option>
                         ))}
                         <option value="">Cancel</option>
@@ -1974,7 +1980,7 @@ export default function CreateListing() {
                         className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['damageType'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                       >
                         <option value="" disabled>Damage Type</option>
-                        {DAMAGE_TYPES.map((d) => (
+                        {damageTypeOptions.map((d) => (
                           <option key={d} value={d}>{d}</option>
                         ))}
                         <option value="">Cancel</option>
@@ -2002,7 +2008,7 @@ export default function CreateListing() {
                         className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['functionalStatus'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
                       >
                         <option value="" disabled>Functional Status</option>
-                        {FUNCTIONAL_STATUSES.map((f) => (
+                        {functionalStatusOptions.map((f) => (
                           <option key={f} value={f}>{f}</option>
                         ))}
                         <option value="">Cancel</option>
@@ -2173,7 +2179,7 @@ export default function CreateListing() {
                     />
                     <label
                       htmlFor="listing-images"
-                      className="block w-full text-center !rounded-xl !border !border-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] !text-base sm:!text-lg font-bold h-14 sm:h-16 flex items-center justify-center cursor-pointer touch-manipulation select-none"
+                      className="block w-full text-center !rounded-xl !border-0 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white transition-all !duration-200 !shadow-none hover:!shadow-none active:!shadow-none !text-base sm:!text-lg font-bold h-14 sm:h-16 flex items-center justify-center cursor-pointer touch-manipulation select-none"
                     >
                       {images.length === 0 ? 'Choose Image' : 'Add More Images'}
                     </label>

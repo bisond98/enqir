@@ -92,6 +92,48 @@ export const FUNCTIONAL_STATUSES = [
   'Not Applicable',
 ];
 
+// Antiques get their own vocabulary: age, patina and restoration matter far more
+// than "with tags" or wear percentages. Shown on the Antiques Condition step.
+export const ANTIQUE_CONDITIONS = [
+  'Mint – As New, No Wear',
+  'Excellent – Minimal Age Wear',
+  'Very Good – Light Patina',
+  'Good – Natural Patina & Age Marks',
+  'Fair – Visible Wear or Fading',
+  'Well Worn – Heavy Patina / Losses',
+  'Original – Unrestored',
+  'Restored / Refinished',
+  'Partially Restored',
+  'Incomplete – Missing Parts',
+  'For Restoration',
+  'For Parts / Study Piece',
+];
+
+export const ANTIQUE_DAMAGE_TYPES = [
+  'Chip / Nick',
+  'Crack',
+  'Hairline Crack',
+  'Fading / Faded Finish',
+  'Patina Loss',
+  'Tarnish / Oxidation',
+  'Rust / Corrosion',
+  'Woodworm / Borer Damage',
+  'Warping',
+  'Water Stain',
+  'Old Repair / Restoration',
+  'Missing Part',
+  'Worn Signature / Maker Mark',
+  'Other',
+];
+
+export const ANTIQUE_FUNCTIONAL_STATUSES = [
+  'Fully Functional',
+  'Partially Working',
+  'Not Working',
+  'Display Only',
+  'Not Applicable',
+];
+
 export type CategoryDetailsStep = 'title' | 'description' | 'details' | 'price';
 
 export interface CategoryDetailField {
