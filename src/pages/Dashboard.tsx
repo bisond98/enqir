@@ -2175,7 +2175,7 @@ const Dashboard = () => {
                                     }
                                     if (isNaN(deadlineDate.getTime())) return null;
                                     return (
-                                      <Badge className="flex items-center gap-1 px-2 sm:px-3 py-1 rounded-md !shadow-none border border-red-200 bg-red-50 text-red-600 flex-shrink-0">
+                                      <Badge className="flex items-center gap-1 px-2 sm:px-3 py-1 rounded-md !shadow-none border border-red-900 bg-red-800 text-white flex-shrink-0 mt-2.5 sm:mt-0">
                                         <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                         <span className="text-[8px] sm:text-[9px] font-bold whitespace-nowrap tracking-wide">
                                           {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
