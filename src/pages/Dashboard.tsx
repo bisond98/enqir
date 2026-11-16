@@ -2219,7 +2219,7 @@ const Dashboard = () => {
                                       disabled={expiredFlag}
                                       aria-label="Delete enquiry"
                                       title="Delete"
-                                      className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-gray-200 !bg-white hover:!bg-gray-50 !text-[#800020] !p-0 !shadow-none !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
+                                      className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-[#800020] !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
                                     >
                                       <Trash2 className="h-[15px] w-[15px] xl:h-[17px] xl:w-[17px] group-hover/delete:scale-110 transition-transform" />
                                     </Button>
@@ -2299,7 +2299,7 @@ const Dashboard = () => {
                                     disabled={expiredFlag}
                                     aria-label="Delete enquiry"
                                     title="Delete"
-                                    className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-gray-200 !bg-white hover:!bg-gray-50 !text-[#800020] !p-0 !shadow-none !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
+                                    className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-[#800020] !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
                                   >
                                     <Trash2 className="h-[17px] w-[17px] group-hover/delete:scale-110 transition-transform" />
                                   </Button>
