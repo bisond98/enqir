@@ -2272,7 +2272,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-fit max-w-full mx-auto sm:mx-0 sm:flex-none flex-shrink-0 !border-0 !ring-0 !ring-offset-0 !outline-none !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_1.5px_0_0_rgba(17,24,39,0.45),-1.5px_0_0_0_rgba(17,24,39,0.45),1.5px_0_0_0_rgba(17,24,39,0.45),0_-1.5px_0_0_rgba(17,24,39,0.45)] active:!shadow-[0_0.5px_0_0_rgba(17,24,39,0.3),-0.5px_0_0_0_rgba(17,24,39,0.3),0.5px_0_0_0_rgba(17,24,39,0.3),0_-0.5px_0_0_rgba(17,24,39,0.3)] active:!translate-y-[1px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
+                                  className="w-fit max-w-full mx-auto sm:mx-0 flex-shrink-0 !border-0 !ring-0 !ring-offset-0 !outline-none !rounded-xl !bg-white hover:!bg-white !text-black px-4 py-1.5 sm:py-2 h-auto font-chip font-black text-xs sm:text-sm tracking-tight !shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] active:!translate-y-[1px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
                               >
                                   <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">
@@ -2470,8 +2470,8 @@ const Dashboard = () => {
                                 <span className="flex-shrink-0 inline-flex items-center text-[9px] font-black text-white bg-red-600 border-[0.5px] border-black rounded-md px-1.5 py-0.5 uppercase tracking-wide">For Sale</span>
                               </div>
                               <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                <span className="text-[10px] font-black text-gray-700 bg-gray-100 border border-gray-300 rounded-md px-1.5 py-0.5">{(listing as any).priceType === 'discussion' ? 'Open to discussion' : listing.price ? `₹${listing.price.toLocaleString('en-IN')}` : 'Price on request'}</span>
-                                {listing.location && <span className="text-[10px] font-bold text-gray-700 bg-gray-100 border border-gray-300 rounded-md px-1.5 py-0.5">• {listing.location}</span>}
+                                <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">{(listing as any).priceType === 'discussion' ? 'Open to discussion' : listing.price ? `₹${listing.price.toLocaleString('en-IN')}` : 'Price on request'}</span>
+                                {listing.location && <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">• {listing.location}</span>}
                               </div>
                               <Button
                                 variant="outline"
@@ -2515,9 +2515,9 @@ const Dashboard = () => {
                               <h4 className="text-sm font-bold text-black truncate min-w-0">{enquiry.title}</h4>
                             </div>
                             <div className="flex items-center gap-2 mt-1 flex-wrap">
-                              <Badge variant="secondary" className="text-[9px] px-2 py-0.5 bg-gray-100 text-gray-900 border border-black font-bold">{enquiry.category}</Badge>
-                              <span className="text-[10px] font-black text-gray-700 bg-gray-100 border border-gray-300 rounded-md px-1.5 py-0.5">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
-                              {enquiry.location && <span className="text-[10px] font-bold text-gray-700 bg-gray-100 border border-gray-300 rounded-md px-1.5 py-0.5">• {enquiry.location}</span>}
+                              <Badge variant="secondary" className="text-[9px] px-2 py-0.5 bg-white text-black border-0 rounded-lg font-chip font-black shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">{enquiry.category}</Badge>
+                              <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
+                              {enquiry.location && <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">• {enquiry.location}</span>}
                             </div>
                             <Button
                               variant="outline"
@@ -2789,7 +2789,7 @@ const Dashboard = () => {
                                   </div>
                                 ) : (
                                   <div className="relative flex items-center justify-center gap-1.5 sm:gap-2 w-full pt-7 sm:pt-9">
-                                    <span className={`relative z-10 text-lg sm:text-xl font-bold text-center w-full ${
+                                    <span className={`relative z-10 inline-block w-fit max-w-full text-center rounded-xl bg-white border-0 px-4 py-1.5 sm:py-2 font-chip font-black text-lg sm:text-xl leading-tight tracking-tight shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
                                 {submission.title}

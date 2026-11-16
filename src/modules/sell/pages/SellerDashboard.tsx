@@ -251,12 +251,12 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                       </div>
                       <div className="flex items-center flex-wrap gap-x-2.5 gap-y-1 mt-2">
                         {l.price != null && (
-                          <span className="inline-flex items-center text-xs font-bold text-gray-700 bg-gray-100 border border-gray-300 rounded-full px-2.5 py-1">
+                          <span className="inline-flex items-center text-xs font-chip font-black text-black bg-white border-0 rounded-xl px-2.5 py-1 shadow-[0_-1px_0_0_rgba(17,24,39,0.10),-1px_0_0_0_rgba(17,24,39,0.10),1px_0_0_0_rgba(17,24,39,0.10),0_2px_0_0_rgba(17,24,39,0.22)]">
                             ₹{l.price.toLocaleString('en-IN')}
                           </span>
                         )}
                         {l.createdAt && (
-                          <span className="inline-flex items-center truncate rounded-full bg-gray-100 border border-gray-300 px-1.5 py-[1px] text-[7px] font-bold text-gray-700">
+                          <span className="inline-flex items-center truncate rounded-lg bg-white border-0 px-1.5 py-[1px] text-[7px] font-chip font-black text-black shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">
                             Posted on {(() => {
                               try {
                                 const d = typeof l.createdAt?.toDate === 'function' ? l.createdAt.toDate() : new Date(l.createdAt);
