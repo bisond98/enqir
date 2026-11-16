@@ -6451,7 +6451,7 @@ export default function EnquiryWall() {
                                         {/* Mobile: Location and Before stacked vertically and right-aligned, Desktop: horizontal */}
                                         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-0 ml-auto sm:ml-0">
                                           {/* Location - Desktop first position, Mobile right-aligned */}
-                                        {enquiry.location && (
+                                        {enquiry.location && !isEnquiryOutdated(enquiry) && (
                                             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md enhanced-border block sm:inline-flex max-w-full overflow-hidden">
                                               <div className="flex items-center justify-center w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0">
                                                 <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3" style={{ stroke: '#000000', fill: '#dc2626' }} strokeWidth={2} />
@@ -6460,7 +6460,7 @@ export default function EnquiryWall() {
                                               <span className="truncate text-[7px] sm:text-sm md:text-base text-white font-bold whitespace-nowrap overflow-hidden" style={{ letterSpacing: '0.05em' }}>{enquiry.location.length > 20 ? `${enquiry.location.slice(0, 20)}...` : enquiry.location}</span>
                                           </div>
                                         )}
-                                        {enquiry.location && (
+                                        {enquiry.location && !isEnquiryOutdated(enquiry) && (
                                             <span className="text-[8px] sm:text-xs text-white/70 font-medium hidden sm:inline">/</span>
                                         )}
                                           {/* Before Date - Under At on mobile (right-aligned), inline on desktop */}
@@ -6793,8 +6793,8 @@ export default function EnquiryWall() {
                             {enquiry.title}
                           </h3>
 
-                          {/* Location */}
-                          {enquiry.location && (
+                          {/* Location — hidden on expired cards */}
+                          {enquiry.location && !isEnquiryOutdated(enquiry) && (
                             <div className="mt-4 inline-flex max-w-full self-start items-center gap-1.5 rounded-lg px-1.5 py-1">
                               <MapPin className="h-2.5 w-2.5 flex-shrink-0 text-red-600 sm:h-3 sm:w-3" fill="currentColor" stroke="currentColor" strokeWidth={1} />
                               <span className="truncate text-[9px] font-semibold leading-snug text-gray-900 sm:text-[10px]">

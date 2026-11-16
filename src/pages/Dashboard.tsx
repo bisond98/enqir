@@ -2120,8 +2120,8 @@ const Dashboard = () => {
                             <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
                               expiredFlag ? 'opacity-70' : ''
                             }`}>
-                              {/* Same diamond pattern across the black header */}
-                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
+                              {/* Diamond pattern across the whole black header (no fade) */}
+                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 opacity-50">
                                 <div className="responses-meander" />
                               </div>
                               {/* Elegant pattern overlay */}
@@ -2377,21 +2377,18 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[320px] lg:min-h-[300px] xl:min-h-[340px]"
+                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[236px] sm:min-h-[268px] lg:min-h-[252px] xl:min-h-[286px]"
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
                           >
                             {/* Premium Black Header - matching enquiry card */}
-                            <div className="relative bg-gradient-to-br from-black via-black to-gray-900 px-4 py-2.5">
-                              {/* Same diamond pattern across the black header */}
-                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
+                            <div className="relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 py-2.5 min-h-[52px] sm:min-h-[60px]">
+                              {/* Diamond pattern across the whole black header (no fade) */}
+                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 opacity-50">
                                 <div className="responses-meander" />
                               </div>
                               <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
                               <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
-                              <div className="relative flex items-start justify-between gap-2">
-                                <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-white/70 leading-none">
-                                  interest
-                                </span>
+                              <div className="relative flex items-center justify-end gap-2">
                                 <div className="flex-shrink-0 flex items-center gap-1.5">
                                   <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white/10 rounded-full border border-white/25 group-hover:scale-110 transition-transform">
                                     <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-white" />
@@ -2401,8 +2398,8 @@ const Dashboard = () => {
                             </div>
 
                             {/* White Content Area - matching enquiry card */}
-                            <div className="relative flex flex-col px-5 pt-5 pb-2.5 sm:px-6 sm:pt-6 sm:pb-3 overflow-visible min-h-[190px] sm:min-h-[210px] lg:min-h-[200px] xl:min-h-[220px]">
-                              <div className="relative z-10 text-center mt-4 sm:mt-5 mb-2">
+                            <div className="relative flex flex-col px-5 pt-4 pb-2.5 sm:px-6 sm:pt-5 sm:pb-3 overflow-visible min-h-[168px] sm:min-h-[186px] lg:min-h-[176px] xl:min-h-[194px]">
+                              <div className="relative z-10 text-center mt-2 sm:mt-2.5 mb-1.5">
                                 <h5 className="block w-fit max-w-full mx-auto text-center text-base sm:text-lg font-['Plus_Jakarta_Sans'] font-bold text-gray-700 leading-snug tracking-tight truncate text-gray-900 leading-tight mb-2">
                                   {listing.title}
                                 </h5>
@@ -2410,7 +2407,7 @@ const Dashboard = () => {
                                   {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
                                 </p>
                                 {listing.location && (
-                                  <p className="inline-flex items-center justify-center rounded-full bg-gray-100 border border-gray-200 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold text-gray-600 gap-1 mt-2">
+                                  <p className="inline-flex items-center justify-center rounded-full bg-gray-100 border border-gray-200 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-semibold text-gray-600 gap-1 mt-1.5">
                                     <MapPin className="h-2.5 w-2.5 flex-shrink-0 text-gray-500" />
                                     {listing.location}
                                   </p>
@@ -2421,7 +2418,7 @@ const Dashboard = () => {
                               <div className="flex-1 min-h-[12px]"></div>
 
                               {/* Remove (left) + Chat (right) — round icon buttons */}
-                              <div className="relative flex items-center justify-between pt-4" onClick={(e) => e.stopPropagation()}>
+                              <div className="relative flex items-center justify-between pt-3" onClick={(e) => e.stopPropagation()}>
                                 <Button
                                   variant="destructive"
                                   size="sm"
@@ -2702,11 +2699,11 @@ const Dashboard = () => {
                           }}
                         >
                           {/* Premium Header with Sophisticated Design */}
-                          <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2 sm:py-2.5 ${
+                          <div className={`relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 py-2.5 min-h-[52px] sm:min-h-[60px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
                           }`}>
-                            {/* Same diamond pattern across the black header */}
-                            <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
+                            {/* Diamond pattern across the whole black header (no fade) */}
+                            <div aria-hidden className="pointer-events-none absolute inset-0 z-0 opacity-50">
                               <div className="responses-meander" />
                             </div>
                             {/* Elegant pattern overlay */}
