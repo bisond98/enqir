@@ -2120,6 +2120,10 @@ const Dashboard = () => {
                             <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
                               expiredFlag ? 'opacity-70' : ''
                             }`}>
+                              {/* Same diamond pattern across the black header */}
+                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
+                                <div className="responses-meander" />
+                              </div>
                               {/* Elegant pattern overlay */}
                               <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
                               
@@ -2249,7 +2253,7 @@ const Dashboard = () => {
 
                               {/* Premium Action Buttons - Perfectly Aligned */}
                               <div 
-                                className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 border-t border-gray-200 pt-3 sm:pt-3.5 flex-wrap lg:flex-nowrap"
+                                className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 pt-3 sm:pt-3.5 flex-wrap lg:flex-nowrap"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
@@ -2378,6 +2382,10 @@ const Dashboard = () => {
                           >
                             {/* Premium Black Header - matching enquiry card */}
                             <div className="relative bg-gradient-to-br from-black via-black to-gray-900 px-4 py-2.5">
+                              {/* Same diamond pattern across the black header */}
+                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
+                                <div className="responses-meander" />
+                              </div>
                               <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
                               <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                               <div className="relative flex items-start justify-between gap-2">
@@ -2393,7 +2401,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* White Content Area - matching enquiry card */}
-                            <div className="relative flex flex-col bg-white px-5 pt-5 pb-2.5 sm:px-6 sm:pt-6 sm:pb-3 overflow-visible min-h-[190px] sm:min-h-[210px] lg:min-h-[200px] xl:min-h-[220px]">
+                            <div className="relative flex flex-col px-5 pt-5 pb-2.5 sm:px-6 sm:pt-6 sm:pb-3 overflow-visible min-h-[190px] sm:min-h-[210px] lg:min-h-[200px] xl:min-h-[220px]">
                               <div className="relative z-10 text-center mt-4 sm:mt-5 mb-2">
                                 <h5 className="block w-fit max-w-full mx-auto text-center text-base sm:text-lg font-['Plus_Jakarta_Sans'] font-bold text-gray-700 leading-snug tracking-tight truncate text-gray-900 leading-tight mb-2">
                                   {listing.title}
@@ -2413,7 +2421,7 @@ const Dashboard = () => {
                               <div className="flex-1 min-h-[12px]"></div>
 
                               {/* Remove (left) + Chat (right) — round icon buttons */}
-                              <div className="relative flex items-center justify-between border-t border-gray-200 pt-4" onClick={(e) => e.stopPropagation()}>
+                              <div className="relative flex items-center justify-between pt-4" onClick={(e) => e.stopPropagation()}>
                                 <Button
                                   variant="destructive"
                                   size="sm"
@@ -2693,15 +2701,14 @@ const Dashboard = () => {
                             }
                           }}
                         >
-                          {/* Geometric pattern, strong on the left and fading right */}
-                          <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
-                            <div className="responses-meander" />
-                          </div>
-
                           {/* Premium Header with Sophisticated Design */}
                           <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2 sm:py-2.5 ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
                           }`}>
+                            {/* Same diamond pattern across the black header */}
+                            <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
+                              <div className="responses-meander" />
+                            </div>
                             {/* Elegant pattern overlay */}
                             <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
                             
