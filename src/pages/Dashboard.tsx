@@ -2072,7 +2072,7 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full min-h-[200px] sm:min-h-[214px] lg:min-h-[208px] xl:min-h-[224px] ${
+                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full min-h-[252px] sm:min-h-[272px] lg:min-h-[272px] xl:min-h-[296px] ${
                               expiredFlag
                                 ? 'opacity-50 grayscale bg-gray-50 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] cursor-not-allowed'
                                 : 'bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5'
@@ -2190,7 +2190,7 @@ const Dashboard = () => {
                             </div>
                             
                             {/* Premium Content Area with Better Structure */}
-                            <div className="relative bg-white p-3.5 sm:p-4 overflow-visible min-h-[150px] sm:min-h-[160px] lg:min-h-[156px] xl:min-h-[168px]">
+                            <div className="relative bg-white p-3.5 sm:p-4 overflow-visible min-h-[196px] sm:min-h-[212px] lg:min-h-[216px] xl:min-h-[236px]">
                               {/* Subtle background texture */}
                               <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
@@ -2206,7 +2206,7 @@ const Dashboard = () => {
                               {/* Enquiry Details Section - Visible on all screens, wider on mobile */}
 
                               {/* Share + Delete Buttons - Desktop Only */}
-                                  <div className="hidden lg:flex items-center justify-center gap-2 xl:gap-2.5">
+                                  <div className="hidden lg:flex items-center justify-center gap-2 xl:gap-2.5 lg:pt-7">
                                     <Button 
                                       variant="destructive" 
                                       size="sm" 
@@ -2235,9 +2235,9 @@ const Dashboard = () => {
                                       }}
                                       aria-label="Share enquiry"
                                       title="Share"
-                                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
+                                      className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
                                     >
-                                      <Share2 className="h-[15px] w-[15px] xl:h-[17px] xl:w-[17px]" strokeWidth={1.8} />
+                                      <Share2 className="h-7 w-7" strokeWidth={1.8} />
                                     </button>
                                   </div>
                                   
@@ -2272,7 +2272,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-full sm:flex-none flex-shrink-0 !border-[1.5px] !border-black !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
+                                  className="w-fit max-w-full mx-auto sm:mx-0 sm:flex-none flex-shrink-0 !border-0 !bg-white hover:!bg-gray-50 !text-black text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-[0_3px_0_0_rgba(17,24,39,0.85)] active:!shadow-[0_1px_0_0_rgba(17,24,39,0.85)] active:!translate-y-[2px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
                               >
                                   <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">
@@ -2286,7 +2286,7 @@ const Dashboard = () => {
                               </Button>
                               
                                 {/* Share + Delete Buttons - Mobile/Tablet Only */}
-                                <div className="lg:hidden flex items-center justify-center gap-2 sm:gap-2.5 w-full">
+                                <div className="lg:hidden flex items-center justify-center gap-2 sm:gap-2.5 w-full pt-5 sm:pt-7">
                                   <Button 
                                     variant="destructive" 
                                     size="sm" 
@@ -2315,9 +2315,9 @@ const Dashboard = () => {
                                     }}
                                     aria-label="Share enquiry"
                                     title="Share"
-                                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
+                                    className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
                                   >
-                                    <Share2 className="h-[17px] w-[17px]" strokeWidth={1.8} />
+                                    <Share2 className="h-7 w-7" strokeWidth={1.8} />
                                   </button>
                                 </div>
                             </div>
@@ -2377,7 +2377,7 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[236px] sm:min-h-[268px] lg:min-h-[252px] xl:min-h-[286px]"
+                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[318px] lg:min-h-[316px] xl:min-h-[352px]"
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
                           >
                             {/* Premium Black Header - matching enquiry card */}
@@ -2398,7 +2398,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* White Content Area - matching enquiry card */}
-                            <div className="relative flex flex-col px-5 pt-4 pb-2.5 sm:px-6 sm:pt-5 sm:pb-3 overflow-visible min-h-[168px] sm:min-h-[186px] lg:min-h-[176px] xl:min-h-[194px]">
+                            <div className="relative flex flex-col px-5 pt-4 pb-2.5 sm:px-6 sm:pt-5 sm:pb-3 overflow-visible min-h-[212px] sm:min-h-[236px] lg:min-h-[240px] xl:min-h-[260px]">
                               <div className="relative z-10 text-center mt-2 sm:mt-2.5 mb-1.5">
                                 <h5 className="block w-fit max-w-full mx-auto text-center text-base sm:text-lg font-['Plus_Jakarta_Sans'] font-bold text-gray-700 leading-snug tracking-tight truncate text-gray-900 leading-tight mb-2">
                                   {listing.title}
@@ -2433,9 +2433,9 @@ const Dashboard = () => {
                                   to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
                                   aria-label="Chat with Seller"
                                   title="Chat with Seller"
-                                  className="group/chat flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  className="group/chat flex h-16 w-16 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                 >
-                                  <MessageSquare className="h-5 w-5 group-hover/chat:scale-110 transition-transform" />
+                                  <MessageSquare className="h-7 w-7 group-hover/chat:scale-110 transition-transform" />
                                 </Link>
                               </div>
                             </div>
@@ -2683,7 +2683,7 @@ const Dashboard = () => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
-                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[178px] sm:min-h-[190px] lg:min-h-[184px] xl:min-h-[196px] ${
+                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[230px] sm:min-h-[248px] lg:min-h-[252px] xl:min-h-[272px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
                               ? 'opacity-50 grayscale pointer-events-none bg-gray-50 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)]'
                               : 'bg-white border-0 hover:border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer'
@@ -2766,7 +2766,7 @@ const Dashboard = () => {
                           </div>
                           
                           {/* Premium Content Area */}
-                          <div className="relative p-3 sm:p-4 min-h-[146px] sm:min-h-[154px] lg:min-h-[150px] xl:min-h-[160px]">
+                          <div className="relative p-3 sm:p-4 min-h-[196px] sm:min-h-[212px] lg:min-h-[218px] xl:min-h-[234px]">
                             {/* Subtle background texture */}
                             <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                             
@@ -2788,7 +2788,7 @@ const Dashboard = () => {
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className="relative flex items-center justify-center gap-1.5 sm:gap-2 w-full pt-1 sm:pt-2">
+                                  <div className="relative flex items-center justify-center gap-1.5 sm:gap-2 w-full pt-7 sm:pt-9">
                                     <span className={`relative z-10 text-lg sm:text-xl font-bold text-center w-full ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
@@ -2809,7 +2809,7 @@ const Dashboard = () => {
                             </div>
 
                             {/* Action Buttons */}
-                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 relative z-10 pt-2 sm:pt-2.5 flex-wrap lg:flex-nowrap">
+                              <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 relative z-10 pt-8 sm:pt-10 flex-wrap lg:flex-nowrap">
                                 {/* Call + Chat — side by side, Call first */}
                                 <div className="flex flex-col gap-2 w-full sm:w-auto">
                                 <div className="flex items-center justify-center gap-3 sm:gap-4 w-full">
@@ -2827,9 +2827,9 @@ const Dashboard = () => {
                                       }}
                                       aria-label="Call"
                                       title="Call"
-                                      className="flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !p-0 !h-12 !w-12 !min-h-12 !min-w-12 sm:!h-11 sm:!w-11 !rounded-full !shadow-none active:!shadow-none active:scale-95 !transition-transform !duration-150 group/call flex items-center justify-center touch-manipulation select-none"
+                                      className="flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !p-0 !h-16 !w-16 !min-h-16 !min-w-16 sm:!h-[60px] sm:!w-[60px] !rounded-full !shadow-none active:!shadow-none active:scale-95 !transition-transform !duration-150 group/call flex items-center justify-center touch-manipulation select-none"
                                     >
-                                      <Phone className="!h-5 !w-5 relative z-10 group-hover/call:scale-110 transition-transform" />
+                                      <Phone className="!h-7 !w-7 relative z-10 group-hover/call:scale-110 transition-transform" />
                                     </Button>
                                   );
                                 })()}
@@ -2843,9 +2843,9 @@ const Dashboard = () => {
                                   }}
                                   aria-label="Chat"
                                   title="Chat"
-                                  className="flex-shrink-0 !border-0 !bg-emerald-600 hover:!bg-emerald-700 !text-white !p-0 !h-12 !w-12 !min-h-12 !min-w-12 sm:!h-11 sm:!w-11 !rounded-full !shadow-none active:!shadow-none active:scale-95 !transition-transform !duration-150 group/chat flex items-center justify-center touch-manipulation select-none"
+                                  className="flex-shrink-0 !border-0 !bg-emerald-600 hover:!bg-emerald-700 !text-white !p-0 !h-16 !w-16 !min-h-16 !min-w-16 sm:!h-[60px] sm:!w-[60px] !rounded-full !shadow-none active:!shadow-none active:scale-95 !transition-transform !duration-150 group/chat flex items-center justify-center touch-manipulation select-none"
                                 >
-                                  <MessageSquare className="!h-5 !w-5 relative z-10 group-hover/chat:scale-110 transition-transform" />
+                                  <MessageSquare className="!h-7 !w-7 relative z-10 group-hover/chat:scale-110 transition-transform" />
                                 </Button>
                               )}
                                 </div>
