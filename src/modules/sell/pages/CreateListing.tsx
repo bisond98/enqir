@@ -985,6 +985,7 @@ export default function CreateListing() {
                 viewBox="0 0 640 260"
                 className="absolute inset-0 w-full h-full pointer-events-none"
                 preserveAspectRatio="none"
+                style={{ filter: 'drop-shadow(0 2px 0 rgba(17,24,39,0.24)) drop-shadow(0 4px 0 rgba(17,24,39,0.20)) drop-shadow(0 -2px 0 rgba(17,24,39,0.14)) drop-shadow(2px 0 0 rgba(17,24,39,0.16)) drop-shadow(-2px 0 0 rgba(17,24,39,0.16)) drop-shadow(0 10px 12px rgba(17,24,39,0.30))' }}
               >
                 <defs>
                   <linearGradient id="brushSwashSell" x1="0" y1="0" x2="1" y2="0.6">
