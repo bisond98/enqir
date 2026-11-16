@@ -2779,8 +2779,8 @@ const Dashboard = () => {
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 w-full pt-1 sm:pt-2">
-                                    <span className={`text-lg sm:text-xl font-bold text-center w-full ${
+                                  <div className="relative flex items-center justify-center gap-1.5 sm:gap-2 w-full pt-1 sm:pt-2">
+                                    <span className={`relative z-10 text-lg sm:text-xl font-bold text-center w-full ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
                                 {submission.title}
