@@ -2120,8 +2120,8 @@ const Dashboard = () => {
                             <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
                               expiredFlag ? 'opacity-70' : ''
                             }`}>
-                              {/* Diamond pattern across the whole black header (no fade) */}
-                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 opacity-50">
+                              {/* Same diamond pattern across the black header */}
+                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
                                 <div className="responses-meander" />
                               </div>
                               {/* Elegant pattern overlay */}
@@ -2382,8 +2382,8 @@ const Dashboard = () => {
                           >
                             {/* Premium Black Header - matching enquiry card */}
                             <div className="relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 py-2.5 min-h-[52px] sm:min-h-[60px]">
-                              {/* Diamond pattern across the whole black header (no fade) */}
-                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 opacity-50">
+                              {/* Same diamond pattern across the black header */}
+                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
                                 <div className="responses-meander" />
                               </div>
                               <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
@@ -2702,8 +2702,8 @@ const Dashboard = () => {
                           <div className={`relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 py-2.5 min-h-[52px] sm:min-h-[60px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
                           }`}>
-                            {/* Diamond pattern across the whole black header (no fade) */}
-                            <div aria-hidden className="pointer-events-none absolute inset-0 z-0 opacity-50">
+                            {/* Same diamond pattern across the black header */}
+                            <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
                               <div className="responses-meander" />
                             </div>
                             {/* Elegant pattern overlay */}
@@ -2713,15 +2713,13 @@ const Dashboard = () => {
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                             
                             <div className="relative flex flex-col gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
-                              <div className="flex items-center justify-between gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
-                                <div className="flex items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 flex-1 min-w-0 pr-2">
+                              <div className="flex w-full items-center justify-end gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
+                                <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
                                   {((submission as any).isProfileVerified || (submission as any).userVerified || submission.isIdentityVerified) && (
                                     <div className="flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 lg:w-4.5 lg:h-4.5 xl:w-5 xl:h-5 rounded-full flex-shrink-0 shadow-lg ring-2 ring-white/20 bg-blue-500">
                                       <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
                                     </div>
                                   )}
-                                </div>
-                                <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
                                 {/* Enquiry Deleted Badge */}
                                 {isEnquiryDeleted && (
                                   <Badge className="text-[9px] sm:text-xs lg:text-[8px] xl:text-[9px] px-2 sm:px-2.5 lg:px-2 xl:px-2.5 py-0.5 sm:py-1 lg:py-0.5 xl:py-0.5 bg-red-500/25 text-red-200 border border-red-400/40 whitespace-nowrap backdrop-blur-sm !shadow-none">

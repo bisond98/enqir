@@ -521,8 +521,11 @@ const MyResponses = () => {
                   <Card className={`group relative rounded-2xl overflow-hidden ${isExpired || isEnquiryDeleted ? 'opacity-70 bg-gray-50 border-black grayscale cursor-not-allowed' : 'border-gray-200/80 bg-gradient-to-br from-white via-white to-gray-50/40 border-2 shadow-[0_12px_24px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.8)] active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] active:translate-y-[2px] active:scale-[0.99] sm:transition-all sm:duration-200 sm:hover:shadow-[0_16px_32px_rgba(0,0,0,0.2),0_8px_16px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.9)] sm:hover:-translate-y-1 sm:hover:scale-[1.02] sm:active:shadow-[0_4px_8px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.08)] sm:active:translate-y-[2px] sm:active:scale-[0.99] cursor-pointer'}`}>
                     {/* Card Header - Solid black background */}
                     <div className={`relative bg-black px-3 sm:px-4 lg:px-3 xl:px-4 py-4 sm:py-5 lg:py-4 xl:py-5 rounded-t-2xl ${isExpired || isEnquiryDeleted ? 'opacity-70' : ''}`}>
-                      <div className="flex items-center justify-between gap-1 sm:gap-2">
-                        <div className="flex items-center space-x-1 sm:space-x-3 flex-1 min-w-0">
+                      <div className="flex w-full items-center justify-between gap-1 sm:gap-2">
+                        <h3 className={`hidden sm:block text-base sm:text-xl lg:text-2xl font-black truncate ${isExpired || isEnquiryDeleted ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
+                          Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
+                        </h3>
+                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-auto">
                           {isExpired || isEnquiryDeleted ? (
                             <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-red-300 flex-shrink-0" />
                           ) : (
@@ -534,11 +537,6 @@ const MyResponses = () => {
                             </div>
                             )
                           )}
-                          <h3 className={`hidden sm:block text-base sm:text-xl lg:text-2xl font-black truncate ${isExpired || isEnquiryDeleted ? 'text-gray-300' : 'text-white'} drop-shadow-sm`}>
-                            Your Response #{sortedSubmissions.findIndex(s => s.id === submission.id) + 1}
-                          </h3>
-                        </div>
-                        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                           {isEnquiryDeleted && (
                             <Badge variant="outline" className="text-[8px] sm:text-xs text-red-500 border border-red-400 font-bold bg-red-50">Enquiry Deleted</Badge>
                           )}
