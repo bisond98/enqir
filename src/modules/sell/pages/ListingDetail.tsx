@@ -1106,7 +1106,7 @@ export default function ListingDetail() {
                     <button
                       type="button"
                       onClick={handleCallClick}
-                      className="relative w-full !h-14 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 touch-manipulation select-none flex items-center justify-center"
+                      className="relative w-full !h-14 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none flex items-center justify-center"
                     >
                       <Phone className="h-4 w-4 text-white mr-2" />
                       <span>Call Seller</span>
@@ -1155,7 +1155,7 @@ export default function ListingDetail() {
                         type="button"
                         onClick={handleCallClick}
                         disabled={callingPayment}
-                        className="relative w-full !h-14 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 touch-manipulation select-none flex items-center justify-center"
+                        className="relative w-full !h-14 !text-lg !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-none active:!shadow-none !transition-colors !duration-150 disabled:!opacity-50 touch-manipulation select-none flex items-center justify-center"
                       >
                         <Phone className="h-4 w-4 text-white mr-2" />
                         <span>{callingPayment ? 'Opening payment…' : 'Call Seller'}</span>
