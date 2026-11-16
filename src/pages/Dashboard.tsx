@@ -2206,7 +2206,7 @@ const Dashboard = () => {
                               {/* Enquiry Details Section - Visible on all screens, wider on mobile */}
 
                               {/* Share + Delete Buttons - Desktop Only */}
-                                  <div className="hidden lg:flex items-center gap-2 xl:gap-2.5">
+                                  <div className="hidden lg:flex items-center justify-center gap-2 xl:gap-2.5">
                                     <Button 
                                       variant="destructive" 
                                       size="sm" 
@@ -2286,7 +2286,7 @@ const Dashboard = () => {
                               </Button>
                               
                                 {/* Share + Delete Buttons - Mobile/Tablet Only */}
-                                <div className="lg:hidden flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
+                                <div className="lg:hidden flex items-center justify-center gap-2 sm:gap-2.5 w-full">
                                   <Button 
                                     variant="destructive" 
                                     size="sm" 
@@ -2315,7 +2315,7 @@ const Dashboard = () => {
                                     }}
                                     aria-label="Share enquiry"
                                     title="Share"
-                                    className="ml-auto flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
+                                    className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
                                   >
                                     <Share2 className="h-[17px] w-[17px]" strokeWidth={1.8} />
                                   </button>
@@ -2418,24 +2418,24 @@ const Dashboard = () => {
                               <div className="flex-1 min-h-[12px]"></div>
 
                               {/* Remove (left) + Chat (right) — round icon buttons */}
-                              <div className="relative flex items-center justify-between pt-3" onClick={(e) => e.stopPropagation()}>
+                              <div className="relative flex items-center justify-center gap-3 sm:gap-4 pt-3" onClick={(e) => e.stopPropagation()}>
                                 <Button
                                   variant="destructive"
                                   size="sm"
                                   onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeInterest(listing.id); }}
                                   aria-label="Remove from interests"
                                   title="Remove"
-                                  className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-gray-200 !bg-white hover:!bg-gray-50 !text-[#800020] !p-0 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  className="group/delete flex h-8 w-8 flex-shrink-0 items-center justify-center !rounded-full !border !border-gray-200 !bg-white hover:!bg-gray-50 !text-[#800020] !p-0 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                 >
-                                  <Trash2 className="!h-[14px] !w-[14px] group-hover/delete:scale-110 transition-transform" />
+                                  <Trash2 className="!h-3 !w-3 group-hover/delete:scale-110 transition-transform" />
                                 </Button>
                                 <Link
                                   to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
                                   aria-label="Chat with Seller"
                                   title="Chat with Seller"
-                                  className="group/chat flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  className="group/chat flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                 >
-                                  <MessageSquare className="h-[14px] w-[14px] group-hover/chat:scale-110 transition-transform" />
+                                  <MessageSquare className="h-5 w-5 group-hover/chat:scale-110 transition-transform" />
                                 </Link>
                               </div>
                             </div>
@@ -2752,6 +2752,13 @@ const Dashboard = () => {
                                     {submission.status.charAt(0).toUpperCase() + submission.status.slice(1)}
                                   </Badge>
                                 )}
+                                {/* Submitted date & time — small, at the header's right edge */}
+                                <span className="inline-flex min-w-0 items-center gap-1 rounded-full border border-white/25 bg-white/10 px-1.5 py-px">
+                                  <Clock className="h-2 w-2 flex-shrink-0 text-white/70" />
+                                  <span className="text-[7px] font-bold text-white/80 truncate">
+                                    {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
+                                  </span>
+                                </span>
                               </div>
                               </div>
 
@@ -2801,21 +2808,11 @@ const Dashboard = () => {
                               </div>
                             </div>
 
-                            {/* Submitted date & time — above the action divider, right side on mobile */}
-                            <div className="flex justify-end sm:justify-start pb-0">
-                              <span className="inline-flex max-w-full items-center gap-1 rounded-full border border-gray-300 bg-gray-100 px-2 py-0.5">
-                                <Clock className="h-2.5 w-2.5 flex-shrink-0 text-gray-500" />
-                                <span className="text-[9px] font-bold text-gray-700 truncate">
-                                  {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
-                                </span>
-                              </span>
-                            </div>
-
                             {/* Action Buttons */}
                               <div className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5 relative z-10 pt-2 sm:pt-2.5 flex-wrap lg:flex-nowrap">
                                 {/* Call + Chat — side by side, Call first */}
                                 <div className="flex flex-col gap-2 w-full sm:w-auto">
-                                <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 w-full sm:w-auto">
+                                <div className="flex items-center justify-center gap-3 sm:gap-4 w-full">
                                 {submission.status === 'approved' && !isEnquiryDeleted && !isEnquiryExpired && (() => {
                                   const respondedEnquiry = respondedEnquiriesById[submission.enquiryId];
                                   const enquiryMobile = respondedEnquiry?.mobileNumber && String(respondedEnquiry.mobileNumber).trim() ? String(respondedEnquiry.mobileNumber).trim() : null;
@@ -2828,12 +2825,11 @@ const Dashboard = () => {
                                         e.stopPropagation();
                                         setScamAlertPending({ action: 'call', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                       }}
-                                      className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/call flex items-center justify-center sm:min-w-[110px] lg:min-w-[100px] xl:min-w-[110px] relative overflow-hidden touch-manipulation select-none"
+                                      aria-label="Call"
+                                      title="Call"
+                                      className="flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !p-0 !h-12 !w-12 !min-h-12 !min-w-12 sm:!h-11 sm:!w-11 !rounded-full !shadow-none active:!shadow-none active:scale-95 !transition-transform !duration-150 group/call flex items-center justify-center touch-manipulation select-none"
                                     >
-                                      <span className="w-5 h-5 rounded-full border-[1.5px] border-white flex items-center justify-center mr-1.5 lg:mr-1 flex-shrink-0 relative z-10">
-                                        <Phone className="h-2.5 w-2.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
-                                      </span>
-                                      <span className="tracking-tight whitespace-nowrap relative z-10">Call</span>
+                                      <Phone className="!h-5 !w-5 relative z-10 group-hover/call:scale-110 transition-transform" />
                                     </Button>
                                   );
                                 })()}
@@ -2845,10 +2841,11 @@ const Dashboard = () => {
                                     e.stopPropagation();
                                     setScamAlertPending({ action: 'chat', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                   }}
-                                    className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-emerald-700 hover:!bg-emerald-800 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
+                                  aria-label="Chat"
+                                  title="Chat"
+                                  className="flex-shrink-0 !border-0 !bg-emerald-600 hover:!bg-emerald-700 !text-white !p-0 !h-12 !w-12 !min-h-12 !min-w-12 sm:!h-11 sm:!w-11 !rounded-full !shadow-none active:!shadow-none active:scale-95 !transition-transform !duration-150 group/chat flex items-center justify-center touch-manipulation select-none"
                                 >
-                                    <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
-                                  <span className="tracking-tight whitespace-nowrap relative z-10">Chat</span>
+                                  <MessageSquare className="!h-5 !w-5 relative z-10 group-hover/chat:scale-110 transition-transform" />
                                 </Button>
                               )}
                                 </div>
