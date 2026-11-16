@@ -2694,7 +2694,9 @@ const Dashboard = () => {
                           }}
                         >
                           {/* Geometric pattern, strong on the left and fading right */}
-                          <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade" />
+                          <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
+                            <div className="responses-meander" />
+                          </div>
 
                           {/* Premium Header with Sophisticated Design */}
                           <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-3 sm:px-4 lg:px-3.5 xl:px-4 py-2 sm:py-2.5 ${
@@ -2778,7 +2780,7 @@ const Dashboard = () => {
                                   </div>
                                 ) : (
                                   <div className="flex items-center justify-center gap-1.5 sm:gap-2 w-full pt-1 sm:pt-2">
-                                    <span className={`inline-block max-w-full rounded-lg bg-white px-2 py-0.5 text-lg sm:text-xl font-bold text-center ${
+                                    <span className={`text-lg sm:text-xl font-bold text-center w-full ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
                                 {submission.title}
@@ -2824,7 +2826,7 @@ const Dashboard = () => {
                                         e.stopPropagation();
                                         setScamAlertPending({ action: 'call', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                       }}
-                                      className="flex-1 sm:flex-none flex-shrink-0 !border !border-white/80 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/call flex items-center justify-center sm:min-w-[110px] lg:min-w-[100px] xl:min-w-[110px] relative overflow-hidden touch-manipulation select-none"
+                                      className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/call flex items-center justify-center sm:min-w-[110px] lg:min-w-[100px] xl:min-w-[110px] relative overflow-hidden touch-manipulation select-none"
                                     >
                                       <span className="w-5 h-5 rounded-full border-[1.5px] border-white flex items-center justify-center mr-1.5 lg:mr-1 flex-shrink-0 relative z-10">
                                         <Phone className="h-2.5 w-2.5 lg:h-2.5 lg:w-2.5 xl:h-3 xl:w-3 text-white" />
@@ -2841,7 +2843,7 @@ const Dashboard = () => {
                                     e.stopPropagation();
                                     setScamAlertPending({ action: 'chat', enquiryId: submission.enquiryId, sellerId: String(submission.sellerId) });
                                   }}
-                                    className="flex-1 sm:flex-none flex-shrink-0 !border !border-white/80 !bg-emerald-700 hover:!bg-emerald-800 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
+                                    className="flex-1 sm:flex-none flex-shrink-0 !border-0 !bg-emerald-700 hover:!bg-emerald-800 !text-white text-xs sm:text-sm lg:text-[10px] xl:text-xs px-3.5 sm:px-4 lg:px-3 xl:px-3.5 py-1.5 sm:py-1.5 lg:py-1.5 xl:py-1.5 h-auto sm:h-9 lg:h-8 xl:h-8.5 font-black !rounded-2xl !shadow-none active:!shadow-none !transition-colors !duration-150 group/chat flex items-center justify-center sm:min-w-[130px] lg:min-w-[110px] xl:min-w-[120px] relative overflow-hidden touch-manipulation select-none"
                                 >
                                     <MessageSquare className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">Chat</span>
@@ -2863,7 +2865,7 @@ const Dashboard = () => {
                                 }}
                                   aria-label="Delete response"
                                   title="Delete"
-                                  className="group/delete flex !h-8 !w-8 !min-h-8 !min-w-8 flex-shrink-0 items-center justify-center !rounded-full !border !border-white/80 !bg-red-700 hover:!bg-red-800 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
+                                  className="group/delete flex !h-8 !w-8 !min-h-8 !min-w-8 flex-shrink-0 items-center justify-center !rounded-full !border !border-red-700 !bg-red-700 hover:!bg-red-800 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
                                   disabled={isEnquiryDeleted || isEnquiryExpired}
                               >
                                   <Trash2 className="!h-3.5 !w-3.5 group-hover/delete:scale-110 transition-transform" />
