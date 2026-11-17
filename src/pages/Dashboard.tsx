@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, useContext, useRef } from "react";
 import { motion } from "framer-motion";
+import { CategoryDoodle } from "../components/categoryDoodles";
+import { DealPairCategoryDoodle } from "../components/dealPairCategoryDoodle";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -2527,6 +2529,19 @@ const Dashboard = () => {
 
                               </div>
                             </div>
+                            {/* Under the call / chat buttons: the pair closing the deal, dressed
+                                for this category, with its object beside them */}
+                            <div className="flex h-[56px] sm:h-[62px] w-full items-center justify-center gap-3 overflow-hidden border-t border-gray-100 bg-white px-2">
+                              <CategoryDoodle
+                                category={listing.category}
+                                className="pointer-events-none h-[90%] w-auto max-w-[46%] opacity-75 saturate-[0.85]"
+                              />
+                              <DealPairCategoryDoodle
+                                category={listing.category}
+                                showObject={false}
+                                className="pointer-events-none h-[90%] w-auto max-w-[46%] opacity-75 saturate-[0.85]"
+                              />
+                            </div>
                           </motion.div>
                         ))}
                       </div>
@@ -2739,6 +2754,10 @@ const Dashboard = () => {
                         const isEnquiryDeleted = deletedEnquiries.has(submission.enquiryId);
                         // Check if enquiry is expired or deal closed - must fetch if not in state
                         const enquiry = enquiries.find(e => e.id === submission.enquiryId);
+                        // Jobs enquiries get their own hand-drawn doodle in the tile header.
+                        // The responded enquiry (not the user's own list) carries its category.
+                        const respondedEnquiry = respondedEnquiriesById[submission.enquiryId] || enquiry;
+                        const respondedCategory = String(respondedEnquiry?.category || '').toLowerCase();
                         const isDealClosed = (() => {
                           if (!enquiry) return false;
                           return enquiry.status === 'deal_closed' || enquiry.dealClosed === true;
@@ -2855,6 +2874,12 @@ const Dashboard = () => {
                           
                           {/* Premium Content Area */}
                           <div className="relative p-3 sm:p-4 min-h-[196px] sm:min-h-[212px] lg:min-h-[218px] xl:min-h-[234px]">
+                            {/* Jobs: a hand-drawn briefcase, role card and offer inked across the tile body */}
+                            {/* One doodle per category; a smiling character for anything else */}
+                            <CategoryDoodle
+                              category={respondedCategory}
+                              className="pointer-events-none absolute bottom-0 right-1 z-0 h-[68%] w-auto max-w-[52%] opacity-80 saturate-[0.85] sm:h-[72%] xl:h-[74%]"
+                            />
                             {/* Subtle background texture */}
                             <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                             
