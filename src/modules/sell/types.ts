@@ -24,6 +24,8 @@ export interface SellListing {
   details?: ListingDetails | null;
   /** Seller's contact mobile number (e.g. "+91 98765 43210") — never displayed on the page, only revealed via the call popup to paid users. */
   mobileNumber?: string | null;
+  /** How many times the seller has changed the price after posting (max 2). */
+  priceEditCount?: number;
   createdAt?: any;
   updatedAt?: any;
   status: 'live' | 'draft' | 'deleted' | 'expired';

@@ -8,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { listMyListings, listResponsesForSeller, softDeleteListing, updateListing } from '../services/sellDb';
 import type { SellListing, SellListingResponse } from '../types';
 import { Link } from 'react-router-dom';
-import { Pencil, Trash2, Save, X, Plus, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail, User, Clock } from 'lucide-react';
+import { Pencil, Trash2, Plus, X, IndianRupee, MapPin, Eye, MessageSquare, LayoutDashboard, Tag, Package, MapPinned, ChevronLeft, ChevronRight, Mail, User, Clock, MoreHorizontal } from 'lucide-react';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import ShareButton from '../components/ShareButton';
 
@@ -18,12 +18,27 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
   const [listings, setListings] = useState<SellListing[]>([]);
   const [responses, setResponses] = useState<SellListingResponse[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  // Which listing tile has its 3-dot menu open (holds Edit + Delete)
+  const [openListingMenu, setOpenListingMenu] = useState<string | null>(null);
+
+  // Close the 3-dot menu on any outside tap. A full-screen overlay can't be used:
+  // the cards are hover-transformed, which lifts them above such an overlay.
+  useEffect(() => {
+    if (!openListingMenu) return;
+    const close = () => setOpenListingMenu(null);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [openListingMenu]);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'listings' | 'responses'>('listings');
   const [editPrice, setEditPrice] = useState('');
   const [listingsPage, setListingsPage] = useState(1);
   const [responsesPage, setResponsesPage] = useState(1);
   const ITEMS_PER_PAGE = 5;
+  // A seller may change a listing's price only twice after posting.
+  const MAX_PRICE_EDITS = 2;
+  const priceEditsUsed = (l: SellListing) => l.priceEditCount ?? 0;
+  const priceEditsLeft = (l: SellListing) => Math.max(0, MAX_PRICE_EDITS - priceEditsUsed(l));
 
   const load = async () => {
     if (!user) return;
@@ -42,6 +57,11 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
   }, [user?.uid]);
 
   const startEdit = (l: SellListing) => {
+    if (priceEditsLeft(l) <= 0) {
+      // Third attempt: stay frozen — no editor opens — and say why.
+      toast({ title: 'Price locked', description: 'You can only edit it for 2 times.', variant: 'destructive' });
+      return;
+    }
     setEditingId(l.id);
     // Only the price is editable; everything else stays untouched.
     setEditPrice(l.price != null ? String(l.price) : '');
@@ -49,11 +69,19 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
 
   const saveEdit = async () => {
     if (!editingId) return;
+    const target = listings.find((l) => l.id === editingId);
+    const used = target ? priceEditsUsed(target) : 0;
+    if (used >= MAX_PRICE_EDITS) {
+      setEditingId(null);
+      toast({ title: 'Price locked', description: 'You can only edit it for 2 times.', variant: 'destructive' });
+      return;
+    }
     // Only the price is editable once a listing is live.
     setSaving(true);
     try {
       await updateListing(editingId, {
         price: editPrice ? Number(editPrice.replace(/[^0-9]/g, '')) : null,
+        priceEditCount: used + 1,
       } as any);
       toast({ title: 'Saved', description: 'Listing updated.', variant: 'success' });
       setEditingId(null);
@@ -200,35 +228,31 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
               {editingId === l.id ? (
                 <div className="p-4 space-y-3" onClick={(e) => e.preventDefault()}>
                   {/* Price */}
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price</label>
-                    <div className="flex items-center border border-gray-300 rounded-xl h-12 min-h-[48px] overflow-hidden bg-white !shadow-none focus-within:border-black transition-colors">
-                      <span className="flex items-center justify-center pl-4 text-sm font-bold text-black"><IndianRupee className="h-4 w-4" /></span>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Price</label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-10 min-h-[40px] flex-1 min-w-0 items-center overflow-hidden rounded-[10px] border-0 bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.14),0_0_8px_rgba(0,0,0,0.08),0_4px_10px_rgba(0,0,0,0.10)] hover:shadow-[0_3px_0_0_rgba(0,0,0,0.16),0_0_10px_rgba(0,0,0,0.10),0_5px_12px_rgba(0,0,0,0.12)] focus-within:shadow-[0_3px_0_0_rgba(0,0,0,0.16),0_0_12px_rgba(0,0,0,0.12),0_5px_14px_rgba(0,0,0,0.14)] transition-all duration-200">
+                      <span className="flex items-center justify-center pl-3 text-xs font-bold text-black"><IndianRupee className="h-3.5 w-3.5" /></span>
                       <input
                         type="text"
                         inputMode="numeric"
                         value={editPrice ? Number(editPrice).toLocaleString('en-IN') : ''}
                         onChange={(e) => setEditPrice(e.target.value.replace(/[^0-9]/g, ''))}
-                        placeholder="0"
-                        className="flex-1 h-full w-full text-base font-medium text-slate-900 bg-transparent px-3 outline-none border-none ring-0 focus:ring-0 focus:outline-none shadow-none focus:shadow-none placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] [caret-color:black] [-webkit-tap-highlight-color:transparent]"
-                        style={{ fontSize: '16px', WebkitTapHighlightColor: 'transparent', WebkitAppearance: 'none' }}
+                        placeholder="Change your price"
+                        className="flex-1 h-full w-full text-sm font-medium text-slate-900 bg-transparent px-2 outline-none border-none ring-0 focus:ring-0 focus:outline-none shadow-none focus:shadow-none placeholder:text-gray-400 placeholder:font-semibold placeholder:text-[11px] [caret-color:black] [-webkit-tap-highlight-color:transparent]"
+                        style={{ fontSize: '15px', WebkitTapHighlightColor: 'transparent', WebkitAppearance: 'none' }}
                         spellCheck={false}
                         autoCorrect="off"
                         autoCapitalize="off"
                         autoFocus
                       />
                     </div>
-                  </div>
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 pt-1">
-                    <Button className="flex-1 h-10 !bg-black hover:!bg-gray-900 !text-white !border-0 font-bold text-xs !rounded-full !shadow-none" onClick={saveEdit} disabled={saving}>
-                      <Save className="h-3 w-3 mr-1.5" />{saving ? 'Saving…' : 'Save'}
+                    <Button className="h-10 px-3 flex-shrink-0 !bg-black hover:!bg-gray-900 !text-white !border-0 font-bold text-[11px] !rounded-full !shadow-none" onClick={saveEdit} disabled={saving}>
+                      {saving ? 'Saving…' : 'Save'}
                     </Button>
-                    <Button variant="outline" className="flex-1 h-10 !border !border-gray-300 font-bold text-xs !rounded-full !shadow-none" onClick={() => setEditingId(null)} disabled={saving}>
-                      <X className="h-3 w-3 mr-1.5" />Cancel
+                    <Button variant="outline" aria-label="Cancel" title="Cancel" className="h-10 w-10 flex-shrink-0 !border !border-gray-300 !bg-gray-100 hover:!bg-gray-200 !text-gray-600 !p-0 font-bold text-[11px] !rounded-full !shadow-none" onClick={() => setEditingId(null)} disabled={saving}>
+                      <X className="h-4 w-4" />
                     </Button>
-                  </div>
-                </div>
+                  </div>                </div>
               ) : (
                 <Link to={`/sell/listing/${l.id}`} className="block">
                   <div className="flex gap-3.5 p-3.5">
@@ -274,22 +298,39 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
                     <span className="mr-auto inline-flex items-center gap-0.5 text-[7px] font-bold text-gray-700 bg-gray-100 border border-gray-300 rounded-full px-1.5 py-[1px]">
                       <MapPin className="h-1.5 w-1.5 text-gray-500" />{l.location}
                     </span>
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(l); }}
-                      aria-label="Edit listing"
-                      title="Edit"
-                      className="group/edit flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 border border-gray-200 text-gray-600 hover:bg-gray-200 transition-colors focus-visible:border-black touch-manipulation select-none"
-                    >
-                      <Pencil className="h-3.5 w-3.5 group-hover/edit:scale-110 transition-transform" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); remove(l.id); }}
-                      aria-label="Delete listing"
-                      title="Delete"
-                      className="group/del flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-red-700 border border-red-700 text-white hover:bg-red-800 transition-colors focus-visible:border-red-800 touch-manipulation select-none"
-                    >
-                      <Trash2 className="h-3.5 w-3.5 group-hover/del:scale-110 transition-transform" />
-                    </button>
+                    {/* 3-dot menu: Edit + Delete */}
+                    <div className="relative flex-shrink-0">
+                      <button
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenListingMenu(openListingMenu === l.id ? null : l.id); }}
+                        aria-label="Listing options"
+                        aria-haspopup="menu"
+                        aria-expanded={openListingMenu === l.id}
+                        title="More options"
+                        className="flex items-center justify-center border-0 bg-transparent p-0 text-gray-500 hover:text-black transition-colors touch-manipulation select-none"
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </button>
+                      {openListingMenu === l.id && (
+                        <div role="menu" className="absolute right-0 bottom-7 z-30 w-40 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_6px_16px_-6px_rgba(17,24,39,0.35)]">
+                          <button
+                            role="menuitem"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenListingMenu(null); startEdit(l); }}
+                            className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold text-gray-800 hover:bg-gray-50 transition-colors"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                            Edit
+                          </button>
+                          <button
+                            role="menuitem"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenListingMenu(null); remove(l.id); }}
+                            className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold !text-[#800020] hover:bg-gray-50 transition-colors"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     {/* Share — same green round share as the listing detail page */}
                     <ShareButton
                       listing={l}

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
-import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, ArrowLeftRight, ChevronLeft, ChevronRight, CalendarIcon, Sparkles, Flame, IndianRupee, BadgeCheck, Phone, Share2 } from "lucide-react";
+import { Eye, MessageSquare, Rocket, ShoppingBag, ArrowRight, TrendingUp, Users, Activity, Plus, RefreshCw, ArrowLeft, Bookmark, CheckCircle, Clock, Lock, AlertTriangle, Trash2, ShoppingCart, UserCheck, MapPin, Tag, ChevronDown, LayoutDashboard, FileText, Reply, ArrowLeftRight, ChevronLeft, ChevronRight, CalendarIcon, Sparkles, Flame, IndianRupee, BadgeCheck, Phone, Share2, MoreHorizontal } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import Layout from "../components/Layout";
 import { useAuth } from "../contexts/AuthContext";
@@ -115,6 +115,9 @@ const Dashboard = () => {
   const [sellerSubmissions, setSellerSubmissions] = useState<SellerSubmission[]>([]);
   const [enquiryResponses, setEnquiryResponses] = useState<{[key: string]: SellerSubmission[]}>({});
   const [responsesSummary, setResponsesSummary] = useState<SellerSubmission[]>([]);
+  // Which sell-response card has its 3-dot overflow menu open (holds the delete action)
+  const [openSellResponseMenu, setOpenSellResponseMenu] = useState<string | null>(null);
+
   const [responsesReady, setResponsesReady] = useState(false);
   const [loading, setLoading] = useState(true);
   const isInitialLoad = useRef(true);
@@ -131,6 +134,8 @@ const Dashboard = () => {
   const [deletedEnquiries, setDeletedEnquiries] = useState<Set<string>>(new Set()); // Track deleted enquiry IDs
   // Share — one menu instance, anchored to whichever card's Share button was tapped
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  // Which enquiry card has its 3-dot overflow menu open (holds the delete action)
+  const [openEnquiryMenu, setOpenEnquiryMenu] = useState<string | null>(null);
   const [shareMenuEnquiryId, setShareMenuEnquiryId] = useState<string | null>(null);
   const shareAnchorRef = useRef<HTMLElement | null>(null);
   const shareEnquiry = useMemo(
@@ -178,6 +183,20 @@ const Dashboard = () => {
   const [interestListings, setInterestListings] = useState<SellListing[]>([]);
   const [hiddenInterestIds, setHiddenInterestIds] = useState<Set<string>>(new Set());
   const [enquiryView, setEnquiryView] = useState<'enquiries' | 'interests' | 'saved'>('enquiries');
+  // Which interests card has its 3-dot overflow menu open (holds the delete action)
+  const [openInterestMenu, setOpenInterestMenu] = useState<string | null>(null);
+  // Close any tile's 3-dot menu on an outside tap. A fixed overlay would sit above the
+  // cards' animated transforms, so the tap is tracked on the document instead.
+  useEffect(() => {
+    if (!openInterestMenu && !openEnquiryMenu && !openSellResponseMenu) return;
+    const close = () => {
+      setOpenInterestMenu(null);
+      setOpenEnquiryMenu(null);
+      setOpenSellResponseMenu(null);
+    };
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [openInterestMenu, openEnquiryMenu, openSellResponseMenu]);
   const [viewMode, setViewMode] = useState<'buyer' | 'seller' | 'matches'>(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -2206,23 +2225,44 @@ const Dashboard = () => {
                               {/* Enquiry Details Section - Visible on all screens, wider on mobile */}
 
                               {/* Share + Delete Buttons - Desktop Only */}
-                                  <div className="hidden lg:flex items-center justify-center gap-2 xl:gap-2.5 lg:pt-7">
-                                    <Button 
-                                      variant="destructive" 
-                                      size="sm" 
+                                  <div className="relative hidden lg:flex items-center justify-center lg:pt-7">
+                                    <button
+                                      type="button"
+                                      aria-label="Delete enquiry"
+                                      aria-haspopup="menu"
+                                      aria-expanded={openEnquiryMenu === enquiry.id}
+                                      title="More options"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
-                                          handleDeleteEnquiry(enquiry.id);
-                                        }
+                                        e.preventDefault();
+                                        if (expiredFlag) return;
+                                        setOpenEnquiryMenu(openEnquiryMenu === enquiry.id ? null : enquiry.id);
                                       }}
                                       disabled={expiredFlag}
-                                      aria-label="Delete enquiry"
-                                      title="Delete"
-                                      className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-[#800020] !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
+                                      className="absolute bottom-1 left-0 z-20 flex items-center justify-center border-0 bg-transparent p-0 text-gray-500 hover:text-black transition-colors duration-150 touch-manipulation select-none disabled:opacity-40 disabled:cursor-not-allowed"
                                     >
-                                      <Trash2 className="h-[15px] w-[15px] xl:h-[17px] xl:w-[17px] group-hover/delete:scale-110 transition-transform" />
-                                    </Button>
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    </button>
+                                    {openEnquiryMenu === enquiry.id && (
+                                      <div role="menu" className="absolute bottom-10 left-0 z-30 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_6px_16px_-6px_rgba(17,24,39,0.35)]">
+                                        <button
+                                          type="button"
+                                          role="menuitem"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                            setOpenEnquiryMenu(null);
+                                            if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
+                                              handleDeleteEnquiry(enquiry.id);
+                                            }
+                                          }}
+                                          className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold !text-[#800020] hover:bg-gray-50 transition-colors duration-150"
+                                        >
+                                          <Trash2 className="h-3.5 w-3.5" />
+                                          Delete
+                                        </button>
+                                      </div>
+                                    )}
                                     {/* Share — right of Delete, same green round share as the enquiry detail page */}
                                     <button
                                       type="button"
@@ -2286,23 +2326,44 @@ const Dashboard = () => {
                               </Button>
                               
                                 {/* Share + Delete Buttons - Mobile/Tablet Only */}
-                                <div className="lg:hidden flex items-center justify-center gap-2 sm:gap-2.5 w-full pt-5 sm:pt-7">
-                                  <Button 
-                                    variant="destructive" 
-                                    size="sm" 
+                                <div className="relative lg:hidden flex items-center justify-center w-full pt-5 sm:pt-7">
+                                  <button
+                                    type="button"
+                                    aria-label="Delete enquiry"
+                                    aria-haspopup="menu"
+                                    aria-expanded={openEnquiryMenu === enquiry.id}
+                                    title="More options"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
-                                        handleDeleteEnquiry(enquiry.id);
-                                      }
+                                      e.preventDefault();
+                                      if (expiredFlag) return;
+                                      setOpenEnquiryMenu(openEnquiryMenu === enquiry.id ? null : enquiry.id);
                                     }}
                                     disabled={expiredFlag}
-                                    aria-label="Delete enquiry"
-                                    title="Delete"
-                                    className="group/delete flex h-10 w-10 flex-shrink-0 items-center justify-center !rounded-full !border !border-[#800020] !bg-[#800020] hover:!bg-[#6b0019] !text-white !p-0 !shadow-none !transition-colors active:!scale-95 disabled:!opacity-50 disabled:!cursor-not-allowed touch-manipulation"
+                                    className="absolute bottom-1 left-0 z-20 flex items-center justify-center border-0 bg-transparent p-0 text-gray-500 hover:text-black transition-colors duration-150 touch-manipulation select-none disabled:opacity-40 disabled:cursor-not-allowed"
                                   >
-                                    <Trash2 className="h-[17px] w-[17px] group-hover/delete:scale-110 transition-transform" />
-                                  </Button>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </button>
+                                  {openEnquiryMenu === enquiry.id && (
+                                    <div role="menu" className="absolute bottom-10 left-0 z-30 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_6px_16px_-6px_rgba(17,24,39,0.35)]">
+                                      <button
+                                        type="button"
+                                        role="menuitem"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          e.preventDefault();
+                                          setOpenEnquiryMenu(null);
+                                          if (!expiredFlag && window.confirm(`Are you sure you want to delete the enquiry "${enquiry.title}"? This action cannot be undone.`)) {
+                                            handleDeleteEnquiry(enquiry.id);
+                                          }
+                                        }}
+                                        className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold !text-[#800020] hover:bg-gray-50 transition-colors duration-150"
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        Delete
+                                      </button>
+                                    </div>
+                                  )}
                                   {/* Share — pushed to the right edge of the row (detail page's green round share) */}
                                   <button
                                     type="button"
@@ -2417,18 +2478,44 @@ const Dashboard = () => {
                               {/* Spacer to maintain card height - matching enquiry card */}
                               <div className="flex-1 min-h-[12px]"></div>
 
-                              {/* Remove (left) + Chat (right) — round icon buttons */}
-                              <div className="relative flex items-center justify-center gap-3 sm:gap-4 pt-3" onClick={(e) => e.stopPropagation()}>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); removeInterest(listing.id); }}
+                              {/* Chat centred; overflow menu (with delete) sits bottom-left */}
+                              <div className="relative flex items-center justify-center gap-4 pt-3" onClick={(e) => e.stopPropagation()}>
+                                <button
+                                  type="button"
                                   aria-label="Remove from interests"
-                                  title="Remove"
-                                  className="group/delete flex h-8 w-8 flex-shrink-0 items-center justify-center !rounded-full !border !border-gray-200 !bg-white hover:!bg-gray-50 !text-[#800020] !p-0 !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  aria-haspopup="menu"
+                                  aria-expanded={openInterestMenu === listing.id}
+                                  title="More options"
+                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(openInterestMenu === listing.id ? null : listing.id); }}
+                                  className="absolute bottom-1 left-0 z-20 flex items-center justify-center border-0 bg-transparent p-0 text-gray-500 hover:text-black transition-colors duration-150 touch-manipulation select-none"
                                 >
-                                  <Trash2 className="!h-3 !w-3 group-hover/delete:scale-110 transition-transform" />
-                                </Button>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </button>
+                                {openInterestMenu === listing.id && (
+                                  <div role="menu" className="absolute bottom-10 left-0 z-30 w-40 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_6px_16px_-6px_rgba(17,24,39,0.35)]">
+                                    <button
+                                      type="button"
+                                      role="menuitem"
+                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(null); removeInterest(listing.id); }}
+                                      className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold !text-[#800020] hover:bg-gray-50 transition-colors duration-150"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                      Remove
+                                    </button>
+                                  </div>
+                                )}
+                                {/* Call — only when the seller actually listed a number */}
+                                {listing.mobileNumber && String(listing.mobileNumber).trim() && (
+                                  <a
+                                    href={`tel:${String(listing.mobileNumber).replace(/[^\d+]/g, '')}`}
+                                    aria-label="Call seller"
+                                    title="Call seller"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="group/call flex h-16 w-16 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  >
+                                    <Phone className="h-7 w-7 group-hover/call:scale-110 transition-transform" />
+                                  </a>
+                                )}
                                 <Link
                                   to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
                                   aria-label="Chat with Seller"
@@ -2437,6 +2524,7 @@ const Dashboard = () => {
                                 >
                                   <MessageSquare className="h-7 w-7 group-hover/chat:scale-110 transition-transform" />
                                 </Link>
+
                               </div>
                             </div>
                           </motion.div>
@@ -2852,23 +2940,44 @@ const Dashboard = () => {
                                 </div>
                               
                               {/* Delete (left) + View Details (right) — round icon buttons */}
-                              <div className="flex items-center justify-center w-full pt-1.5" onClick={(e) => e.stopPropagation()}>
-                              <Button 
-                                variant="destructive" 
-                                size="sm" 
-                                onClick={(e) => { 
-                                  e.stopPropagation(); 
-                                  if (!isEnquiryDeleted && !isEnquiryExpired) {
-                                    deleteResponse(submission.id);
-                                  }
+                              <div className="relative flex min-h-8 items-center justify-center w-full pt-1.5" onClick={(e) => e.stopPropagation()}>
+                              <button
+                                type="button"
+                                aria-label="Delete response"
+                                aria-haspopup="menu"
+                                aria-expanded={openSellResponseMenu === submission.id}
+                                title="More options"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  if (isEnquiryDeleted || isEnquiryExpired) return;
+                                  setOpenSellResponseMenu(openSellResponseMenu === submission.id ? null : submission.id);
                                 }}
-                                  aria-label="Delete response"
-                                  title="Delete"
-                                  className="group/delete flex !h-8 !w-8 !min-h-8 !min-w-8 flex-shrink-0 items-center justify-center !rounded-full !border !border-red-700 !bg-red-700 hover:!bg-red-800 !text-white !p-0 !shadow-none !transition-colors !duration-150 disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale touch-manipulation select-none"
-                                  disabled={isEnquiryDeleted || isEnquiryExpired}
+                                disabled={isEnquiryDeleted || isEnquiryExpired}
+                                className="absolute bottom-2 left-0 z-20 flex items-center justify-center border-0 bg-transparent p-0 text-gray-500 hover:text-black transition-colors duration-150 touch-manipulation select-none disabled:opacity-40 disabled:cursor-not-allowed"
                               >
-                                  <Trash2 className="!h-3.5 !w-3.5 group-hover/delete:scale-110 transition-transform" />
-                              </Button>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </button>
+                              {openSellResponseMenu === submission.id && (
+                                <div role="menu" className="absolute bottom-8 left-0 z-30 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_6px_16px_-6px_rgba(17,24,39,0.35)]">
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      e.preventDefault();
+                                      setOpenSellResponseMenu(null);
+                                      if (!isEnquiryDeleted && !isEnquiryExpired) {
+                                        deleteResponse(submission.id);
+                                      }
+                                    }}
+                                    className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold !text-[#800020] hover:bg-gray-50 transition-colors duration-150"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
 
                               </div>
                             </div>
