@@ -2124,7 +2124,7 @@ const Dashboard = () => {
                               />
                             )}
                             {/* Premium Header with Sophisticated Design */}
-                            <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 pr-9 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
+                            <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 pr-14 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
                               expiredFlag ? 'opacity-70' : ''
                             }`}>
                               {/* 3-dot with the delete pop-up, at the header's right corner */}
@@ -2167,9 +2167,12 @@ const Dashboard = () => {
                                   </div>
                                 )}
                               </div>
-                              {/* Same diamond pattern across the black header */}
-                              <div aria-hidden className="pointer-events-none absolute inset-0 z-0 responses-geo-fade">
-                                <div className="responses-meander" />
+                              {/* Category doodle, inked white straight onto the black header */}
+                              <div className="pointer-events-none absolute left-1.5 top-1/2 z-0 -translate-y-1/2">
+                                <CategoryDoodle
+                                  category={enquiry.category}
+                                  className="block h-8 w-auto sm:h-9 [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.4] [&_*]:[opacity:1]"
+                                />
                               </div>
                               {/* Elegant pattern overlay */}
                               <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
@@ -2177,7 +2180,7 @@ const Dashboard = () => {
                               {/* Shine effect on hover */}
                               <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                               
-                              <div className="relative flex items-start justify-between gap-3 sm:gap-4 lg:gap-4 xl:gap-4">
+                              <div className="relative flex items-start justify-between gap-3 pl-[84px] sm:gap-4 sm:pl-[92px] lg:gap-4 xl:gap-4">
                                 {/* Title Section with Better Typography */}
                                 <div className="flex-1 min-w-0 pr-2 sm:pr-3 lg:pr-3 xl:pr-3">
                                   <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3 mb-2.5 lg:mb-2 xl:mb-2">
@@ -2222,7 +2225,7 @@ const Dashboard = () => {
                                     }
                                     if (isNaN(deadlineDate.getTime())) return null;
                                     return (
-                                      <Badge className="flex items-center gap-1 px-2 sm:px-3 py-1 rounded-md !shadow-none border border-red-900 bg-red-800 text-white flex-shrink-0 mt-2.5 sm:mt-0">
+                                      <Badge className="absolute right-0 top-1/2 z-10 flex -translate-y-1/2 items-center gap-1 px-2 sm:px-3 py-1 rounded-md !shadow-none border border-red-900 bg-red-800 text-white flex-shrink-0">
                                         <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                         <span className="text-[8px] sm:text-[9px] font-bold whitespace-nowrap tracking-wide">
                                           {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
@@ -2303,7 +2306,7 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-fit max-w-full mx-auto sm:mx-0 flex-shrink-0 !border-0 !ring-0 !ring-offset-0 !outline-none !rounded-xl !bg-white hover:!bg-white !text-black px-4 py-1.5 sm:py-2 h-auto font-chip font-black text-xs sm:text-sm tracking-tight !shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] active:!translate-y-[1px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
+                                  className="w-fit max-w-full mx-auto sm:mx-0 flex-shrink-0 !border-0 !ring-0 !ring-offset-0 !outline-none !rounded-xl !bg-white hover:!bg-white !text-black px-4 py-1.5 sm:py-2 h-auto font-chip font-black text-xs sm:text-sm tracking-tight !shadow-[0_-1.5px_0_0_rgba(17,24,39,0.12),-1.5px_0_0_0_rgba(17,24,39,0.12),1.5px_0_0_0_rgba(17,24,39,0.12),0_1.5px_0_0_rgba(17,24,39,0.12),0_8px_12px_-6px_rgba(17,24,39,0.18)] active:!translate-y-[1px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
                               >
                                   <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
                                   <span className="tracking-tight whitespace-nowrap relative z-10">
@@ -2392,92 +2395,90 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[318px] lg:min-h-[316px] xl:min-h-[352px]"
+                            className="group relative aspect-square w-full overflow-hidden rounded-full bg-gradient-to-br from-black via-black to-gray-900 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01]"
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
                           >
-                            {/* Premium Black Header - matching enquiry card */}
-                            <div className="relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 pr-9 py-2.5 min-h-[52px] sm:min-h-[60px]">                              {/* 3-dot with the remove pop-up, at the header's right corner */}
-                              <div className="absolute right-1 top-1/2 z-20 -translate-y-1/2" onClick={(e) => e.stopPropagation()}>
-                                <button
-                                  type="button"
-                                  aria-label="Remove from interests"
-                                  aria-haspopup="menu"
-                                  aria-expanded={openInterestMenu === listing.id}
-                                  title="More options"
-                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(openInterestMenu === listing.id ? null : listing.id); }}
-                                  className="flex items-center justify-center border-0 bg-transparent p-0 text-white/70 hover:text-white transition-colors touch-manipulation select-none"
-                                >
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </button>
-                                {openInterestMenu === listing.id && (
-                                  <div role="menu" className="absolute right-0 top-6 z-30 w-40 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_6px_16px_-6px_rgba(17,24,39,0.35)]">
-                                    <button
-                                      type="button"
-                                      role="menuitem"
-                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(null); removeInterest(listing.id); }}
-                                      className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold !text-[#800020] hover:bg-gray-50 transition-colors"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5" />
-                                      Remove
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
+                            {/* Everything re-stacked inside one black disc: doodle, title,
+                                price, location and the round call/chat buttons */}
+                            <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                            <div className="pointer-events-none absolute inset-0 z-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
 
-                              {/* Category doodle, inked white straight onto the black header */}
-                              <div className="pointer-events-none absolute left-1.5 top-1/2 z-0 -translate-y-1/2">
-                                <CategoryDoodle
-                                  category={listing.category}
-                                  className="block h-[40px] w-auto sm:h-[46px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.4] [&_*]:[opacity:1]"
-                                />
-                              </div>
-                              <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
-                              <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
+                            {/* 3-dot with the remove pop-up, top-right inside the circle */}
+                            <div className="absolute right-[18%] top-[15%] z-20" onClick={(e) => e.stopPropagation()}>
+                              <button
+                                type="button"
+                                aria-label="Remove from interests"
+                                aria-haspopup="menu"
+                                aria-expanded={openInterestMenu === listing.id}
+                                title="More options"
+                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(openInterestMenu === listing.id ? null : listing.id); }}
+                                className="flex items-center justify-center rounded-full border border-white/20 bg-white/10 p-1.5 text-white/75 hover:text-white transition-colors touch-manipulation select-none"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </button>
+                              {openInterestMenu === listing.id && (
+                                <div role="menu" className="absolute right-0 top-9 z-30 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_6px_16px_-6px_rgba(17,24,39,0.35)]">
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(null); removeInterest(listing.id); }}
+                                    className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold !text-[#800020] hover:bg-gray-50 transition-colors"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    Remove
+                                  </button>
+                                </div>
+                              )}
                             </div>
 
-                            {/* White Content Area - matching enquiry card */}
-                            <div className="relative flex flex-col px-5 pt-4 pb-2.5 sm:px-6 sm:pt-5 sm:pb-3 overflow-visible min-h-[212px] sm:min-h-[236px] lg:min-h-[240px] xl:min-h-[260px]">
-                              <div className="relative z-10 text-center mt-2 sm:mt-2.5 mb-1.5">
-                                <h5 className="block w-fit max-w-full mx-auto text-center rounded-xl bg-white text-black border-0 px-4 py-1.5 sm:py-2 font-chip font-black text-lg sm:text-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] font-['Plus_Jakarta_Sans'] font-bold leading-snug tracking-tight truncate text-gray-900 leading-tight mb-2">
-                                  {listing.title}
-                                </h5>
-                                <p className="mt-1.5 inline-flex items-center justify-center rounded-xl bg-white text-black border-0 px-3 py-1 sm:py-1.5 font-chip font-black text-[13px] sm:text-base leading-snug tracking-tight shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
-                                  {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
+                            <div className="relative z-10 flex h-full flex-col items-center justify-center gap-1.5 px-[15%] py-[9%] text-center"
+                                 onClick={(e) => e.stopPropagation()}>
+                              {/* Category doodle, inked white on the black disc */}
+                              <CategoryDoodle
+                                category={listing.category}
+                                className="pointer-events-none block h-[15%] min-h-[34px] w-auto max-w-[62%] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.4] [&_*]:[opacity:1]"
+                              />
+
+                              {/* Title — tapping it opens the listing */}
+                              <h5
+                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
+                                className="w-full max-h-[2.7em] cursor-pointer overflow-hidden text-center font-chip text-[15px] font-black leading-tight tracking-tight text-white sm:text-base line-clamp-2"
+                              >
+                                {listing.title}
+                              </h5>
+
+                              <p className="inline-flex max-w-full items-center justify-center truncate rounded-xl bg-white px-2.5 py-0.5 font-chip font-black text-[12px] leading-snug tracking-tight text-black shadow-[0_-1.5px_0_0_rgba(17,24,39,0.12),-1.5px_0_0_0_rgba(17,24,39,0.12),1.5px_0_0_0_rgba(17,24,39,0.12),0_1.5px_0_0_rgba(17,24,39,0.12),0_6px_10px_-6px_rgba(17,24,39,0.45)] sm:text-[13px]">
+                                {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
+                              </p>
+
+                              {listing.location && (
+                                <p className="inline-flex max-w-full items-center justify-center gap-0.5 truncate rounded-md border border-white/25 bg-white/15 px-1.5 py-px font-chip text-[7px] font-semibold uppercase tracking-wide text-white/85 sm:text-[8px]">
+                                  <MapPin className="h-1.5 w-1.5 flex-shrink-0 text-white/60" />
+                                  {listing.location}
                                 </p>
-                                {listing.location && (
-                                  <p className="inline-flex items-center justify-center rounded-lg bg-gray-100 border border-gray-200 px-2 py-0.5 text-[8px] sm:text-[9px] font-chip font-semibold text-gray-600 uppercase tracking-wide gap-1 mt-1.5 shadow-[0_-1px_0_0_rgba(17,24,39,0.06),-1px_0_0_0_rgba(17,24,39,0.06),1px_0_0_0_rgba(17,24,39,0.06),0_2px_0_0_rgba(17,24,39,0.12)]">
-                                    <MapPin className="h-2 w-2 flex-shrink-0 text-gray-500" />
-                                    {listing.location}
-                                  </p>
-                                )}
-                              </div>
+                              )}
 
-                              {/* Spacer to maintain card height - matching enquiry card */}
-                              <div className="flex-1 min-h-[12px]"></div>
-
-                              {/* Chat centred; overflow menu (with delete) sits bottom-left */}
-                              <div className="relative flex items-center justify-center gap-4 pt-3" onClick={(e) => e.stopPropagation()}>
-                                {/* Call — only when the seller actually listed a number */}
+                              <div className="mt-1.5 flex items-center justify-center gap-3" onClick={(e) => e.stopPropagation()}>
                                 {listing.mobileNumber && String(listing.mobileNumber).trim() && (
                                   <a
                                     href={`tel:${String(listing.mobileNumber).replace(/[^\d+]/g, '')}`}
                                     aria-label="Call seller"
                                     title="Call seller"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="group/call flex h-16 w-16 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                    className="group/call flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                   >
-                                    <Phone className="h-7 w-7 group-hover/call:scale-110 transition-transform" />
+                                    <Phone className="h-5 w-5 group-hover/call:scale-110 transition-transform" />
                                   </a>
                                 )}
                                 <Link
                                   to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
                                   aria-label="Chat with Seller"
                                   title="Chat with Seller"
-                                  className="group/chat flex h-16 w-16 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="group/chat flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                 >
-                                  <MessageSquare className="h-7 w-7 group-hover/chat:scale-110 transition-transform" />
+                                  <MessageSquare className="h-5 w-5 group-hover/chat:scale-110 transition-transform" />
                                 </Link>
-
                               </div>
                             </div>
                           </motion.div>
@@ -2511,8 +2512,8 @@ const Dashboard = () => {
                                 <span className="flex-shrink-0 inline-flex items-center text-[9px] font-black text-white bg-red-600 border-[0.5px] border-black rounded-md px-1.5 py-0.5 uppercase tracking-wide">For Sale</span>
                               </div>
                               <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">{(listing as any).priceType === 'discussion' ? 'Open to discussion' : listing.price ? `₹${listing.price.toLocaleString('en-IN')}` : 'Price on request'}</span>
-                                {listing.location && <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">• {listing.location}</span>}
+                                <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_0.5px_0_0_rgba(17,24,39,0.10)]">{(listing as any).priceType === 'discussion' ? 'Open to discussion' : listing.price ? `₹${listing.price.toLocaleString('en-IN')}` : 'Price on request'}</span>
+                                {listing.location && <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_0.5px_0_0_rgba(17,24,39,0.10)]">• {listing.location}</span>}
                               </div>
                               <Button
                                 variant="outline"
@@ -2556,9 +2557,9 @@ const Dashboard = () => {
                               <h4 className="text-sm font-bold text-black truncate min-w-0">{enquiry.title}</h4>
                             </div>
                             <div className="flex items-center gap-2 mt-1 flex-wrap">
-                              <Badge variant="secondary" className="text-[9px] px-2 py-0.5 bg-white text-black border-0 rounded-lg font-chip font-black shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">{enquiry.category}</Badge>
-                              <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
-                              {enquiry.location && <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_1.5px_0_0_rgba(17,24,39,0.22)]">• {enquiry.location}</span>}
+                              <Badge variant="secondary" className="text-[9px] px-2 py-0.5 bg-white text-black border-0 rounded-lg font-chip font-black shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_0.5px_0_0_rgba(17,24,39,0.10)]">{enquiry.category}</Badge>
+                              <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_0.5px_0_0_rgba(17,24,39,0.10)]">₹{enquiry.budget?.toLocaleString('en-IN')}</span>
+                              {enquiry.location && <span className="text-[10px] font-black text-black bg-white border-0 rounded-lg px-1.5 py-0.5 font-chip shadow-[0_-0.5px_0_0_rgba(17,24,39,0.10),-0.5px_0_0_0_rgba(17,24,39,0.10),0.5px_0_0_0_rgba(17,24,39,0.10),0_0.5px_0_0_rgba(17,24,39,0.10)]">• {enquiry.location}</span>}
                             </div>
                             <Button
                               variant="outline"
@@ -2744,7 +2745,7 @@ const Dashboard = () => {
                           }}
                         >
                           {/* Premium Header with Sophisticated Design */}
-                          <div className={`relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 pr-9 py-2.5 min-h-[52px] sm:min-h-[60px] ${
+                          <div className={`relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 pr-14 py-2.5 min-h-[52px] sm:min-h-[60px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
                           }`}>                            {/* 3-dot with the delete pop-up, at the header's right edge */}
                             <div className="absolute right-1 top-1/2 z-20 -translate-y-1/2" onClick={(e) => e.stopPropagation()}>
@@ -2800,7 +2801,7 @@ const Dashboard = () => {
                             {/* Shine effect on hover */}
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                             
-                            <div className="relative flex flex-col gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
+                            <div className="relative flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
                               <div className="flex w-full items-center justify-end gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
                                 <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
                                   {((submission as any).isProfileVerified || (submission as any).userVerified || submission.isIdentityVerified) && (
@@ -2841,7 +2842,7 @@ const Dashboard = () => {
                                   </Badge>
                                 )}
                                 {/* Submitted date & time — small, at the header's right edge */}
-                                <span className="inline-flex min-w-0 items-center gap-1 rounded-full border border-white/25 bg-white/10 px-1.5 py-px">
+                                <span className="inline-flex min-w-0 flex-shrink-0 items-center gap-1 rounded-full border border-white/25 bg-white/10 px-1.5 py-px">
                                   <Clock className="h-2 w-2 flex-shrink-0 text-white/70" />
                                   <span className="text-[7px] font-bold text-white/80 truncate">
                                     {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
@@ -2877,7 +2878,7 @@ const Dashboard = () => {
                                   </div>
                                 ) : (
                                   <div className="relative flex items-center justify-center gap-1.5 sm:gap-2 w-full pt-7 sm:pt-9">
-                                    <span className={`relative z-10 inline-block w-fit max-w-full text-center rounded-xl bg-white border-0 px-4 py-1.5 sm:py-2 font-chip font-black text-lg sm:text-xl leading-tight tracking-tight shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] ${
+                                    <span className={`relative z-10 inline-block w-fit max-w-full text-center rounded-xl bg-white border-0 px-4 py-1.5 sm:py-2 font-chip font-black text-lg sm:text-xl leading-tight tracking-tight ${
                                       submission.status === 'approved' ? 'text-black' : 'text-amber-900'
                                     }`}>
                                 {submission.title}
