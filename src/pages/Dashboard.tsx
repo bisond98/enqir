@@ -2395,89 +2395,90 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="group relative aspect-square w-full overflow-hidden rounded-full bg-gradient-to-br from-black via-black to-gray-900 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01]"
+                            className="group relative rounded-[28px] sm:rounded-[40px] overflow-hidden bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 hover:scale-[1.01] w-full min-h-[280px] sm:min-h-[318px] lg:min-h-[316px] xl:min-h-[352px]"
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
                           >
-                            {/* Everything re-stacked inside one black disc: doodle, title,
-                                price, location and the round call/chat buttons */}
-                            <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
-                            <div className="pointer-events-none absolute inset-0 z-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
+                            {/* Premium Black Header */}
+                            <div className="relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 pr-14 py-2.5 min-h-[52px] sm:min-h-[60px]">
+                              {/* 3-dot with the remove pop-up, at the header's right corner */}
+                              <div className="absolute right-1 top-1/2 z-20 -translate-y-1/2" onClick={(e) => e.stopPropagation()}>
+                                <button
+                                  type="button"
+                                  aria-label="Remove from interests"
+                                  aria-haspopup="menu"
+                                  aria-expanded={openInterestMenu === listing.id}
+                                  title="More options"
+                                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(openInterestMenu === listing.id ? null : listing.id); }}
+                                  className="flex items-center justify-center border-0 bg-transparent p-0 text-white/70 hover:text-white transition-colors touch-manipulation select-none"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </button>
+                                {openInterestMenu === listing.id && (
+                                  <div role="menu" className="absolute right-0 top-6 z-30 w-40 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_6px_16px_-6px_rgba(17,24,39,0.35)]">
+                                    <button
+                                      type="button"
+                                      role="menuitem"
+                                      onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(null); removeInterest(listing.id); }}
+                                      className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold !text-[#800020] hover:bg-gray-50 transition-colors"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                      Remove
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
 
-                            {/* 3-dot with the remove pop-up, top-right inside the circle */}
-                            <div className="absolute right-[18%] top-[15%] z-20" onClick={(e) => e.stopPropagation()}>
-                              <button
-                                type="button"
-                                aria-label="Remove from interests"
-                                aria-haspopup="menu"
-                                aria-expanded={openInterestMenu === listing.id}
-                                title="More options"
-                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(openInterestMenu === listing.id ? null : listing.id); }}
-                                className="flex items-center justify-center rounded-full border border-white/20 bg-white/10 p-1.5 text-white/75 hover:text-white transition-colors touch-manipulation select-none"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                              </button>
-                              {openInterestMenu === listing.id && (
-                                <div role="menu" className="absolute right-0 top-9 z-30 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-[0_6px_16px_-6px_rgba(17,24,39,0.35)]">
-                                  <button
-                                    type="button"
-                                    role="menuitem"
-                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenInterestMenu(null); removeInterest(listing.id); }}
-                                    className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-[12px] font-bold !text-[#800020] hover:bg-gray-50 transition-colors"
-                                  >
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                    Remove
-                                  </button>
-                                </div>
-                              )}
+                              {/* Category doodle, inked white straight onto the black header */}
+                              <div className="pointer-events-none absolute left-1.5 top-1/2 z-0 -translate-y-1/2">
+                                <CategoryDoodle
+                                  category={listing.category}
+                                  className="block h-[40px] w-auto sm:h-[46px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.4] [&_*]:[opacity:1]"
+                                />
+                              </div>
+                              <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
+                              <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                             </div>
 
-                            <div className="relative z-10 flex h-full flex-col items-center justify-center gap-1.5 px-[15%] py-[9%] text-center"
-                                 onClick={(e) => e.stopPropagation()}>
-                              {/* Category doodle, inked white on the black disc */}
-                              <CategoryDoodle
-                                category={listing.category}
-                                className="pointer-events-none block h-[15%] min-h-[34px] w-auto max-w-[62%] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.4] [&_*]:[opacity:1]"
-                              />
-
-                              {/* Title — tapping it opens the listing */}
-                              <h5
-                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
-                                className="w-full max-h-[2.7em] cursor-pointer overflow-hidden text-center font-chip text-[15px] font-black leading-tight tracking-tight text-white sm:text-base line-clamp-2"
-                              >
-                                {listing.title}
-                              </h5>
-
-                              <p className="inline-flex max-w-full items-center justify-center truncate rounded-xl bg-white px-2.5 py-0.5 font-chip font-black text-[12px] leading-snug tracking-tight text-black shadow-[0_-1.5px_0_0_rgba(17,24,39,0.12),-1.5px_0_0_0_rgba(17,24,39,0.12),1.5px_0_0_0_rgba(17,24,39,0.12),0_1.5px_0_0_rgba(17,24,39,0.12),0_6px_10px_-6px_rgba(17,24,39,0.45)] sm:text-[13px]">
-                                {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
-                              </p>
-
-                              {listing.location && (
-                                <p className="inline-flex max-w-full items-center justify-center gap-0.5 truncate rounded-md border border-white/25 bg-white/15 px-1.5 py-px font-chip text-[7px] font-semibold uppercase tracking-wide text-white/85 sm:text-[8px]">
-                                  <MapPin className="h-1.5 w-1.5 flex-shrink-0 text-white/60" />
-                                  {listing.location}
+                            {/* White Content Area */}
+                            <div className="relative flex flex-col px-5 pt-4 pb-2.5 sm:px-6 sm:pt-5 sm:pb-3 overflow-visible min-h-[212px] sm:min-h-[236px] lg:min-h-[240px] xl:min-h-[260px]">
+                              <div className="relative z-10 text-center mt-2 sm:mt-2.5 mb-1.5">
+                                <h5 className="block w-fit max-w-full mx-auto text-center rounded-xl bg-white text-black border-0 px-4 py-1.5 sm:py-2 font-chip font-black text-lg sm:text-xl font-['Plus_Jakarta_Sans'] font-bold leading-snug tracking-tight truncate text-gray-900 leading-tight mb-2">
+                                  {listing.title}
+                                </h5>
+                                <p className="mt-1.5 inline-flex items-center justify-center rounded-xl bg-white text-black border-0 px-3 py-1 sm:py-1.5 font-chip font-black text-[13px] sm:text-base leading-snug tracking-tight shadow-[0_-1.5px_0_0_rgba(17,24,39,0.12),-1.5px_0_0_0_rgba(17,24,39,0.12),1.5px_0_0_0_rgba(17,24,39,0.12),0_1.5px_0_0_rgba(17,24,39,0.12),0_8px_12px_-6px_rgba(17,24,39,0.18)]">
+                                  {(listing as any).priceType === 'discussion' ? "Open to discussion" : listing.price ? `₹${listing.price.toLocaleString("en-IN")}` : "Price on request"}
                                 </p>
-                              )}
+                                {listing.location && (
+                                  <p className="inline-flex items-center justify-center rounded-md bg-gray-100 border border-gray-200 px-1.5 py-px text-[7px] sm:text-[8px] font-chip font-semibold text-gray-500 uppercase tracking-wide gap-0.5 mt-1 shadow-[0_-1px_0_0_rgba(17,24,39,0.08),-1px_0_0_0_rgba(17,24,39,0.08),1px_0_0_0_rgba(17,24,39,0.08),0_1px_0_0_rgba(17,24,39,0.08)]">
+                                    <MapPin className="h-1.5 w-1.5 flex-shrink-0 text-gray-400" />
+                                    {listing.location}
+                                  </p>
+                                )}
+                              </div>
 
-                              <div className="mt-1.5 flex items-center justify-center gap-3" onClick={(e) => e.stopPropagation()}>
+                              {/* Spacer to maintain card height */}
+                              <div className="flex-1 min-h-[12px]"></div>
+
+                              {/* Chat centred with the call button when the seller listed a number */}
+                              <div className="relative flex items-center justify-center gap-4 pt-3" onClick={(e) => e.stopPropagation()}>
                                 {listing.mobileNumber && String(listing.mobileNumber).trim() && (
                                   <a
                                     href={`tel:${String(listing.mobileNumber).replace(/[^\d+]/g, '')}`}
                                     aria-label="Call seller"
                                     title="Call seller"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="group/call flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                    className="group/call flex h-16 w-16 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                   >
-                                    <Phone className="h-5 w-5 group-hover/call:scale-110 transition-transform" />
+                                    <Phone className="h-7 w-7 group-hover/call:scale-110 transition-transform" />
                                   </a>
                                 )}
                                 <Link
                                   to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
                                   aria-label="Chat with Seller"
                                   title="Chat with Seller"
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="group/chat flex h-12 w-12 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  className="group/chat flex h-16 w-16 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
                                 >
-                                  <MessageSquare className="h-5 w-5 group-hover/chat:scale-110 transition-transform" />
+                                  <MessageSquare className="h-7 w-7 group-hover/chat:scale-110 transition-transform" />
                                 </Link>
                               </div>
                             </div>
