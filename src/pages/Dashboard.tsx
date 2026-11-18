@@ -2110,7 +2110,8 @@ const Dashboard = () => {
                               });
                             }}
                           >
-                            {/* Overlay to block all interactions when expired */}
+                            {/* Overlay to block taps when expired — it must not eat scroll gestures,
+                                so it swallows the click only and leaves touch-action to the browser */}
                             {expiredFlag && (
                               <div 
                                 className="absolute inset-0 z-[9999] cursor-not-allowed bg-transparent" 
@@ -2119,22 +2120,7 @@ const Dashboard = () => {
                                   e.preventDefault();
                                   return false;
                                 }}
-                                onMouseDown={(e) => {
-                                  e.stopPropagation();
-                                  e.preventDefault();
-                                  return false;
-                                }}
-                                onTouchStart={(e) => {
-                                  e.stopPropagation();
-                                  e.preventDefault();
-                                  return false;
-                                }}
-                                onMouseUp={(e) => {
-                                  e.stopPropagation();
-                                  e.preventDefault();
-                                  return false;
-                                }}
-                                style={{ pointerEvents: 'auto', touchAction: 'none' }}
+                                style={{ pointerEvents: 'auto', touchAction: 'pan-y' }}
                               />
                             )}
                             {/* Premium Header with Sophisticated Design */}
