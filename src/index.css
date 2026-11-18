@@ -53,6 +53,13 @@
   button, a, [role="button"] {
     transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
+
+  /* Selected dropdowns fill blue; keep the open list readable on a white popup */
+  select option,
+  select optgroup {
+    background-color: #ffffff;
+    color: #111827;
+  }
   
   /* Optimize scrollable containers — only -webkit-overflow-scrolling for smooth iOS scroll */
   [class*="overflow-auto"],

@@ -460,7 +460,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       {isMobile ? (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 !border-red-500 focus:!border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-2xl !bg-red-500 hover:!bg-red-600 !text-white relative overflow-hidden transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none">
+            <Button variant="outline" className={`w-full justify-start text-left font-normal h-12 sm:h-12 text-xs sm:text-sm border-2 focus:ring-4 focus:ring-red-500/20 rounded-2xl relative overflow-hidden transition-all !duration-150 !shadow-none active:!shadow-none touch-manipulation select-none ${value ? '!border-red-800 !bg-red-700 hover:!bg-red-800 !text-white focus:!border-red-800' : '!border-red-300 !bg-red-100 hover:!bg-red-200 !text-red-800 focus:!border-red-400'}`}>
               <Clock className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
               <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
               <span className="ml-auto relative z-10 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-white/80 mr-1">Click</span>
@@ -479,7 +479,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       ) : (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="w-full justify-start text-left font-normal h-11 sm:h-9 text-[10px] sm:text-xs border-2 !border-red-500 focus:!border-red-500 focus:ring-4 focus:ring-red-500/20 rounded-2xl !bg-red-500 hover:!bg-red-600 !text-white relative overflow-hidden transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none">
+            <Button variant="outline" className={`w-full justify-start text-left font-normal h-12 sm:h-12 text-xs sm:text-sm border-2 focus:ring-4 focus:ring-red-500/20 rounded-2xl relative overflow-hidden transition-all !duration-150 !shadow-none active:!shadow-none touch-manipulation select-none ${value ? '!border-red-800 !bg-red-700 hover:!bg-red-800 !text-white focus:!border-red-800' : '!border-red-300 !bg-red-100 hover:!bg-red-200 !text-red-800 focus:!border-red-400'}`}>
               <Clock className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
               <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
               <span className="ml-auto relative z-10 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-white/80 mr-1">Click</span>

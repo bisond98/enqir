@@ -700,6 +700,7 @@ const DEADLINE_STEP = 5;
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const idVerificationCardRef = useRef<HTMLDivElement>(null);
   const inlineVerificationRef = useRef<HTMLDivElement>(null);
+  const locationStepRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   // Session-drop handling: no toast — the sign-in prompt below speaks for itself.
@@ -3102,7 +3103,7 @@ const DEADLINE_STEP = 5;
                                 className={cn(
                                   'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
                                   selected
-                                    ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
+                                    ? 'border-black bg-blue-600 text-white shadow-none'
                                     : isDisabled
                                       ? 'opacity-40 border-black/20 bg-white text-black'
                                       : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
@@ -3137,7 +3138,7 @@ const DEADLINE_STEP = 5;
                                     className={cn(
                                       'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
                                       selected
-                                        ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
+                                        ? 'border-black bg-blue-600 text-white shadow-none'
                                         : isDisabled
                                           ? 'opacity-40 border-black/20 bg-white text-black'
                                           : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
@@ -3224,7 +3225,7 @@ const DEADLINE_STEP = 5;
                             <select
                               value={jobDetails.education}
                               onChange={(e) => setJobDetails(v => ({ ...v, education: e.target.value }))}
-                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.education ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.education ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.education) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                             >
                               <option value="">Education</option>
                               {['10th pass', '12th pass', 'ITI', 'Diploma', 'Graduate', 'Post Graduate', 'PhD', 'Other'].map((opt) => (
@@ -3251,7 +3252,7 @@ const DEADLINE_STEP = 5;
                             <select
                               value={jobDetails.experience}
                               onChange={(e) => setJobDetails(v => ({ ...v, experience: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.experience ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.experience ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.experience) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                             >
                               <option value="">{jobDirection === 'hiring' ? 'Experience required' : 'Your experience'}</option>
                               {['Fresher', '0-1 year', '1-3 years', '3-5 years', '5-10 years', '10+ years'].map((opt) => (
@@ -3263,7 +3264,7 @@ const DEADLINE_STEP = 5;
                             <select
                               value={jobDetails.jobType}
                               onChange={(e) => setJobDetails(v => ({ ...v, jobType: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.jobType ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.jobType ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.jobType) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                             >
                               <option value="">Job type</option>
                               {['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'].map((opt) => (
@@ -3275,7 +3276,7 @@ const DEADLINE_STEP = 5;
                             <select
                               value={jobDetails.workMode}
                               onChange={(e) => setJobDetails(v => ({ ...v, workMode: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.workMode ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.workMode ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.workMode) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                             >
                               <option value="">Work mode</option>
                               {['Work from office', 'Work from home', 'Hybrid'].map((opt) => (
@@ -3395,7 +3396,7 @@ const DEADLINE_STEP = 5;
                                     else setLaptopDetails((prev) => ({ ...prev, storage: v }));
                                   }}
                                   disabled={field.disabled}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(accommodationType) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Cancel</option>
                                   {field.options.map((o) => (
@@ -3463,7 +3464,7 @@ const DEADLINE_STEP = 5;
                                     } else setWatchDetails((prev) => ({ ...prev, model: v }));
                                   }}
                                   disabled={field.disabled}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(field.value) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Cancel</option>
                                   {field.options.map((o) => (
@@ -3518,7 +3519,7 @@ const DEADLINE_STEP = 5;
                                     } else setCameraDetails((prev) => ({ ...prev, model: v }));
                                   }}
                                   disabled={field.disabled}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(field.value) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Cancel</option>
                                   {field.options.map((o) => (
@@ -3564,7 +3565,7 @@ const DEADLINE_STEP = 5;
                                     } else setAudioDetails((prev) => ({ ...prev, model: v }));
                                   }}
                                   disabled={field.disabled}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(field.value) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value=""></option>
                                   {field.options.map((o) => (
@@ -3606,11 +3607,11 @@ const DEADLINE_STEP = 5;
                           <select
                             value={subcategory}
                             onChange={(e) => setSubcategory(e.target.value)}
-                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!subcategory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-4 ${!subcategory ? 'border-gray-800 bg-white text-[10px] text-slate-400 focus-visible:border-black' : 'border-blue-700 bg-gradient-to-b from-blue-500 to-blue-700 text-sm sm:text-base text-white shadow-none focus-visible:border-blue-700 focus:ring-white/60'}${(subcategory) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                           >
-                            <option value="">{subcategoryOptions === FURNITURE_SUBCATEGORIES ? 'Select type' : subcategoryOptions === DIGITAL_IT_SUBCATEGORIES || subcategoryOptions === KITCHEN_DINING_SUBCATEGORIES || subcategoryOptions === LEGAL_SUBCATEGORIES || subcategoryOptions === MARKETING_SUBCATEGORIES || subcategoryOptions === MEDICAL_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === MEMORABILIA_SUBCATEGORIES || subcategoryOptions === MUSICAL_ACCESSORIES_SUBCATEGORIES || subcategoryOptions === MUSICAL_INSTRUMENTS_SUBCATEGORIES || subcategoryOptions === MUSICAL_SERVICES_SUBCATEGORIES || subcategoryOptions === NON_PROFIT_SUBCATEGORIES || subcategoryOptions === PHOTOGRAPHY_SUBCATEGORIES || subcategoryOptions === REAL_ESTATE_SERVICES_SUBCATEGORIES || subcategoryOptions === RENEWABLE_ENERGY_SUBCATEGORIES || subcategoryOptions === SECURITY_SUBCATEGORIES || subcategoryOptions === SOUVENIRS_SUBCATEGORIES || subcategoryOptions === SPORTS_SUBCATEGORIES || subcategoryOptions === TECHNOLOGY_SUBCATEGORIES || subcategoryOptions === TOOLS_EQUIPMENT_SUBCATEGORIES || subcategoryOptions === TRANSPORTATION_SUBCATEGORIES || subcategoryOptions === TRAVEL_SUBCATEGORIES || subcategoryOptions === TUTORING_SUBCATEGORIES || subcategoryOptions === VINTAGE_SUBCATEGORIES || subcategoryOptions === WASTE_MANAGEMENT_SUBCATEGORIES || subcategoryOptions === WEDDING_SUBCATEGORIES ? 'Select' : 'Select subcategory'}</option>
+                            <option value="">Select</option>
                             {subcategoryOptions.map((s) => (
-                              <option key={s} value={s}>{s}</option>
+                              <option key={s} value={s} className="bg-white text-black">{s}</option>
                             ))}
                           </select>
                         </div>
@@ -3633,7 +3634,7 @@ const DEADLINE_STEP = 5;
                               <select
                                 value={vehicleDetails.brand}
                                 onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value, ...(isTruckLike ? { variant: '' } : {}) }))}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(vehicleDetails.brand) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                               >
                                 <option value="">Brand</option>
                                 {(isBikeOnly
@@ -3663,7 +3664,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.type}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, type: e.target.value, brand: '', variant: '' }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.type ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base !font-bold text-black'}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.type ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base !font-bold text-black'}${(vehicleDetails.type) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Type</option>
                                       {VEHICLE_TYPES.map((t) => (
@@ -3731,7 +3732,7 @@ const DEADLINE_STEP = 5;
                                   <select
                                     value={vehicleDetails.variant}
                                     onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
-                                    className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                    className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(vehicleDetails.variant) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                   >
                                     <option value="">Variant</option>
                                     {models.map((m) => (
@@ -3752,7 +3753,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.transmission}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, transmission: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.transmission ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.transmission ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(vehicleDetails.transmission) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Transmission</option>
                                       {['Manual', 'Automatic'].map((t) => (
@@ -3775,7 +3776,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.fuelType}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, fuelType: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.fuelType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.fuelType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(vehicleDetails.fuelType) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Fuel Type</option>
                                       {['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'LPG'].map((f) => (
@@ -3810,7 +3811,7 @@ const DEADLINE_STEP = 5;
                                 <select
                                   value={mobileDetails.brand}
                                   onChange={(e) => setMobileDetails(v => ({ ...v, brand: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(mobileDetails.brand) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Brand</option>
                                   {MOBILE_BRANDS.map((b) => (
@@ -3824,7 +3825,7 @@ const DEADLINE_STEP = 5;
                                 <select
                                   value={mobileDetails.ram}
                                   onChange={(e) => setMobileDetails(v => ({ ...v, ram: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.ram ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.ram ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(mobileDetails.ram) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">RAM</option>
                                   {RAM_OPTIONS.map((r) => (
@@ -3838,7 +3839,7 @@ const DEADLINE_STEP = 5;
                                 <select
                                   value={mobileDetails.memory}
                                   onChange={(e) => setMobileDetails(v => ({ ...v, memory: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.memory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.memory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(mobileDetails.memory) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Memory</option>
                                   {MEMORY_OPTIONS.map((m) => (
@@ -3872,7 +3873,7 @@ const DEADLINE_STEP = 5;
                                       <select
                                         value={sneakerBrand}
                                         onChange={(e) => setSneakerBrand(e.target.value)}
-                                        className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrand ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
+                                        className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrand ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}${(sneakerBrand) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                       >
                                         <option value="">Brand</option>
                                         {SNEAKER_BRANDS.map((b) => (
@@ -3896,7 +3897,7 @@ const DEADLINE_STEP = 5;
                                 <select
                                   value={sneakerSize}
                                   onChange={(e) => setSneakerSize(e.target.value)}
-                                  className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}`}
+                                  className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}${(sneakerSize) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Size</option>
                                   {sizeList.map((s) => (
@@ -3939,7 +3940,7 @@ const DEADLINE_STEP = 5;
                               <select
                                 value={thriftGender}
                                 onChange={(e) => { setThriftGender(e.target.value); setThriftType(''); setThriftItem(''); setThriftSize(''); }}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftGender ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftGender ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}${(thriftGender) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                               >
                                 <option value="" disabled>Select gender</option>
                                 {THRIFT_GENDERS.map((g) => <option key={g.value} value={g.label}>{g.label}</option>)}
@@ -3952,7 +3953,7 @@ const DEADLINE_STEP = 5;
                                 <select
                                   value={thriftType}
                                   onChange={(e) => { setThriftType(e.target.value); setThriftItem(''); setThriftSize(''); }}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}${(thriftType) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="" disabled>Select type</option>
                                   {THRIFT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -3967,7 +3968,7 @@ const DEADLINE_STEP = 5;
                               <select
                                 value={thriftItem}
                                 onChange={(e) => setThriftItem(e.target.value)}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftItem ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftItem ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}${(thriftItem) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                               >
                                 <option value="" disabled>Select item</option>
                                 {thriftItemsFor(thriftGender, thriftType).map((item) => <option key={item} value={item}>{item}</option>)}
@@ -3981,7 +3982,7 @@ const DEADLINE_STEP = 5;
                               <select
                                 value={thriftSize}
                                 onChange={(e) => setThriftSize(e.target.value)}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftSize ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftSize ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}${(thriftSize) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                               >
                                 <option value="" disabled>Select size</option>
                                 {thriftSizesFor(thriftType).map((sz) => <option key={sz} value={sz}>{sz}</option>)}
@@ -4022,6 +4023,7 @@ const DEADLINE_STEP = 5;
                                   className={cn(
                                     'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
                                     !estateDealType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black',
+                                    estateDealType && '!bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none',
                                     !!estateType && 'opacity-60 cursor-not-allowed'
                                   )}
                                 >
@@ -4051,7 +4053,8 @@ const DEADLINE_STEP = 5;
                                   }}
                                   className={cn(
                                     'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
-                                    !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'
+                                    !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black',
+                                    estateType && '!bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none'
                                   )}
                                 >
                                   <option value="" disabled hidden>Select property type</option>
@@ -4080,7 +4083,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={unit}
                                       onChange={(e) => setUnit(e.target.value)}
-                                      className="h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer"
+                                      className={`h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold text-black outline-none focus:border-[3px] focus:border-gray-900 appearance-none pl-4 pr-8 cursor-pointer${(unit) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                       style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
                                     >
                                       {units.map((u) => <option key={u} value={u}>{u}</option>)}
@@ -4093,7 +4096,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={estateDetails.houseBhk}
                                       onChange={(e) => setEstateDetails(v => ({ ...v, houseBhk: e.target.value }))}
-                                      className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] appearance-none pl-4 pr-8 cursor-pointer', !estateDetails.houseBhk ? 'text-slate-400' : 'text-black')}
+                                      className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] appearance-none pl-4 pr-8 cursor-pointer', !estateDetails.houseBhk ? 'text-slate-400' : 'text-black', estateDetails.houseBhk && '!bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none')}
                                       style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
                                     >
                                       <option value="">BHK</option>
@@ -4151,7 +4154,7 @@ const DEADLINE_STEP = 5;
                   {/* Step 3: Location — map-pin only; the search bar above
                       "Where do you want it?" was removed per request */}
                   {step === 3 && (
-                    <div className="max-w-xl mx-auto w-full space-y-3">
+                    <div ref={locationStepRef} className="max-w-xl mx-auto w-full space-y-3">
                       {/* Pin precise location on a map */}
                       <button
                         type="button"
@@ -4185,9 +4188,18 @@ const DEADLINE_STEP = 5;
                           const text = addr.formatted_address || addr.city || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
                           setLocation(text);
                           setShowLocationSuggestions(false);
-                          // Mobile: scroll back up so the picked location card is in view
+                          // Mobile: bring the picked location card itself into view
+                          // (just below the header) instead of jumping to the top of the page
                           if (window.matchMedia('(max-width: 640px)').matches) {
-                            window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 150);
+                            window.setTimeout(() => {
+                              const el = locationStepRef.current;
+                              if (!el) return;
+                              const r = el.getBoundingClientRect();
+                              const target = Math.max(0, window.scrollY + r.top - 96);
+                              if (Math.abs(target - window.scrollY) > 8) {
+                                window.scrollTo({ top: target, behavior: 'smooth' });
+                              }
+                            }, 200);
                           }
                         }}
                       />
@@ -4240,12 +4252,12 @@ const DEADLINE_STEP = 5;
                                 setBudgetOpenToDiscussion(false);
                               }
                             }}
-                            className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit max-w-full font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-10 ${budgetOpenToDiscussion ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
+                            className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit min-w-[152px] sm:min-w-[168px] max-w-full font-medium border-[1.5px] focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${budgetOpenToDiscussion ? 'border-black bg-blue-600 text-[11px] sm:text-xs font-bold text-white shadow-none' : 'border-slate-200 bg-white text-[10px] sm:text-xs font-semibold text-slate-400 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)]'}`}
                           >
-                            <option value="">Click here</option>
-                            <option value="open-to-discussion">Open to discussion</option>
+                            <option value="" className="bg-white text-black">Click here</option>
+                            <option value="open-to-discussion" className="bg-white text-black">Open to discussion</option>
                           </select>
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                          <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${budgetOpenToDiscussion ? 'text-white' : 'text-gray-800'}`} />
                         </div>
                       </div>
                     </div>
@@ -4295,7 +4307,7 @@ const DEADLINE_STEP = 5;
                           <div className="grid grid-cols-3 gap-2 mb-3">
                             {referenceImageUrls.map((url, i) => (
                               <div key={i} className="relative group">
-                                <img loading="lazy" decoding="async" src={url} alt={`Image ${i+1}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
+                                <img loading="lazy" decoding="async" src={url} alt={`Image ${i+1}${(estateType) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`} className="w-full h-20 object-cover rounded-lg border border-black/10" />
                                 <button
                                   type="button"
                                   onClick={() => removeReferenceImage(i)}
@@ -4577,7 +4589,7 @@ const DEADLINE_STEP = 5;
                       aria-label="Country code"
                       value={countryCode}
                       onChange={(e) => setCountryCode(e.target.value)}
-                      className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold focus:outline-none focus-within:!border-black transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation appearance-none text-center"
+                      className={`!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold focus:outline-none focus-within:!border-black transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation appearance-none text-center`}
                     >
                       {[
                         ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
