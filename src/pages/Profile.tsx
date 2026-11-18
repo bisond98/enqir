@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2, X, Tag, MapPin, ArrowLeft, Image as ImageIcon } from "lucide-react";
+import { Upload, Shield, User, Camera, CheckCircle, XCircle, Edit, Save, Trash2, Loader2, X, Tag, MapPin, ArrowLeft, LayoutDashboard, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationContext } from "@/contexts/NotificationContext";
 import { db } from "@/firebase";
@@ -1027,17 +1027,17 @@ const Profile = () => {
         {/* Profile Form - Inside Container */}
         <div className="max-w-2xl lg:max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
 
-        {/* Username & Mobile number — bare inputs, no card */}
-        <div className="mt-20 sm:mt-28 space-y-5">
+        {/* Profile picture, name and mobile number, grouped on one card */}
+        <div className="relative mt-10 sm:mt-12 space-y-4 rounded-3xl sm:rounded-2xl border-[1.5px] border-black bg-white px-4 pb-4 pt-14 sm:px-5 sm:pb-5 sm:pt-16">
             {/* Profile picture — centered; tapping the circle opens a share-style menu card below it */}
-            <div className="flex items-center justify-center gap-2.5 -mt-10 sm:-mt-14">
+            <div className="absolute left-1/2 top-0 z-20 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-2.5">
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setShowPhotoActions(true)}
                   disabled={uploadingPhoto}
                   aria-label={photoUrl ? "Profile photo options" : "Add profile photo"}
-                  className="relative w-20 h-20 rounded-full border-[1.5px] border-black bg-white overflow-hidden flex items-center justify-center disabled:opacity-60 shrink-0"
+                  className="relative w-20 h-20 rounded-full border-[1.5px] border-black bg-white overflow-hidden flex items-center justify-center ring-[6px] ring-white disabled:opacity-60 shrink-0"
                 >
                   {photoUrl ? (
                     <img loading="lazy" decoding="async" src={photoUrl} alt="Profile" className="w-full h-full object-cover" />
@@ -1128,7 +1128,7 @@ const Profile = () => {
                     type="button"
                     onClick={handleUsernameSave}
                     disabled={savingUsername}
-                    className="h-10 sm:h-12 min-w-[104px] px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black disabled:opacity-60 shrink-0"
+                    className="h-10 sm:h-12 min-w-[104px] px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-0 disabled:opacity-60 shrink-0"
                   >
                     {savingUsername ? (
                       <Loader2 className="h-4 w-4 mr-1 animate-spin" />
@@ -1141,7 +1141,7 @@ const Profile = () => {
                   <Button
                     type="button"
                     onClick={handleUsernameEdit}
-                    className="h-10 sm:h-12 min-w-[104px] px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black shrink-0"
+                    className="h-10 sm:h-12 min-w-[104px] px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-0 shrink-0"
                   >
                     <Edit className="h-4 w-4 mr-1" />
                     Edit
@@ -1179,7 +1179,7 @@ const Profile = () => {
                       type="button"
                       onClick={handlePhoneOtpSend}
                       disabled={!phone.trim() || sendingOtp || confirmingOtp}
-                      className="h-10 sm:h-12 min-w-[104px] px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-[0.5px] border-black disabled:opacity-60 shrink-0"
+                      className="h-10 sm:h-12 min-w-[104px] px-4 text-xs bg-black hover:bg-gray-900 text-white font-black rounded-xl border-0 disabled:opacity-60 shrink-0"
                     >
                       {sendingOtp ? (
                         <Loader2 className="h-4 w-4 mr-1 animate-spin" />
@@ -1240,10 +1240,22 @@ const Profile = () => {
           </div>          {/* recaptcha anchor for Firebase phone auth (required, invisible) */}
         <div id="recaptcha-container" />
 
-        <div className="mt-24 sm:mt-28" />
+        <div className="mt-8 sm:mt-10" />
+
+        {/* Straight back into the dashboard, above the verification card */}
+        <div className="mt-4 sm:mt-6 flex justify-center">
+          <Button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            className="inline-flex w-full max-w-md items-center justify-center gap-2.5 h-14 rounded-2xl bg-black hover:bg-gray-900 text-white font-black text-base sm:text-lg border-0 shadow-none hover:shadow-none active:shadow-none touch-manipulation select-none"
+          >
+            <LayoutDashboard className="h-5 w-5" />
+            Dashboard
+          </Button>
+        </div>
 
         {/* Trust Badge Section - SIMPLE & CLEAN */}
-        <Card className="mt-4 sm:mt-6 border-0 rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px] transition-all duration-200 !shadow-[0_-2px_0_0_rgba(17,24,39,0.10),-2px_0_0_0_rgba(17,24,39,0.12),2px_0_0_0_rgba(17,24,39,0.12),0_4px_0_0_rgba(17,24,39,0.20),0_10px_18px_-8px_rgba(17,24,39,0.22)] hover:!shadow-[0_-2px_0_0_rgba(17,24,39,0.12),-2px_0_0_0_rgba(17,24,39,0.14),2px_0_0_0_rgba(17,24,39,0.14),0_6px_0_0_rgba(17,24,39,0.24),0_16px_26px_-10px_rgba(17,24,39,0.30)] hover:-translate-y-[2px]">
+        <Card className="mt-8 sm:mt-10 border-[1.5px] border-black rounded-3xl sm:rounded-2xl bg-white lg:min-h-[200px] transition-all duration-200 hover:-translate-y-[2px] !shadow-none hover:!shadow-none">
           {/* Card Header - White Background */}
           <div className="bg-white px-4 sm:px-4 py-4 sm:py-5 lg:px-5 lg:py-6 rounded-t-3xl sm:rounded-t-2xl">
             <div className="flex flex-col items-center justify-center gap-2">
@@ -1908,7 +1920,7 @@ const Profile = () => {
                     verifyingId ||
                     (idErrors.idNumber && idErrors.idNumber.length > 0)
                   }
-                  className="w-full h-8 sm:h-10 text-xs sm:text-sm bg-black hover:bg-gray-900 text-white font-black rounded-2xl border-[0.5px] border-black shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                  className="w-full h-8 sm:h-10 text-xs sm:text-sm bg-black hover:bg-gray-900 text-white font-black rounded-2xl border-0 shadow-none hover:shadow-none active:shadow-none transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden"
                 >
                   {/* Physical button depth effect */}
                   <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-2xl pointer-events-none" />

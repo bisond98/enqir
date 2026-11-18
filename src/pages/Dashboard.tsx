@@ -2093,7 +2093,7 @@ const Dashboard = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
-                            className={`group relative rounded-2xl sm:rounded-3xl lg:rounded-2xl overflow-hidden transition-all duration-300 w-full min-h-[280px] sm:min-h-[318px] lg:min-h-[316px] xl:min-h-[352px] ${
+                            className={`group relative rounded-[28px] sm:rounded-[40px] overflow-hidden transition-all duration-300 w-full min-h-[280px] sm:min-h-[318px] lg:min-h-[316px] xl:min-h-[352px] ${
                               expiredFlag
                                 ? 'opacity-50 grayscale bg-gray-50 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] cursor-not-allowed'
                                 : 'bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5'
@@ -2730,7 +2730,7 @@ const Dashboard = () => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3 }}
-                          className={`group relative rounded-xl sm:rounded-2xl lg:rounded-xl xl:rounded-2xl overflow-hidden transition-all duration-300 min-h-[230px] sm:min-h-[248px] lg:min-h-[252px] xl:min-h-[272px] ${
+                          className={`group relative rounded-[28px] sm:rounded-[40px] overflow-hidden transition-all duration-300 min-h-[230px] sm:min-h-[248px] lg:min-h-[252px] xl:min-h-[272px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed
                               ? 'opacity-50 grayscale pointer-events-none bg-gray-50 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)]'
                               : 'bg-white border-0 hover:border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer'
