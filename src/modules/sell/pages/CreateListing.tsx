@@ -548,7 +548,11 @@ export default function CreateListing() {
             </p>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full max-w-xs mt-2">
               <Button
-                onClick={() => navigate('/signin')}
+                onClick={() => {
+                  // After login, come back to the list-new form.
+                  sessionStorage.setItem('returnAfterSignIn', '/sell/new');
+                  navigate('/signin');
+                }}
                 className="flex-1 h-12 bg-black hover:bg-gray-900 text-white border border-black font-black text-sm rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.1)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:translate-y-[4px] transition-all duration-200"
               >
                 <LogIn className="h-4 w-4 mr-2" />
@@ -556,7 +560,10 @@ export default function CreateListing() {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => navigate('/signin', { state: { mode: 'signup' } })}
+                onClick={() => {
+                  sessionStorage.setItem('returnAfterSignIn', '/sell/new');
+                  navigate('/signin', { state: { mode: 'signup' } });
+                }}
                 className="flex-1 h-12 border-2 border-black font-black text-sm rounded-xl bg-white hover:bg-gray-50 shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3)] active:translate-y-[4px] transition-all duration-200"
               >
                 <UserPlus className="h-4 w-4 mr-2" />

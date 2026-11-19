@@ -591,7 +591,14 @@ export default function MyChats() {
                 <Button
                   variant="ghost"
                   type="button"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate('/dashboard'); }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Return to wherever the user came from; only fall back to the
+                    // dashboard when the page was opened directly (no history).
+                    if (location.key !== 'default') navigate(-1);
+                    else navigate('/dashboard');
+                  }}
                   className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
                 >
                   <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
@@ -849,12 +856,8 @@ export default function MyChats() {
             {chats.filter(chat => isChatExpired(chat)).length > 0 && (
               <Button
                 onClick={clearExpiredChats}
-                className="border-[0.5px] border-black bg-gradient-to-b from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white text-xs sm:text-sm font-black px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl shadow-[0_6px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,0.5)] active:shadow-[0_2px_0_0_rgba(0,0,0,0.3),inset_0_1px_2px_rgba(0,0,0,0.2)] transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden group/clear"
+                className="!border-0 !bg-none !bg-red-800 hover:!bg-none hover:!bg-red-900 !shadow-none hover:!shadow-none active:!shadow-none text-white text-xs sm:text-sm font-black px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden"
               >
-                {/* Physical button depth effect */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl pointer-events-none" />
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/clear:translate-x-full transition-transform duration-700 pointer-events-none rounded-xl" />
                 <span className="relative z-10 flex items-center gap-2">
                   <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 relative z-10 text-white" />
                   Clear Expired Chats

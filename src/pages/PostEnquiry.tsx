@@ -1808,6 +1808,8 @@ const DEADLINE_STEP = 5;
   // redirecting then looked like a random sign-out after every reload.
   useEffect(() => {
     if (!authLoading && !user) {
+      // Saved return path so login always comes back to the post form.
+      sessionStorage.setItem('returnAfterSignIn', '/post-enquiry');
       navigate('/signin', { 
         replace: true,
         state: { 

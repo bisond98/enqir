@@ -176,6 +176,18 @@ const EnquiryDetail = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Coming back from sign-in via the Connect (Buyer) button: open the page
+  // scrolled down to that button instead of the top.
+  useEffect(() => {
+    if (!user) return;
+    if (window.location.hash !== '#connect-buyer') return;
+    const timer = setTimeout(() => {
+      const el = document.getElementById('connect-buyer');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [user, enquiry]);
+
   // Update meta tags for social sharing when enquiry loads
   useEffect(() => {
     if (!enquiry) return;
@@ -343,7 +355,11 @@ const EnquiryDetail = () => {
           className: "bg-white border-black border-8 text-black shadow-lg max-w-sm mx-auto sm:max-w-md",
           action: (
             <button 
-              onClick={() => navigate('/signin')}
+              onClick={() => {
+                // Come back to this enquiry page after signing in.
+                sessionStorage.setItem('returnAfterSignIn', window.location.pathname + window.location.search);
+                navigate('/signin');
+              }}
               className="bg-black hover:bg-gray-900 text-white px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
             >
               Sign In
@@ -439,6 +455,9 @@ const EnquiryDetail = () => {
         description: "Please sign in to respond to this enquiry.",
         variant: "destructive",
       });
+      // After signing in, come back to this enquiry page, scrolled to this
+      // Connect (Buyer) button.
+      sessionStorage.setItem('returnAfterSignIn', window.location.pathname + window.location.search + '#connect-buyer');
       navigate('/signin');
       return;
     }
@@ -1294,6 +1313,7 @@ const EnquiryDetail = () => {
                         
                         return (
                           <Button
+                            id="connect-buyer"
                             onClick={handleRespond}
                             disabled={responding || enquiry.status !== 'live' || isExpired}
                             className="!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-0 !shadow-none active:!shadow-none !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none"

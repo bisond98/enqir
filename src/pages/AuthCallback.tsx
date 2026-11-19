@@ -7,6 +7,14 @@ import { auth } from '@/firebase';
 import { friendlyError } from '@/utils/friendlyError';
 import { applyActionCode, checkActionCode, isSignInWithEmailLink, signInWithEmailLink } from 'firebase/auth';
 
+// Email-link sign-in / verification lands here as a full page load, so it has
+// to honour the destination saved before the user was sent to sign in.
+const redirectAfterAuth = (navigate: (to: string, opts?: { replace?: boolean }) => void, fallback = '/') => {
+  const dest = sessionStorage.getItem('returnAfterSignIn') || fallback;
+  sessionStorage.removeItem('returnAfterSignIn');
+  navigate(dest, { replace: true });
+};
+
 const AuthCallback = () => {
   const navigate = useNavigate();
 
@@ -83,9 +91,9 @@ const AuthCallback = () => {
               title: 'Signed in successfully!', 
               description: 'Your email has been verified and you are now signed in.' 
             });
-            // Redirect to the signed-in home screen (Landing)
-            console.log('🔄 Redirecting to / ...');
-            navigate('/', { replace: true });
+            // Back to where the user was headed (home only if nothing was saved)
+            console.log('🔄 Redirecting to saved destination ...');
+            redirectAfterAuth(navigate);
             return;
           } catch (err: any) {
             console.error('❌ Sign-in with email link error:', err);
@@ -135,7 +143,7 @@ const AuthCallback = () => {
                 title: 'Email verified!', 
                 description: 'Your email has been successfully verified. Welcome!' 
               });
-              navigate('/');
+              redirectAfterAuth(navigate);
             return;
           }
             

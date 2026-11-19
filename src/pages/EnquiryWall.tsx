@@ -6702,7 +6702,7 @@ export default function EnquiryWall() {
                                   </Button>
                                 )
                               ) : (
-                                <Link to="/signin" className="w-full sm:w-auto block">
+                                <Link to="/signin" onClick={() => sessionStorage.setItem('returnAfterSignIn', `/enquiry/${enquiry.id}`)} className="w-full sm:w-auto block">
                                   <Button className="w-full sm:w-auto h-6 sm:h-8 md:h-10 px-1.5 sm:px-3 md:px-6 text-[9px] sm:text-xs md:text-sm font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
                                     {/* Top highlight overlay — same as Connect button */}
                                     <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
@@ -6771,7 +6771,7 @@ export default function EnquiryWall() {
                               </Button>
                               )
                             ) : (
-                              <Link to="/signin" className="w-full block">
+                              <Link to="/signin" onClick={() => sessionStorage.setItem('returnAfterSignIn', `/enquiry/${enquiry.id}`)} className="w-full block">
                                 <Button className="w-full h-9 text-[9px] font-black bg-black hover:bg-gray-900 text-white !rounded-xl !border-[0.5px] !border-black !shadow-[0_2px_0_0_rgba(0,0,0,0.5),0_4px_6px_rgba(0,0,0,0.12)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.5),0_2px_3px_rgba(0,0,0,0.10)] active:!translate-y-[2px] !transition-all !duration-200 !transform !relative !overflow-hidden group">
                                   {/* Top highlight overlay — same as Connect button */}
                                   <span className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent rounded-xl pointer-events-none" />
@@ -6895,7 +6895,7 @@ export default function EnquiryWall() {
                               </Button>
                               )
                             ) : (
-                              <Link to="/signin" className="block">
+                              <Link to="/signin" onClick={() => sessionStorage.setItem('returnAfterSignIn', `/enquiry/${enquiry.id}`)} className="block">
                                 <Button className="w-full h-10 rounded-xl !bg-[#0b1b33] hover:!bg-[#12294d] !border !border-black text-[10px] sm:text-[11px] font-bold !text-white transition-colors">
                                   Sign In to Respond
                                 </Button>

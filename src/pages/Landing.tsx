@@ -2891,7 +2891,11 @@ const Landing = () => {
                           ) : (
                             <button 
                               className="w-full h-9 !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 text-white text-[10px] font-black !rounded-2xl relative overflow-hidden min-h-[36px] shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none"
-                              onClick={() => navigate('/signin')}
+                              onClick={() => {
+                                // Land on this tile's enquiry page after signing in.
+                                sessionStorage.setItem('returnAfterSignIn', `/enquiry/${enquiry.id}`);
+                                navigate('/signin');
+                              }}
                             >
                               <span className="relative z-10">Sign In</span>
                             </button>
@@ -2973,7 +2977,11 @@ const Landing = () => {
                         ) : (
                           <button 
                             className={`w-full ${windowWidth < 640 ? 'h-9' : 'h-9 sm:h-9 lg:h-10'} !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 text-white ${windowWidth < 640 ? 'text-[10px]' : 'text-[10px] sm:text-xs lg:text-sm'} font-black !rounded-2xl relative overflow-hidden shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] transition-all !duration-150 touch-manipulation select-none`}
-                            onClick={() => navigate('/signin')}
+                            onClick={() => {
+                              // Land on this tile's enquiry page after signing in.
+                              sessionStorage.setItem('returnAfterSignIn', `/enquiry/${enquiry.id}`);
+                              navigate('/signin');
+                            }}
                           >
                             <span className="relative z-10">Sign In</span>
                           </button>

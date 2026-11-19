@@ -242,6 +242,12 @@ const SignInMobile = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading: authLoading, sendPhoneOTP, verifyPhoneOTP } = useAuth();
+  // Same rule as SignIn: a destination passed in navigation state becomes the
+  // saved return path when nothing was saved yet.
+  const stateReturn = ((location.state as any)?.redirectTo || (location.state as any)?.returnTo || (location.state as any)?.from) as string | undefined;
+  if (stateReturn && !sessionStorage.getItem('returnAfterSignIn')) {
+    sessionStorage.setItem('returnAfterSignIn', stateReturn);
+  }
 
   const [phoneDigits, setPhoneDigits] = useState("");
   const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);

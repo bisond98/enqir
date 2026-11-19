@@ -181,6 +181,12 @@ const SignInOptions = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading: authLoading, signInWithGoogle } = useAuth();
+  // Same rule as SignIn: a destination passed in navigation state becomes the
+  // saved return path when nothing was saved yet.
+  const stateReturn = ((location.state as any)?.redirectTo || (location.state as any)?.returnTo || (location.state as any)?.from) as string | undefined;
+  if (stateReturn && !sessionStorage.getItem('returnAfterSignIn')) {
+    sessionStorage.setItem('returnAfterSignIn', stateReturn);
+  }
 
   // Already signed in and verified? Go straight through.
   useEffect(() => {

@@ -22,6 +22,14 @@ const SignIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  // Destination after login: prefer the saved return path, otherwise a path
+  // handed over in navigation state (e.g. /post-enquiry). A state path is
+  // copied into the shared key so the /signin/email and /signin/mobile pages
+  // and the email-link callback all land in the same place.
+  const stateReturn = ((location.state as any)?.redirectTo || (location.state as any)?.returnTo || (location.state as any)?.from) as string | undefined;
+  if (stateReturn && !sessionStorage.getItem('returnAfterSignIn')) {
+    sessionStorage.setItem('returnAfterSignIn', stateReturn);
+  }
   const returnTo = sessionStorage.getItem('returnAfterSignIn');
   
   // STRICT: Redirect if user is already signed in AND verified - check both AuthContext and Firebase directly
@@ -195,7 +203,7 @@ const SignIn = () => {
       
       if (!result.error) {
         setLoading(false);
-        const savedReturn = sessionStorage.getItem('returnAfterSignIn');
+        const savedReturn = sessionStorage.getItem('returnAfterSignIn') || stateReturn || null;
         if (savedReturn) {
           sessionStorage.removeItem('returnAfterSignIn');
           // SPA navigation instead of a hard reload — a full page reload here

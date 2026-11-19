@@ -214,6 +214,19 @@ export default function ListingDetail() {
     }
   }, [targetBuyerId, responses]);
 
+  // Coming back here after signing in from "Sign in to message" / "Call
+  // Seller": the return path carries #message-seller, so open the page on the
+  // connect-seller section instead of the top.
+  useEffect(() => {
+    if (!user || !listing) return;
+    if (window.location.hash !== '#message-seller') return;
+    const timer = setTimeout(() => {
+      const el = document.getElementById('message-seller');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [user, listing]);
+
   const isOwner = useMemo(() => !!user && !!listing && listing.sellerId === user.uid, [user, listing]);
   const chatUnlocked = useMemo(() => !!user && responses.some(r => r.buyerId === user.uid), [user, responses]);
   const [sellerProfile, setSellerProfile] = useState<any>(null);

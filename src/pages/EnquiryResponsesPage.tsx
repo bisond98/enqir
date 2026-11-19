@@ -566,21 +566,17 @@ const EnquiryResponsesPage = () => {
       <div className="container mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-8 bg-white text-gray-900 min-h-screen">
         {/* Sorting Controls - Simple Design */}
         {responses.length > 0 && (
-          <div className="mb-3 sm:mb-6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+          <div className="mt-4 sm:mt-6 mb-3 sm:mb-6 flex flex-row items-center justify-end gap-2 sm:gap-3">
             {/* Amount Sort */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex-1 sm:flex-none !border-[1.5px] !border-black rounded-lg sm:rounded-xl px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 h-auto !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/amount min-touch"
+                  aria-label="Sort by amount"
+                  title="Sort by amount"
+                  className="!flex-none !border-0 !rounded-full !w-14 !h-14 sm:!w-16 sm:!h-16 !p-0 !bg-blue-600 hover:!bg-blue-700 !text-white flex items-center justify-center !shadow-none hover:!shadow-none active:!shadow-none !transition-all !duration-150 relative overflow-hidden group/amount min-touch shrink-0"
                 >
-                  <div className="flex items-center justify-between w-full gap-2 relative z-10">
-                    <div className="flex items-center gap-2">
-                      <ArrowUpDown className="h-4 w-4 text-white" />
-                      <span className="font-black text-xs sm:text-sm text-white">Amount</span>
-                    </div>
-                    <ChevronDown className="h-3.5 w-3.5 text-white" />
-                  </div>
+                  <ArrowUpDown className="h-5 w-5 sm:h-6 sm:w-6 text-white relative z-10" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-56 bg-white border-4 border-black rounded-lg shadow-xl">
@@ -624,15 +620,11 @@ const EnquiryResponsesPage = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex-1 sm:flex-none !border-[1.5px] !border-black rounded-lg sm:rounded-xl px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 h-auto !bg-blue-600 hover:!bg-blue-700 !text-white text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/date min-touch"
+                  aria-label="Sort by date"
+                  title="Sort by date"
+                  className="!flex-none !border-0 !rounded-full !w-14 !h-14 sm:!w-16 sm:!h-16 !p-0 !bg-blue-600 hover:!bg-blue-700 !text-white flex items-center justify-center !shadow-none hover:!shadow-none active:!shadow-none !transition-all !duration-150 relative overflow-hidden group/date min-touch shrink-0"
                 >
-                  <div className="flex items-center justify-between w-full gap-2 relative z-10">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-white" />
-                      <span className="font-black text-xs sm:text-sm text-white">Date</span>
-                    </div>
-                    <ChevronDown className="h-3.5 w-3.5 text-white" />
-                  </div>
+                  <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-white relative z-10" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-56 bg-white border-4 border-black rounded-lg shadow-xl">
@@ -681,7 +673,7 @@ const EnquiryResponsesPage = () => {
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  className="p-1.5 sm:p-2 rounded-full transition-all duration-300 hover:bg-gray-100 flex items-center justify-center"
+                  className={`!flex-none !border-0 !rounded-full !w-14 !h-14 sm:!w-16 sm:!h-16 !p-0 flex items-center justify-center !shadow-none hover:!shadow-none active:!shadow-none transition-all duration-300 shrink-0 ${showOnlyTrustBadged ? '!bg-blue-800 hover:!bg-blue-900' : '!bg-blue-600 hover:!bg-blue-700'}`}
                   title={showOnlyTrustBadged ? "Click to remove filter" : "Filter trust-badged responses"}
                 >
                   <motion.div
@@ -692,10 +684,10 @@ const EnquiryResponsesPage = () => {
                     transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                 >
                   <Filter 
-                      className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 transition-colors duration-300"
+                      className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0 transition-colors duration-300"
                     style={{
-                      fill: showOnlyTrustBadged ? '#3b82f6' : '#000000',
-                      color: showOnlyTrustBadged ? '#3b82f6' : '#000000'
+                      fill: '#ffffff',
+                      color: '#ffffff'
                     }}
                   />
                   </motion.div>
@@ -867,7 +859,7 @@ const EnquiryResponsesPage = () => {
                 <div className="bg-black px-3 py-2.5 sm:px-4 sm:py-3 lg:px-8 lg:py-5 border-b border-gray-800 relative z-20">
                   <div className="flex items-center justify-between gap-2 sm:gap-4">
                     <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
-                      <div className="bg-blue-600 text-white rounded-lg sm:rounded-xl w-7 h-7 sm:w-9 sm:h-9 lg:w-12 lg:h-12 flex items-center justify-center font-black text-xs sm:text-sm lg:text-lg flex-shrink-0 shadow-lg ring-1 sm:ring-2 ring-blue-400/50">
+                      <div className="bg-white text-black rounded-lg sm:rounded-xl w-7 h-7 sm:w-9 sm:h-9 lg:w-12 lg:h-12 flex items-center justify-center font-black text-xs sm:text-sm lg:text-lg flex-shrink-0">
                         #{index + 1}
                       </div>
                       <div className="min-w-0">
@@ -880,20 +872,6 @@ const EnquiryResponsesPage = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3">
-                      {/* Trust Badge - Right side of card */}
-                      {((userProfiles[response.sellerId]?.isProfileVerified || 
-                         userProfiles[response.sellerId]?.isVerified || 
-                         userProfiles[response.sellerId]?.trustBadge || 
-                         userProfiles[response.sellerId]?.isIdentityVerified) || 
-                        (response as any).userProfileVerified || 
-                        (response as any).isProfileVerified ||
-                        (response as any).userVerified ||
-                        response.isIdentityVerified ||
-                        (response as any).govIdUrl) && (
-                        <div className="bg-blue-600 rounded-full p-1 sm:p-1.5 ring-2 sm:ring-4 ring-blue-600 shadow-md sm:shadow-lg flex-shrink-0">
-                          <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-                        </div>
-                      )}
                       {/* Status badge hidden for approved — approval is implied on this page */}
                       {response.status !== 'approved' && (
                         <Badge 
@@ -919,8 +897,22 @@ const EnquiryResponsesPage = () => {
                   <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4 lg:gap-6 relative z-10">
                     {/* Seller Info - chips row: user code chip left, Seller 1/1 chip right */}
                     <div className="flex items-center justify-between gap-2 w-full">
-                      <h4 className="font-black text-[10px] sm:text-xs lg:text-sm text-black truncate border border-black rounded-full px-2.5 py-1">{getSellerCode(response.sellerId)}</h4>
-                      <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-black border border-black/30 bg-gray-50 rounded-full px-2.5 py-1 whitespace-nowrap">{responderNoun} {index + 1}/{visibleResponses.length}</span>
+                      <h4 className="font-black text-[10px] sm:text-xs lg:text-sm text-black px-0.5 py-1 inline-flex items-center gap-1 max-w-[60%]">
+                        <span className="truncate">{getSellerCode(response.sellerId)}</span>
+                        {/* Verification tick — moved here from the card header */}
+                        {((userProfiles[response.sellerId]?.isProfileVerified ||
+                           userProfiles[response.sellerId]?.isVerified ||
+                           userProfiles[response.sellerId]?.trustBadge ||
+                           userProfiles[response.sellerId]?.isIdentityVerified) ||
+                          (response as any).userProfileVerified ||
+                          (response as any).isProfileVerified ||
+                          (response as any).userVerified ||
+                          response.isIdentityVerified ||
+                          (response as any).govIdUrl) && (
+                          <CheckCircle className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0 text-blue-600" fill="currentColor" stroke="#ffffff" strokeWidth={2.5} />
+                        )}
+                      </h4>
+                      <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-black rounded-full px-0.5 py-1 whitespace-nowrap">{responderNoun} {index + 1}/{visibleResponses.length}</span>
                     </div>
                     
                     {/* Seller's Quote (top) — jobs/services only; other categories show the offer card at the bottom instead */}
@@ -1043,40 +1035,6 @@ const EnquiryResponsesPage = () => {
                   </div>
                 )}
                 
-                {/* Message & Notes Group - Mobile optimized */}
-                <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
-                  {/* Message Section - Mobile optimized */}
-                  <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200 border border-gray-300">
-                    <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
-                        <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
-                      </div>
-                      <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Message from the seller</span>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
-                      <p className="text-xs sm:text-sm lg:text-lg text-black font-medium leading-relaxed">{response.message || 'No message provided'}</p>
-                    </div>
-                  </div>
-                  
-                  {/* Additional Notes - Mobile optimized */}
-                  {response.notes && (
-                    <div className="bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200">
-                      <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
-                          <div className="w-5 h-5 sm:w-6 sm:w-6 bg-yellow-600 rounded-lg flex items-center justify-center">
-                            <span className="text-white text-xs sm:text-sm font-black">📝</span>
-                          </div>
-                        </div>
-                        <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Additional Notes</span>
-                      </div>
-                      <div className="bg-yellow-50 border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
-                        <p className="text-[10px] sm:text-xs lg:text-base text-black leading-relaxed font-medium">{response.notes}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
-                
                 {/* Seller Offer + Amount — same 3D card style as the top quote card,
                     for non-jobs/services categories (jobs/services use salary wording above) */}
                 {!useSalaryWording && (
@@ -1139,6 +1097,55 @@ const EnquiryResponsesPage = () => {
                   </div>
                 )}
                 
+                
+                {/* Message & Notes Group - Mobile optimized */}
+                <div className="space-y-3 sm:space-y-4 pb-3 sm:pb-5 lg:pb-6">
+                  {/* Message Section - Mobile optimized. Tapping anywhere here opens
+                      the same chat as the Start Chat button below. */}
+                  <div
+                    onClick={() => {
+                      setScamAlertPending({ action: 'chat', target: String(response.sellerId), sellerId: String(response.sellerId) });
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setScamAlertPending({ action: 'chat', target: String(response.sellerId), sellerId: String(response.sellerId) });
+                      }
+                    }}
+                    title="Open chat with seller"
+                    className="bg-white rounded-[28px] sm:rounded-[40px] p-5 sm:p-7 lg:p-9 border-[0.5px] border-black shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5 transition-all duration-200 overflow-hidden"
+                  >
+                    <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
+                        <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-white" />
+                      </div>
+                      <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Message from the seller</span>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
+                      <p className="text-xs sm:text-sm lg:text-lg text-black font-medium leading-relaxed">{response.message || 'No message provided'}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Additional Notes - Mobile optimized */}
+                  {response.notes && (
+                    <div className="bg-white border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-5 lg:p-6 shadow-sm sm:hover:shadow-md transition-shadow duration-200">
+                      <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500 rounded-lg sm:rounded-xl flex items-center justify-center shadow-sm sm:shadow-md">
+                          <div className="w-5 h-5 sm:w-6 sm:w-6 bg-yellow-600 rounded-lg flex items-center justify-center">
+                            <span className="text-white text-xs sm:text-sm font-black">📝</span>
+                          </div>
+                        </div>
+                        <span className="text-xs sm:text-sm lg:text-lg font-black text-black">Additional Notes</span>
+                      </div>
+                      <div className="bg-yellow-50 border-[0.5px] border-black rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-5">
+                        <p className="text-[10px] sm:text-xs lg:text-base text-black leading-relaxed font-medium">{response.notes}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
                 {/* Footer Section - Mobile optimized */}
                 <div className="flex flex-col gap-2 sm:gap-3 pt-1 sm:pt-2 lg:pt-3">
                   {/* Security message */}
@@ -1158,7 +1165,7 @@ const EnquiryResponsesPage = () => {
                         onClick={() => {
                           setScamAlertPending({ action: 'call', target: sellerMobile, sellerId: String(response.sellerId) });
                         }}
-                        className="w-full sm:w-auto !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/call min-touch flex items-center justify-center"
+                        className="w-full sm:w-auto !h-auto !min-h-[54px] sm:!min-h-[60px] lg:!min-h-[64px] !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white px-5 sm:px-8 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-lg sm:rounded-xl text-sm sm:text-base lg:text-lg font-black !shadow-none hover:!shadow-none active:!shadow-none !transition-all !duration-150 relative overflow-hidden group/call min-touch flex items-center justify-center"
                       >
                         <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-[1.5px] border-white flex items-center justify-center mr-1.5 sm:mr-2 flex-shrink-0 relative z-10">
                           <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white relative z-10" />
@@ -1173,10 +1180,12 @@ const EnquiryResponsesPage = () => {
                     onClick={() => {
                       setScamAlertPending({ action: 'chat', target: String(response.sellerId), sellerId: String(response.sellerId) });
                     }}
-                    className="w-full sm:w-auto !border-[1.5px] !border-black !bg-emerald-500 hover:!bg-emerald-600 !text-white px-4 sm:px-6 lg:px-10 py-2.5 sm:py-3 lg:py-4 rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-black !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] !transition-all !duration-150 relative overflow-hidden group/startchat min-touch flex items-center justify-center"
+                    className="w-full sm:w-auto !h-auto !min-h-[54px] sm:!min-h-[60px] lg:!min-h-[64px] !border-0 !bg-emerald-700 hover:!bg-emerald-800 !text-white px-5 sm:px-8 lg:px-12 py-3.5 sm:py-4 lg:py-5 rounded-lg sm:rounded-xl text-sm sm:text-base lg:text-lg font-black !shadow-none hover:!shadow-none active:!shadow-none !transition-all !duration-150 relative overflow-hidden group/startchat min-touch flex items-center justify-center"
                   >
-                    <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-6 lg:w-6 mr-1.5 sm:mr-2 flex-shrink-0 relative z-10" />
-                    <span className="whitespace-nowrap tracking-tight relative z-10">Start Chat</span>
+                    <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-[1.5px] border-white flex items-center justify-center mr-1.5 sm:mr-2 flex-shrink-0 relative z-10">
+                      <MessageSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4 text-white relative z-10" />
+                    </span>
+                    <span className="whitespace-nowrap tracking-tight relative z-10">Chat</span>
                   </Button>
                   </div>
                 </div>

@@ -1239,6 +1239,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   // page load — `user` is briefly null and this bounced users to
                   // sign-in as if they'd been signed out.
                   e.preventDefault();
+                  // Come back to the tab the user actually tapped after login.
+                  sessionStorage.setItem('returnAfterSignIn', item.path);
                   navigate("/signin");
                 } else if (isProtectedRoute && user) {
                   e.preventDefault();
@@ -1316,6 +1318,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
               onClick={(e) => {
                 if (!user) {
                   e.preventDefault();
+                  sessionStorage.setItem('returnAfterSignIn', '/settings');
                   navigate("/signin");
                 } else {
                   navigate("/settings");
@@ -1350,6 +1353,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
               onClick={() => {
                 setShowActionMenu(false);
                 if (!user) {
+                  // After login, land straight on the post enquiry form.
+                  sessionStorage.setItem('returnAfterSignIn', '/post-enquiry');
                   navigate("/signin");
                 } else {
                   navigate("/post-enquiry");
@@ -1369,6 +1374,8 @@ export default function Layout({ children, showNavigation = true }: { children: 
               onClick={() => {
                 setShowActionMenu(false);
                 if (!user) {
+                  // After login, land straight on the list-new (sell) form.
+                  sessionStorage.setItem('returnAfterSignIn', '/sell/new');
                   navigate("/signin");
                 } else {
                   navigate("/sell/new");
