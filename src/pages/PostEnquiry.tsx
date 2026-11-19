@@ -43,6 +43,7 @@ import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES, getVehicleBrandsForType } from "@/modules/sell/categoryBrands";
 import { VEHICLE_MODEL_OTHER, getVehicleModels } from "@/constants/vehicleCatalog";
 import { AUDIO_BRAND_OPTIONS, AUDIO_OTHER, getAudioModels } from "@/constants/audioCatalog";
+import { CATEGORY_TILE_IMAGES, CATEGORY_TILE_SCRIM } from "@/constants/categoryTileImages";
 
 // Description limits — every category shares one description field.
 // Cap is 8000 words; MAX_DESC_CHARS is only a hard safety ceiling so a paste of
@@ -2049,80 +2050,7 @@ const DEADLINE_STEP = 5;
   };
 
   // Category tiles that carry a wallpaper photo behind the icon and label
-  const categoryTileImages: Record<string, string> = {
-    'business': '/images/categories/business-dark.jpg',
-    'personal': '/images/categories/personal-dark.jpg',
-    'service': '/images/categories/service-dark.jpg',
-    'audio-headphones': '/images/categories/audio-headphones-dark.jpg',
-    'accommodations': '/images/categories/accommodations-dark.jpg',
-    'agriculture-farming': '/images/categories/agriculture-farming-dark.jpg',
-    'antiques': '/images/categories/antiques-dark.jpg',
-    'appliances': '/images/categories/appliances-dark.jpg',
-    'art': '/images/categories/art-dark.jpg',
-    'baby-kids': '/images/categories/baby-kids-dark.jpg',
-    'bags-luggage': '/images/categories/bags-luggage-dark.jpg',
-    'beauty-products': '/images/categories/beauty-products-dark.jpg',
-    'bicycles': '/images/categories/bicycles-dark.jpg',
-    'books-publications': '/images/categories/books-publications-dark.jpg',
-    'camera': '/images/categories/camera-dark.jpg',
-    'car': '/images/categories/car-dark.jpg',
-    'childcare-family': '/images/categories/childcare-family-dark.jpg',
-    'cleaning-services': '/images/categories/cleaning-services-dark.jpg',
-    'collectibles': '/images/categories/collectibles-dark.jpg',
-    'construction-renovation': '/images/categories/construction-renovation-dark.jpg',
-    'digital-it-services': '/images/categories/digital-it-services-dark.jpg',
-    'education-training': '/images/categories/education-training-dark.jpg',
-    'electronics': '/images/categories/electronics-dark.jpg',
-    'entertainment-media': '/images/categories/entertainment-media-dark.jpg',
-    'events-entertainment': '/images/categories/events-entertainment-dark.jpg',
-    'fashion': '/images/categories/fashion-dark.jpg',
-    'fitness-gym-equipment': '/images/categories/fitness-gym-equipment-dark.jpg',
-    'food-beverage': '/images/categories/food-beverage-dark.jpg',
-    'furniture': '/images/categories/furniture-dark.jpg',
-    'gaming-recreation': '/images/categories/gaming-recreation-dark.jpg',
-    'garden-outdoor': '/images/categories/garden-outdoor-dark.jpg',
-    'government-public': '/images/categories/government-public-dark.jpg',
-    'health-beauty': '/images/categories/health-beauty-dark.jpg',
-    'home': '/images/categories/home-dark.jpg',
-    'raw-materials-industrial': '/images/categories/raw-materials-industrial-dark.jpg',
-    'insurance-services': '/images/categories/insurance-services-dark.jpg',
-    'jewelry-accessories': '/images/categories/jewelry-accessories-dark.jpg',
-    'jobs': '/images/categories/jobs-dark.jpg',
-    'kitchen-dining': '/images/categories/kitchen-dining-dark.jpg',
-    'laptops': '/images/categories/laptops-dark.jpg',
-    'legal-financial': '/images/categories/legal-financial-dark.jpg',
-    'marketing-advertising': '/images/categories/marketing-advertising-dark.jpg',
-    'medical-equipment': '/images/categories/medical-equipment-dark.jpg',
-    'memorabilia': '/images/categories/memorabilia-dark.jpg',
-    'mobiles': '/images/categories/mobiles-dark.jpg',
-    'bike': '/images/categories/bike-dark.jpg',
-    'musical-accessories': '/images/categories/musical-accessories-dark.jpg',
-    'musical-instruments': '/images/categories/musical-instruments-dark.jpg',
-    'musical-services': '/images/categories/musical-services-dark.jpg',
-    'non-profit-charity': '/images/categories/non-profit-charity-dark.jpg',
-    'office-supplies': '/images/categories/office-supplies-dark.jpg',
-    'pets': '/images/categories/pets-dark.jpg',
-    'photography': '/images/categories/photography-dark.jpg',
-    'real-estate': '/images/categories/real-estate-dark.jpg',
-    'real-estate-services': '/images/categories/real-estate-services-dark.jpg',
-    'renewable-energy': '/images/categories/renewable-energy-dark.jpg',
-    'security-safety': '/images/categories/security-safety-dark.jpg',
-    'sneakers': '/images/categories/sneakers-dark.jpg',
-    'souvenir': '/images/categories/souvenir-dark.jpg',
-    'sports-outdoor': '/images/categories/sports-outdoor-dark.jpg',
-    'technology': '/images/categories/technology-dark.jpg',
-    'thrift': '/images/categories/thrift-dark.jpg',
-    'tools-equipment': '/images/categories/tools-equipment-dark.jpg',
-    'transportation-logistics': '/images/categories/transportation-logistics-dark.jpg',
-    'travel-tourism': '/images/categories/travel-tourism-dark.jpg',
-    'tutoring-lessons': '/images/categories/tutoring-lessons-dark.jpg',
-    'vehicles': '/images/categories/vehicles-dark.jpg',
-    'vintage': '/images/categories/vintage-dark.jpg',
-    'waste-management': '/images/categories/waste-management-dark.jpg',
-    'watches': '/images/categories/watches-dark.jpg',
-    'wedding-events': '/images/categories/wedding-events-dark.jpg',
-    'other': '/images/categories/other-dark.jpg',
-  };
+  const categoryTileImages = CATEGORY_TILE_IMAGES;
 
   // Keep main categories at top, sort the rest alphabetically, then add 'Other' at the end
   const mainCategories = categories.filter(cat => ['business', 'personal', 'service'].includes(cat.value));
@@ -3032,20 +2960,20 @@ const DEADLINE_STEP = 5;
                 </div>
               </div>
 
-              <CardContent className="relative pt-6 sm:pt-8 pb-6 flex flex-col">
+              <CardContent className="relative pt-2 sm:pt-4 pb-6 flex flex-col">
                 {/* The card is left clean: the old doodle watermark that sat
                     behind the form fields has been removed. */}
                 {/* Step icon retired by request. What is left is an invisible
                     spacer, trimmed twice now so every tab's title sits a little
                     higher than it did with the icon in place. */}
                 <div id="step-top" className="scroll-mt-3">
-                  <div aria-hidden="true" className="mx-auto mb-3 h-6 w-6 sm:h-8 sm:w-8" />
+                  <div aria-hidden="true" className="mx-auto mb-0 h-1 w-1 sm:h-2 sm:w-2" />
                 </div>
 
                 {/* Step Title — styled like the "Enqir" wordmark on the phone sign-in page:
                     brush-swash stroke behind the text, no pill/background */}
-                <div id="step-title" className="text-center pt-2 mb-4">
-                  <div className="relative mx-auto inline-flex items-center justify-center select-none px-9 sm:px-14 py-7 sm:py-9">
+                <div id="step-title" className="text-center pt-0 mb-3">
+                  <div className="relative mx-auto inline-flex max-w-full items-center justify-center select-none px-5 sm:px-9 py-4 sm:py-6">
                     {/* Painterly brush swash — same tapered stroke as the sign-in wordmark */}
                     <svg
                       aria-hidden="true"
@@ -3089,7 +3017,7 @@ const DEADLINE_STEP = 5;
                         opacity="0.45"
                       />
                     </svg>
-                    <span id="enquiry-step-heading" className="relative inline-flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight leading-snug text-center whitespace-nowrap">
+                    <span id="enquiry-step-heading" className="relative whitespace-nowrap text-center text-[clamp(14px,5vw,30px)] font-extrabold text-gray-950 tracking-tight leading-tight">
                       {STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}
                     </span>
                 </div>
@@ -3202,7 +3130,7 @@ const DEADLINE_STEP = 5;
                                         'pointer-events-none absolute inset-0',
                                         selected
                                           ? 'bg-gradient-to-t from-blue-700 via-blue-600/85 to-blue-600/45'
-                                          : 'bg-[linear-gradient(to_top,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_30%,rgba(0,0,0,0.3)_42%,rgba(0,0,0,0.05)_58%,rgba(0,0,0,0)_100%)]'
+                                          : CATEGORY_TILE_SCRIM
                                       )}
                                     />
                                   </>

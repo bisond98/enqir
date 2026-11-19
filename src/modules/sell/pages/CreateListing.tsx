@@ -12,6 +12,7 @@ import { uploadToCloudinaryUnsigned } from '@/integrations/cloudinary';
 import { toast } from '@/hooks/use-toast';
 import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
+import { CATEGORY_TILE_IMAGES, CATEGORY_TILE_SCRIM } from '@/constants/categoryTileImages';
 import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
 import { LAPTOP_OTHER, getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
@@ -1077,6 +1078,7 @@ export default function CreateListing() {
                       const Icon = CATEGORY_ICON[c.value] ?? LayoutGrid;
                       const selected = selectedCats.includes(c.value);
                       const disabled = false;
+                      const tileImage = CATEGORY_TILE_IMAGES[c.value];
                       return (
                         <button
                           key={c.value}
@@ -1084,7 +1086,7 @@ export default function CreateListing() {
                           onClick={() => toggleCat(c.value)}
                           disabled={disabled}
                           className={cn(
-                            'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
+                            'relative overflow-hidden flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
                             selected
                               ? 'border-black bg-blue-600 text-white shadow-none'
                               : disabled
@@ -1092,15 +1094,38 @@ export default function CreateListing() {
                                 : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
                           )}
                         >
+                          {tileImage && (
+                            <>
+                              {/* Category wallpaper — bright up top, dark behind the label */}
+                              <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute inset-0 bg-cover bg-center brightness-100 saturate-[0.95]"
+                                style={{ backgroundImage: `url('${tileImage}')` }}
+                              />
+                              <span
+                                aria-hidden="true"
+                                className={cn(
+                                  'pointer-events-none absolute inset-0',
+                                  selected
+                                    ? 'bg-gradient-to-t from-blue-700 via-blue-600/85 to-blue-600/45'
+                                    : CATEGORY_TILE_SCRIM
+                                )}
+                              />
+                            </>
+                          )}
                           <div
                             className={cn(
-                              'flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border',
-                              selected ? 'border-white/30 bg-white/10' : 'border-black/10 bg-slate-50'
+                              'relative z-10 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border',
+                              selected
+                                ? 'border-white/30 bg-white/10'
+                                : tileImage
+                                  ? 'border-white/25 bg-white/10 text-white backdrop-blur-[2px]'
+                                  : 'border-black/10 bg-slate-50'
                             )}
                           >
                             <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
                           </div>
-                          <span className="text-[10px] sm:text-xs font-black leading-tight">{c.label}</span>
+                          <span className={cn('relative z-10 text-[10px] sm:text-xs font-black leading-tight', tileImage && 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]')}>{c.label}</span>
                           {selected && <Check className="h-4 w-4 shrink-0" />}
                         </button>
                       );
