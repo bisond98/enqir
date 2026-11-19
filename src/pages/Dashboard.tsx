@@ -224,6 +224,26 @@ const Dashboard = () => {
     return 'responses';
   });
 
+  // Just submitted a response? Remember which enquiry's tile to scroll to once
+  // the submission tiles are on screen (set by SellerResponse's redirect).
+  const [highlightResponseEnquiryId, setHighlightResponseEnquiryId] = useState<string | null>(null);
+  useEffect(() => {
+    const navState = location.state as any;
+    if (navState && typeof navState.highlightEnquiryId === 'string') {
+      setHighlightResponseEnquiryId(navState.highlightEnquiryId);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (!highlightResponseEnquiryId || !responsesReady) return;
+    const el = document.getElementById(`dash-response-${highlightResponseEnquiryId}`);
+    if (!el) return;
+    const timer = setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [highlightResponseEnquiryId, responsesReady, responsesSummary]);
+
   // Match engine state (AI matches between enquiries & listings)
   const [userMatches, setUserMatches] = useState<UserMatches | null>(null);
   const [matchesLoading, setMatchesLoading] = useState(false);
@@ -2856,6 +2876,7 @@ const Dashboard = () => {
                         return (
                         <motion.div
                           key={submission.id}
+                          id={`dash-response-${submission.enquiryId}`}
                           style={{ willChange: 'transform, opacity' }}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}

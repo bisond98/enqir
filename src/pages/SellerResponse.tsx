@@ -428,7 +428,8 @@ const SellerResponse = () => {
           if (prev <= 1) {
             clearInterval(countdownInterval);
             console.log('🔄 Auto-redirecting to dashboard');
-            navigate('/dashboard?mode=seller');
+            // Tell the dashboard which enquiry's response to scroll to.
+            navigate('/dashboard?mode=seller', { state: { highlightEnquiryId: enquiryId } });
             return 0;
           }
           return prev - 1;
