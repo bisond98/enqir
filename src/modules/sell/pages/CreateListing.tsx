@@ -1079,7 +1079,7 @@ export default function CreateListing() {
                           className={cn(
                             'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
                             selected
-                              ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
+                              ? 'border-black bg-blue-600 text-white shadow-none'
                               : disabled
                                 ? 'border-black/10 bg-slate-50 text-slate-400 opacity-60 cursor-not-allowed'
                                 : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
@@ -1115,7 +1115,7 @@ export default function CreateListing() {
                               className={cn(
                                 'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
                                 selected
-                                  ? 'border-black bg-black text-white shadow-[0_4px_0_0_rgba(0,0,0,0.35)]'
+                                  ? 'border-black bg-blue-600 text-white shadow-none'
                                   : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
                               )}
                             >
@@ -1399,7 +1399,7 @@ export default function CreateListing() {
                                   }
                                 }
                               }}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-transparent' : f.key === 'vehicleType' ? 'text-sm sm:text-base !font-bold text-black' : f.key === 'subcategory' ? 'text-[11px] text-black' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] && f.key === 'subcategory' ? '!bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''} ${!details[f.key] ? 'text-[10px] text-transparent' : f.key === 'vehicleType' ? 'text-sm sm:text-base !font-bold text-black' : f.key === 'subcategory' ? '!text-[11px] !text-white' : 'text-sm sm:text-base text-black'}`}
                             >
                               <option value="">Cancel</option>
                               {fieldOptions.map((opt) => (
@@ -1411,7 +1411,7 @@ export default function CreateListing() {
                                 {f.placeholder ?? 'Select'}
                               </span>
                             )}
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${details[f.key] && f.key === 'subcategory' ? 'text-white' : 'text-gray-800'}`} />
                           </>
                         )}
                       </div>

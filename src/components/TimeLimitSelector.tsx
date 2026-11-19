@@ -450,7 +450,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
     <div className={`space-y-3 sm:space-y-4 ${className}`}>
       <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
         {value && (
-          <Badge className={`${urgency.color} text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-0.5`}>
+          <Badge className="!bg-red-700 hover:!bg-red-700 !text-white !border-red-800 text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 sm:py-0.5 tabular-nums">
             <span className="mr-1">{urgency.icon}</span>
             {formatDeadline(deadline)}
           </Badge>
@@ -460,7 +460,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       {isMobile ? (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" className={`w-full justify-start text-left font-normal h-12 sm:h-12 text-xs sm:text-sm border-2 focus:ring-4 focus:ring-red-500/20 rounded-2xl relative overflow-hidden transition-all !duration-150 !shadow-none active:!shadow-none touch-manipulation select-none ${value ? '!border-red-800 !bg-red-700 hover:!bg-red-800 !text-white focus:!border-red-800' : '!border-red-300 !bg-red-100 hover:!bg-red-200 !text-red-800 focus:!border-red-400'}`}>
+            <Button variant="outline" className={`w-full justify-start text-left font-normal h-12 sm:h-12 text-xs sm:text-sm border-2 focus:ring-4 focus:ring-red-500/20 rounded-2xl relative overflow-hidden transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none ${value ? '!border-red-800 !bg-red-700 hover:!bg-red-800 !text-white focus:!border-red-800' : '!border-red-700 !bg-red-600 hover:!bg-red-700 !text-white focus:!border-red-700'}`}>
               <Clock className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
               <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
               <span className="ml-auto relative z-10 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-white/80 mr-1">Click</span>
@@ -479,7 +479,7 @@ const TimeLimitSelector: React.FC<TimeLimitSelectorProps> = ({
       ) : (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className={`w-full justify-start text-left font-normal h-12 sm:h-12 text-xs sm:text-sm border-2 focus:ring-4 focus:ring-red-500/20 rounded-2xl relative overflow-hidden transition-all !duration-150 !shadow-none active:!shadow-none touch-manipulation select-none ${value ? '!border-red-800 !bg-red-700 hover:!bg-red-800 !text-white focus:!border-red-800' : '!border-red-300 !bg-red-100 hover:!bg-red-200 !text-red-800 focus:!border-red-400'}`}>
+            <Button variant="outline" className={`w-full justify-start text-left font-normal h-12 sm:h-12 text-xs sm:text-sm border-2 focus:ring-4 focus:ring-red-500/20 rounded-2xl relative overflow-hidden transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] hover:!shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none ${value ? '!border-red-800 !bg-red-700 hover:!bg-red-800 !text-white focus:!border-red-800' : '!border-red-700 !bg-red-600 hover:!bg-red-700 !text-white focus:!border-red-700'}`}>
               <Clock className="mr-2 h-4 w-4 sm:h-4 sm:w-4 relative z-10" />
               <span className="relative z-10">{value ? formatDeadline(deadline) : 'Set deadline'}</span>
               <span className="ml-auto relative z-10 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-white/80 mr-1">Click</span>
