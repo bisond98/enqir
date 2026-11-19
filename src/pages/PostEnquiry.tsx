@@ -2834,6 +2834,16 @@ const DEADLINE_STEP = 5;
         </div>
         {/* Header - Matching Live Enquiries - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+          {/* Real photo backdrop — a desk with a laptop and notebook at night,
+              dimmed hard so the heading and step titles stay fully legible. */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+            <img
+              src="/images/headers/food.jpg"
+              alt=""
+              className="h-full w-full object-cover object-center opacity-[0.58]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+          </div>
           {/* Mural doodle filling the whole black header behind the text.
               Absolutely positioned, so the header keeps exactly its height. */}
           <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">
@@ -2972,7 +2982,7 @@ const DEADLINE_STEP = 5;
 
                 {/* Step Title — styled like the "Enqir" wordmark on the phone sign-in page:
                     brush-swash stroke behind the text, no pill/background */}
-                <div id="step-title" className="text-center pt-0 mb-3">
+                <div id="step-title" className="text-center pt-3 sm:pt-4 mb-9 sm:mb-10">
                   <div className="relative mx-auto inline-flex max-w-full items-center justify-center select-none px-5 sm:px-9 py-4 sm:py-6">
                     {/* Painterly brush swash — same tapered stroke as the sign-in wordmark */}
                     <svg
@@ -3108,7 +3118,7 @@ const DEADLINE_STEP = 5;
                                 type="button"
                                 onClick={() => !isDisabled && handleCategoryToggle(cat.value)}
                                 className={cn(
-                                  'relative overflow-hidden flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
+                                  'relative overflow-hidden flex flex-col items-center justify-center gap-2 rounded-xl border-2 p-3 sm:p-4 min-h-[104px] sm:min-h-[118px] text-center transition-all touch-manipulation',
                                   selected
                                     ? 'border-black bg-blue-600 text-white shadow-none'
                                     : isDisabled
@@ -3146,7 +3156,7 @@ const DEADLINE_STEP = 5;
                                   <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
 
                                 </div>
-                                <span className={cn('relative z-10 text-[10px] sm:text-xs font-black leading-tight', tileImage && 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]')}>{cat.label}</span>
+                                <span className={cn('relative z-10 mt-1 translate-y-1 sm:translate-y-1.5 text-[10px] sm:text-xs font-black leading-tight', tileImage && 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]')}>{cat.label}</span>
                                 {selected && <Check className="relative z-10 h-4 w-4 shrink-0" />}
                               </button>
                             );
@@ -3326,7 +3336,7 @@ const DEADLINE_STEP = 5;
                             value={jobSkills}
                             onChange={(e) => setJobSkills(e.target.value)}
                             placeholder={jobSkills ? '' : 'Skills — e.g., Tally, Excel, Driving, 2-wheeler license'}
-                            className={`w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-sm sm:text-base text-black'}`}
+                            className={`w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                           />
                         </div>
                       )}
@@ -3340,7 +3350,7 @@ const DEADLINE_STEP = 5;
                               // Reset gender when switching to a subtype where it doesn't apply
                               if (!GENDER_RELEVANT_ACCOMMODATION_TYPES.has(e.target.value)) setAccommodationGender('any');
                             }}
-                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!accommodationType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!accommodationType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                           >
                             <option value="">Stay type</option>
                             {ACCOMMODATION_SUBTYPES.map((s) => (
@@ -3389,16 +3399,13 @@ const DEADLINE_STEP = 5;
                             <select
                               value={repairType}
                               onChange={(e) => setRepairType(e.target.value)}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!repairType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!repairType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                             >
                               <option value="">What needs fixing?</option>
                               {REPAIR_TYPES.map((t) => (
                                 <option key={t} value={t}>{t}</option>
                               ))}
                             </select>
-                            <div className="h-3">
-                              <p className="text-[8px] font-bold text-black text-center tracking-wide">service type</p>
-                            </div>
                           </div>
                         );
                       })()}
@@ -4053,7 +4060,7 @@ const DEADLINE_STEP = 5;
                                   onChange={(e) => { if (!estateType) setEstateDealType(e.target.value as typeof estateDealType); }}
                                   className={cn(
                                     'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
-                                    !estateDealType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black',
+                                    !estateDealType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none',
                                     estateDealType && '!bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none',
                                     !!estateType && 'opacity-60 cursor-not-allowed'
                                   )}
@@ -4084,7 +4091,7 @@ const DEADLINE_STEP = 5;
                                   }}
                                   className={cn(
                                     'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
-                                    !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black',
+                                    !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none',
                                     estateType && '!bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none'
                                   )}
                                 >
