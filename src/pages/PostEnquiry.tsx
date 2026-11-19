@@ -2947,7 +2947,7 @@ const DEADLINE_STEP = 5;
 
           {/* Main Form - Multi-step wizard (matching sell listing) */}
           {!isSubmitted && (
-            <Card className="border border-black rounded-2xl sm:rounded-3xl bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_-4px_0_0_rgba(0,0,0,0.18),4px_0_0_0_rgba(0,0,0,0.18),-4px_0_0_0_rgba(0,0,0,0.18),0_0_18px_rgba(0,0,0,0.14),0_0_34px_rgba(0,0,0,0.08)] overflow-hidden">
+            <Card className="enq-form border border-black rounded-2xl sm:rounded-3xl bg-white shadow-[0_4px_0_0_rgba(0,0,0,0.18),0_-4px_0_0_rgba(0,0,0,0.18),4px_0_0_0_rgba(0,0,0,0.18),-4px_0_0_0_rgba(0,0,0,0.18),0_0_18px_rgba(0,0,0,0.14),0_0_34px_rgba(0,0,0,0.08)] overflow-hidden">
               <div className="space-y-2 pb-4 px-5 sm:px-6 lg:px-8 pt-4">
                 <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
                   <div
@@ -3632,16 +3632,29 @@ const DEADLINE_STEP = 5;
                       {/* Subcategory — Electronics / Agriculture (description step) */}
                       {subcategoryOptions && (
                         <div className="mb-4">
-                          <select
-                            value={subcategory}
-                            onChange={(e) => setSubcategory(e.target.value)}
-                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-4 ${!subcategory ? 'border-gray-800 bg-white text-[10px] text-slate-400 focus-visible:border-black' : 'border-blue-700 bg-gradient-to-b from-blue-500 to-blue-700 text-sm sm:text-base text-white shadow-none focus-visible:border-blue-700 focus:ring-white/60'}${(subcategory) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
-                          >
-                            <option value="">Select</option>
-                            {subcategoryOptions.map((s) => (
-                              <option key={s} value={s} className="bg-white text-black">{s}</option>
-                            ))}
-                          </select>
+                          <div className="relative">
+                            <select
+                              id="enquiry-subcategory"
+                              aria-label="Choose a type"
+                              value={subcategory}
+                              onChange={(e) => setSubcategory(e.target.value)}
+                              className={`w-full appearance-none rounded-full h-12 sm:h-14 pl-5 pr-14 text-left border-2 transition-all duration-200 focus:outline-none shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] ${subcategory
+                                ? 'border-blue-700 bg-gradient-to-r from-blue-600 to-blue-700 text-sm sm:text-base font-bold text-white focus-visible:ring-3 focus-visible:ring-white/50'
+                                : 'border-slate-200 bg-gradient-to-b from-white to-slate-50 text-xs sm:text-sm font-bold text-slate-900 hover:border-slate-300 hover:to-slate-100 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
+                            >
+                              <option value="">Select</option>
+                              {subcategoryOptions.map((s) => (
+                                <option key={s} value={s} className="bg-white text-black">{s}</option>
+                              ))}
+                            </select>
+                            {/* Soft round handle on the right — hints that the pill opens a list */}
+                            <span
+                              aria-hidden="true"
+                              className={`pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-200 ${subcategory ? 'bg-white text-black' : 'bg-black text-white'}`}
+                            >
+                              <ChevronDown className="chev-badge h-4 w-4" strokeWidth={2.5} />
+                            </span>
+                          </div>
                         </div>
                       )}
                       {/* Vehicle details — brand/year/variant above the description when a vehicle category is selected */}
@@ -3788,11 +3801,11 @@ const DEADLINE_STEP = 5;
                                         <option key={t} value={t}>{t}</option>
                                       ))}
                                     </select>
-                                    <div className="absolute inset-y-0 right-0 flex items-center gap-0.5 pr-3 pointer-events-none">
+                                    {/* Transmission is named by its gear icon alone — no chevron */}
+                                    <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                                       <span className="flex items-center justify-center h-6 w-6 rounded-full bg-black">
                                         <GearShifterIcon className="h-3.5 w-3.5 text-white" />
                                       </span>
-                                      <ChevronDown className="h-4 w-4 text-gray-500" />
                                     </div>
                                   </div>
                                   <div className="h-3">
@@ -3811,11 +3824,11 @@ const DEADLINE_STEP = 5;
                                         <option key={f} value={f}>{f}</option>
                                       ))}
                                     </select>
-                                    <div className="absolute inset-y-0 right-0 flex items-center gap-0.5 pr-3 pointer-events-none">
+                                    {/* Fuel type is named by its pump icon alone — no chevron */}
+                                    <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                                       <span className="flex items-center justify-center h-6 w-6 rounded-full bg-black">
                                         <Fuel className="h-3.5 w-3.5 text-white" />
                                       </span>
-                                      <ChevronDown className="h-4 w-4 text-gray-500" />
                                     </div>
                                   </div>
                                   <div className="h-3">

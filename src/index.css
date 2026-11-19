@@ -2706,3 +2706,30 @@ body {
 
 
 
+
+/* Post-enquiry dropdowns: every category picker shares the rounded outline and
+   the soft depth of the description field. Height, padding and colours are left
+   exactly as each dropdown already sets them. */
+.enq-form select:not([multiple]) {
+  border-radius: 9999px !important;
+  box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.14), 0 0 11px rgba(0, 0, 0, 0.09), 0 6px 14px rgba(0, 0, 0, 0.12) !important;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.enq-form select:not([multiple]):hover {
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.16), 0 0 14px rgba(0, 0, 0, 0.11), 0 8px 18px rgba(0, 0, 0, 0.14) !important;
+}
+
+/* Every dropdown arrow inside the post-enquiry form becomes the same black round
+   handle used by the category picker. The arrow keeps its own offset; padding
+   simply grows the circle around it. */
+.enq-form select ~ svg.lucide-chevron-down:not(.chev-badge),
+.enq-form .relative > svg.lucide-chevron-down:not(.chev-badge) {
+  box-sizing: content-box;
+  width: 14px;
+  height: 14px;
+  padding: 7px;
+  border-radius: 9999px;
+  background-color: #000;
+  color: #fff;
+  stroke-width: 2.75;
+}
