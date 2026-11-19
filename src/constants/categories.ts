@@ -2543,6 +2543,13 @@ export function filterCategoriesBySearch<T extends AppCategory>(categories: T[],
   const q = query.trim().toLowerCase();
   if (!q) return categories;
 
+  // "other" / "others" names one umbrella category, so show that single tile
+  // rather than padding the grid with catch-alls and service-led extras.
+  if (/^others?$/.test(q)) {
+    const only = categories.find(c => c.value === 'other');
+    if (only) return [only];
+  }
+
   const scored: Array<{ c: T; s: number }> = [];
   for (const c of categories) {
     const s = matchStrength(c, q);
