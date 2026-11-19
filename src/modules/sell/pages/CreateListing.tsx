@@ -1195,7 +1195,7 @@ export default function CreateListing() {
             })()}
 
             {step === 1 && (
-              <div className="relative space-y-2 max-w-lg mx-auto w-full">
+              <div className="sell-pills relative space-y-2 max-w-lg mx-auto w-full">
                 {/* Single quiet line-art doodle — seller offering */}
                 <SellerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
                 <Label htmlFor="listing-title" className="text-[9px] sm:text-[10px] font-bold text-black">
@@ -1335,8 +1335,21 @@ export default function CreateListing() {
                             ? [LAPTOP_OTHER]
                             : [...getLaptopModels(details['brand'] ?? ''), LAPTOP_OTHER])
                         : (f.options ?? []);
+                      // Every dropdown hugs the text it shows (its placeholder, or
+                      // the picked value once chosen) instead of a fixed column.
+                      const shortSubcategory = category === 'electronics' && f.key === 'subcategory';
+                      const isDropdown = !f.typeable && f.type !== 'text' && f.type !== 'number';
+                      // Only a tab that holds a single dropdown gets the hugs-text
+                      // treatment; tabs with several (car, vehicles, bike) keep
+                      // their normal even widths.
+                      const titleDropdowns = fieldsForCategoryStep(category, 'title')
+                        .filter((field) => !field.typeable && field.type !== 'text' && field.type !== 'number').length;
+                      const hugText = isDropdown && titleDropdowns <= 1;
+                      const shortLabel = details[f.key] || (f.placeholder ?? 'Select');
+                      // Extra room on the right for the round chevron handle.
+                      const shortWidth = Math.min(320, Math.max(124, Math.round(shortLabel.length * 7.4) + 88));
                       return (
-                      <div key={f.key} className={`relative ${f.key === 'subcategory' ? 'w-full' : 'w-[48%]'}`} style={f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
+                      <div key={f.key} className={`relative ${shortSubcategory ? 'electronics-pill max-w-full' : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={hugText ? { width: `${shortWidth}px`, marginLeft: 'auto' } : f.key === 'repairType' ? { marginLeft: 'auto' } : undefined}>
                         {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
                           <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
                         )}
@@ -1392,6 +1405,16 @@ export default function CreateListing() {
                                   const unknownCar = e.target.value === CAR_MODEL_OTHER || details['brand'] === CAR_MODEL_OTHER;
                                   setTitle(unknownCar ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
                                 }
+                                // Bikes cascade the same way: a new brand clears the
+                                // model, and the title mirrors brand + model.
+                                if (f.key === 'brand' && category === 'bike') {
+                                  setDetail('model', '');
+                                  setTitle(e.target.value === BIKE_MODEL_OTHER ? '' : e.target.value);
+                                }
+                                if (f.key === 'model' && category === 'bike') {
+                                  const unknownBike = e.target.value === BIKE_MODEL_OTHER || details['brand'] === BIKE_MODEL_OTHER;
+                                  setTitle(unknownBike ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
+                                }
                                 if (f.key === 'brand' && category === 'audio-headphones') {
                                   setDetail('model', '');
                                   setTitle(e.target.value === AUDIO_OTHER ? '' : e.target.value);
@@ -1437,7 +1460,7 @@ export default function CreateListing() {
                                   }
                                 }
                               }}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''} ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-sm sm:text-base !font-bold !text-white'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''} ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-sm sm:text-base !font-bold !text-white'}`}
                             >
                               <option value="">Cancel</option>
                               {fieldOptions.map((opt) => (
@@ -1445,7 +1468,7 @@ export default function CreateListing() {
                               ))}
                             </select>
                             {!details[f.key] && (
-                              <span className="pointer-events-none absolute left-4 right-9 top-1/2 -translate-y-1/2 truncate text-[10px] font-semibold text-gray-900">
+                              <span className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 truncate text-center text-[10px] font-semibold text-gray-900">
                                 {f.placeholder ?? 'Select'}
                               </span>
                             )}
@@ -1462,7 +1485,7 @@ export default function CreateListing() {
             )}
 
             {step === 2 && (
-              <div className="space-y-2 max-w-lg mx-auto w-full">
+              <div className="sell-pills space-y-2 max-w-lg mx-auto w-full">
                 {/* Sneaker details — brand + audience + size, styled like the Post Enquiry form */}
                 {category === 'sneakers' && (() => {
                   const sneakerAudience = details['sneakerAudience'] ?? 'Adults';
@@ -1478,7 +1501,7 @@ export default function CreateListing() {
                           <select
                             value={sneakerBrandVal}
                             onChange={(e) => setDetail('sneakerBrand', e.target.value)}
-                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrandVal ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrandVal ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                           >
                             <option value="">Brand</option>
                             {SNEAKER_BRANDS.map((b) => (
@@ -1499,7 +1522,7 @@ export default function CreateListing() {
                           <select
                             value={sneakerSize}
                             onChange={(e) => setDetail('sneakerSize', e.target.value)}
-                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                           >
                             <option value="">Size</option>
                             {sizeList.map((s) => (
@@ -1567,7 +1590,7 @@ export default function CreateListing() {
                             onChange={(e) => { if (!estateType) setDetail('listingFor', e.target.value); }}
                             className={cn(
                               'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
-                              !details['listingFor'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none',
+                              !details['listingFor'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none',
                               !!estateType && 'opacity-60 cursor-not-allowed'
                             )}
                           >
@@ -1597,7 +1620,7 @@ export default function CreateListing() {
                             }}
                             className={cn(
                               'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
-                              !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'
+                              !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'
                             )}
                           >
                             <option value="" disabled hidden>Select property type</option>
@@ -1639,7 +1662,7 @@ export default function CreateListing() {
                               <select
                                 value={details['houseBhk'] ?? ''}
                                 onChange={(e) => setDetail('houseBhk', e.target.value)}
-                                className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] appearance-none pl-4 pr-8 cursor-pointer', !details['houseBhk'] ? 'text-slate-400' : '!text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none')}
+                                className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] appearance-none pl-4 pr-8 cursor-pointer', !details['houseBhk'] ? 'text-slate-400' : '!text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none')}
                                 style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
                               >
                                 <option value="">BHK</option>
@@ -1670,7 +1693,7 @@ export default function CreateListing() {
                             <select
                               value={details['thriftGender'] ?? ''}
                               onChange={(e) => { setDetail('thriftGender', e.target.value); resetThriftBelow('gender'); }}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftGender'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftGender'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                             >
                               <option value="" disabled>Select gender</option>
                               {THRIFT_GENDERS.map((g) => <option key={g.value} value={g.label}>{g.label}</option>)}
@@ -1683,7 +1706,7 @@ export default function CreateListing() {
                               <select
                                 value={details['thriftType'] ?? ''}
                                 onChange={(e) => { setDetail('thriftType', e.target.value); resetThriftBelow('type'); }}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftType'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftType'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                               >
                                 <option value="" disabled>Select type</option>
                                 {THRIFT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -1698,7 +1721,7 @@ export default function CreateListing() {
                             <select
                               value={details['thriftItem'] ?? ''}
                               onChange={(e) => setDetail('thriftItem', e.target.value)}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftItem'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftItem'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                             >
                               <option value="" disabled>Select item</option>
                               {thriftItemsFor(details['thriftGender'], details['thriftType']).map((item) => <option key={item} value={item}>{item}</option>)}
@@ -1712,7 +1735,7 @@ export default function CreateListing() {
                             <select
                               value={details['thriftSize'] ?? ''}
                               onChange={(e) => setDetail('thriftSize', e.target.value)}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftSize'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['thriftSize'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                             >
                               <option value="" disabled>Select size</option>
                               {thriftSizesFor(details['thriftType']).map((sz) => <option key={sz} value={sz}>{sz}</option>)}
@@ -1786,13 +1809,19 @@ export default function CreateListing() {
                                 // On mobile the year box sits at the top of the tab;
                                 // from sm upwards it keeps its array position. Cars
                                 // are the exception: their variant leads the tab.
-                                <div key={f.key} className={`space-y-2 ${f.key === 'year' && category !== 'vehicles' && category !== 'car' ? 'order-first sm:order-none' : ''} ${category === 'car' && (f.key === 'variant' || f.key === 'year') ? 'sm:col-span-2' : ''}`}>
+                                <div
+                                  key={f.key}
+                                  className={`space-y-2 ${f.key === 'year' && category !== 'vehicles' && category !== 'car' ? 'order-first sm:order-none' : ''} ${category === 'car' && (f.key === 'variant' || f.key === 'year') ? 'sm:col-span-2' : ''}`}
+                                  style={selectFields.length === 1 && f.type !== 'text' && f.type !== 'number'
+                                    ? { width: `${Math.min(320, Math.max(124, Math.round(((details[f.key] || f.placeholder || 'Select').length) * 7.4) + 88))}px`, marginLeft: 'auto' }
+                                    : undefined}
+                                >
                                   {category === 'vehicles' && f.key === 'variant' && getVehicleModels(details['brand'] ?? '', details['vehicleType'] ?? '').length > 0 ? (
                                     <div className="relative">
                                       <select
                                         value={details[f.key] ?? ''}
                                         onChange={(e) => setDetail(f.key, e.target.value)}
-                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                                       >
                                         <option value="">Select model</option>
                                         {getVehicleModels(details['brand'] ?? '', details['vehicleType'] ?? '').map((opt) => (
@@ -1807,7 +1836,7 @@ export default function CreateListing() {
                                       <select
                                         value={details[f.key] ?? ''}
                                         onChange={(e) => setDetail(f.key, e.target.value)}
-                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                                       >
                                         <option value="">Select variant</option>
                                         {getCarVariants(details['brand'] ?? '', details['model'] ?? '').map((opt) => (
@@ -1835,7 +1864,7 @@ export default function CreateListing() {
                                       value={details[f.key] ?? ''}
                                       disabled={(f.key === 'storage' && category === 'laptops' && !details['model']) || (f.key === 'processor' && category === 'laptops' && !details['brand'])}
                                       onChange={(e) => setDetail(f.key, e.target.value)}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                                     >
                                       <option value="">{f.placeholder ?? 'Select'}</option>
                                       {((f.key === 'storage' && category === 'laptops')
@@ -1872,7 +1901,7 @@ export default function CreateListing() {
                             value={details['year'] ?? ''}
                             onChange={(e) => setDetail('year', e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
                             placeholder="Year"
-                            className={`w-full rounded-full text-sm font-medium bg-white px-1 py-0 text-center placeholder:text-black placeholder:opacity-100 placeholder:font-semibold placeholder:text-[11px] transition-all duration-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] ${details['year']?.length === 4 ? '!h-10 !min-h-0 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : '!h-10 !min-h-0 border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
+                            className={`w-full rounded-full text-sm font-medium bg-white px-1 py-0 text-center placeholder:text-black placeholder:opacity-100 placeholder:font-semibold placeholder:text-[11px] transition-all duration-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] ${details['year']?.length === 4 ? '!h-10 !min-h-0 !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : '!h-10 !min-h-0 border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
                           />
                         </div>
                       </div>
@@ -2011,7 +2040,7 @@ export default function CreateListing() {
                       <select
                         value={details['productCondition'] ?? ''}
                         onChange={(e) => setDetail('productCondition', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['productCondition'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['productCondition'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                       >
                         <option value="" disabled>Product Condition</option>
                         {conditionGrades.map((c) => (
@@ -2025,7 +2054,7 @@ export default function CreateListing() {
                       <select
                         value={details['visibleDamage'] ?? ''}
                         onChange={(e) => setDetail('visibleDamage', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['visibleDamage'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['visibleDamage'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                       >
                         <option value="" disabled>Visible damage?</option>
                         {VISIBLE_DAMAGE_OPTIONS.map((v) => (
@@ -2039,7 +2068,7 @@ export default function CreateListing() {
                       <select
                         value={details['damageType'] ?? ''}
                         onChange={(e) => setDetail('damageType', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['damageType'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['damageType'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                       >
                         <option value="" disabled>Damage Type</option>
                         {damageTypeOptions.map((d) => (
@@ -2053,7 +2082,7 @@ export default function CreateListing() {
                       <select
                         value={details['damageSeverity'] ?? ''}
                         onChange={(e) => setDetail('damageSeverity', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['damageSeverity'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['damageSeverity'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                       >
                         <option value="" disabled>Damage Severity</option>
                         {DAMAGE_SEVERITIES.map((d) => (
@@ -2067,7 +2096,7 @@ export default function CreateListing() {
                       <select
                         value={details['functionalStatus'] ?? ''}
                         onChange={(e) => setDetail('functionalStatus', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['functionalStatus'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['functionalStatus'] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                       >
                         <option value="" disabled>Functional Status</option>
                         {functionalStatusOptions.map((f) => (
@@ -2088,7 +2117,7 @@ export default function CreateListing() {
                           <select
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value)}
-                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                           >
                             <option value="">{f.placeholder ?? 'Select'}</option>
                             {f.options?.map((opt) => (
@@ -2197,7 +2226,7 @@ export default function CreateListing() {
                       <select
                         value={details[f.key] ?? ''}
                         onChange={(e) => setDetail(f.key, e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                       >
                         <option value="">{f.placeholder ?? 'Select'}</option>
                         {f.options?.map((opt) => (
@@ -2241,7 +2270,7 @@ export default function CreateListing() {
                     />
                     <label
                       htmlFor="listing-images"
-                      className="block w-full text-center !rounded-xl !border-0 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white transition-all !duration-200 !shadow-none hover:!shadow-none active:!shadow-none !text-base sm:!text-lg font-bold h-14 sm:h-16 flex items-center justify-center cursor-pointer touch-manipulation select-none"
+                      className="block w-full text-center !rounded-xl !border-0 !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white transition-all !duration-200 !shadow-none hover:!shadow-none active:!shadow-none !text-base sm:!text-lg font-bold h-14 sm:h-16 flex items-center justify-center cursor-pointer touch-manipulation select-none"
                     >
                       {images.length === 0 ? 'Choose Image' : 'Add More Images'}
                     </label>
@@ -2391,7 +2420,7 @@ export default function CreateListing() {
                   }));
                   navigate('/profile?returnTo=/sell/new');
                 }}
-                className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border !border-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 transition-all !duration-200 group !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] touch-manipulation select-none"
+                className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border !border-black !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 transition-all !duration-200 group !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] touch-manipulation select-none"
               >
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                   <ShieldCheck className="h-5 w-5 text-white" />
@@ -2497,7 +2526,7 @@ export default function CreateListing() {
                   type="button"
                   onClick={publish}
                   disabled={!user || uploading || publishing}
-                  className="!w-full !h-16 !text-lg !font-black !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative overflow-hidden transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
+                  className="!w-full !h-16 !text-lg !font-black !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative overflow-hidden transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
                 >
                   <span className="relative z-10">{publishing ? 'Selling…' : 'Sell'}</span>
                 </Button>

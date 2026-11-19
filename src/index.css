@@ -2806,3 +2806,69 @@ body {
   opacity: 1 !important;
   font-weight: 600;
 }
+
+/* Sell form, Electronics: the single subcategory dropdown borrows the
+   post-enquiry dropdown look — a pill with no outline, soft depth and the same
+   black round chevron handle. */
+.electronics-pill select:not([multiple]) {
+  border-radius: 9999px !important;
+  border-width: 0 !important;
+  /* Room on the right so the picked value never runs under the round handle. */
+  padding-right: 3rem !important;
+  padding-left: 1.25rem !important;
+  box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.14), 0 0 11px rgba(0, 0, 0, 0.09), 0 6px 14px rgba(0, 0, 0, 0.12) !important;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.electronics-pill select:not([multiple]):hover {
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.16), 0 0 14px rgba(0, 0, 0, 0.11), 0 8px 18px rgba(0, 0, 0, 0.14) !important;
+}
+.electronics-pill select ~ svg.lucide-chevron-down,
+.electronics-pill .relative > svg.lucide-chevron-down,
+.electronics-pill svg.lucide-chevron-down {
+  box-sizing: content-box;
+  width: 14px;
+  height: 14px;
+  padding: 7px;
+  border-radius: 9999px;
+  background-color: #000;
+  color: #fff;
+  stroke-width: 2.75;
+  right: 0.5rem;
+}
+
+/* The "Select" hint hugs the left inside the electronics pill. */
+.electronics-pill > span {
+  text-align: left !important;
+  padding-left: 1.6rem;
+}
+
+/* Sell form, Title and Description tabs: every dropdown matches the
+   post-enquiry pickers — pill shaped, no outline, soft depth, and the same
+   black round chevron handle. */
+.sell-pills select:not([multiple]) {
+  border-radius: 9999px !important;
+  border-width: 0 !important;
+  padding-right: 3rem !important;
+  box-shadow: 0 3px 0 0 rgba(0, 0, 0, 0.14), 0 0 11px rgba(0, 0, 0, 0.09), 0 6px 14px rgba(0, 0, 0, 0.12) !important;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.sell-pills select:not([multiple]):hover {
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.16), 0 0 14px rgba(0, 0, 0, 0.11), 0 8px 18px rgba(0, 0, 0, 0.14) !important;
+}
+.sell-pills svg.lucide-chevron-down {
+  box-sizing: content-box;
+  width: 14px;
+  height: 14px;
+  padding: 7px;
+  border-radius: 9999px;
+  background-color: #000;
+  color: #fff;
+  stroke-width: 2.75;
+  right: 0.5rem;
+}
+
+/* Post-enquiry: every dropdown is borderless — the soft depth, the pill shape
+   and the black handle carry the field, matching the car/bike blocks. */
+.enq-form select:not([multiple]) {
+  border-width: 0 !important;
+}
