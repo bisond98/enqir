@@ -2048,6 +2048,82 @@ const DEADLINE_STEP = 5;
     "other": MoreHorizontal,
   };
 
+  // Category tiles that carry a wallpaper photo behind the icon and label
+  const categoryTileImages: Record<string, string> = {
+    'business': '/images/categories/business-dark.jpg',
+    'personal': '/images/categories/personal-dark.jpg',
+    'service': '/images/categories/service-dark.jpg',
+    'audio-headphones': '/images/categories/audio-headphones-dark.jpg',
+    'accommodations': '/images/categories/accommodations-dark.jpg',
+    'agriculture-farming': '/images/categories/agriculture-farming-dark.jpg',
+    'antiques': '/images/categories/antiques-dark.jpg',
+    'appliances': '/images/categories/appliances-dark.jpg',
+    'art': '/images/categories/art-dark.jpg',
+    'baby-kids': '/images/categories/baby-kids-dark.jpg',
+    'bags-luggage': '/images/categories/bags-luggage-dark.jpg',
+    'beauty-products': '/images/categories/beauty-products-dark.jpg',
+    'bicycles': '/images/categories/bicycles-dark.jpg',
+    'books-publications': '/images/categories/books-publications-dark.jpg',
+    'camera': '/images/categories/camera-dark.jpg',
+    'car': '/images/categories/car-dark.jpg',
+    'childcare-family': '/images/categories/childcare-family-dark.jpg',
+    'cleaning-services': '/images/categories/cleaning-services-dark.jpg',
+    'collectibles': '/images/categories/collectibles-dark.jpg',
+    'construction-renovation': '/images/categories/construction-renovation-dark.jpg',
+    'digital-it-services': '/images/categories/digital-it-services-dark.jpg',
+    'education-training': '/images/categories/education-training-dark.jpg',
+    'electronics': '/images/categories/electronics-dark.jpg',
+    'entertainment-media': '/images/categories/entertainment-media-dark.jpg',
+    'events-entertainment': '/images/categories/events-entertainment-dark.jpg',
+    'fashion': '/images/categories/fashion-dark.jpg',
+    'fitness-gym-equipment': '/images/categories/fitness-gym-equipment-dark.jpg',
+    'food-beverage': '/images/categories/food-beverage-dark.jpg',
+    'furniture': '/images/categories/furniture-dark.jpg',
+    'gaming-recreation': '/images/categories/gaming-recreation-dark.jpg',
+    'garden-outdoor': '/images/categories/garden-outdoor-dark.jpg',
+    'government-public': '/images/categories/government-public-dark.jpg',
+    'health-beauty': '/images/categories/health-beauty-dark.jpg',
+    'home': '/images/categories/home-dark.jpg',
+    'raw-materials-industrial': '/images/categories/raw-materials-industrial-dark.jpg',
+    'insurance-services': '/images/categories/insurance-services-dark.jpg',
+    'jewelry-accessories': '/images/categories/jewelry-accessories-dark.jpg',
+    'jobs': '/images/categories/jobs-dark.jpg',
+    'kitchen-dining': '/images/categories/kitchen-dining-dark.jpg',
+    'laptops': '/images/categories/laptops-dark.jpg',
+    'legal-financial': '/images/categories/legal-financial-dark.jpg',
+    'marketing-advertising': '/images/categories/marketing-advertising-dark.jpg',
+    'medical-equipment': '/images/categories/medical-equipment-dark.jpg',
+    'memorabilia': '/images/categories/memorabilia-dark.jpg',
+    'mobiles': '/images/categories/mobiles-dark.jpg',
+    'bike': '/images/categories/bike-dark.jpg',
+    'musical-accessories': '/images/categories/musical-accessories-dark.jpg',
+    'musical-instruments': '/images/categories/musical-instruments-dark.jpg',
+    'musical-services': '/images/categories/musical-services-dark.jpg',
+    'non-profit-charity': '/images/categories/non-profit-charity-dark.jpg',
+    'office-supplies': '/images/categories/office-supplies-dark.jpg',
+    'pets': '/images/categories/pets-dark.jpg',
+    'photography': '/images/categories/photography-dark.jpg',
+    'real-estate': '/images/categories/real-estate-dark.jpg',
+    'real-estate-services': '/images/categories/real-estate-services-dark.jpg',
+    'renewable-energy': '/images/categories/renewable-energy-dark.jpg',
+    'security-safety': '/images/categories/security-safety-dark.jpg',
+    'sneakers': '/images/categories/sneakers-dark.jpg',
+    'souvenir': '/images/categories/souvenir-dark.jpg',
+    'sports-outdoor': '/images/categories/sports-outdoor-dark.jpg',
+    'technology': '/images/categories/technology-dark.jpg',
+    'thrift': '/images/categories/thrift-dark.jpg',
+    'tools-equipment': '/images/categories/tools-equipment-dark.jpg',
+    'transportation-logistics': '/images/categories/transportation-logistics-dark.jpg',
+    'travel-tourism': '/images/categories/travel-tourism-dark.jpg',
+    'tutoring-lessons': '/images/categories/tutoring-lessons-dark.jpg',
+    'vehicles': '/images/categories/vehicles-dark.jpg',
+    'vintage': '/images/categories/vintage-dark.jpg',
+    'waste-management': '/images/categories/waste-management-dark.jpg',
+    'watches': '/images/categories/watches-dark.jpg',
+    'wedding-events': '/images/categories/wedding-events-dark.jpg',
+    'other': '/images/categories/other-dark.jpg',
+  };
+
   // Keep main categories at top, sort the rest alphabetically, then add 'Other' at the end
   const mainCategories = categories.filter(cat => ['business', 'personal', 'service'].includes(cat.value));
   const otherCategories = categories.filter(cat => !['business', 'personal', 'service', 'other'].includes(cat.value));
@@ -3097,13 +3173,14 @@ const DEADLINE_STEP = 5;
                             const Icon = categoryIcons[cat.value] ?? LayoutGrid;
                             const selected = selectedCategories.includes(cat.value);
                             const isDisabled = false;
+                            const tileImage = categoryTileImages[cat.value];
                             return (
                               <button
                                 key={cat.value}
                                 type="button"
                                 onClick={() => !isDisabled && handleCategoryToggle(cat.value)}
                                 className={cn(
-                                  'flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
+                                  'relative overflow-hidden flex flex-col items-center gap-2 rounded-xl border-2 p-3 sm:p-4 text-center transition-all touch-manipulation',
                                   selected
                                     ? 'border-black bg-blue-600 text-white shadow-none'
                                     : isDisabled
@@ -3111,14 +3188,38 @@ const DEADLINE_STEP = 5;
                                       : 'border-black/20 bg-white text-black hover:border-black hover:bg-slate-50 shadow-[0_3px_0_0_rgba(0,0,0,0.08)]'
                                 )}
                               >
+                                {tileImage && (
+                                  <>
+                                    {/* Category wallpaper, faded only where the label sits so the title stays readable */}
+                                    <span
+                                      aria-hidden="true"
+                                      className="pointer-events-none absolute inset-0 bg-cover bg-center brightness-100 saturate-[0.95]"
+                                      style={{ backgroundImage: `url('${tileImage}')` }}
+                                    />
+                                    <span
+                                      aria-hidden="true"
+                                      className={cn(
+                                        'pointer-events-none absolute inset-0',
+                                        selected
+                                          ? 'bg-gradient-to-t from-blue-700 via-blue-600/85 to-blue-600/45'
+                                          : 'bg-[linear-gradient(to_top,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_30%,rgba(0,0,0,0.3)_42%,rgba(0,0,0,0.05)_58%,rgba(0,0,0,0)_100%)]'
+                                      )}
+                                    />
+                                  </>
+                                )}
                                 <div className={cn(
-                                  'flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border',
-                                  selected ? 'border-white/30 bg-white/10' : 'border-black/10 bg-slate-50'
+                                  'relative z-10 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl border',
+                                  selected
+                                    ? 'border-white/30 bg-white/10'
+                                    : tileImage
+                                      ? 'border-white/25 bg-white/10 text-white backdrop-blur-[2px]'
+                                      : 'border-black/10 bg-slate-50'
                                 )}>
                                   <Icon className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
+
                                 </div>
-                                <span className="text-[10px] sm:text-xs font-black leading-tight">{cat.label}</span>
-                                {selected && <Check className="h-4 w-4 shrink-0" />}
+                                <span className={cn('relative z-10 text-[10px] sm:text-xs font-black leading-tight', tileImage && 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]')}>{cat.label}</span>
+                                {selected && <Check className="relative z-10 h-4 w-4 shrink-0" />}
                               </button>
                             );
                           })}
