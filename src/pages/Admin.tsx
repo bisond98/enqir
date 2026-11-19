@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { db } from '@/firebase';
 import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot, increment, setDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
-import { Crown, Trash2, Eye, EyeOff, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server, FileText } from 'lucide-react';
+import { Crown, Trash2, Eye, EyeOff, Search, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server, FileText } from 'lucide-react';
 import { isDocumentUrl, attachmentFileName, downloadAttachment } from '@/lib/attachmentUrl';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
@@ -111,6 +111,13 @@ const Admin = () => {
   // admin asks for the rest.
   // Same 10-per-step pagination as the Live Enquiries section
   const [visibleSellListingsCount, setVisibleSellListingsCount] = useState(10);
+  // Admin search boxes (client-side, case-insensitive)
+  const [enquirySearch, setEnquirySearch] = useState('');
+  const [listingSearch, setListingSearch] = useState('');
+  // Seller responses list: 10 at a time, like the other admin sections
+  const [visibleSellerResponsesCount, setVisibleSellerResponsesCount] = useState(10);
+  // Sell listing responses: 5 at a time
+  const [visibleSellListingResponsesCount, setVisibleSellListingResponsesCount] = useState(5);
   const [profileVerifications, setProfileVerifications] = useState<any[]>([]);
   const [userReports, setUserReports] = useState<any[]>([]);
   const [selectedEnquiry, setSelectedEnquiry] = useState<Enquiry | null>(null);
@@ -1576,6 +1583,34 @@ const Admin = () => {
     );
   }
 
+  // ── Admin list filters ───────────────────────────────────────────────
+  // Sell listings: live ones first, newest first inside each group.
+  const listingTimeMs = (v: any) =>
+    v?.toMillis?.() ?? v?.toDate?.()?.getTime?.() ?? (v ? new Date(v).getTime() : 0) ?? 0;
+  const sortedSellListings = [...sellListings].sort((a: any, b: any) => {
+    const aLive = String(a.status || 'live').toLowerCase() === 'live' ? 1 : 0;
+    const bLive = String(b.status || 'live').toLowerCase() === 'live' ? 1 : 0;
+    if (aLive !== bLive) return bLive - aLive;
+    return listingTimeMs(b.createdAt) - listingTimeMs(a.createdAt);
+  });
+  const listingSearchTerm = listingSearch.trim().toLowerCase();
+  const filteredSellListings = listingSearchTerm
+    ? sortedSellListings.filter((l: any) =>
+        [l.title, l.description, l.category, l.location, l.status, l.sellerId, l.id]
+          .filter(Boolean)
+          .some((v: any) => String(v).toLowerCase().includes(listingSearchTerm))
+      )
+    : sortedSellListings;
+
+  const enquirySearchTerm = enquirySearch.trim().toLowerCase();
+  const filteredLiveEnquiries = enquirySearchTerm
+    ? liveEnquiries.filter((e: any) =>
+        [e.title, e.category, e.description, e.location, e.userId, e.id]
+          .filter(Boolean)
+          .some((v: any) => String(v).toLowerCase().includes(enquirySearchTerm))
+      )
+    : liveEnquiries;
+
   return (
     <Layout>
       <div className="min-h-screen bg-black">
@@ -2018,17 +2053,27 @@ const Admin = () => {
                     <div>
                       <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">Live Enquiries</h2>
                       <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                        {liveEnquiries.length} enquiry{liveEnquiries.length !== 1 ? 's' : ''} currently active
+                        {filteredLiveEnquiries.length} enquiry{filteredLiveEnquiries.length !== 1 ? 's' : ''} currently active
                       </p>
                     </div>
                     <Badge variant="default" className="text-xs sm:text-sm px-3 py-1.5 bg-green-900/30 text-green-400 border border-green-500/30">
-              {liveEnquiries.length} live
+              {filteredLiveEnquiries.length} live
             </Badge>
           </div>
+            <div className="relative mt-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <input
+                type="text"
+                value={enquirySearch}
+                onChange={(e) => { setEnquirySearch(e.target.value); setVisibleLiveEnquiriesCount(10); }}
+                placeholder="Search enquiries (title, category, location, user id…)"
+                className="w-full rounded-lg border border-gray-800 bg-gray-900 pl-9 pr-3 py-2 text-xs sm:text-sm text-white placeholder-gray-500 outline-none focus:border-green-500/60"
+              />
+            </div>
           </div>
                 
                 <CardContent className="p-4 sm:p-6">
-          {liveEnquiries.length === 0 ? (
+          {filteredLiveEnquiries.length === 0 ? (
                     <div className="text-center py-12 sm:py-16">
                       <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Eye className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
@@ -2039,7 +2084,7 @@ const Admin = () => {
                   ) : (
                     <>
                     <div className="space-y-3 sm:space-y-4">
-              {liveEnquiries.slice(0, visibleLiveEnquiriesCount).map((enquiry) => (
+              {filteredLiveEnquiries.slice(0, visibleLiveEnquiriesCount).map((enquiry) => (
                         <Card key={enquiry.id} className="border border-gray-900 bg-black hover:shadow-lg transition-all duration-200">
                           <CardContent className="p-5 sm:p-6">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -2097,7 +2142,7 @@ const Admin = () => {
                         </Card>
               ))}
             </div>
-            {liveEnquiries.length > visibleLiveEnquiriesCount && (
+            {filteredLiveEnquiries.length > visibleLiveEnquiriesCount && (
               <div className="flex justify-center mt-6 sm:mt-8 mb-4">
                 <Button
                   onClick={() => setVisibleLiveEnquiriesCount(prev => prev + 10)}
@@ -2106,7 +2151,7 @@ const Admin = () => {
                   <span className="flex items-center justify-center gap-2">
                     <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span className="text-sm sm:text-base">
-                      Load More ({liveEnquiries.length - visibleLiveEnquiriesCount} remaining)
+                      Load More ({filteredLiveEnquiries.length - visibleLiveEnquiriesCount} remaining)
                     </span>
                   </span>
                 </Button>
@@ -2118,81 +2163,90 @@ const Admin = () => {
               </Card>
 
         {/* Sell Listings (marketplace) */}
-        <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200 px-5 sm:px-6 py-4">
+        <Card className="bg-black border border-gray-900 shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-emerald-900/30 to-teal-900/30 border-b border-gray-900 px-5 sm:px-6 py-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                  <Database className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
-                </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900">Sell Listings</h2>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                    {sellListings.length} listing{sellListings.length !== 1 ? 's' : ''}
-                    {sellListings.length > 0 && (
-                      <> • showing latest {Math.min(visibleSellListingsCount, sellListings.length)}</>
-                    )}
-                  </p>
-                </div>
+              <div>
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">Sell Listings</h2>
+                <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                  {filteredSellListings.length} listing{filteredSellListings.length !== 1 ? 's' : ''}
+                  {listingSearchTerm ? ' matching' : ''} • showing latest {Math.min(visibleSellListingsCount, filteredSellListings.length)}
+                </p>
               </div>
-              <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">
+              <Badge variant="default" className="text-xs sm:text-sm px-3 py-1.5 bg-emerald-900/30 text-emerald-400 border border-emerald-500/30">
                 {sellListings.length} total
               </Badge>
+            </div>
+            <div className="relative mt-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <input
+                type="text"
+                value={listingSearch}
+                onChange={(e) => { setListingSearch(e.target.value); setVisibleSellListingsCount(10); }}
+                placeholder="Search listings (title, category, location, seller id…)"
+                className="w-full rounded-lg border border-gray-800 bg-gray-900 pl-9 pr-3 py-2 text-xs sm:text-sm text-white placeholder-gray-500 outline-none focus:border-emerald-500/60"
+              />
             </div>
           </div>
 
           <CardContent className="p-4 sm:p-6">
-            {sellListings.length === 0 ? (
+            {filteredSellListings.length === 0 ? (
               <div className="text-center py-12 sm:py-16">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Database className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Database className="h-8 w-8 sm:h-10 sm:w-10 text-gray-600" />
                 </div>
-                <p className="text-sm sm:text-base text-gray-600 font-medium">No listings yet</p>
-                <p className="text-xs sm:text-sm text-gray-500 mt-1">Listings posted from the sell form will appear here</p>
+                <p className="text-sm sm:text-base text-gray-300 font-medium">{listingSearchTerm ? 'No matching listings' : 'No listings yet'}</p>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">{listingSearchTerm ? 'Try a different search term' : 'Listings posted from the sell form will appear here'}</p>
               </div>
             ) : (
-              <div className="space-y-3 sm:space-y-4">
-                {sellListings.slice(0, visibleSellListingsCount).map((listing) => (
-                  <Card key={listing.id} className="border border-gray-200 bg-white hover:shadow-md transition-all duration-200">
-                    <CardContent className="p-4 sm:p-5">
-                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0 space-y-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="text-sm sm:text-base font-bold text-gray-900 truncate">{listing.title || 'Untitled listing'}</h3>
-                            <Badge variant="secondary" className="text-[10px] sm:text-xs px-2 py-0.5 capitalize">
+              <>
+              <div className="space-y-2.5 sm:space-y-3">
+                {filteredSellListings.slice(0, visibleSellListingsCount).map((listing) => (
+                  <Card key={listing.id} className="border border-gray-900 bg-black hover:border-gray-800 transition-all duration-200">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5">
+                        <div className="flex-1 min-w-0 space-y-1.5">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <h3 className="text-xs sm:text-sm font-bold text-white truncate max-w-full">{listing.title || 'Untitled listing'}</h3>
+                            <Badge variant="secondary" className="text-[9px] sm:text-[10px] px-1.5 py-0 capitalize bg-gray-800 text-gray-200 border-0">
                               {listing.status || 'live'}
                             </Badge>
                             {listing.withheld === true && (
-                              <Badge variant="destructive" className="text-[10px] sm:text-xs px-2 py-0.5">
+                              <Badge variant="destructive" className="text-[9px] sm:text-[10px] px-1.5 py-0">
                                 Withheld
                               </Badge>
                             )}
                           </div>
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
-                            <Badge variant="outline" className="text-[10px] sm:text-xs">{listing.category || 'Uncategorised'}</Badge>
-                            <span className="font-semibold text-gray-900">{formatListingPrice(listing)}</span>
-                            {listing.location && <span className="truncate">{listing.location}</span>}
-                            <span>{formatAdminDate(listing.createdAt)}</span>
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] sm:text-[11px] text-gray-300">
+                            <Badge variant="outline" className="text-[9px] sm:text-[10px] border-gray-800 text-gray-300 px-1.5 py-0">{listing.category || 'Uncategorised'}</Badge>
+                            <span className="font-semibold text-white">{formatListingPrice(listing)}</span>
+                            {listing.location && <span className="truncate text-gray-400">{listing.location}</span>}
+                            <span className="text-gray-500">{formatAdminDate(listing.createdAt)}</span>
                           </div>
-                          {Array.isArray(listing.images) && listing.images.length > 0 && (
-                            <div className="flex items-center gap-2">
-                              {listing.images.slice(0, 3).map((url: string, index: number) => (
-                                <img
-                                  key={index}
-                                  loading="lazy"
-                                  decoding="async"
-                                  src={url}
-                                  alt={`Listing ${index + 1}`}
-                                  className="w-12 h-12 rounded-lg object-cover border border-gray-200 cursor-pointer"
-                                  onClick={() => window.open(url, '_blank')}
-                                />
-                              ))}
-                              <span className="text-[10px] text-gray-500">
-                                {listing.images.length} image{listing.images.length !== 1 ? 's' : ''}
-                              </span>
-                            </div>
+                          {listing.description && (
+                            <p className="text-[10px] sm:text-[11px] text-gray-500 line-clamp-1">{listing.description}</p>
                           )}
-                          <p className="text-[10px] sm:text-xs text-gray-500 truncate">Seller: {listing.sellerId}</p>
+                          <div className="flex items-center gap-2">
+                            {Array.isArray(listing.images) && listing.images.length > 0 && (
+                              <>
+                                {listing.images.slice(0, 3).map((url: string, index: number) => (
+                                  <img
+                                    key={index}
+                                    loading="lazy"
+                                    decoding="async"
+                                    src={url}
+                                    alt={`Listing ${index + 1}`}
+                                    className="w-9 h-9 rounded-md object-cover border border-gray-800 cursor-pointer"
+                                    onClick={() => window.open(url, '_blank')}
+                                  />
+                                ))}
+                                <span className="text-[9px] text-gray-500">
+                                  {listing.images.length} image{listing.images.length !== 1 ? 's' : ''}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <p className="text-[9px] sm:text-[10px] text-gray-600 truncate">Seller: {listing.sellerId}</p>
                         </div>
                         <div className="flex items-center gap-2 self-start">
                           <Button
@@ -2200,17 +2254,17 @@ const Admin = () => {
                             size="sm"
                             title={listing.withheld === true ? 'Release (show in marketplace again)' : 'Withhold (hide from marketplace)'}
                             onClick={() => setWithheld('sell_listings', listing.id, listing.withheld !== true, 'Listing')}
-                            className="h-8 w-8 sm:h-9 sm:w-9 p-0"
+                            className="h-7 w-7 sm:h-8 sm:w-8 p-0 bg-transparent border-gray-700 text-gray-200 hover:bg-gray-900 hover:text-white"
                           >
-                            {listing.withheld === true ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                            {listing.withheld === true ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
                           </Button>
                           <Button
                             variant="destructive"
                             size="sm"
                             onClick={() => deleteSellListing(listing.id)}
-                            className="h-8 w-8 sm:h-9 sm:w-9 p-0"
+                            className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       </div>
@@ -2218,24 +2272,26 @@ const Admin = () => {
                   </Card>
                 ))}
               </div>
-            )}
-            {sellListings.length > visibleSellListingsCount && (
-              <div className="flex justify-center mt-6 sm:mt-8 mb-4">
-                <Button
-                  onClick={() => setVisibleSellListingsCount(prev => prev + 10)}
-                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 min-w-[200px] sm:min-w-[240px]"
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span className="text-sm sm:text-base">
-                      Load More ({sellListings.length - visibleSellListingsCount} remaining)
+              {filteredSellListings.length > visibleSellListingsCount && (
+                <div className="flex justify-center mt-5 sm:mt-6 mb-2">
+                  <Button
+                    onClick={() => setVisibleSellListingsCount(prev => prev + 10)}
+                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold px-6 sm:px-8 py-2.5 rounded-lg shadow-lg transition-all duration-300 border-0 min-w-[200px] sm:min-w-[240px]"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <TrendingUp className="h-4 w-4" />
+                      <span className="text-sm sm:text-base">
+                        Load More ({filteredSellListings.length - visibleSellListingsCount} remaining)
+                      </span>
                     </span>
-                  </span>
-                </Button>
-              </div>
+                  </Button>
+                </div>
+              )}
+              </>
             )}
           </CardContent>
         </Card>
+
 
         {/* Old Submissions */}
               <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
@@ -2385,6 +2441,8 @@ const Admin = () => {
                           {sellerSubmissions.length} response{sellerSubmissions.length !== 1 ? 's' : ''}
                           {' • '}
                           {sellerSubmissions.filter((s) => s.status === 'pending').length} awaiting review
+                          {' • '}
+                          showing latest {Math.min(visibleSellerResponsesCount, sellerSubmissions.length)}
                         </p>
                       </div>
                     </div>
@@ -2405,7 +2463,7 @@ const Admin = () => {
                     </div>
                   ) : (
                     <div className="space-y-4 sm:space-y-6">
-              {sellerSubmissions.map((submission) => (
+              {sellerSubmissions.slice(0, visibleSellerResponsesCount).map((submission) => (
                         <Card key={submission.id} className="border border-gray-200 bg-white hover:shadow-md transition-all duration-200">
                           <CardContent className="p-4 sm:p-6">
                             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
@@ -2536,6 +2594,21 @@ const Admin = () => {
               ))}
             </div>
           )}
+          {sellerSubmissions.length > visibleSellerResponsesCount && (
+            <div className="flex justify-center mt-6 sm:mt-8 mb-4">
+              <Button
+                onClick={() => setVisibleSellerResponsesCount(prev => prev + 10)}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 min-w-[200px] sm:min-w-[240px]"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-sm sm:text-base">
+                    Load More ({sellerSubmissions.length - visibleSellerResponsesCount} remaining)
+                  </span>
+                </span>
+              </Button>
+            </div>
+          )}
                 </CardContent>
         </Card>
 
@@ -2572,7 +2645,7 @@ const Admin = () => {
               </div>
             ) : (
               <div className="space-y-3 sm:space-y-4">
-                {sellListingResponses.map((response) => (
+                {sellListingResponses.slice(0, visibleSellListingResponsesCount).map((response) => (
                   <Card key={response.id} className="border border-gray-200 bg-white hover:shadow-md transition-all duration-200">
                     <CardContent className="p-4 sm:p-5">
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
@@ -2615,6 +2688,21 @@ const Admin = () => {
                     </CardContent>
                   </Card>
                 ))}
+              </div>
+            )}
+            {sellListingResponses.length > visibleSellListingResponsesCount && (
+              <div className="flex justify-center mt-6 sm:mt-8 mb-4">
+                <Button
+                  onClick={() => setVisibleSellListingResponsesCount(prev => prev + 5)}
+                  className="bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 min-w-[200px] sm:min-w-[240px]"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-sm sm:text-base">
+                      Show more ({sellListingResponses.length - visibleSellListingResponsesCount} more)
+                    </span>
+                  </span>
+                </Button>
               </div>
             )}
           </CardContent>
