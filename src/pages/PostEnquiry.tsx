@@ -2834,16 +2834,6 @@ const DEADLINE_STEP = 5;
         </div>
         {/* Header - Matching Live Enquiries - Full Width */}
         <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
-          {/* Real photo backdrop — a desk with a laptop and notebook at night,
-              dimmed hard so the heading and step titles stay fully legible. */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-            <img
-              src="/images/headers/food.jpg"
-              alt=""
-              className="h-full w-full object-cover object-center opacity-[0.58]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
-          </div>
           {/* Mural doodle filling the whole black header behind the text.
               Absolutely positioned, so the header keeps exactly its height. */}
           <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">

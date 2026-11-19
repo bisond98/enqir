@@ -2677,9 +2677,9 @@ const Dashboard = () => {
                                     aria-label="Call seller"
                                     title="Call seller"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="group/call flex h-16 w-16 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                    className="group/call flex h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white ring-[8px] ring-blue-100 !shadow-[0_10px_24px_-14px_rgba(37,99,235,0.9)] active:!shadow-[0_10px_24px_-14px_rgba(37,99,235,0.9)] !transition-colors !duration-150 touch-manipulation select-none"
                                   >
-                                    <Phone className="h-7 w-7 group-hover/call:scale-110 transition-transform" />
+                                    <Phone className="h-9 w-9 sm:h-10 sm:w-10 group-hover/call:scale-110 transition-transform" />
                                   </a>
                                 )}
                                 <Link
