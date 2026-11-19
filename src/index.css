@@ -2793,3 +2793,16 @@ body {
   opacity: 1 !important;
   font-weight: 600;
 }
+
+/* Motorcycle block: Brand, Model and Year all read as capsules — fully
+   rounded, with the outline dropped so only the soft depth remains. */
+.bike-capsule select:not([multiple]),
+.bike-capsule input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]) {
+  border-radius: 9999px !important;
+  border-width: 0 !important;
+}
+.bike-capsule input::placeholder {
+  color: #000 !important;
+  opacity: 1 !important;
+  font-weight: 600;
+}

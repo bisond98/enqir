@@ -18,6 +18,7 @@ import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
 import { LAPTOP_OTHER, getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
 import { AUDIO_OTHER, getAudioModels } from '@/constants/audioCatalog';
 import { CAR_MODEL_OTHER, getCarModels, getCarVariants } from '@/constants/carCatalog';
+import { BIKE_MODEL_OTHER, getBikeModels } from '@/constants/bikeCatalog';
 import { getVehicleBrandsForType } from '../categoryBrands';
 import { VEHICLE_MODEL_OTHER, getVehicleModels } from '@/constants/vehicleCatalog';
 import { WATCH_OTHER, getWatchModels } from '@/constants/watchCatalog';
@@ -1313,6 +1314,10 @@ export default function CreateListing() {
                         ? (details['brand'] === CAR_MODEL_OTHER
                             ? [CAR_MODEL_OTHER]
                             : [...getCarModels(details['brand'] ?? ''), CAR_MODEL_OTHER])
+                        : f.key === 'model' && category === 'bike'
+                        ? (details['brand'] === BIKE_MODEL_OTHER
+                            ? [BIKE_MODEL_OTHER]
+                            : [...getBikeModels(details['brand'] ?? ''), BIKE_MODEL_OTHER])
                         : f.key === 'model' && category === 'audio-headphones'
                         ? (details['brand'] === AUDIO_OTHER
                             ? [AUDIO_OTHER]
@@ -1724,6 +1729,8 @@ export default function CreateListing() {
                       // Post-Enquiry-style block above, not by the generic fields.
                       const descFields = fieldsForCategoryStep(category, 'description')
                         .filter((f) => !isFieldHiddenForDetails(f, details))
+                        // The motorcycle year is drawn above the description box instead.
+                        .filter((f) => !(category === 'bike' && f.key === 'year'))
                         .filter((f) => !['sneakerBrand', 'sneakerAudience', 'sneakerSize', 'cleaningTypes', 'thriftGender', 'thriftType', 'thriftItem', 'thriftSize'].includes(f.key));
                       // Car transmission is a 2-option field but it belongs here as a
                       // dropdown, not the on/off toggle the other 2-option fields use.
@@ -1853,7 +1860,27 @@ export default function CreateListing() {
                 )}
                 {(category !== 'real-estate' || estateType) && (
                   <>
-                    <div className="relative">
+                    {/* Motorcycle: the year box sits directly above the description. */}
+                    {category === 'bike' && (
+                      <div className="mb-3 flex justify-center">
+                        {/* Small capsule sized for a 4-digit year. */}
+                        <div className="w-24">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={4}
+                            value={details['year'] ?? ''}
+                            onChange={(e) => setDetail('year', e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
+                            placeholder="Year"
+                            className={`w-full rounded-full text-sm font-medium bg-white px-1 py-0 text-center placeholder:text-black placeholder:opacity-100 placeholder:font-semibold placeholder:text-[11px] transition-all duration-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] ${details['year']?.length === 4 ? '!h-10 !min-h-0 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : '!h-10 !min-h-0 border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {/* A little air between the last dropdown row and the description box.
+                        The step stacks its blocks with space-y, so the margin has to win
+                        against that rule — hence the important. */}
+                    <div className="relative !mt-6">
                       <button
                         type="button"
                         onClick={runDescriptionAI}
@@ -2447,7 +2474,7 @@ export default function CreateListing() {
             </div>
           )}
           {/* Nav — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
-          <div className={`mt-2 flex items-center gap-4 pt-2 border-t border-slate-100 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
+          <div className={`mt-2 flex items-center gap-4 pt-2 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
             {/* Back circle — hidden entirely on the first tab (was a dead, disabled button there) */}
             {step > 0 && (
               <Button

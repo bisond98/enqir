@@ -225,8 +225,11 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   ],
   bike: [
     { key: 'brand', label: 'Brand', type: 'select', options: BIKE_BRANDS, placeholder: 'Select brand', step: 'title' },
-    { key: 'year', label: 'Year of manufacture', type: 'select', options: YEARS, placeholder: 'Year', typeable: true, step: 'title' },
-    { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., 350 Standard, Dual Channel ABS', step: 'title' },
+    // Model options follow the picked brand (Royal Enfield -> Classic 350 …);
+    // CreateListing resolves them with getBikeModels().
+    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Select model', step: 'title' },
+    // Year moved down to the Description tab, directly above the description box.
+    { key: 'year', label: 'Year of manufacture', type: 'number', placeholder: 'Year', min: 1950, step: 'description' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },
     { key: 'accidentHistory', label: 'Accident history', type: 'select', options: ['No accidents', 'Minor accidents', 'Major accidents'], placeholder: 'Select accident history', step: 'details' },

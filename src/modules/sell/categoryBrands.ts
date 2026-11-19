@@ -13,11 +13,12 @@ export const CAR_BRANDS = [
 ];
 
 export const BIKE_BRANDS = [
-  'Ampere', 'Aprilia', 'Ather', 'Bajaj', 'Benelli', 'BSA', 'CFMoto', 'Ducati',
-  'Harley-Davidson', 'Hero', 'Hero Electric', 'Honda', 'Husqvarna', 'Jawa',
-  'Joy e-bike', 'Kawasaki', 'Keeway', 'Kinetic Green', 'Komaki', 'KTM',
-  'Matter', 'Moto Morini', 'Okinawa', 'Ola Electric', 'Pure EV', 'QJ Motor',
-  'Revolt', 'Royal Enfield', 'Simple Energy', 'Suzuki', 'Triumph', 'TVS',
+  'Ampere', 'Aprilia', 'Ather', 'Bajaj', 'Benelli', 'BGauss', 'BMW', 'Bounce',
+  'BSA', 'CFMoto', 'Ducati', 'Harley-Davidson', 'Hero', 'Hero Electric', 'Honda',
+  'Husqvarna', 'Indian', 'Jawa', 'Joy e-bike', 'Kawasaki', 'Keeway',
+  'Kinetic Green', 'Komaki', 'KTM', 'Matter', 'Moto Guzzi', 'Moto Morini',
+  'Odysse', 'Okinawa', 'Ola Electric', 'Pure EV', 'QJ Motor', 'Revolt', 'River',
+  'Royal Enfield', 'Simple Energy', 'Suzuki', 'Tork', 'Triumph', 'TVS',
   'Ultraviolette', 'UM', 'Vespa', 'Voge', 'Yamaha', 'Yezdi', 'Zontes', 'Other',
 ];
 
