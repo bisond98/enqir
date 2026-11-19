@@ -235,7 +235,13 @@ const Dashboard = () => {
   const [sellUnreadCount, setSellUnreadCount] = useState(0);
   // Responses sub-toggle badge: submissions newer than last viewed
   const [responsesUnread, setResponsesUnread] = useState(0);
+  // Listing chats that still hold unread messages (thread key + latest message
+  // time) — used to open/scroll the Listings sub-view and clear the badge.
+  const [sellUnreadThreads, setSellUnreadThreads] = useState<{ key: string; latest: number }[]>([]);
   const matchScanRef = useRef<Promise<UserMatches> | null>(null);
+  // Guards the one-time jump that happens when the page is opened from the
+  // header dashboard notification.
+  const autoDashboardOpenedRef = useRef(false);
 
   const [listingPage, setListingPage] = useState(0);
   const LISTINGS_PER_PAGE = 6;
@@ -418,14 +424,17 @@ const Dashboard = () => {
           const cur = threadLatest.get(key) || 0;
           if (t > cur) threadLatest.set(key, t);
         });
-        let count = 0;
+        const unreadThreads: { key: string; latest: number }[] = [];
         threadLatest.forEach((latest, key) => {
           const readKey = `chat_read_${user.uid}_${key}`;
           const lastViewed = localStorage.getItem(readKey);
-          if (!lastViewed) { count++; return; }
-          if (latest > parseInt(lastViewed, 10)) count++;
+          if (!lastViewed) { unreadThreads.push({ key, latest }); return; }
+          if (latest > parseInt(lastViewed, 10)) unreadThreads.push({ key, latest });
         });
-        if (!cancelled) setSellUnreadCount(count);
+        if (!cancelled) {
+          setSellUnreadCount(unreadThreads.length);
+          setSellUnreadThreads(unreadThreads);
+        }
       } catch {
         if (!cancelled) setSellUnreadCount(0);
       }
@@ -1480,6 +1489,127 @@ const Dashboard = () => {
     [interestListings, hiddenInterestIds]
   );
 
+  // Opened from the header dashboard icon while there were unread items: land on
+  // the main toggle + sub-toggle that actually hold them, scroll there, and
+  // clear those notifications so the visit counts as seen. On an equal number of
+  // notifications, the section whose item arrived first wins.
+  useEffect(() => {
+    if (autoDashboardOpenedRef.current) return;
+    if (!(location.state as { fromDashboardNotification?: boolean } | null)?.fromDashboardNotification) return;
+    if (!user?.uid) return;
+
+    const MAX_MS = Number.MAX_SAFE_INTEGER;
+    const toMs = (v: any) =>
+      v?.toDate ? v.toDate().getTime() : (v ? new Date(v).getTime() : 0);
+
+    // Buy → Enquiries: enquiries with responses newer than the stored view stamp
+    const unreadEnquiryIds: string[] = [];
+    let firstEnquiryMs = MAX_MS;
+    for (const enquiry of enquiries) {
+      const responses = enquiryResponses[enquiry.id] || [];
+      if (responses.length === 0) continue;
+      const viewed = localStorage.getItem(`responses_viewed_${user.uid}_${enquiry.id}`);
+      const viewedMs = viewed ? parseInt(viewed, 10) : NaN;
+      const latest = responses.reduce((max: number, r: any) => Math.max(max, toMs(r.createdAt)), 0);
+      if (!viewed || isNaN(viewedMs) || latest > viewedMs) {
+        unreadEnquiryIds.push(enquiry.id);
+        if (latest > 0) firstEnquiryMs = Math.min(firstEnquiryMs, latest);
+      }
+    }
+
+    // Buy → Interests: listings messaged about beyond the last seen count
+    const interestsViewed = parseInt(localStorage.getItem(`interests_viewed_${user.uid}`) || '0', 10);
+    const interestsUnread = Math.max(0, visibleInterestListings.length - (isNaN(interestsViewed) ? 0 : interestsViewed));
+
+    // Sell → Responses: own submissions newer than the stored view stamp
+    const unreadSubmissionIds: string[] = [];
+    let firstSubmissionMs = MAX_MS;
+    for (const submission of sellerSubmissions) {
+      const viewed = localStorage.getItem(`response_viewed_${user.uid}_${submission.id}`);
+      const viewedMs = viewed ? parseInt(viewed, 10) : NaN;
+      const time = toMs(submission.createdAt);
+      if (!viewed || isNaN(viewedMs) || time > viewedMs) {
+        unreadSubmissionIds.push(submission.id);
+        if (time > 0) firstSubmissionMs = Math.min(firstSubmissionMs, time);
+      }
+    }
+
+    // Sell → Listings: listing chats with unread messages
+    const firstListingMs = sellUnreadThreads.reduce((min, t) => Math.min(min, t.latest), MAX_MS);
+
+    const groups = [
+      {
+        mode: 'buyer' as const,
+        sub: 'enquiries' as const,
+        count: unreadEnquiryIds.length,
+        first: firstEnquiryMs,
+        dismiss: () => {
+          unreadEnquiryIds.forEach(id => localStorage.setItem(`responses_viewed_${user.uid}_${id}`, String(Date.now())));
+          setBuyUnreadCount(0);
+          window.dispatchEvent(new CustomEvent('responseViewed', { detail: { enquiryId: unreadEnquiryIds[0] } }));
+        },
+      },
+      {
+        mode: 'buyer' as const,
+        sub: 'interests' as const,
+        count: interestsUnread,
+        first: MAX_MS,
+        dismiss: () => {
+          localStorage.setItem(`interests_viewed_${user.uid}`, String(visibleInterestListings.length));
+        },
+      },
+      {
+        mode: 'seller' as const,
+        sub: 'responses' as const,
+        count: unreadSubmissionIds.length,
+        first: firstSubmissionMs,
+        dismiss: () => {
+          unreadSubmissionIds.forEach(id => localStorage.setItem(`response_viewed_${user.uid}_${id}`, String(Date.now())));
+          setResponsesUnread(0);
+        },
+      },
+      {
+        mode: 'seller' as const,
+        sub: 'listings' as const,
+        count: sellUnreadThreads.length,
+        first: firstListingMs,
+        dismiss: () => {
+          sellUnreadThreads.forEach(t => localStorage.setItem(`chat_read_${user.uid}_${t.key}`, String(Date.now())));
+          setSellUnreadCount(0);
+          setSellUnreadThreads([]);
+          window.dispatchEvent(new CustomEvent('chatViewed'));
+        },
+      },
+    ].filter(group => group.count > 0);
+
+    if (groups.length === 0) return;
+
+    const best = groups.reduce((a, b) => {
+      if (b.count !== a.count) return b.count > a.count ? b : a;
+      return b.first < a.first ? b : a;
+    });
+
+    autoDashboardOpenedRef.current = true;
+    localStorage.setItem('dashboardViewMode', best.mode);
+    setViewMode(best.mode);
+    if (best.mode === 'buyer') setEnquiryView(best.sub as 'enquiries' | 'interests');
+    else setSellerView(best.sub as 'responses' | 'listings');
+    best.dismiss();
+    window.dispatchEvent(new CustomEvent('dashboardUpdated'));
+
+    window.setTimeout(() => {
+      document.getElementById('dashboard-sub-toggle')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 250);
+  }, [
+    location.state,
+    user?.uid,
+    enquiries,
+    enquiryResponses,
+    sellerSubmissions,
+    sellUnreadThreads,
+    visibleInterestListings,
+  ]);
+
   // Add visibility change listener to refresh data when user returns to tab
   useEffect(() => {
     let visibilityTimeout: number | undefined;
@@ -1974,7 +2104,7 @@ const Dashboard = () => {
 
               <CardContent className="p-4 sm:p-6 lg:p-5 xl:p-6 lg:pb-4 xl:pb-5 relative z-10">
                 {/* Enquiries / Interests / Saved toggle - styled like Buy/Sell/Listings toggle */}
-                <div className="flex justify-center bg-black -mx-4 sm:-mx-6 lg:-mx-5 xl:-mx-6 -mt-4 sm:-mt-6 lg:-mt-5 xl:-mt-6 px-4 sm:px-6 lg:px-5 xl:px-6 pt-4 sm:pt-6 lg:pt-5 xl:pt-6 pb-5 sm:pb-6 mb-6 sm:mb-8">
+                <div id="dashboard-sub-toggle" className="flex justify-center bg-black -mx-4 sm:-mx-6 lg:-mx-5 xl:-mx-6 -mt-4 sm:-mt-6 lg:-mt-5 xl:-mt-6 px-4 sm:px-6 lg:px-5 xl:px-6 pt-4 sm:pt-6 lg:pt-5 xl:pt-6 pb-5 sm:pb-6 mb-6 sm:mb-8">
                   <div className="inline-flex items-center w-full bg-white rounded-full p-1 gap-1 !border-[1.5px] !border-black !shadow-none">
                     {([
                       { key: 'enquiries' as const, label: 'Enquiries', unread: buyUnreadCount },
@@ -2620,7 +2750,7 @@ const Dashboard = () => {
 
               <CardContent className="p-0 relative z-10">
                 {/* Responses | Listings toggle - styled like Enquiries/Interests/Saved toggle */}
-                <div className="flex justify-center bg-black px-4 sm:px-6 lg:px-5 xl:px-6 pt-4 sm:pt-6 lg:pt-5 xl:pt-6 pb-5 sm:pb-6">
+                <div id="dashboard-sub-toggle" className="flex justify-center bg-black px-4 sm:px-6 lg:px-5 xl:px-6 pt-4 sm:pt-6 lg:pt-5 xl:pt-6 pb-5 sm:pb-6">
                   <div className="inline-flex items-center w-full bg-white rounded-full p-1 sm:p-1.5 gap-1 !border-[1.5px] !border-black !shadow-none">
                     {([
                       { key: 'responses' as const, label: 'Responses', unread: responsesUnread },

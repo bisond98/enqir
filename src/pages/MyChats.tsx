@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useChats } from "@/contexts/ChatContext";
@@ -30,6 +30,10 @@ interface ChatThread {
 export default function MyChats() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  // Guards the one-time auto-switch that happens when the page is opened from
+  // the header chat notification.
+  const autoOpenedRef = useRef(false);
   const { allChats: preloadedChats, loading: chatsLoading, refreshChats } = useChats();
   // Initialize with preloaded chats immediately - don't wait for loading state
   // Try to load from localStorage first for instant display, then use context
@@ -71,21 +75,20 @@ export default function MyChats() {
     return 'buyer';
   });
   
-  // Check if a chat has unread messages or is recently active (live)
+  // Check if a chat has unread messages — same rule as the header chat badge:
+  // the last message is newer than the stored "last viewed" stamp. Once the
+  // thread has been seen the toggle badge clears with it (no lingering "recently
+  // active" count), so viewing a chat dismisses both notifications together.
   const hasNotification = useCallback((chat: ChatThread) => {
     if (!chat.enquiryId || !chat.sellerId || !user?.uid || chat.isDisabled) return false;
-    // Check unread: last message newer than last viewed
+    const lastSender = typeof chat.lastMessage === 'object' ? chat.lastMessage?.senderId : undefined;
+    if (lastSender && lastSender === user.uid) return false; // Nothing new from the other person
     const threadKey = `${chat.enquiryId}_${chat.sellerId}`;
     const readKey = `chat_read_${user.uid}_${threadKey}`;
     const lastViewed = localStorage.getItem(readKey);
-    const chatTime = chat.updatedAt?.toDate ? chat.updatedAt.toDate().getTime() : (chat.updatedAt ? new Date(chat.updatedAt).getTime() : 0);
     if (!lastViewed) return true; // Never viewed = notification
-    const lastViewedTime = parseInt(lastViewed, 10);
-    if (chatTime > lastViewedTime) return true; // Unread = notification
-    // Also show notification if chat was active in last 24 hours
-    const hoursSinceActive = (Date.now() - chatTime) / (1000 * 60 * 60);
-    if (hoursSinceActive < 24) return true; // Live chat = notification
-    return false;
+    const chatTime = chat.updatedAt?.toDate ? chat.updatedAt.toDate().getTime() : (chat.updatedAt ? new Date(chat.updatedAt).getTime() : 0);
+    return chatTime > parseInt(lastViewed, 10); // Unread = notification
   }, [user?.uid]);
 
   // Calculate notification counts (unread + live chats)
@@ -422,6 +425,39 @@ export default function MyChats() {
       navigate(`/enquiry/${chat.enquiryId}/responses-page`);
     }
   };
+
+  // Opened from the header chat icon while there were unread messages: jump to
+  // the toggle that actually holds them, then clear those notifications so the
+  // visit has been "seen" and the next load is a normal one. If two toggles
+  // have the same number of notifications, the one whose message arrived first
+  // (earliest unread thread) wins.
+  useEffect(() => {
+    if (autoOpenedRef.current) return;
+    if (!(location.state as { fromChatNotification?: boolean } | null)?.fromChatNotification) return;
+    if (!user?.uid || allChats.length === 0) return;
+
+    const threadTime = (chat: ChatThread) =>
+      chat.updatedAt?.toDate ? chat.updatedAt.toDate().getTime() : (chat.updatedAt ? new Date(chat.updatedAt).getTime() : 0);
+
+    const groups = [
+      { mode: 'buyer' as const, chats: allChats.filter(c => c.isBuyerChat === true && !c.isSellListingChat && hasNotification(c)) },
+      { mode: 'seller' as const, chats: allChats.filter(c => c.isBuyerChat === false && !c.isSellListingChat && hasNotification(c)) },
+      { mode: 'listings' as const, chats: allChats.filter(c => c.isSellListingChat === true && hasNotification(c)) },
+    ].filter(group => group.chats.length > 0);
+
+    if (groups.length === 0) return;
+
+    const best = groups.reduce((a, b) => {
+      if (b.chats.length !== a.chats.length) return b.chats.length > a.chats.length ? b : a;
+      const aFirst = Math.min(...a.chats.map(threadTime));
+      const bFirst = Math.min(...b.chats.map(threadTime));
+      return bFirst < aFirst ? b : a;
+    });
+
+    autoOpenedRef.current = true;
+    handleToggleView(best.mode);
+    best.chats.forEach(chat => markChatAsRead(chat));
+  }, [allChats, location.state, user?.uid, hasNotification, handleToggleView, markChatAsRead]);
 
   // Dismiss warning message
   const dismissWarning = async (chat: ChatThread) => {

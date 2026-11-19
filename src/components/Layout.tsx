@@ -1049,7 +1049,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                 <>
                   {/* Desktop-only buttons */}
                   <div className="hidden md:flex items-center gap-1 md:gap-1.5 flex-shrink-0 overflow-hidden">
-                  <Link to="/dashboard">
+                  <Link to="/dashboard" state={{ fromDashboardNotification: unreadResponseCount > 0 }}>
                     <Button variant="ghost" size="sm" className="flex items-center justify-center h-8 px-2.5 sm:px-3 text-black hover:text-black md:border md:border-black relative">
                       <div className="relative">
                         <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-1.5 flex-shrink-0" />
@@ -1094,7 +1094,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                     </Suspense>
                   
                     {/* Dashboard button - visible on mobile */}
-                    <Link to="/dashboard" className="md:hidden">
+                    <Link to="/dashboard" state={{ fromDashboardNotification: unreadResponseCount > 0 }} className="md:hidden">
                       <Button variant="ghost" size="sm" className="flex items-center justify-center h-7 sm:h-9 px-2 sm:px-4 text-black hover:text-black md:border md:border-black">
                         <div className="relative">
                           <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -1108,7 +1108,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
                   </Link>
                     
                   {/* Chats button – shows all user chats (mobile + desktop) */}
-                  <Link to="/my-chats">
+                  <Link to="/my-chats" state={{ fromChatNotification: unreadChatCount > 0 }}>
                     <Button
                       variant="ghost"
                       size="sm"
