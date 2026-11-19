@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useContext, useRef } from "react";
 import { motion } from "framer-motion";
 import { CategoryDoodle } from "../components/categoryDoodles";
+import { getCategoryHeaderImage } from "@/constants/categoryHeaderImages";
 import { DealPairCategoryDoodle } from "../components/dealPairCategoryDoodle";
 import { Card, CardHeader, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -2298,9 +2299,15 @@ const Dashboard = () => {
                               </div>
                             )}
                             {/* Premium Header with Sophisticated Design */}
-                            <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 pr-14 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
+                            <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 pr-14 py-4 sm:py-5 min-h-[84px] sm:min-h-[96px] flex items-center ${
                               expiredFlag ? 'opacity-70' : ''
                             }`}>
+                              {/* Photographic backdrop inside the black header */}
+                              <div
+                                className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-55"
+                                style={{ backgroundImage: `url('${getCategoryHeaderImage(enquiry.category)}')` }}
+                              />
+                              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/35" />
                               {/* 3-dot with the delete pop-up, at the header's right corner */}
                               <div className="absolute right-1 top-1/2 z-20 -translate-y-1/2" onClick={(e) => e.stopPropagation()}>
                                 <button
@@ -2345,7 +2352,7 @@ const Dashboard = () => {
                               <div className="pointer-events-none absolute left-1.5 top-1/2 z-0 -translate-y-1/2">
                                 <CategoryDoodle
                                   category={enquiry.category}
-                                  className="block h-8 w-auto sm:h-9 [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.4] [&_*]:[opacity:1]"
+                                  className="block h-16 w-auto sm:h-[72px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.2] [&_*]:[opacity:1]"
                                 />
                               </div>
                               {/* Elegant pattern overlay */}
@@ -2354,7 +2361,7 @@ const Dashboard = () => {
                               {/* Shine effect on hover */}
                               <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                               
-                              <div className="relative flex items-start justify-between gap-3 pl-[84px] sm:gap-4 sm:pl-[92px] lg:gap-4 xl:gap-4">
+                              <div className="relative flex w-full flex-1 items-center justify-between gap-3 pl-[96px] sm:gap-4 sm:pl-[116px] lg:gap-4 xl:gap-4">
                                 {/* Title Section with Better Typography */}
                                 <div className="flex-1 min-w-0 pr-2 sm:pr-3 lg:pr-3 xl:pr-3">
                                   <div className="flex items-center gap-2.5 sm:gap-3 lg:gap-3 xl:gap-3 mb-2.5 lg:mb-2 xl:mb-2">
@@ -2399,9 +2406,9 @@ const Dashboard = () => {
                                     }
                                     if (isNaN(deadlineDate.getTime())) return null;
                                     return (
-                                      <Badge className="absolute right-0 top-1/2 z-10 flex -translate-y-1/2 items-center gap-1 px-2 sm:px-3 py-1 rounded-md !shadow-none border border-red-900 bg-red-800 text-white flex-shrink-0">
-                                        <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                                        <span className="text-[8px] sm:text-[9px] font-bold whitespace-nowrap tracking-wide">
+                                      <Badge className="absolute right-7 sm:right-8 top-1/2 z-10 flex -translate-y-1/2 items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full !shadow-none border border-red-900 bg-red-800 text-white flex-shrink-0 whitespace-nowrap">
+                                        <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                        <span className="text-[9px] sm:text-[11px] font-bold whitespace-nowrap tracking-wide">
                                           {deadlineDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                                         </span>
                                       </Badge>
@@ -2418,9 +2425,12 @@ const Dashboard = () => {
                               {/* Subtle background texture */}
                               <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.1),transparent_70%)] pointer-events-none"></div>
                               
-                              {/* Enquiry Title - Centered in card */}
-                              <div className="relative z-10 mt-1 sm:mt-2 mb-1.5 sm:mb-2 text-center">
-                                <h5 className={`text-base sm:text-lg font-bold leading-snug tracking-tight ${
+                              {/* Soft curved base, like a card foot */}
+                              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 sm:h-24 rounded-b-[28px] sm:rounded-b-[40px] bg-gradient-to-t from-gray-100 to-transparent" />
+
+                              {/* Enquiry title — large, bold, left aligned */}
+                              <div className="relative z-10 mt-4 sm:mt-5 mb-3 text-center">
+                                <h5 className={`block w-fit max-w-full mx-auto text-center rounded-xl bg-white border-0 px-4 py-1.5 sm:py-2 font-chip font-black text-lg sm:text-xl leading-snug tracking-tight truncate ${
                                   expiredFlag ? 'text-gray-500' : 'text-gray-900'
                                 }`}>
                                   {enquiry.title}
@@ -2430,7 +2440,7 @@ const Dashboard = () => {
                               {/* Enquiry Details Section - Visible on all screens, wider on mobile */}
 
                               {/* Share + Delete Buttons - Desktop Only */}
-                                  <div className="relative hidden lg:flex items-center justify-center lg:pt-7">
+                                  <div className="relative hidden">
                                     {/* Share — right of Delete, same green round share as the enquiry detail page */}
                                     <button
                                       type="button"
@@ -2443,9 +2453,9 @@ const Dashboard = () => {
                                       }}
                                       aria-label="Share enquiry"
                                       title="Share"
-                                      className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
+                                      className="flex h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 items-center justify-center rounded-full bg-green-600 text-white ring-[8px] ring-green-100 transition-colors hover:bg-green-700 active:scale-95 touch-manipulation shadow-[0_10px_24px_-14px_rgba(22,163,74,0.9)]"
                                     >
-                                      <Share2 className="h-7 w-7" strokeWidth={1.8} />
+                                      <Share2 className="h-9 w-9 sm:h-10 sm:w-10" strokeWidth={1.8} />
                                     </button>
                                   </div>
                                   
@@ -2461,7 +2471,7 @@ const Dashboard = () => {
 
                               {/* Premium Action Buttons - Perfectly Aligned */}
                               <div 
-                                className="grid grid-cols-1 sm:flex sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 lg:gap-2 xl:gap-2.5 relative z-10 pt-3 sm:pt-3.5 flex-wrap lg:flex-nowrap"
+                                className="flex flex-col items-stretch gap-2 relative z-10 pt-3 sm:pt-4"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   e.preventDefault();
@@ -2480,21 +2490,22 @@ const Dashboard = () => {
                                   }
                                 }}
                                   disabled={expiredFlag}
-                                  className="w-fit max-w-full mx-auto sm:mx-0 flex-shrink-0 !border-0 !ring-0 !ring-offset-0 !outline-none !rounded-xl !bg-white hover:!bg-white !text-black px-4 py-1.5 sm:py-2 h-auto font-chip font-black text-xs sm:text-sm tracking-tight !shadow-[0_-1.5px_0_0_rgba(17,24,39,0.12),-1.5px_0_0_0_rgba(17,24,39,0.12),1.5px_0_0_0_rgba(17,24,39,0.12),0_1.5px_0_0_rgba(17,24,39,0.12),0_8px_12px_-6px_rgba(17,24,39,0.18)] active:!translate-y-[1px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed group/btn flex items-center justify-center !relative !overflow-hidden disabled:grayscale touch-manipulation select-none"
+                                  className="w-[86%] sm:w-[80%] mx-auto flex-shrink-0 !border !border-gray-200 !ring-0 !ring-offset-0 !outline-none !rounded-full !bg-gradient-to-b !from-white !to-gray-50 hover:!from-white hover:!to-gray-100 !text-black px-5 sm:px-6 py-3.5 sm:py-4 h-auto tracking-tight !shadow-[0_8px_20px_-12px_rgba(17,24,39,0.45)] active:!translate-y-[1px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed flex !items-center !justify-between !gap-3 !relative !overflow-visible disabled:grayscale touch-manipulation select-none"
                               >
-                                  <Eye className="h-3.5 w-3.5 lg:h-3 lg:w-3 xl:h-3.5 xl:w-3.5 mr-1.5 lg:mr-1 xl:mr-1.5 flex-shrink-0 relative z-10" />
-                                  <span className="tracking-tight whitespace-nowrap relative z-10">
+                                  <Eye className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 relative z-10" strokeWidth={1.7} />
+                                  <span className="h-8 w-px bg-gray-300 flex-shrink-0 relative z-10" />
+                                  <span className="flex-1 text-left text-base sm:text-lg font-black tracking-tight whitespace-nowrap relative z-10">
                                     {responseCount} {responseCount === 1 ? 'Response' : 'Responses'}
                                   </span>
-                                  {hasUnreadResponses(enquiry.id) && responseCount > 0 && !expiredFlag && (
-                                    <div className="ml-1.5 lg:ml-1 xl:ml-1.5 flex items-center justify-center w-5 h-5 lg:w-4 lg:h-4 xl:w-5 xl:h-5 bg-red-500 text-white text-[10px] lg:text-[9px] xl:text-[10px] font-bold rounded-full shadow-md relative z-10">
+                                  {responseCount > 0 && (
+                                    <span className={`flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 flex-shrink-0 rounded-full text-white text-base font-black relative z-10 shadow-md ${hasUnreadResponses(enquiry.id) && !expiredFlag ? 'bg-red-800' : 'bg-red-700/90'}`}>
                                       {responseCount}
-                                    </div>
+                                    </span>
                                   )}
                               </Button>
                               
                                 {/* Share + Delete Buttons - Mobile/Tablet Only */}
-                                <div className="relative lg:hidden flex items-center justify-center w-full pt-5 sm:pt-7">
+                                <div className="relative flex items-center justify-center w-full pt-5 sm:pt-7">
                                   {/* Share — pushed to the right edge of the row (detail page's green round share) */}
                                   <button
                                     type="button"
@@ -2507,9 +2518,9 @@ const Dashboard = () => {
                                     }}
                                     aria-label="Share enquiry"
                                     title="Share"
-                                    className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white transition-colors hover:bg-green-600 active:scale-95 touch-manipulation"
+                                    className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-green-600 text-white ring-[8px] ring-green-100 transition-colors hover:bg-green-700 active:scale-95 touch-manipulation shadow-[0_10px_24px_-14px_rgba(22,163,74,0.9)]"
                                   >
-                                    <Share2 className="h-7 w-7" strokeWidth={1.8} />
+                                    <Share2 className="h-9 w-9" strokeWidth={1.8} />
                                   </button>
                                 </div>
                             </div>
@@ -2573,7 +2584,13 @@ const Dashboard = () => {
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/sell/listing/${listing.id}`); }}
                           >
                             {/* Premium Black Header */}
-                            <div className="relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 pr-14 py-2.5 min-h-[52px] sm:min-h-[60px]">
+                            <div className="relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 pr-14 py-4 sm:py-5 min-h-[84px] sm:min-h-[96px]">
+                              {/* Category photo backdrop, faded into the black header */}
+                              <div
+                                className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-55"
+                                style={{ backgroundImage: `url('${getCategoryHeaderImage(listing.category)}')` }}
+                              />
+                              <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/35" />
                               {/* 3-dot with the remove pop-up, at the header's right corner */}
                               <div className="absolute right-1 top-1/2 z-20 -translate-y-1/2" onClick={(e) => e.stopPropagation()}>
                                 <button
@@ -2606,9 +2623,28 @@ const Dashboard = () => {
                               <div className="pointer-events-none absolute left-1.5 top-1/2 z-0 -translate-y-1/2">
                                 <CategoryDoodle
                                   category={listing.category}
-                                  className="block h-[40px] w-auto sm:h-[46px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.4] [&_*]:[opacity:1]"
+                                  className="block h-16 w-auto sm:h-[72px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.2] [&_*]:[opacity:1]"
                                 />
                               </div>
+                              {/* Listed date, just left of the 3-dot menu */}
+                              {listing.createdAt && (() => {
+                                // kept clear of the 3-dot menu on the right
+                                try {
+                                  const raw: any = listing.createdAt;
+                                  const d = raw?.toDate ? raw.toDate() : new Date(raw);
+                                  if (isNaN(d.getTime())) return null;
+                                  return (
+                                    <Badge className="absolute right-12 sm:right-14 top-1/2 z-10 flex -translate-y-1/2 items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full !shadow-none border border-red-900 bg-red-800 text-white flex-shrink-0 whitespace-nowrap">
+                                      <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                      <span className="text-[9px] sm:text-[11px] font-bold whitespace-nowrap tracking-wide">
+                                        {d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                                      </span>
+                                    </Badge>
+                                  );
+                                } catch {
+                                  return null;
+                                }
+                              })()}
                               <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px]"></div>
                               <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                             </div>
@@ -2650,9 +2686,9 @@ const Dashboard = () => {
                                   to={`/sell/listing/${listing.id}/chat/${user?.uid}`}
                                   aria-label="Chat with Seller"
                                   title="Chat with Seller"
-                                  className="group/chat flex h-16 w-16 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-600 !text-white !shadow-none active:!shadow-none !transition-colors !duration-150 touch-manipulation select-none"
+                                  className="group/chat flex h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 items-center justify-center !rounded-full !border-0 !bg-emerald-600 hover:!bg-emerald-700 !text-white ring-[8px] ring-emerald-100 !shadow-[0_10px_24px_-14px_rgba(22,163,74,0.9)] active:!shadow-[0_10px_24px_-14px_rgba(22,163,74,0.9)] !transition-colors !duration-150 touch-manipulation select-none"
                                 >
-                                  <MessageSquare className="h-7 w-7 group-hover/chat:scale-110 transition-transform" />
+                                  <MessageSquare className="h-9 w-9 sm:h-10 sm:w-10 group-hover/chat:scale-110 transition-transform" />
                                 </Link>
                               </div>
                             </div>
@@ -2921,9 +2957,16 @@ const Dashboard = () => {
                           }}
                         >
                           {/* Premium Header with Sophisticated Design */}
-                          <div className={`relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 pr-14 py-2.5 min-h-[52px] sm:min-h-[60px] ${
+                          <div className={`relative flex items-center bg-gradient-to-br from-black via-black to-gray-900 px-4 pr-14 py-4 sm:py-5 min-h-[84px] sm:min-h-[96px] ${
                             isEnquiryDeleted || isEnquiryExpired || isDealClosed ? 'opacity-70' : ''
-                          }`}>                            {/* 3-dot with the delete pop-up, at the header's right edge */}
+                          }`}>
+                            {/* Category photo backdrop, faded into the black header */}
+                            <div
+                              className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-55"
+                              style={{ backgroundImage: `url('${getCategoryHeaderImage(respondedCategory || enquiry?.category)}')` }}
+                            />
+                            <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/35" />
+                            {/* 3-dot with the delete pop-up, at the header's right edge */}
                             <div className="absolute right-1 top-1/2 z-20 -translate-y-1/2" onClick={(e) => e.stopPropagation()}>
                               <button
                                 type="button"
@@ -2968,7 +3011,7 @@ const Dashboard = () => {
                             <div className="pointer-events-none absolute left-1.5 top-1/2 z-0 -translate-y-1/2">
                               <CategoryDoodle
                                 category={respondedCategory}
-                                className="block h-[40px] w-auto sm:h-[46px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.4] [&_*]:[opacity:1]"
+                                className="block h-16 w-auto sm:h-[72px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.2] [&_*]:[opacity:1]"
                               />
                             </div>
                             {/* Elegant pattern overlay */}
@@ -3018,9 +3061,9 @@ const Dashboard = () => {
                                   </Badge>
                                 )}
                                 {/* Submitted date & time — small, at the header's right edge */}
-                                <span className="inline-flex min-w-0 flex-shrink-0 items-center gap-1 rounded-full border border-white/25 bg-white/10 px-1.5 py-px">
-                                  <Clock className="h-2 w-2 flex-shrink-0 text-white/70" />
-                                  <span className="text-[7px] font-bold text-white/80 truncate">
+                                <span className="inline-flex min-w-0 flex-shrink-0 items-center gap-1.5 rounded-full border border-red-900 bg-red-800 px-2.5 py-1">
+                                  <Clock className="h-3 w-3 flex-shrink-0 text-white" />
+                                  <span className="text-[9px] sm:text-[10px] font-bold text-white truncate">
                                     {submission.createdAt?.toDate ? submission.createdAt.toDate().toLocaleString() : 'N/A'}
                                   </span>
                                 </span>
@@ -3053,12 +3096,12 @@ const Dashboard = () => {
                                     </span>
                                   </div>
                                 ) : (
-                                  <div className="relative flex items-center justify-center gap-1.5 sm:gap-2 w-full pt-7 sm:pt-9">
-                                    <span className={`relative z-10 inline-block w-fit max-w-full text-center rounded-xl bg-white border-0 px-4 py-1.5 sm:py-2 font-chip font-black text-lg sm:text-xl leading-tight tracking-tight ${
-                                      submission.status === 'approved' ? 'text-black' : 'text-amber-900'
+                                  <div className="relative flex w-full items-start justify-center gap-1.5 sm:gap-2 pt-5 sm:pt-6 text-center">
+                                    <h5 className={`relative z-10 block w-fit max-w-full mx-auto text-center rounded-xl bg-white border-0 px-4 py-1.5 sm:py-2 font-chip font-black text-lg sm:text-xl leading-snug tracking-tight truncate ${
+                                      submission.status === 'approved' ? 'text-gray-900' : 'text-amber-900'
                                     }`}>
                                 {submission.title}
-                              </span>
+                              </h5>
                                   </div>
                               )}
                             </div>
@@ -3092,9 +3135,9 @@ const Dashboard = () => {
                                       }}
                                       aria-label="Call"
                                       title="Call"
-                                      className="flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !p-0 !h-16 !w-16 !min-h-16 !min-w-16 sm:!h-[60px] sm:!w-[60px] !rounded-full !shadow-none active:!shadow-none active:scale-95 !transition-transform !duration-150 group/call flex items-center justify-center touch-manipulation select-none"
+                                      className="flex-shrink-0 !border-0 !bg-blue-600 hover:!bg-blue-700 !text-white !p-0 !h-20 !w-20 !min-h-20 !min-w-20 sm:!h-24 sm:!w-24 sm:!min-h-24 sm:!min-w-24 !rounded-full ring-[8px] ring-blue-100 !shadow-[0_10px_24px_-14px_rgba(37,99,235,0.9)] active:!shadow-[0_10px_24px_-14px_rgba(37,99,235,0.9)] active:scale-95 !transition-transform !duration-150 group/call flex items-center justify-center touch-manipulation select-none"
                                     >
-                                      <Phone className="!h-7 !w-7 relative z-10 group-hover/call:scale-110 transition-transform" />
+                                      <Phone className="!h-9 !w-9 sm:!h-10 sm:!w-10 relative z-10 group-hover/call:scale-110 transition-transform" />
                                     </Button>
                                   );
                                 })()}
@@ -3108,9 +3151,9 @@ const Dashboard = () => {
                                   }}
                                   aria-label="Chat"
                                   title="Chat"
-                                  className="flex-shrink-0 !border-0 !bg-emerald-600 hover:!bg-emerald-700 !text-white !p-0 !h-16 !w-16 !min-h-16 !min-w-16 sm:!h-[60px] sm:!w-[60px] !rounded-full !shadow-none active:!shadow-none active:scale-95 !transition-transform !duration-150 group/chat flex items-center justify-center touch-manipulation select-none"
+                                  className="flex-shrink-0 !border-0 !bg-emerald-600 hover:!bg-emerald-700 !text-white !p-0 !h-20 !w-20 !min-h-20 !min-w-20 sm:!h-24 sm:!w-24 sm:!min-h-24 sm:!min-w-24 !rounded-full ring-[8px] ring-emerald-100 !shadow-[0_10px_24px_-14px_rgba(22,163,74,0.9)] active:!shadow-[0_10px_24px_-14px_rgba(22,163,74,0.9)] active:scale-95 !transition-transform !duration-150 group/chat flex items-center justify-center touch-manipulation select-none"
                                 >
-                                  <MessageSquare className="!h-7 !w-7 relative z-10 group-hover/chat:scale-110 transition-transform" />
+                                  <MessageSquare className="!h-9 !w-9 sm:!h-10 sm:!w-10 relative z-10 group-hover/chat:scale-110 transition-transform" />
                                 </Button>
                               )}
                                 </div>
