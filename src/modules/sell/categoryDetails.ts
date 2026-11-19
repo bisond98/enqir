@@ -192,10 +192,12 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     // Transmission, year of manufacture and variant moved to the Description
     // tab. Description renders select fields as dropdowns too, so transmission
     // stays a picker (Manual / Automatic) and year a list plus typed entry.
-    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
+    // Variant leads the Description tab, so the trim can be picked right after
+    // the model before the year and fuel boxes.
     { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'description' },
-    // Typed, not a dropdown: the year is a 4-digit box on the Description tab.
+    // Year sits directly under the variant pick.
     { key: 'year', label: 'Year of manufacture', type: 'number', placeholder: 'e.g., 2021', min: 1950, step: 'description' },
+    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
     { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },

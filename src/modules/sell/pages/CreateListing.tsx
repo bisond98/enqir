@@ -1774,11 +1774,12 @@ export default function CreateListing() {
                             </div>
                           )}
                           {selectFields.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className={`grid gap-3 ${category === 'car' ? 'car-pill grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
                               {selectFields.map((f) => (
                                 // On mobile the year box sits at the top of the tab;
-                                // from sm upwards it keeps its array position.
-                                <div key={f.key} className={`space-y-2 ${f.key === 'year' && category !== 'vehicles' ? 'order-first sm:order-none' : ''}`}>
+                                // from sm upwards it keeps its array position. Cars
+                                // are the exception: their variant leads the tab.
+                                <div key={f.key} className={`space-y-2 ${f.key === 'year' && category !== 'vehicles' && category !== 'car' ? 'order-first sm:order-none' : ''} ${category === 'car' && (f.key === 'variant' || f.key === 'year') ? 'sm:col-span-2' : ''}`}>
                                   {category === 'vehicles' && f.key === 'variant' && getVehicleModels(details['brand'] ?? '', details['vehicleType'] ?? '').length > 0 ? (
                                     <div className="relative">
                                       <select

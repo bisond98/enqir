@@ -41,6 +41,7 @@ import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDE
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES, getVehicleBrandsForType } from "@/modules/sell/categoryBrands";
+import { getCarModels, getCarVariants } from "@/constants/carCatalog";
 import { VEHICLE_MODEL_OTHER, getVehicleModels } from "@/constants/vehicleCatalog";
 import { AUDIO_BRAND_OPTIONS, AUDIO_OTHER, getAudioModels } from "@/constants/audioCatalog";
 import { CATEGORY_TILE_IMAGES, CATEGORY_TILE_SCRIM } from "@/constants/categoryTileImages";
@@ -281,7 +282,7 @@ const DEADLINE_STEP = 5;
   // Vehicle details (brand/year/variant + transmission/fuel for cars) — filled when a vehicle category is selected
   // `type` is the body type (truck, lorry, pickup …) for the Vehicles category, so
   // `variant` is free to hold the real model — the same split as the sell form.
-  const [vehicleDetails, setVehicleDetails] = useState<{ type: string; brand: string; year: string; variant: string; transmission: string; fuelType: string }>({ type: '', brand: '', year: '', variant: '', transmission: '', fuelType: '' });
+  const [vehicleDetails, setVehicleDetails] = useState<{ type: string; brand: string; model: string; year: string; variant: string; transmission: string; fuelType: string }>({ type: '', brand: '', model: '', year: '', variant: '', transmission: '', fuelType: '' });
   // Mobile details (brand/RAM/memory) — filled when the mobiles category is selected
   const [mobileDetails, setMobileDetails] = useState<{ brand: string; ram: string; memory: string }>({ brand: '', ram: '', memory: '' });
   // Laptop details (brand -> model -> processor -> storage) — filled when the laptops category is selected
@@ -912,7 +913,7 @@ const DEADLINE_STEP = 5;
         if (d.location && !isDefaultPinAddress(d.location)) setLocation(d.location);
         if (d.deadline) setDeadline(new Date(d.deadline));
         if (d.notes) setNotes(d.notes);
-        if (d.vehicleDetails) setVehicleDetails(d.vehicleDetails);
+        if (d.vehicleDetails) setVehicleDetails((prev) => ({ ...prev, ...d.vehicleDetails }));
         if (d.mobileDetails) setMobileDetails(d.mobileDetails);
         if (d.laptopDetails) setLaptopDetails(d.laptopDetails);
         if (d.laptopCustom) setLaptopCustom(d.laptopCustom);
@@ -3665,6 +3666,14 @@ const DEADLINE_STEP = 5;
                         // Car keeps a free-text trim (VXI, ZXI); the generic Vehicles / truck
                         // categories get the body-type picker instead.
                         const isCar = selectedCategories.includes('car');
+                        // Cars cascade: the model list belongs to the picked brand, the
+                        // variant list belongs to that brand + model pair.
+                        const carModelOptions = vehicleDetails.brand && vehicleDetails.brand !== 'Other'
+                          ? getCarModels(vehicleDetails.brand)
+                          : [];
+                        const carVariantOptions = vehicleDetails.brand && vehicleDetails.model && vehicleDetails.model !== 'Other'
+                          ? getCarVariants(vehicleDetails.brand, vehicleDetails.model)
+                          : [];
                         const isTruckLike = !isCar && selectedCategories.some(c => ['automobile', 'vehicles'].includes(c));
                         if (!isCarLike && !isBike) return null;
                         // Brand sits first for Car/Motorcycle and last for Vehicles, so it is
@@ -3674,8 +3683,8 @@ const DEADLINE_STEP = 5;
                             <div className="relative">
                               <select
                                 value={vehicleDetails.brand}
-                                onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value, ...(isTruckLike ? { variant: '' } : {}) }))}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(vehicleDetails.brand) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value, model: '', variant: '', transmission: '', fuelType: '' }))}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.brand) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                               >
                                 <option value="">Brand</option>
                                 {(isBikeOnly
@@ -3696,7 +3705,7 @@ const DEADLINE_STEP = 5;
                           </div>
                         );
                         return (
-                          <div className="mb-6">
+                          <div className={`mb-6 ${isCar ? 'car-pill no-field-border' : ''}`}>
                             <div className="flex items-start justify-between gap-3">
                               {/* Type — body type (truck, lorry, pickup …); first slot in Vehicles */}
                               {isTruckLike && (
@@ -3705,7 +3714,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.type}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, type: e.target.value, brand: '', variant: '' }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.type ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base !font-bold text-black'}${(vehicleDetails.type) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.type ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base !font-bold text-black'}${(vehicleDetails.type) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Type</option>
                                       {VEHICLE_TYPES.map((t) => (
@@ -3720,6 +3729,28 @@ const DEADLINE_STEP = 5;
                               )}
                               {/* Brand — first slot for Car / Motorcycle, last slot for Vehicles */}
                               {!isTruckLike && brandField}
+                              {/* Model — cars only; the list is whatever that maker sells,
+                                  and picking one narrows the variants below. */}
+                              {isCar && (
+                                <div className="flex-1 min-w-0">
+                                  <div className="relative">
+                                    <select
+                                      value={vehicleDetails.model}
+                                      onChange={(e) => setVehicleDetails(v => ({ ...v, model: e.target.value, variant: '', transmission: '', fuelType: '' }))}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.model ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.model) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                    >
+                                      <option value="">Model</option>
+                                      {carModelOptions.map((m) => (
+                                        <option key={m} value={m}>{m}</option>
+                                      ))}
+                                      <option value="Other">Other</option>
+                                    </select>
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                                  </div>
+                                  <div className="h-3">
+                                  </div>
+                                </div>
+                              )}
                               {/* Year */}
                               <div className="flex-1 min-w-0">
                                 <Input
@@ -3729,26 +3760,11 @@ const DEADLINE_STEP = 5;
                                   value={vehicleDetails.year}
                                   onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
                                   placeholder="Year"
-                                  className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-2 border-gray-800 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
+                                  className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-2 border-gray-800 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-black placeholder:font-semibold placeholder:text-[11px]"
                                 />
                                 <div className="h-3">
                                 </div>
                               </div>
-                              {/* Variant — cars only, free text (VXI, ZXI (O), LXI CNG …) */}
-                              {isCar && (
-                                <div className="flex-1 min-w-0">
-                                  <Input
-                                    type="text"
-                                    maxLength={40}
-                                    value={vehicleDetails.variant}
-                                    onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
-                                    placeholder="e.g., VXI, ZXI (O)"
-                                    className="w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 text-black placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px]"
-                                  />
-                                  <div className="h-3">
-                                  </div>
-                                </div>
-                              )}
                               {isTruckLike && brandField}
                             </div>
                             {/* Model — real models of the picked maker (Signa 2823.K, Yodha 2.0 …) */}
@@ -3773,7 +3789,7 @@ const DEADLINE_STEP = 5;
                                   <select
                                     value={vehicleDetails.variant}
                                     onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
-                                    className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(vehicleDetails.variant) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                    className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.variant) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                   >
                                     <option value="">Variant</option>
                                     {models.map((m) => (
@@ -3788,23 +3804,57 @@ const DEADLINE_STEP = 5;
                             {/* Transmission / Fuel Type / Ownership — cars & automobiles only */}
                             {isCarLike && (
                               <div className="flex items-start justify-between gap-3 mt-3">
+                                {/* Variant — only the trims this model is sold in */}
+                                {isCar && (
+                                  <div className="flex-1 min-w-0">
+                                    <div className="relative">
+                                      {carVariantOptions.length > 0 ? (
+                                        <select
+                                          value={vehicleDetails.variant}
+                                          onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
+                                          className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.variant) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                        >
+                                          <option value="">Variant</option>
+                                          {carVariantOptions.map((v) => (
+                                            <option key={v} value={v}>{v}</option>
+                                          ))}
+                                          <option value="Other">Other</option>
+                                        </select>
+                                      ) : (
+                                        <Input
+                                          type="text"
+                                          maxLength={40}
+                                          value={vehicleDetails.variant}
+                                          onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
+                                          placeholder="Variant"
+                                          className="w-full rounded-[16px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-2 border-gray-800 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black pl-3 pr-3 text-black placeholder:text-black placeholder:font-semibold placeholder:text-[11px]"
+                                        />
+                                      )}
+                                      {carVariantOptions.length > 0 && (
+                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                                      )}
+                                    </div>
+                                    <div className="h-3">
+                                    </div>
+                                  </div>
+                                )}
                                 {/* Transmission */}
                                 <div className="flex-1 min-w-0">
                                   <div className="relative">
                                     <select
                                       value={vehicleDetails.transmission}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, transmission: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.transmission ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(vehicleDetails.transmission) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.transmission ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.transmission) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Transmission</option>
                                       {['Manual', 'Automatic'].map((t) => (
                                         <option key={t} value={t}>{t}</option>
                                       ))}
                                     </select>
-                                    {/* Transmission is named by its gear icon alone — no chevron */}
+                                    {/* Same black round handle the Sell form's car fields use */}
                                     <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                                       <span className="flex items-center justify-center h-6 w-6 rounded-full bg-black">
-                                        <GearShifterIcon className="h-3.5 w-3.5 text-white" />
+                                        <ChevronDown className="chev-badge h-3.5 w-3.5 text-white" strokeWidth={2.75} />
                                       </span>
                                     </div>
                                   </div>
@@ -3817,17 +3867,17 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.fuelType}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, fuelType: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-[4.75rem] ${!vehicleDetails.fuelType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(vehicleDetails.fuelType) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.fuelType ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.fuelType) ? ' !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Fuel Type</option>
                                       {['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'LPG'].map((f) => (
                                         <option key={f} value={f}>{f}</option>
                                       ))}
                                     </select>
-                                    {/* Fuel type is named by its pump icon alone — no chevron */}
+                                    {/* Same black round handle the Sell form's car fields use */}
                                     <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
                                       <span className="flex items-center justify-center h-6 w-6 rounded-full bg-black">
-                                        <Fuel className="h-3.5 w-3.5 text-white" />
+                                        <ChevronDown className="chev-badge h-3.5 w-3.5 text-white" strokeWidth={2.75} />
                                       </span>
                                     </div>
                                   </div>

@@ -10,22 +10,25 @@ const CAR_MODELS: Record<string, string[]> = {
   'Maruti Suzuki': [
     'Alto 800', 'Alto K10', 'S-Presso', 'Wagon R', 'Celerio', 'Swift', 'Dzire',
     'Baleno', 'Fronx', 'Brezza', 'Ertiga', 'XL6', 'Grand Vitara', 'Invicto',
-    'Jimny', 'Ciaz', 'Ignis', 'Eeco', 'Tour S', 'Ritz', 'Estilo', 'Omni',
+    'Jimny', 'Ciaz', 'Ignis', 'Eeco', 'e Vitara', 'Victoris', 'Tour S', 'Ritz',
+    'Estilo', 'Omni',
   ],
   Hyundai: [
     'Santro', 'Grand i10', 'Grand i10 Nios', 'i10 Nios', 'Aura', 'Exter', 'Venue',
-    'Verna', 'Creta', 'Alcazar', 'Tucson', 'Ioniq 5', 'Kona Electric', 'i20',
-    'Accent', 'Elantra', 'Xcent', 'Eon',
+    'Verna', 'Creta', 'Creta Electric', 'Alcazar', 'Tucson', 'Ioniq 5',
+    'Kona Electric', 'i20', 'Accent', 'Elantra', 'Xcent', 'Eon',
   ],
   Tata: [
-    'Tiago', 'Tiago EV', 'Tigor', 'Tigor EV', 'Altroz', 'Punch', 'Nexon',
-    'Nexon EV', 'Curvv', 'Curvv EV', 'Harrier', 'Safari', 'Nano', 'Zest',
-    'Bolt', 'Indica', 'Indigo', 'Sumo', 'Hexa',
+    'Tiago', 'Tiago EV', 'Tigor', 'Tigor EV', 'Altroz', 'Punch', 'Punch EV',
+    'Nexon', 'Nexon EV', 'Curvv', 'Curvv EV', 'Sierra', 'Sierra EV', 'Harrier',
+    'Harrier EV', 'Safari', 'Aeris', 'Nano', 'Zest', 'Bolt', 'Indica', 'Indigo',
+    'Sumo', 'Hexa',
   ],
   Mahindra: [
-    'Bolero', 'Bolero Neo', 'Scorpio', 'Scorpio Classic', 'Scorpio N', 'XUV300',
-    'XUV 3XO', 'XUV400', 'XUV500', 'XUV700', 'Thar', 'Thar Roxx', 'Marazzo',
-    'Alturas G4', 'KUV100', 'Verito', 'Xylo', 'TUV300',
+    'Bolero', 'Bolero Neo', 'Bolero Neo Plus', 'Scorpio', 'Scorpio Classic',
+    'Scorpio N', 'XUV300', 'XUV 3XO', 'XUV 3XO EV', 'XUV400', 'XUV 7XO',
+    'XUV500', 'XUV700', 'Thar', 'Thar Roxx', 'BE 6', 'XEV 9e', 'XEV 9S',
+    'Marazzo', 'Alturas G4', 'KUV100', 'Verito', 'Xylo', 'TUV300',
   ],
   Honda: [
     'Brio', 'Jazz', 'Amaze', 'City', 'City Hybrid', 'Elevate', 'WR-V', 'BR-V',
@@ -36,7 +39,7 @@ const CAR_MODELS: Record<string, string[]> = {
     'Innova', 'Innova Crysta', 'Innova Hycross', 'Fortuner', 'Fortuner Legender',
     'Hilux', 'Camry', 'Vellfire', 'Etios', 'Corolla Altis', 'Yaris', 'Qualis',
   ],
-  Kia: ['Sonet', 'Seltos', 'Carens', 'Carnival', 'EV6', 'EV9', 'Syros'],
+  Kia: ['Sonet', 'Seltos', 'Carens', 'Carens Clavis', 'Carnival', 'EV6', 'EV9', 'Syros', 'Syros EV'],
   Renault: ['Kwid', 'Triber', 'Kiger', 'Duster', 'Captur', 'Lodgy', 'Scala', 'Pulse'],
   Nissan: ['Magnite', 'Micra', 'Sunny', 'Terrano', 'Kicks', 'X-Trail', 'Teana'],
   Volkswagen: [
@@ -44,11 +47,14 @@ const CAR_MODELS: Record<string, string[]> = {
     'Jetta', 'Beetle',
   ],
   Skoda: [
-    'Fabia', 'Rapid', 'Slavia', 'Kushaq', 'Karoq', 'Kodiaq', 'Octavia', 'Superb',
-    'Laura', 'Yeti',
+    'Fabia', 'Rapid', 'Slavia', 'Kushaq', 'Kylaq', 'Karoq', 'Kodiaq', 'Octavia',
+    'Superb', 'Laura', 'Yeti',
   ],
-  MG: ['Hector', 'Hector Plus', 'Astor', 'ZS EV', 'Comet EV', 'Gloster', 'Windsor EV'],
-  BYD: ['Atto 3', 'Seal', 'e6', 'Sealion 7', 'M6'],
+  MG: [
+    'Hector', 'Hector Plus', 'Hector Tomahawk EV', 'Astor', 'ZS EV', 'Comet EV',
+    'Gloster', 'Windsor EV', 'Windsor EV Pro', 'M9', 'Cyberster',
+  ],
+  BYD: ['Atto 3', 'Seal', 'Sealion 7', 'eMAX 7', 'e6', 'M6'],
   Citroën: ['C3', 'eC3', 'C3 Aircross', 'C5 Aircross', 'Basalt'],
   Jeep: ['Compass', 'Meridian', 'Wrangler', 'Grand Cherokee', 'Avenger'],
   Ford: ['Figo', 'Aspire', 'EcoSport', 'Fiesta', 'Ikon', 'Endeavour', 'Mustang', 'Freestyle'],
@@ -101,7 +107,9 @@ export const CAR_MODEL_BRANDS: string[] = Object.keys(CAR_MODELS);
 /** Models the brand actually sells; empty until a brand is picked. */
 export function getCarModels(brand: string): string[] {
   if (!brand) return [];
-  return CAR_MODELS[brand] ?? [];
+  // The picker reads A–Z (Safari sits with the S models, not where it was
+  // authored in the list), so every brand's models are sorted before display.
+  return [...(CAR_MODELS[brand] ?? [])].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
 }
 
 // ---------------- Variants ----------------
@@ -128,6 +136,10 @@ const CAR_VARIANTS: Record<string, string[]> = {
   'Maruti Suzuki|Ignis': ['Sigma', 'Delta', 'Zeta', 'Alpha'],
   'Maruti Suzuki|Eeco': ['Std', '5-Seater', '7-Seater', 'CNG'],
   'Hyundai|Creta': ['E', 'EX', 'S', 'S(O)', 'SX', 'SX(O)', 'SX Tech', 'Knight', 'S(O) Turbo', 'SX(O) Turbo'],
+  'Hyundai|Creta Electric': [
+    'Executive', 'Executive Tech', 'Premium', 'Excellence', 'Excellence Knight',
+    'Executive (O) LR', 'Excellence LR', 'Excellence LR Knight',
+  ],
   'Hyundai|i20': ['Magna', 'Sportz', 'Asta', 'Asta(O)', 'Sportz IVT', 'Asta(O) IVT'],
   'Hyundai|Venue': ['E', 'S', 'S(O)', 'SX', 'SX(O)', 'SX Turbo', 'S(O) Turbo', 'Knight'],
   'Hyundai|Exter': ['EX', 'S', 'SX', 'SX(O)', 'Knight', 'S CNG', 'SX CNG'],
@@ -142,9 +154,33 @@ const CAR_VARIANTS: Record<string, string[]> = {
   'Tata|Altroz': ['XE', 'XM', 'XT', 'XZ', 'XZ+', 'XZ+ S', 'XZ Lux', 'Racer'],
   'Tata|Tiago': ['XE', 'XM', 'XT', 'XZ', 'XZ+', 'XT CNG', 'XZ CNG'],
   'Tata|Tigor': ['XE', 'XM', 'XT', 'XZ', 'XZ+', 'XT CNG'],
-  'Tata|Harrier': ['Smart', 'Pure', 'Adventure', 'Fearless', 'Fearless+', 'Dark Edition'],
-  'Tata|Safari': ['Smart', 'Pure', 'Adventure', 'Accomplished', 'Fearless', 'Dark Edition'],
+  'Tata|Harrier': ['Smart', 'Pure', 'Adventure', 'Fearless', 'Fearless+', 'Dark Edition', 'Kaziranga Edition'],
+  'Tata|Safari': ['Smart', 'Pure', 'Adventure', 'Accomplished', 'Fearless', 'Dark Edition', 'Kaziranga Edition'],
   'Tata|Curvv': ['Smart', 'Pure', 'Creative', 'Accomplished', 'Accomplished+ S', 'Fearless'],
+  'Tata|Sierra': ['Pure', 'Adventure', 'Accomplished', 'Empowered', 'Empowered AWD'],
+  'Tata|Sierra EV': ['Pure', 'Adventure', 'Accomplished', 'Empowered', 'Empowered AWD', 'Dark'],
+  'Tata|Harrier EV': ['Pure', 'Adventure', 'Fearless', 'Fearless+', 'Empowered AWD'],
+  'Tata|Nexon EV': ['Smart', 'Pure', 'Creative', 'Fearless', 'Empowered', 'Empowered+ 45'],
+  'Tata|Punch EV': ['Smart', 'Pure', 'Adventure', 'Empowered', 'Empowered+'],
+  'Tata|Tiago EV': ['XE', 'XM', 'XT', 'XZ+', 'Smart 19'],
+  'Tata|Curvv EV': ['Pure', 'Creative', 'Accomplished', 'Fearless', 'Empowered'],
+  'Tata|Aeris': ['Pure', 'Adventure', 'Accomplished'],
+  // ---- Mahindra, including the electric line-up ----
+  'Mahindra|XEV 9e': [
+    'Pack One', 'Pack One 7.2 kW', 'Pack One 11.2 kW', 'Pack Two', 'Pack Two 7.2 kW',
+    'Pack Two 11.2 kW', 'Pack Two 79 kWh', 'Pack Two 79 kWh 7.2 kW',
+    'Pack Two 79 kWh 11.2 kW', 'Pack Three', 'Pack Three 79 kWh',
+    'Batman Edition',
+  ],
+  'Mahindra|XEV 9S': ['Pack One', 'Pack Two', 'Pack Three', 'Pack Three 79 kWh'],
+  'Mahindra|BE 6': [
+    'One', 'Two', 'Three', 'Three+', 'Four', 'FE', 'FE Four',
+    'Launch Edition', 'Batman Edition',
+  ],
+  'Mahindra|XUV 3XO EV': ['MX1', 'MX3', 'AX5', 'AX7 L'],
+  'Mahindra|XUV 7XO': ['MX', 'AX3', 'AX5', 'AX7', 'AX7 L'],
+  'Mahindra|Bolero Neo': ['N4', 'N8', 'N10', 'N10(O)'],
+  'Mahindra|Bolero Neo Plus': ['P4', 'P8', 'P10'],
   'Mahindra|Scorpio N': ['Z2', 'Z4', 'Z6', 'Z8', 'Z8L', 'Z4 4WD', 'Z8L 4WD'],
   'Mahindra|Scorpio Classic': ['S', 'S11', 'S11 MT', 'S11 AT'],
   'Mahindra|Thar': ['AX Opt', 'LX', 'AX 4WD', 'LX 4WD', 'Earth Edition'],
@@ -166,6 +202,10 @@ const CAR_VARIANTS: Record<string, string[]> = {
   'Kia|Carens': ['Premium', 'Prestige', 'Luxury', 'Luxury Plus'],
   'Kia|Carnival': ['Premium', 'Prestige', 'Limousine'],
   'Kia|Syros': ['HTE', 'HTK', 'HTK+', 'HTX', 'HTX+', 'GTX+'],
+  'Kia|Syros EV': ['HTK', 'HTX', 'GTX+'],
+  'MG|Windsor EV': ['Excite', 'Exclusive', 'Essence'],
+  'MG|Windsor EV Pro': ['Excite Pro', 'Exclusive Pro', 'Essence Pro'],
+  'MG|M9': ['Select', 'Premium', 'Essence'],
   'Honda|City': ['SV', 'V', 'VX', 'ZX', 'SV CVT', 'VX CVT', 'ZX CVT', 'e:HEV ZX'],
   'Honda|Amaze': ['E', 'S', 'VX', 'VX CVT', 'ZX CVT'],
   'Honda|Elevate': ['SV', 'V', 'VX', 'ZX', 'VX CVT', 'ZX CVT'],
@@ -176,6 +216,7 @@ const CAR_VARIANTS: Record<string, string[]> = {
   'Nissan|Magnite': ['XE', 'XL', 'XV', 'XV Premium', 'XV Turbo', 'XV Premium Turbo'],
   'Skoda|Slavia': ['Active', 'Ambition', 'Style', 'Monte Carlo'],
   'Skoda|Kushaq': ['Active', 'Ambition', 'Style', 'Monte Carlo'],
+  'Skoda|Kylaq': ['Classic', 'Signature', 'Signature Plus', 'Prestige'],
   'Skoda|Kodiaq': ['Style', 'L&K', 'Sportline'],
   'Volkswagen|Virtus': ['Comfortline', 'Highline', 'Topline', 'GT', 'GT Plus'],
   'Volkswagen|Taigun': ['Comfortline', 'Highline', 'Topline', 'GT', 'GT Plus'],
