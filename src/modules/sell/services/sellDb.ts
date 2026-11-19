@@ -132,7 +132,8 @@ export async function listMarketplace(params: {
   // Shared pipeline — identical for the cache pass and the server pass so
   // the instant paint can never disagree with the refreshed results.
   const applyFilters = (input: SellListing[]): SellListing[] => {
-    let listings = input;
+    // Admin-withheld listings are hidden from the marketplace but kept in the DB.
+    let listings = input.filter((l: any) => l.withheld !== true);
     // Hide deadline listings whose deadline has already passed — the
     // background sweep may not have flipped their status yet. Only food listings
     // carry a deadline, so this never affects any other category.

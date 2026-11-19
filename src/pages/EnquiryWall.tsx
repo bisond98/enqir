@@ -560,9 +560,13 @@ export default function EnquiryWall() {
           };
         }) as Enquiry[];
         
+        // Admin-withheld enquiries stay in the database but are never listed
+        // in the public feeds; releasing them (withheld=false) brings them back.
+        const visibleEnquiriesData = allEnquiriesData.filter((enquiry: any) => enquiry.withheld !== true);
+
         // Filter to show enquiries with status='live' OR status='deal_closed' (admin accepted)
         // Use case-insensitive check to catch any variations
-        const liveStatusEnquiries = allEnquiriesData.filter(enquiry => {
+        const liveStatusEnquiries = visibleEnquiriesData.filter(enquiry => {
           const status = (enquiry.status || '').toLowerCase().trim();
           return status === 'live' || status === 'deal_closed';
         });

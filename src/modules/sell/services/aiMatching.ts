@@ -36,7 +36,10 @@ export async function suggestEnquiriesForListing(listing: SellListing, opts?: { 
   // READ-ONLY: We only read enquiries; do not write or mutate anything.
   const q = query(collection(db, 'enquiries'), where('status', '==', 'live'), orderBy('createdAt', 'desc'), limit(200));
   const snap = await getDocs(q);
-  const enquiries = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as EnquiryLite[];
+  // Admin-withheld enquiries are never suggested as matches.
+  const enquiries = snap.docs
+    .map((d) => ({ id: d.id, ...(d.data() as any) }))
+    .filter((e: any) => e.withheld !== true) as EnquiryLite[];
 
   const listingText = `${listing.title} ${listing.description} ${listing.category} ${listing.location} ${(listing.tags ?? []).join(' ')}`;
   const lt = tokenize(listingText);
@@ -61,7 +64,10 @@ export async function suggestListingsForEnquiry(enquiry: EnquiryLite, opts?: { t
   // READ-ONLY: only reads sell_listings.
   const q = query(collection(db, 'sell_listings'), where('status', '==', 'live'), orderBy('createdAt', 'desc'), limit(200));
   const snap = await getDocs(q);
-  const listings = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
+  // Admin-withheld listings are never suggested as matches.
+  const listings = snap.docs
+    .map((d) => ({ id: d.id, ...(d.data() as any) }))
+    .filter((l: any) => l.withheld !== true) as SellListing[];
 
   const et = tokenize(`${enquiry.title ?? ''} ${enquiry.description ?? ''} ${enquiry.category ?? ''} ${enquiry.location ?? ''}`);
   const scored = listings

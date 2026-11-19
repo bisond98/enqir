@@ -2216,6 +2216,9 @@ const Dashboard = () => {
                         const lockedResponses = getLockedResponses(enquiry.id);
                         const remainingCount = getRemainingResponseCount(enquiry.id);
                           const expiredFlag = isExpired(enquiry);
+                          // Admin withheld this enquiry — show the reason and freeze
+                          // the tile (no opening, no menus) until it's released.
+                          const withheldFlag = (enquiry as any).withheld === true;
                         
                         // Get plan display info
                         const getPlanDisplay = () => {
@@ -2248,7 +2251,7 @@ const Dashboard = () => {
                                 ? 'opacity-50 grayscale bg-gray-50 border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] cursor-not-allowed'
                                 : 'bg-white border-0 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)] cursor-pointer transform hover:-translate-y-1.5'
                             }`}
-                            onClick={expiredFlag ? (e) => {
+                            onClick={(expiredFlag || withheldFlag) ? (e) => {
                               e.stopPropagation();
                               e.preventDefault();
                               return false;
@@ -2273,6 +2276,27 @@ const Dashboard = () => {
                                 style={{ pointerEvents: 'auto', touchAction: 'pan-y' }}
                               />
                             )}
+                            {/* Withheld by admin: explains why and blocks every tap until released */}
+                            {withheldFlag && (
+                              <div
+                                className="absolute inset-0 z-[9999] flex items-end justify-center bg-white/70 backdrop-blur-[1px] px-3 pb-5 sm:pb-6 cursor-not-allowed"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  return false;
+                                }}
+                                style={{ pointerEvents: 'auto', touchAction: 'pan-y' }}
+                              >
+                                <div className="flex flex-col items-center gap-2.5 sm:gap-3">
+                                  <span className="flex h-32 w-32 sm:h-40 sm:w-40 flex-shrink-0 items-center justify-center rounded-full bg-red-600 px-3 text-center text-[10px] sm:text-xs font-black uppercase tracking-wide leading-tight text-white">
+                                    Withheld by admin due to security reasons
+                                  </span>
+                                  <span className="inline-block rounded-full bg-green-600 px-3 py-1.5 sm:px-4 sm:py-2 text-center text-[9px] sm:text-[10px] font-bold leading-tight text-white">
+                                    We will make it live after a thorough verification
+                                  </span>
+                                </div>
+                              </div>
+                            )}
                             {/* Premium Header with Sophisticated Design */}
                             <div className={`relative bg-gradient-to-br from-black via-black to-gray-900 px-4 sm:px-5 lg:px-3.5 xl:px-4 pr-14 py-2.5 sm:py-3 lg:py-2 xl:py-2.5 ${
                               expiredFlag ? 'opacity-70' : ''
@@ -2288,10 +2312,10 @@ const Dashboard = () => {
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     e.preventDefault();
-                                    if (expiredFlag) return;
+                                    if (expiredFlag || withheldFlag) return;
                                     setOpenEnquiryMenu(openEnquiryMenu === enquiry.id ? null : enquiry.id);
                                   }}
-                                  disabled={expiredFlag}
+                                  disabled={expiredFlag || withheldFlag}
                                   className="flex items-center justify-center border-0 bg-transparent p-0 text-white/70 hover:text-white transition-colors touch-manipulation select-none disabled:opacity-40 disabled:cursor-not-allowed"
                                 >
                                   <MoreHorizontal className="h-4 w-4" />

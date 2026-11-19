@@ -149,7 +149,9 @@ const MyLikes = () => {
       const matchListing = (l: any) => inLikedCats(cats, l.category, l.categories) || kws.some(kw => matchesKeyword(kw, l));
       const matchEnquiry = (e: any) => (inLikedCats(cats, e.category, e.categories) || kws.some(kw => matchesKeyword(kw, e))) && isEnquiryLive(e);
       setFeedListings(listings.filter(matchListing));
-      const enqs = enqSnap.docs.map(d => ({ id: d.id, ...(d.data() as any) })) as FeedEnquiry[];
+      const enqs = enqSnap.docs
+        .map(d => ({ id: d.id, ...(d.data() as any) }))
+        .filter((e: any) => e.withheld !== true) as FeedEnquiry[]; // admin-withheld hidden
       setFeedEnquiries(enqs.filter(matchEnquiry));
     } catch (err) {
       console.error('Failed to load liked-category feed:', err);

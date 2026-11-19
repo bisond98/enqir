@@ -24,11 +24,13 @@ service cloud.firestore {
     match /enquiries/{enquiryId} {
       allow read: if true;
       allow create: if request.auth != null;
-      // Owner can fully update/delete. Any signed-in user may update ONLY
+      // Owner can fully update/delete. Admins can update any enquiry (withhold /
+      // release from the admin console). Any signed-in user may update ONLY
       // lightweight public counters (views/shares/responses) — used when
       // viewing an enquiry or when a response is approved.
       allow update: if request.auth != null && (
         resource.data.userId == request.auth.uid
+        || isAdmin()
         || request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(['views', 'shares', 'responses', 'lastResponseAt', 'updatedAt'])
       );
@@ -69,7 +71,11 @@ service cloud.firestore {
     match /sell_listings/{listingId} {
       allow read: if true;
       allow create: if request.auth != null;
-      allow update: if request.auth != null && resource.data.sellerId == request.auth.uid;
+      // Seller edits their own listing; admins can update any listing
+      // (withhold / release from the admin console).
+      allow update: if request.auth != null && (
+        resource.data.sellerId == request.auth.uid || isAdmin()
+      );
       // Admins can take a listing down from the admin console.
       allow delete: if isAdmin() || (request.auth != null && resource.data.sellerId == request.auth.uid);
     }

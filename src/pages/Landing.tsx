@@ -1240,6 +1240,8 @@ const Landing = () => {
           const items: any[] = [];
           snapshot.forEach((doc) => {
             const data = doc.data();
+            // Admin-withheld enquiries are not shown on the home screen.
+            if ((data as any).withheld === true) return;
             items.push({
               id: doc.id,
               ...data

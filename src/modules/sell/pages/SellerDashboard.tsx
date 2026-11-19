@@ -224,7 +224,23 @@ export default function SellerDashboard({ minimal = false }: { minimal?: boolean
           )}
 
           {!loading && paginatedListings.map((l) => (
-            <div key={l.id} className="group relative rounded-2xl border-0 bg-white overflow-hidden transition-all duration-200 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)]">
+            <div key={l.id} className={`group relative rounded-2xl border-0 bg-white overflow-hidden transition-all duration-200 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.11),2px_0_0_0_rgba(17,24,39,0.11),0_4px_0_0_rgba(17,24,39,0.16),0_10px_16px_-8px_rgba(17,24,39,0.20)]`}>
+              {(l as any).withheld === true && (
+                <div
+                  className="absolute inset-0 z-30 flex items-end justify-center bg-white/80 px-3 pb-4 cursor-not-allowed"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                  style={{ pointerEvents: 'auto', touchAction: 'pan-y' }}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="flex h-28 w-28 sm:h-32 sm:w-32 flex-shrink-0 items-center justify-center rounded-full bg-red-600 px-2.5 text-center text-[9px] sm:text-[10px] font-black uppercase tracking-wide leading-tight text-white">
+                      Withheld by admin due to security reasons
+                    </span>
+                    <span className="inline-block rounded-full bg-green-600 px-3 py-1.5 text-center text-[8px] sm:text-[9px] font-bold leading-tight text-white">
+                      We will make it live after a thorough verification
+                    </span>
+                  </div>
+                </div>
+              )}
               {editingId === l.id ? (
                 <div className="p-4 space-y-3" onClick={(e) => e.preventDefault()}>
                   {/* Price */}

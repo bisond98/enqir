@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { db } from '@/firebase';
 import { collection, query, where, updateDoc, doc, deleteDoc, orderBy, serverTimestamp, getDocs, writeBatch, addDoc, getDoc, onSnapshot, increment, setDoc } from 'firebase/firestore';
 import { toast } from '@/hooks/use-toast';
-import { Crown, Trash2, Eye, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server, FileText } from 'lucide-react';
+import { Crown, Trash2, Eye, EyeOff, MessageSquare, AlertTriangle, CheckCircle, Lock, Rocket, Bot, X, TrendingUp, TrendingDown, Activity, Zap, Database, Server, FileText } from 'lucide-react';
 import { isDocumentUrl, attachmentFileName, downloadAttachment } from '@/lib/attachmentUrl';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
@@ -109,7 +109,8 @@ const Admin = () => {
   const [sellListingResponses, setSellListingResponses] = useState<any[]>([]);
   // Marketplace listings arrive newest first; only the latest 5 show until the
   // admin asks for the rest.
-  const [visibleSellListingsCount, setVisibleSellListingsCount] = useState(5);
+  // Same 10-per-step pagination as the Live Enquiries section
+  const [visibleSellListingsCount, setVisibleSellListingsCount] = useState(10);
   const [profileVerifications, setProfileVerifications] = useState<any[]>([]);
   const [userReports, setUserReports] = useState<any[]>([]);
   const [selectedEnquiry, setSelectedEnquiry] = useState<Enquiry | null>(null);
@@ -506,7 +507,10 @@ const Admin = () => {
               views: data.views || 0,
               userLikes: data.userLikes || [],
               notes: data.notes || '',
-            });
+              // Needed so the Withhold button can flip to Release (and back)
+              withheld: data.withheld === true,
+              withheldAt: data.withheldAt || null,
+            } as any);
           }
         });
         // Separate live and expired enquiries
@@ -1235,6 +1239,26 @@ const Admin = () => {
     await removeDocument('submissions', id, 'Response', () => {
       setSubmissions((prev) => prev.filter((s) => s.id !== id));
     });
+  };
+
+  // Withhold / release — takes an item off every public feed without touching
+  // its status, responses, chats or payments. Releasing simply clears the flag.
+  const setWithheld = async (collectionName: 'enquiries' | 'sell_listings', id: string, withheld: boolean, label: string) => {
+    try {
+      await updateDoc(doc(db, collectionName, id), {
+        withheld,
+        withheldAt: withheld ? serverTimestamp() : null,
+      });
+      toast({
+        title: withheld ? `${label} withheld` : `${label} released`,
+        description: withheld
+          ? 'Hidden from the public feeds. Nothing was deleted.'
+          : 'Visible again in the public feeds.',
+      });
+    } catch (error) {
+      console.error('Withhold toggle failed:', error);
+      toast({ title: 'Action failed', description: 'Could not update visibility.', variant: 'destructive' });
+    }
   };
 
   const deleteSellListing = async (id: string) => {
@@ -2044,7 +2068,21 @@ const Admin = () => {
                     </div>
                               </div>
                               <div className="flex items-center gap-2">
+                      {(enquiry as any).withheld === true && (
+                        <Badge variant="secondary" className="text-[10px] sm:text-xs px-2 py-0.5 bg-yellow-500 text-black">
+                          Withheld
+                        </Badge>
+                      )}
                       {getStatusBadge(enquiry.status)}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        title={(enquiry as any).withheld === true ? 'Release (show in feeds again)' : 'Withhold (hide from feeds)'}
+                        onClick={() => setWithheld('enquiries', enquiry.id, (enquiry as any).withheld !== true, 'Enquiry')}
+                        className="h-8 w-8 sm:h-9 sm:w-9 p-0 bg-white text-black"
+                      >
+                        {(enquiry as any).withheld === true ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      </Button>
                       <Button 
                         variant="destructive" 
                         size="sm"
@@ -2078,6 +2116,126 @@ const Admin = () => {
           )}
                 </CardContent>
               </Card>
+
+        {/* Sell Listings (marketplace) */}
+        <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200 px-5 sm:px-6 py-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <Database className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900">Sell Listings</h2>
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                    {sellListings.length} listing{sellListings.length !== 1 ? 's' : ''}
+                    {sellListings.length > 0 && (
+                      <> • showing latest {Math.min(visibleSellListingsCount, sellListings.length)}</>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">
+                {sellListings.length} total
+              </Badge>
+            </div>
+          </div>
+
+          <CardContent className="p-4 sm:p-6">
+            {sellListings.length === 0 ? (
+              <div className="text-center py-12 sm:py-16">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Database className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
+                </div>
+                <p className="text-sm sm:text-base text-gray-600 font-medium">No listings yet</p>
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">Listings posted from the sell form will appear here</p>
+              </div>
+            ) : (
+              <div className="space-y-3 sm:space-y-4">
+                {sellListings.slice(0, visibleSellListingsCount).map((listing) => (
+                  <Card key={listing.id} className="border border-gray-200 bg-white hover:shadow-md transition-all duration-200">
+                    <CardContent className="p-4 sm:p-5">
+                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <h3 className="text-sm sm:text-base font-bold text-gray-900 truncate">{listing.title || 'Untitled listing'}</h3>
+                            <Badge variant="secondary" className="text-[10px] sm:text-xs px-2 py-0.5 capitalize">
+                              {listing.status || 'live'}
+                            </Badge>
+                            {listing.withheld === true && (
+                              <Badge variant="destructive" className="text-[10px] sm:text-xs px-2 py-0.5">
+                                Withheld
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+                            <Badge variant="outline" className="text-[10px] sm:text-xs">{listing.category || 'Uncategorised'}</Badge>
+                            <span className="font-semibold text-gray-900">{formatListingPrice(listing)}</span>
+                            {listing.location && <span className="truncate">{listing.location}</span>}
+                            <span>{formatAdminDate(listing.createdAt)}</span>
+                          </div>
+                          {Array.isArray(listing.images) && listing.images.length > 0 && (
+                            <div className="flex items-center gap-2">
+                              {listing.images.slice(0, 3).map((url: string, index: number) => (
+                                <img
+                                  key={index}
+                                  loading="lazy"
+                                  decoding="async"
+                                  src={url}
+                                  alt={`Listing ${index + 1}`}
+                                  className="w-12 h-12 rounded-lg object-cover border border-gray-200 cursor-pointer"
+                                  onClick={() => window.open(url, '_blank')}
+                                />
+                              ))}
+                              <span className="text-[10px] text-gray-500">
+                                {listing.images.length} image{listing.images.length !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                          )}
+                          <p className="text-[10px] sm:text-xs text-gray-500 truncate">Seller: {listing.sellerId}</p>
+                        </div>
+                        <div className="flex items-center gap-2 self-start">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            title={listing.withheld === true ? 'Release (show in marketplace again)' : 'Withhold (hide from marketplace)'}
+                            onClick={() => setWithheld('sell_listings', listing.id, listing.withheld !== true, 'Listing')}
+                            className="h-8 w-8 sm:h-9 sm:w-9 p-0"
+                          >
+                            {listing.withheld === true ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => deleteSellListing(listing.id)}
+                            className="h-8 w-8 sm:h-9 sm:w-9 p-0"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+            {sellListings.length > visibleSellListingsCount && (
+              <div className="flex justify-center mt-6 sm:mt-8 mb-4">
+                <Button
+                  onClick={() => setVisibleSellListingsCount(prev => prev + 10)}
+                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0 min-w-[200px] sm:min-w-[240px]"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span className="text-sm sm:text-base">
+                      Load More ({sellListings.length - visibleSellListingsCount} remaining)
+                    </span>
+                  </span>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Old Submissions */}
               <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
@@ -2381,105 +2539,6 @@ const Admin = () => {
                 </CardContent>
         </Card>
 
-        {/* Sell Listings (marketplace) */}
-        <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200 px-5 sm:px-6 py-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                  <Database className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-600" />
-                </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900">Sell Listings</h2>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
-                    {sellListings.length} listing{sellListings.length !== 1 ? 's' : ''}
-                    {sellListings.length > 0 && (
-                      <> • showing latest {Math.min(visibleSellListingsCount, sellListings.length)}</>
-                    )}
-                  </p>
-                </div>
-              </div>
-              <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1.5 bg-emerald-100 text-emerald-800 border border-emerald-200">
-                {sellListings.length} total
-              </Badge>
-            </div>
-          </div>
-
-          <CardContent className="p-4 sm:p-6">
-            {sellListings.length === 0 ? (
-              <div className="text-center py-12 sm:py-16">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Database className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
-                </div>
-                <p className="text-sm sm:text-base text-gray-600 font-medium">No listings yet</p>
-                <p className="text-xs sm:text-sm text-gray-500 mt-1">Listings posted from the sell form will appear here</p>
-              </div>
-            ) : (
-              <div className="space-y-3 sm:space-y-4">
-                {sellListings.slice(0, visibleSellListingsCount).map((listing) => (
-                  <Card key={listing.id} className="border border-gray-200 bg-white hover:shadow-md transition-all duration-200">
-                    <CardContent className="p-4 sm:p-5">
-                      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0 space-y-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="text-sm sm:text-base font-bold text-gray-900 truncate">{listing.title || 'Untitled listing'}</h3>
-                            <Badge variant="secondary" className="text-[10px] sm:text-xs px-2 py-0.5 capitalize">
-                              {listing.status || 'live'}
-                            </Badge>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
-                            <Badge variant="outline" className="text-[10px] sm:text-xs">{listing.category || 'Uncategorised'}</Badge>
-                            <span className="font-semibold text-gray-900">{formatListingPrice(listing)}</span>
-                            {listing.location && <span className="truncate">{listing.location}</span>}
-                            <span>{formatAdminDate(listing.createdAt)}</span>
-                          </div>
-                          {Array.isArray(listing.images) && listing.images.length > 0 && (
-                            <div className="flex items-center gap-2">
-                              {listing.images.slice(0, 3).map((url: string, index: number) => (
-                                <img
-                                  key={index}
-                                  loading="lazy"
-                                  decoding="async"
-                                  src={url}
-                                  alt={`Listing ${index + 1}`}
-                                  className="w-12 h-12 rounded-lg object-cover border border-gray-200 cursor-pointer"
-                                  onClick={() => window.open(url, '_blank')}
-                                />
-                              ))}
-                              <span className="text-[10px] text-gray-500">
-                                {listing.images.length} image{listing.images.length !== 1 ? 's' : ''}
-                              </span>
-                            </div>
-                          )}
-                          <p className="text-[10px] sm:text-xs text-gray-500 truncate">Seller: {listing.sellerId}</p>
-                        </div>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => deleteSellListing(listing.id)}
-                          className="h-8 w-8 sm:h-9 sm:w-9 p-0 self-start"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-            {sellListings.length > visibleSellListingsCount && (
-              <div className="flex justify-center mt-6">
-                <Button
-                  onClick={() => setVisibleSellListingsCount(sellListings.length)}
-                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold px-6 sm:px-8 py-3 rounded-lg shadow-lg transition-all duration-300 border-0"
-                >
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Show more ({sellListings.length - visibleSellListingsCount} more)
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
         {/* Sell Listing Responses (marketplace response form) */}
         <Card className="bg-white border border-gray-200 shadow-sm overflow-hidden">

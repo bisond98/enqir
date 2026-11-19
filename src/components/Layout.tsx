@@ -571,6 +571,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
         let newCount = 0;
         listingsSnap.docs.forEach(d => {
           const l: any = d.data();
+          if (l.withheld === true) return; // admin-withheld listings don't count
           const cats = Array.isArray(l.categories) && l.categories.length ? l.categories : [l.category];
           const t = l.createdAt?.toMillis?.() ?? (l.createdAt ? new Date(l.createdAt).getTime() : 0);
           if (t > lastRead && matches(cats)) newCount++;
@@ -580,6 +581,7 @@ export default function Layout({ children, showNavigation = true }: { children: 
         const enquiriesSnap = await getDocs(query(collection(db, 'enquiries'), where('status', '==', 'live')));
         enquiriesSnap.docs.forEach(d => {
           const e: any = d.data();
+          if (e.withheld === true) return; // admin-withheld enquiries don't count
           const cats = Array.isArray(e.categories) && e.categories.length ? e.categories : [e.category];
           const t = e.createdAt?.toMillis?.() ?? (e.createdAt ? new Date(e.createdAt).getTime() : 0);
           if (t > lastRead && matches(cats)) newCount++;

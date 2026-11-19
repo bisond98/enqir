@@ -337,7 +337,10 @@ const labelFor = (score: number): MatchItem['label'] =>
 
 async function fetchLiveListings(): Promise<SellListing[]> {
   const snap = await getDocs(query(collection(db, 'sell_listings'), where('status', '==', 'live')));
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) })) as SellListing[];
+  // Admin-withheld listings never appear in matches.
+  return snap.docs
+    .map((d) => ({ id: d.id, ...(d.data() as any) }))
+    .filter((l: any) => l.withheld !== true) as SellListing[];
 }
 
 async function fetchLiveEnquiries(): Promise<EnquiryForMatch[]> {
@@ -345,6 +348,7 @@ async function fetchLiveEnquiries(): Promise<EnquiryForMatch[]> {
   const snap = await getDocs(collection(db, 'enquiries'));
   return snap.docs
     .map((d) => ({ id: d.id, ...(d.data() as any) }))
+    .filter((e: any) => e.withheld !== true) // admin-withheld never in matches
     .filter((e: any) => !e.status || !['deleted', 'rejected', 'draft'].includes(String(e.status).toLowerCase())) as EnquiryForMatch[];
 }
 
