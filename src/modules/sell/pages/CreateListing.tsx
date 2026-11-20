@@ -1475,7 +1475,7 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
                             placeholder={f.placeholder ?? 'Type year'}
-                            className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium ${category === 'vehicles' && f.key === 'year' ? 'border-2 border-gray-800' : 'border-[1.5px] border-slate-200'} focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white text-black placeholder:text-gray-900 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' ? 'pl-3 pr-3 placeholder:text-[8px] placeholder:tracking-tight' : 'pl-4 pr-4 placeholder:text-[11px]'}`}
+                            className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium ${category === 'vehicles' && f.key === 'year' ? 'border-2 border-gray-800' : 'border-[1.5px] border-slate-200'} focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white text-black placeholder:text-gray-900 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' ? 'pl-3 pr-3 placeholder:text-[8px] placeholder:tracking-tight' : 'pl-4 pr-4 placeholder:text-[11px]'}${(category === 'car' || category === 'vehicles') && f.key === 'year' && (details[f.key] ?? '').length === 4 ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
                           />
                         ) : f.type === 'text' ? (
                           <Input
@@ -1501,21 +1501,28 @@ export default function CreateListing() {
                                   setTitle(e.target.value === LAPTOP_OTHER ? '' : e.target.value);
                                 }
                                 if (f.key === 'vehicleType' && category === 'vehicles') {
-                                  setDetail('brand', ''); setDetail('variant', '');
+                                  setDetail('brand', ''); setDetail('variant', ''); setDetail('year', '');
+                                  setDetail('transmission', ''); setDetail('fuel', '');
                                   // Maker first, then the body type — "Ashok Leyland Lorry",
                                   // the way people name commercial vehicles.
                                   setTitle(e.target.value === 'Other' ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
                                 }
                                 if (f.key === 'brand' && category === 'vehicles') {
-                                  setDetail('variant', '');
+                                  setDetail('variant', ''); setDetail('year', '');
+                                  setDetail('transmission', ''); setDetail('fuel', '');
                                   setTitle(e.target.value === 'Other' ? '' : [e.target.value, details['vehicleType']].filter(Boolean).join(' '));
                                 }
+                                // A car's picks below the model belong to that model, so a
+                                // new brand or model drops the variant, year, transmission
+                                // and fuel already chosen.
                                 if (f.key === 'brand' && category === 'car') {
-                                  setDetail('model', ''); setDetail('variant', '');
+                                  setDetail('model', ''); setDetail('variant', ''); setDetail('year', '');
+                                  setDetail('transmission', ''); setDetail('fuel', '');
                                   setTitle(e.target.value === CAR_MODEL_OTHER ? '' : e.target.value);
                                 }
                                 if (f.key === 'model' && category === 'car') {
-                                  setDetail('variant', '');
+                                  setDetail('variant', ''); setDetail('year', '');
+                                  setDetail('transmission', ''); setDetail('fuel', '');
                                   const unknownCar = e.target.value === CAR_MODEL_OTHER || details['brand'] === CAR_MODEL_OTHER;
                                   setTitle(unknownCar ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
                                 }
@@ -1970,7 +1977,7 @@ export default function CreateListing() {
                                       placeholder={category === 'vehicles' && f.key === 'variant'
                                         ? (details['brand'] ? 'Enter model name' : 'Select brand first')
                                         : f.placeholder ?? 'Type here'}
-                                      className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 pl-4 pr-4 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
+                                      className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 pl-4 pr-4 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' && (details[f.key] ?? '').length === 4 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
                                     />
                                   ) : (
                                   <div className="relative">
@@ -2284,7 +2291,7 @@ export default function CreateListing() {
             )}
 
             {step === 5 && (
-              <div className="max-w-md mx-auto w-full space-y-4">
+              <div className="price-pills max-w-md mx-auto w-full space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="price-fixed" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-2 ml-1">
                     <IndianRupee className="h-3.5 w-3.5" />
@@ -2325,12 +2332,12 @@ export default function CreateListing() {
                           setPriceMax('');
                         }
                       }}
-                      className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit max-w-full font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${priceOption === 'discussion' ? 'text-base font-bold text-black' : 'text-[10px] sm:text-xs font-semibold text-slate-400'}`}
+                      className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit min-w-[152px] sm:min-w-[168px] max-w-full font-medium border-[1.5px] focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${priceOption === 'discussion' ? 'border-black bg-blue-600 text-[11px] sm:text-xs font-bold text-white shadow-none' : 'border-slate-200 bg-white text-[10px] sm:text-xs font-semibold text-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)]'}`}
                     >
-                      <option value="">Click here</option>
-                      <option value="discussion">Open to discussion</option>
+                      <option value="" className="bg-white text-black">Click here</option>
+                      <option value="discussion" className="bg-white text-black">Open to discussion</option>
                     </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                    <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${priceOption === 'discussion' ? 'text-white' : 'text-gray-800'}`} />
                   </div>
                 </div>
                 {fieldsForCategoryStep(category, 'price').map((f) => (
