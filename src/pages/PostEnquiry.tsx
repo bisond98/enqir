@@ -75,6 +75,7 @@ import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
 import { EnquiryHeaderDoodles, MagnifierDoodle, DealFlowSketch } from "@/components/doodles";
+import EnquiryPosterDoodle from "@/components/enquiryPosterDoodle";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -3022,6 +3023,15 @@ const DEADLINE_STEP = 5;
               Absolutely positioned, so the header keeps exactly its height. */}
           <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">
             <EnquiryHeaderDoodles className="absolute inset-0 h-full w-full" />
+          </div>
+          {/* Marketing poster pinned to the right edge of the header. Absolutely
+              positioned, so the header keeps exactly its height; only the left
+              edge fades, so the heading stays the first thing read. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none select-none absolute inset-y-0 right-0 flex w-[52%] items-center justify-end pr-2 opacity-75 sm:w-[44%] sm:pr-3 sm:opacity-90"
+          >
+            <EnquiryPosterDoodle className="h-full max-h-[88%] w-auto max-w-full drop-shadow-[0_6px_16px_rgba(0,0,0,0.55)] [mask-image:linear-gradient(to_right,transparent,black_24%)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_24%)]" />
           </div>
           <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
             {/* Spacer Section to Match Dashboard/Profile */}
