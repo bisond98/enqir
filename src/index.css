@@ -2872,3 +2872,18 @@ body {
 .enq-form select:not([multiple]) {
   border-width: 0 !important;
 }
+
+/* Firebase invisible reCAPTCHA: keep the widget mounted but out of the layout,
+   and keep Google's floating badge off the Post Enquiry button. */
+#recaptcha-container {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.grecaptcha-badge {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

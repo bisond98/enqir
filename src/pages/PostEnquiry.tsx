@@ -4949,13 +4949,6 @@ const DEADLINE_STEP = 5;
                     )}
                   </div>
 
-                  {/* Only a verified number is attached to the enquiry / call popup */}
-                  {typedMobileIsVerified && (
-                    <p className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-bold text-green-600">
-                      <CheckCircle className="h-3 w-3" /> Verified — this number will be shared
-                    </p>
-                  )}
-
                   {/* OTP boxes — appear under the number after Verify is clicked */}
                   {otpStage && (
                     <div className="mt-2 rounded-2xl border-[1.5px] border-slate-200 bg-slate-50 p-3 space-y-3">
@@ -5011,7 +5004,7 @@ const DEADLINE_STEP = 5;
                 </div>
 
                 {/* recaptcha anchor for Firebase phone auth (required, invisible) */}
-                <div id="recaptcha-container" />
+                <div id="recaptcha-container" aria-hidden="true" />
 
                 {/* Navigation Buttons — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
                 <div className={`mt-5 flex items-center gap-4 pt-2 border-t border-slate-100 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
