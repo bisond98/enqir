@@ -4461,7 +4461,7 @@ const DEADLINE_STEP = 5;
                   {/* Step 3: Location — map-pin only; the search bar above
                       "Where do you want it?" was removed per request */}
                   {step === 3 && (
-                    <div ref={locationStepRef} className="max-w-xl mx-auto w-full space-y-3">
+                    <div ref={locationStepRef} className="max-w-xl mx-auto w-full space-y-3 pb-6 sm:pb-8">
                       {/* Pin precise location on a map */}
                       <button
                         type="button"
@@ -4826,27 +4826,27 @@ const DEADLINE_STEP = 5;
                             <p className="text-sm font-black text-black">—</p>
                           )}
                         </div>
-                        {/* Location row — pin icon in the left label column */}
-                        <div className="flex items-start gap-2">
-                          <div className="w-16 flex-shrink-0 flex">
+                        {/* Location row — centred under the title, pin beside the chip */}
+                        <div className="flex items-start justify-center gap-2">
+                          <div className="flex-shrink-0 flex pt-0.5">
                             <MapPin className="h-3.5 w-3.5 text-red-600" />
                           </div>
-                          <p className="text-[10px] sm:text-[11px] font-medium text-gray-500 leading-relaxed break-words">{location || '—'}</p>
+                          <span className="inline-flex items-start text-center text-[10px] sm:text-[11px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-2xl px-2 py-0.5 leading-relaxed break-words">{location || '—'}</span>
                         </div>
                         {/* Description row — value starts at the same left edge as the location above (matching 64px + gap label column) */}
                         {description.trim() && (
-                          <div className="flex items-start gap-2">
-                            <div className="w-16 flex-shrink-0">
-                              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">Notes</span>
+                          <div className="flex items-start justify-center gap-2">
+                            <div className="flex-shrink-0">
+                              <span className="text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5">Notes</span>
                             </div>
-                            <p className="text-[10px] sm:text-[11px] text-gray-500 leading-relaxed whitespace-pre-wrap break-words">{description}</p>
+                            <span className="inline-flex items-start text-[10px] sm:text-[11px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-2xl px-2 py-0.5 leading-relaxed whitespace-pre-wrap break-words">{description}</span>
                           </div>
                         )}
                         {/* Stay type row — accommodation subtypes, e.g. "Female only Hostel" */}
                         {isAccom && accommodationType && (
-                          <div className="flex items-start gap-2">
-                            <div className="w-16 flex-shrink-0">
-                              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">Stay</span>
+                          <div className="flex items-start justify-center gap-2">
+                            <div className="flex-shrink-0">
+                              <span className="text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5">Stay</span>
                             </div>
                             <p className="text-xs font-bold text-black leading-relaxed">
                               {(() => {
@@ -4861,21 +4861,21 @@ const DEADLINE_STEP = 5;
                         )}
                         {/* Cleaning type row — selected cleaning services subtypes */}
                         {isCleaning && cleaningTypes.length > 0 && (
-                          <div className="flex items-start gap-2">
-                            <div className="w-16 flex-shrink-0">
-                              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">Cleaning</span>
+                          <div className="flex items-start justify-center gap-2">
+                            <div className="flex-shrink-0">
+                              <span className="text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5">Cleaning</span>
                             </div>
                             <p className="text-xs font-bold text-black leading-relaxed">{cleaningTypes.join(', ')}</p>
                           </div>
                         )}
                         {/* Category row */}
-                        <div className="flex items-start gap-2">
-                          <span className="text-[10px] font-bold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5 flex-shrink-0">Category</span>
-                          <div className="flex flex-wrap gap-1.5">
+                        <div className="flex items-start justify-center gap-2">
+                          <span className="text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5 flex-shrink-0">Category</span>
+                          <div className="flex flex-wrap justify-center gap-1.5">
                             {selectedCategories.map(c => {
                               const cat = categories.find(cat => cat.value === c);
                               return cat ? (
-                                <span key={c} className="inline-flex items-center text-[10px] font-bold text-gray-700 bg-gray-100 rounded-full px-2 py-0.5">{cat.label}</span>
+                                <span key={c} className="inline-flex items-center text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5">{cat.label}</span>
                               ) : null;
                             })}
                           </div>
@@ -5007,7 +5007,7 @@ const DEADLINE_STEP = 5;
                 <div id="recaptcha-container" aria-hidden="true" />
 
                 {/* Navigation Buttons — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
-                <div className={`mt-5 flex items-center gap-4 pt-2 border-t border-slate-100 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
+                <div className={`mt-5 flex items-center gap-4 pt-2 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
                   {/* Back circle — hidden entirely on the first tab (was a dead, disabled button there) */}
                   {step > 0 && (
                     <Button

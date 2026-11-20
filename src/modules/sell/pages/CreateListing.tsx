@@ -2098,7 +2098,6 @@ export default function CreateListing() {
                   open={mapPickerOpen}
                   onOpenChange={(o) => setMapPickerOpen(o)}
                   title="Where is it?"
-                  autoLocate
                   defaultLocation={mapLocation ? { lat: mapLocation.latitude, lng: mapLocation.longitude } : undefined}
                   onSelect={(lat, lng, addr) => {
                     setMapLocation(addr);
@@ -2669,7 +2668,7 @@ export default function CreateListing() {
             </div>
           )}
           {/* Nav — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
-          <div className={`mt-2 flex items-center gap-4 pt-2 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
+          <div className={`mt-6 sm:mt-8 flex items-center gap-4 pt-2 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
             {/* Back circle — hidden entirely on the first tab (was a dead, disabled button there) */}
             {step > 0 && (
               <Button

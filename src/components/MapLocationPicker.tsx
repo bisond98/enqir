@@ -570,7 +570,7 @@ export function MapLocationPicker({
         <Button
           type="button"
           variant="outline"
-          className="!w-full !h-14 sm:!h-16 !text-base !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 !transform !relative !overflow-hidden group touch-manipulation select-none"
+          className="!w-full !h-14 sm:!h-16 !text-base !font-black !bg-green-600 hover:!bg-green-700 !text-white !rounded-2xl !border-0 !shadow-none !transition-all !duration-150 disabled:!opacity-50 !transform !relative !overflow-hidden group touch-manipulation select-none"
           onClick={handleUseMyLocation}
           disabled={geoLoading || confirming}
         >
@@ -681,7 +681,7 @@ export function MapLocationPicker({
       )}
       <Button
         type="button"
-        className="!w-full !h-14 sm:!h-16 !text-base !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-[1.5px] !border-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 !transform !relative !overflow-hidden group touch-manipulation select-none"
+        className="!w-full !h-14 sm:!h-16 !text-base !font-black !bg-blue-600 hover:!bg-blue-700 !text-white !rounded-2xl !border-0 !shadow-none !transition-all !duration-150 disabled:!opacity-50 !transform !relative !overflow-hidden group touch-manipulation select-none"
         onClick={handleConfirm}
         disabled={confirming || pinAtDefault}
       >
