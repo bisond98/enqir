@@ -2432,7 +2432,7 @@ export default function CreateListing() {
                   return (
                     <>
                       {/* Hero: photo + title + price */}
-                      <div className="rounded-2xl overflow-hidden border-2 border-black bg-white">
+                      <div className="rounded-2xl overflow-hidden border-0 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.30),0_0_0_5px_rgba(0,0,0,0.16)]">
                         {hasPhoto ? (
                           <div className="relative">
                             <img loading="lazy" decoding="async" src={images[0]} alt="Listing" className="w-full h-40 sm:h-48 object-cover" />
@@ -2449,7 +2449,6 @@ export default function CreateListing() {
                         <div className="p-4">
                           <h3 className="font-black text-base sm:text-lg text-black leading-snug">{title || 'Untitled listing'}</h3>
                           <div className="flex items-center gap-2 mt-1.5">
-                            <p className="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Price</p>
                             {priceOption === 'discussion' ? (
                               <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-green-800 border-[1.5px] border-black rounded-md px-2.5 py-1"><IndianRupee className="h-3 w-3" />Open to discussion</span>
                             ) : (
@@ -2457,17 +2456,17 @@ export default function CreateListing() {
                             )}
                           </div>
                           <div className="flex flex-wrap items-center gap-1.5 mt-3">
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-300 text-gray-900 border border-black/20 rounded-full px-2 py-0.5">
                               {(() => { const Icon = CATEGORY_ICON[category] ?? LayoutGrid; return <Icon className="h-3 w-3" />; })()}
                               {SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}
                             </span>
                             {!hideCondition && category !== 'jobs' && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5 capitalize">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-300 text-gray-900 border border-black/20 rounded-full px-2 py-0.5 capitalize">
                               <BadgeCheck className="h-3 w-3" />{condition}
                             </span>
                             )}
                             {location && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-100 text-gray-700 rounded-full px-2 py-0.5">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-300 text-gray-900 border border-black/20 rounded-full px-2 py-0.5">
                                 <MapPin className="h-3 w-3" /> {location}
                               </span>
                             )}
@@ -2694,7 +2693,7 @@ export default function CreateListing() {
             )}
           </div>
           {step === totalSteps - 1 && (
-            <p className="text-[6px] sm:text-[7px] text-center text-slate-400 font-medium mt-2">
+            <p className="text-[6px] sm:text-[7px] text-right text-slate-400 font-medium mt-2 pr-1">
               We do not offer anything for free to make you the product.
             </p>
           )}
