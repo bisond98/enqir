@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ClipboardEvent } from 'react';
 import SellShell from '../components/SellShell';
 import { SellListingSketch } from '@/components/doodles';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -146,6 +146,9 @@ function GearShiftIcon({ className }: { className?: string }) {
 }
 import { cn } from '@/lib/utils';
 import { splitE164Phone, formatNationalForInput } from '@/lib/phonePrefill';
+import { db } from '@/firebase';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { firestoreWrite } from '@/lib/firestoreSafe';
 import type { LucideIcon } from 'lucide-react';
 import { friendlyError } from '@/utils/friendlyError';
 
@@ -250,7 +253,7 @@ const withinDescLimit = (text: string) => text.length <= MAX_DESC_CHARS && count
 const DEADLINE_CATEGORIES = new Set(['food-beverage', 'jobs', 'agriculture-farming']);
 
 export default function CreateListing() {
-  const { user, isProfileVerified, loading: authLoading, savedPhone, savedFullName, savedUsername } = useAuth();
+  const { user, isProfileVerified, loading: authLoading, savedPhone, savedFullName, savedUsername, sendPhoneOTP, verifyPhoneOTP } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
@@ -361,22 +364,133 @@ export default function CreateListing() {
   // Contact mobile number (optional) — shown only to paid users via the call popup
   // Prefilled from the signed-in user's OTP number (editable, drafts win)
   const [mobileNumber, setMobileNumber] = useState('');
-  // Country code for the mobile number (default: India +91)
-  const [countryCode, setCountryCode] = useState('+91');
+  // India only: the country code is fixed and only a 10-digit Indian number is accepted.
+  const MOBILE_CODE = '+91';
+  // The account's OTP-verified number. Only a verified number may reach a listing;
+  // a typed/edited number has to be verified before it can replace this one.
+  const [verifiedMobileNational, setVerifiedMobileNational] = useState('');
+  const [otpStage, setOtpStage] = useState(false);
+  const [verificationId, setVerificationId] = useState<string | null>(null);
+  const [otpListeners, setOtpListeners] = useState(['', '', '', '', '', '']);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [confirmingOtp, setConfirmingOtp] = useState(false);
+  const [resendSeconds, setResendSeconds] = useState(60);
+  const otpBoxRefs = useRef<Array<HTMLInputElement | null>>([]);
+
+  const mobileDigitsOnly = mobileNumber.replace(/\D/g, '');
+  const typedMobileIsVerified =
+    !!verifiedMobileNational && mobileDigitsOnly === verifiedMobileNational.replace(/\D/g, '');
+  // Verify is offered only for a complete Indian number that isn't verified yet.
+  const showMobileVerify = !typedMobileIsVerified && mobileDigitsOnly.length === 10;
+  // What the listing is allowed to carry — always the verified number.
+  const verifiedMobileValue = verifiedMobileNational ? `${MOBILE_CODE} ${verifiedMobileNational}` : null;
 
   // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
   // number. Only fills an empty field, so user edits always win.
   useEffect(() => {
     const phoneToUse = user?.phoneNumber || savedPhone || '';
-    if (phoneToUse && !mobileNumber) {
-      const split = splitE164Phone(phoneToUse);
-      if (split) {
-        setCountryCode(split.code);
-        setMobileNumber(formatNationalForInput(split.national, split.code));
-      }
-    }
+    if (!phoneToUse) return;
+    const split = splitE164Phone(phoneToUse);
+    // India only — a saved foreign number is not offered in this field.
+    if (!split || split.code !== MOBILE_CODE) return;
+    const national = formatNationalForInput(split.national, split.code);
+    setVerifiedMobileNational((prev) => prev || national);
+    setMobileNumber((prev) => prev || national);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.phoneNumber, savedPhone]);
+
+  // Resend cooldown while the OTP boxes are open.
+  useEffect(() => {
+    if (!otpStage || resendSeconds <= 0) return;
+    const timer = setTimeout(() => setResendSeconds((s) => s - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [otpStage, resendSeconds]);
+
+  // Send an OTP to the number currently in the field (India, 10 digits).
+  const handleListingOtpSend = async () => {
+    if (!user) return;
+    if (mobileDigitsOnly.length !== 10) {
+      toast({ title: 'Invalid number', description: 'Enter a 10-digit Indian mobile number first.', variant: 'destructive' });
+      return;
+    }
+    setSendingOtp(true);
+    try {
+      const result = await sendPhoneOTP(`${MOBILE_CODE}${mobileDigitsOnly}`);
+      if (result?.error) return;
+      setVerificationId(result.verificationId || null);
+      setOtpListeners(['', '', '', '', '', '']);
+      setResendSeconds(60);
+      setOtpStage(true);
+      setTimeout(() => otpBoxRefs.current[0]?.focus(), 100);
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  // Correct OTP = this number becomes the verified one, so the listing may use it.
+  const handleListingOtpConfirm = async () => {
+    const code = otpListeners.join('');
+    if (code.length < 6) {
+      toast({ title: 'Incomplete OTP', description: 'Enter all 6 digits.', variant: 'destructive' });
+      return;
+    }
+    if (!verificationId) {
+      toast({ title: 'Session expired', description: 'Request a new OTP.', variant: 'destructive' });
+      setOtpStage(false);
+      return;
+    }
+    setConfirmingOtp(true);
+    try {
+      const result = await verifyPhoneOTP(code, verificationId);
+      if (result?.error) return;
+      const national = mobileNumber.trim();
+      setVerifiedMobileNational(national);
+      try {
+        if (user) {
+          await firestoreWrite(
+            setDoc(doc(db, 'userProfiles', user.uid), {
+              userId: user.uid,
+              phone: national.replace(/\D/g, ''),
+              countryCode: MOBILE_CODE,
+              phoneVerified: true,
+              updatedAt: serverTimestamp(),
+            }, { merge: true }),
+            'Listing phone verify profile write'
+          );
+        }
+      } catch (writeError) {
+        console.error('Phone verified but profile save failed:', writeError);
+      }
+      await user?.reload().catch(() => {});
+      setOtpListeners(['', '', '', '', '', '']);
+      setOtpStage(false);
+      setVerificationId(null);
+    } catch (error) {
+      console.error('Listing OTP confirm flow failed:', error);
+    } finally {
+      setConfirmingOtp(false);
+    }
+  };
+
+  const setListingOtpDigit = (index: number, raw: string) => {
+    const digit = raw.replace(/\D/g, '').slice(-1);
+    setOtpListeners((prev) => {
+      const next = [...prev];
+      next[index] = digit;
+      return next;
+    });
+    if (digit && index < 5) otpBoxRefs.current[index + 1]?.focus();
+  };
+
+  const handleListingOtpPaste = (e: ClipboardEvent<HTMLDivElement>) => {
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (!pasted) return;
+    e.preventDefault();
+    const next = pasted.split('');
+    while (next.length < 6) next.push('');
+    setOtpListeners(next);
+    otpBoxRefs.current[Math.min(pasted.length, 5)]?.focus();
+  };
 
   const [aiGenerating, setAiGenerating] = useState(false);
 
@@ -865,7 +979,7 @@ export default function CreateListing() {
       if (details['houseBhk']) estateSaved.houseBhk = details['houseBhk'];
 
       const newListingId = await createListing(user.uid, {
-        mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
+        mobileNumber: verifiedMobileValue,
         title: effectiveTitle,
         description: description.trim(),
         category,
@@ -2420,7 +2534,7 @@ export default function CreateListing() {
                   }));
                   navigate('/profile?returnTo=/sell/new');
                 }}
-                className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border !border-black !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 transition-all !duration-200 group !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] touch-manipulation select-none"
+                className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border-0 !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 transition-all !duration-200 group !shadow-none hover:!shadow-none active:!shadow-none hover:!translate-y-0 active:!translate-y-0 touch-manipulation select-none"
               >
                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                   <ShieldCheck className="h-5 w-5 text-white" />
@@ -2448,7 +2562,7 @@ export default function CreateListing() {
           )}
 
 
-          {/* Contact Mobile Number (optional) — shown only to paid users via the call icon popup */}
+          {/* Contact Mobile Number (optional) — India only, and only a verified number is shared */}
           {step === totalSteps - 1 && (
             <div className="mt-6">
               <Label htmlFor="listing-mobile" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-1.5">
@@ -2456,50 +2570,96 @@ export default function CreateListing() {
                 Mobile Number <span className="text-slate-400 font-normal">(Optional)</span>
               </Label>
               <div className="flex gap-1.5 mt-1.5">
-                <select
-                  aria-label="Country code"
-                  value={countryCode}
-                  onChange={(e) => setCountryCode(e.target.value)}
-                  className="!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold focus:outline-none transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation appearance-none text-center"
+                {/* India only — the country code is fixed, not selectable */}
+                <span
+                  aria-label="Country code India +91"
+                  className="!h-12 shrink-0 !w-[76px] inline-flex items-center justify-center !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold select-none !shadow-[0_3px_0_0_rgba(0,0,0,0.14)]"
                 >
-                  {[
-                    ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
-                    ['+64', '🇳🇿 +64'], ['+971', '🇦🇪 +971'], ['+973', '🇧🇭 +973'], ['+974', '🇶🇦 +974'],
-                    ['+965', '🇰🇼 +965'], ['+968', '🇴🇲 +968'], ['+966', '🇸🇦 +966'], ['+65', '🇸🇬 +65'],
-                    ['+60', '🇲🇾 +60'], ['+66', '🇹🇭 +66'], ['+84', '🇻🇳 +84'], ['+63', '🇵🇭 +63'],
-                    ['+62', '🇮🇩 +62'], ['+49', '🇩🇪 +49'], ['+33', '🇫🇷 +33'], ['+31', '🇳🇱 +31'],
-                    ['+32', '🇧🇪 +32'], ['+41', '🇨🇭 +41'], ['+43', '🇦🇹 +43'], ['+353', '🇮🇪 +353'],
-                    ['+81', '🇯🇵 +81'], ['+82', '🇰🇷 +82'], ['+86', '🇨🇳 +86'], ['+852', '🇭🇰 +852'],
-                    ['+886', '🇹🇼 +886'], ['+55', '🇧🇷 +55'], ['+54', '🇦🇷 +54'], ['+52', '🇲🇽 +52'],
-                    ['+27', '🇿🇦 +27'], ['+254', '🇰🇪 +254'], ['+234', '🇳🇬 +234'], ['+94', '🇱🇰 +94'],
-                    ['+880', '🇧🇩 +880'], ['+92', '🇵🇰 +92'], ['+977', '🇳🇵 +977'], ['+975', '🇧🇹 +975'],
-                    ['+960', '🇲🇻 +960'], ['+20', '🇪🇬 +20'], ['+7', '🇷🇺 +7'], ['+39', '🇮🇹 +39'],
-                    ['+34', '🇪🇸 +34'], ['+351', '🇵🇹 +351'], ['+48', '🇵🇱 +48'],
-                  ].map(([code, label]) => (
-                    <option key={code} value={code}>{label}</option>
-                  ))}
-                </select>
+                  🇮🇳 +91
+                </span>
                 <input
                   id="listing-mobile"
                   type="tel"
                   inputMode="tel"
                   value={mobileNumber}
                   onChange={(e) => {
-                    // Digits and spaces only (country code handled by the dropdown); India +91 limited to 10 digits
-                    const digitsOnly = e.target.value.replace(/[^\d ]/g, '');
-                    if (countryCode === '+91') {
-                      const digitCount = digitsOnly.replace(/ /g, '').length;
-                      if (digitCount >= 10 && e.target.value.length > mobileNumber.length && !/\d/.test(e.target.value.slice(-1))) return;
-                      setMobileNumber(digitsOnly.replace(/(\d{5})(?=\d)/g, '$1 ').slice(0, 11));
-                    } else {
-                      setMobileNumber(digitsOnly);
-                    }
+                    // Indian numbers only: 10 digits, shown as "98765 43210"
+                    const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setMobileNumber(digits.replace(/(\d{5})(?=\d)/, '$1 '));
                   }}
-                  maxLength={countryCode === '+91' ? 11 : 14}
-                  placeholder={'Enter your phone number'}
+                  maxLength={11}
+                  placeholder="98765 43210"
                   className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-sm !font-medium placeholder:!text-gray-900 placeholder:!font-semibold placeholder:!text-[11px] focus:outline-none focus-visible:!border-black focus-visible:!ring-3 focus-visible:!ring-black/15 transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation"
                 />
+                {/* Verify only for a complete number that isn't the verified one */}
+                {showMobileVerify && (
+                  <Button
+                    type="button"
+                    onClick={handleListingOtpSend}
+                    disabled={sendingOtp || confirmingOtp}
+                    className="!h-12 shrink-0 !px-3 !text-[11px] !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-0 disabled:!opacity-60 inline-flex items-center gap-1 !shadow-[0_3px_0_0_rgba(0,0,0,0.14)]"
+                  >
+                    {sendingOtp ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+                    Verify
+                  </Button>
+                )}
               </div>
+
+              {/* OTP boxes — appear under the number after Verify is clicked */}
+              {otpStage && (
+                <div className="mt-2 rounded-2xl border-[1.5px] border-black bg-slate-50 p-3 space-y-3 shadow-[0_3px_0_0_rgba(0,0,0,0.14)]">
+                  <p className="text-[11px] font-bold text-gray-700">
+                    Enter the 6-digit code sent to +91 {mobileNumber.trim()}
+                  </p>
+                  <div className="flex gap-1.5" onPaste={handleListingOtpPaste}>
+                    {otpListeners.map((d, i) => (
+                      <input
+                        key={i}
+                        ref={(el) => { otpBoxRefs.current[i] = el; }}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        value={d}
+                        aria-label={`OTP digit ${i + 1}`}
+                        onChange={(e) => setListingOtpDigit(i, e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Backspace' && !d && i > 0) otpBoxRefs.current[i - 1]?.focus();
+                        }}
+                        className="w-9 h-11 text-center text-sm font-bold border-[1.5px] border-slate-200 rounded-xl bg-white focus:outline-none focus-visible:border-black"
+                      />
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <button
+                      type="button"
+                      onClick={handleListingOtpSend}
+                      disabled={resendSeconds > 0 || sendingOtp}
+                      className="text-[11px] font-bold text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                    >
+                      {resendSeconds > 0 ? `Resend in ${resendSeconds}s` : 'Resend OTP'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setOtpStage(false); setOtpListeners(['', '', '', '', '', '']); }}
+                      className="text-[11px] font-bold text-slate-500"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleListingOtpConfirm}
+                    disabled={confirmingOtp || otpListeners.join('').length < 6}
+                    className="!w-full !h-10 !text-xs !bg-black hover:!bg-gray-900 !text-white !font-black !rounded-2xl !border-0 disabled:!opacity-60"
+                  >
+                    {confirmingOtp && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Confirm OTP
+                  </Button>
+                </div>
+              )}
+
+              {/* recaptcha anchor for Firebase phone auth (required, invisible) */}
+              <div id="recaptcha-container" aria-hidden="true" />
             </div>
           )}
           {/* Nav — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
@@ -2526,7 +2686,7 @@ export default function CreateListing() {
                   type="button"
                   onClick={publish}
                   disabled={!user || uploading || publishing}
-                  className="!w-full !h-16 !text-lg !font-black !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border !border-black relative overflow-hidden transition-all !duration-200 !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
+                  className="!w-full !h-16 !text-lg !font-black !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 !text-white !rounded-xl !border-0 relative overflow-hidden transition-all !duration-200 !shadow-none hover:!shadow-none active:!shadow-none hover:!translate-y-0 active:!translate-y-0 disabled:!opacity-50 disabled:!cursor-not-allowed disabled:!translate-y-0 touch-manipulation select-none flex items-center justify-center"
                 >
                   <span className="relative z-10">{publishing ? 'Selling…' : 'Sell'}</span>
                 </Button>

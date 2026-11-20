@@ -4951,7 +4951,7 @@ const DEADLINE_STEP = 5;
 
                   {/* OTP boxes — appear under the number after Verify is clicked */}
                   {otpStage && (
-                    <div className="mt-2 rounded-2xl border-[1.5px] border-slate-200 bg-slate-50 p-3 space-y-3">
+                    <div className="mt-2 rounded-2xl border-[1.5px] border-black bg-slate-50 p-3 space-y-3 shadow-[0_3px_0_0_rgba(0,0,0,0.14)]">
                       <p className="text-[11px] font-bold text-gray-700">
                         Enter the 6-digit code sent to {countryCode} {mobileNumber.trim()}
                       </p>
