@@ -4625,7 +4625,7 @@ const DEADLINE_STEP = 5;
                           </div>
                         )}
                         {referenceImageUrls.length < 5 && (
-                          <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
+                          <div className="rounded-xl">
                             <input
                               id="enquiry-ref-images"
                               ref={enquiryImageInputRef}
@@ -4665,48 +4665,8 @@ const DEADLINE_STEP = 5;
 
 
 
-                      {/* Profile Verification */}
-                      {!authLoading && !isUserVerified && (
-                        <div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
-                                title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, laptopDetails, laptopCustom, watchDetails, watchCustom, estateDetails, estateType, estateDealType,
-                                deadline: deadline?.toISOString(), notes,
-                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, subcategory, accommodationGender, thriftGender, thriftType, thriftItem, thriftSize, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
-                              }));
-                              navigate('/profile?returnTo=/post-enquiry');
-                            }}
-                            className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border-0 !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 transition-all !duration-200 group !shadow-none hover:!shadow-none active:!shadow-none touch-manipulation select-none"
-                          >
-                            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                              <ShieldCheck className="h-5 w-5 text-white" />
-                            </div>
-                            <div className="flex-1 text-left">
-                              <p className="text-xs sm:text-sm font-bold text-white">Verify Your Profile <span className="text-blue-200 font-normal">(Optional)</span></p>
-                              <p className="text-[10px] sm:text-[11px] text-blue-100">Get a trust badge</p>
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-white/70 flex-shrink-0" />
-                          </button>
-                        </div>
-                      )}
-                      {!authLoading && isUserVerified && (
-                        <div>
-                          <div className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-[#1a2744]">
-                            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                              <CheckCircle className="h-5 w-5 text-white" />
-                            </div>
-                            <div className="flex-1 text-left">
-                              <p className="text-xs sm:text-sm font-bold text-white">Profile Verified ✓</p>
-                              <p className="text-[10px] sm:text-[11px] text-blue-100">Your enquiry will show a trust badge.</p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
                       {/* Enquiry Preview */}
-                      <div className="rounded-xl border-2 border-black bg-white p-4 sm:p-6 space-y-3 sm:space-y-3.5">
+                      <div className="rounded-xl border border-black bg-gray-100 p-4 sm:p-5 space-y-3 -mt-1">
                         {/* Real-estate details first (real-estate only, not services) */}
                         {selectedCategories.includes('real-estate') && (
                           <div className="space-y-1.5">
@@ -4812,43 +4772,39 @@ const DEADLINE_STEP = 5;
                             <div className="border-t border-gray-200" />
                           </div>
                         )}
-                        {/* Title */}
-                        <div>
-                          <p className="text-[15px] sm:text-base font-black text-black leading-snug break-words text-center">{title || 'Your enquiry title'}</p>
+                        {/* Title + budget */}
+                        <div className="space-y-1">
+                          <p className="text-[15px] sm:text-base font-semibold text-gray-900 leading-snug break-words">{title || 'Your enquiry title'}</p>
+                          <div className="flex justify-center pt-4">
+                            {budget ? (
+                              <p className="text-[13px] sm:text-sm font-semibold text-gray-700">₹{budget}</p>
+                            ) : budgetOpenToDiscussion ? (
+                              <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-800 text-white border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]"><IndianRupee className="h-3 w-3" />Open to discussion</span>
+                            ) : (
+                              <p className="text-[13px] font-semibold text-gray-400">—</p>
+                            )}
+                          </div>
                         </div>
-                        {/* Budget — centered under the title */}
-                        <div className="flex justify-center">
-                          {budget ? (
-                            <p className="text-sm sm:text-base font-black text-black">₹{budget}</p>
-                          ) : budgetOpenToDiscussion ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-white bg-green-800 rounded-full px-2 py-0.5"><IndianRupee className="h-2.5 w-2.5" />Open to discussion</span>
-                          ) : (
-                            <p className="text-sm font-black text-black">—</p>
+                        <div className="border-t border-gray-100" />
+                        {/* Details */}
+                        <div className="space-y-2">
+                          {/* Location */}
+                          <div className="flex items-start">
+                            <span className="inline-flex max-w-full items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+                              <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><MapPin className="h-2.5 w-2.5 text-white" /></span>
+                              <span className="break-words">{location || '—'}</span>
+                            </span>
+                          </div>
+                          {/* Description */}
+                          {description.trim() && (
+                            <span className="max-w-full inline-flex items-start gap-1 text-left text-[11px] font-bold font-chip bg-white text-black border-0 px-3 py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] whitespace-pre-wrap break-words leading-relaxed">
+                              <span className="mt-0.5 w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><FileText className="h-2.5 w-2.5 text-white" /></span>
+                              <span className="break-words">{description}</span>
+                            </span>
                           )}
-                        </div>
-                        {/* Location row — centred under the title, pin beside the chip */}
-                        <div className="flex items-start justify-center gap-2">
-                          <div className="flex-shrink-0 flex pt-0.5">
-                            <MapPin className="h-3.5 w-3.5 text-red-600" />
-                          </div>
-                          <span className="inline-flex items-start text-center text-[10px] sm:text-[11px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-2xl px-2 py-0.5 leading-relaxed break-words">{location || '—'}</span>
-                        </div>
-                        {/* Description row — value starts at the same left edge as the location above (matching 64px + gap label column) */}
-                        {description.trim() && (
-                          <div className="flex items-start justify-center gap-2">
-                            <div className="flex-shrink-0">
-                              <span className="text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5">Notes</span>
-                            </div>
-                            <span className="inline-flex items-start text-[10px] sm:text-[11px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-2xl px-2 py-0.5 leading-relaxed whitespace-pre-wrap break-words">{description}</span>
-                          </div>
-                        )}
-                        {/* Stay type row — accommodation subtypes, e.g. "Female only Hostel" */}
-                        {isAccom && accommodationType && (
-                          <div className="flex items-start justify-center gap-2">
-                            <div className="flex-shrink-0">
-                              <span className="text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5">Stay</span>
-                            </div>
-                            <p className="text-xs font-bold text-black leading-relaxed">
+                          {/* Stay type — accommodation subtypes, e.g. "Female only Hostel" */}
+                          {isAccom && accommodationType && (
+                            <p className="text-[11px] text-gray-600 leading-relaxed">
                               {(() => {
                                 const subtypeLabel = ACCOMMODATION_SUBTYPES.find(s => s.value === accommodationType)?.label ?? accommodationType;
                                 const genderPrefix = accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType)
@@ -4857,30 +4813,63 @@ const DEADLINE_STEP = 5;
                                 return genderPrefix && genderPrefix !== 'Any' ? `${genderPrefix} ${subtypeLabel}` : subtypeLabel;
                               })()}
                             </p>
-                          </div>
-                        )}
-                        {/* Cleaning type row — selected cleaning services subtypes */}
-                        {isCleaning && cleaningTypes.length > 0 && (
-                          <div className="flex items-start justify-center gap-2">
-                            <div className="flex-shrink-0">
-                              <span className="text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5">Cleaning</span>
-                            </div>
-                            <p className="text-xs font-bold text-black leading-relaxed">{cleaningTypes.join(', ')}</p>
-                          </div>
-                        )}
-                        {/* Category row */}
-                        <div className="flex items-start justify-center gap-2">
-                          <span className="text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5 flex-shrink-0">Category</span>
-                          <div className="flex flex-wrap justify-center gap-1.5">
+                          )}
+                          {/* Cleaning type — selected cleaning services subtypes */}
+                          {isCleaning && cleaningTypes.length > 0 && (
+                            <p className="text-[11px] text-gray-600 leading-relaxed">{cleaningTypes.join(', ')}</p>
+                          )}
+                          {/* Categories */}
+                          <div className="flex flex-wrap gap-1.5 pt-0.5">
                             {selectedCategories.map(c => {
                               const cat = categories.find(cat => cat.value === c);
                               return cat ? (
-                                <span key={c} className="inline-flex items-center text-[10px] font-bold text-gray-900 bg-slate-300 border border-black/20 rounded-full px-2 py-0.5">{cat.label}</span>
+                                <span key={c} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+                                  <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Tag className="h-2.5 w-2.5 text-white" /></span>{cat.label}</span>
                               ) : null;
                             })}
                           </div>
                         </div>
                       </div>
+
+                      {/* Profile Verification */}
+                      {!authLoading && !isUserVerified && (
+                        <div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
+                                title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, laptopDetails, laptopCustom, watchDetails, watchCustom, estateDetails, estateType, estateDealType,
+                                deadline: deadline?.toISOString(), notes,
+                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, subcategory, accommodationGender, thriftGender, thriftType, thriftItem, thriftSize, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
+                              }));
+                              navigate('/profile?returnTo=/post-enquiry');
+                            }}
+                            className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-xl !border-0 !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 hover:!from-blue-500 hover:!to-blue-700 transition-all !duration-200 group !shadow-none hover:!shadow-none active:!shadow-none touch-manipulation select-none"
+                          >
+                            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                              <ShieldCheck className="h-5 w-5 text-white" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <p className="text-xs sm:text-sm font-bold text-white">Verify Your Profile <span className="text-blue-200 font-normal">(Optional)</span></p>
+                              <p className="text-[10px] sm:text-[11px] text-blue-100">Get a trust badge</p>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-white/70 flex-shrink-0" />
+                          </button>
+                        </div>
+                      )}
+                      {!authLoading && isUserVerified && (
+                        <div>
+                          <div className="w-full flex items-center gap-3 p-3 sm:p-4 rounded-xl bg-[#1a2744]">
+                            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                              <CheckCircle className="h-5 w-5 text-white" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <p className="text-xs sm:text-sm font-bold text-white">Profile Verified ✓</p>
+                              <p className="text-[10px] sm:text-[11px] text-blue-100">Your enquiry will show a trust badge.</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -4892,29 +4881,13 @@ const DEADLINE_STEP = 5;
                     Mobile Number <span className="text-slate-400 font-normal">(Optional)</span>
                   </Label>
                   <div className="flex gap-1.5 mt-1.5">
-                    <select
-                      aria-label="Country code"
-                      value={countryCode}
-                      onChange={(e) => setCountryCode(e.target.value)}
-                      className={`!h-12 shrink-0 !w-[76px] pl-2 pr-0.5 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold focus:outline-none focus-within:!border-black transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation appearance-none text-center`}
+                    {/* India only — the country code is fixed, not selectable */}
+                    <span
+                      aria-label="Country code India +91"
+                      className="!h-12 shrink-0 !w-[76px] inline-flex items-center justify-center !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold select-none !shadow-[0_3px_0_0_rgba(0,0,0,0.14)]"
                     >
-                      {[
-                        ['+91', '🇮🇳 +91'], ['+1', '🇺🇸 +1'], ['+44', '🇬🇧 +44'], ['+61', '🇦🇺 +61'],
-                        ['+64', '🇳🇿 +64'], ['+971', '🇦🇪 +971'], ['+973', '🇧🇭 +973'], ['+974', '🇶🇦 +974'],
-                        ['+965', '🇰🇼 +965'], ['+968', '🇴🇲 +968'], ['+966', '🇸🇦 +966'], ['+65', '🇸🇬 +65'],
-                        ['+60', '🇲🇾 +60'], ['+66', '🇹🇭 +66'], ['+84', '🇻🇳 +84'], ['+63', '🇵🇭 +63'],
-                        ['+62', '🇮🇩 +62'], ['+49', '🇩🇪 +49'], ['+33', '🇫🇷 +33'], ['+31', '🇳🇱 +31'],
-                        ['+32', '🇧🇪 +32'], ['+41', '🇨🇭 +41'], ['+43', '🇦🇹 +43'], ['+353', '🇮🇪 +353'],
-                        ['+81', '🇯🇵 +81'], ['+82', '🇰🇷 +82'], ['+86', '🇨🇳 +86'], ['+852', '🇭🇰 +852'],
-                        ['+886', '🇹🇼 +886'], ['+55', '🇧🇷 +55'], ['+54', '🇦🇷 +54'], ['+52', '🇲🇽 +52'],
-                        ['+27', '🇿🇦 +27'], ['+254', '🇰🇪 +254'], ['+234', '🇳🇬 +234'], ['+94', '🇱🇰 +94'],
-                        ['+880', '🇧🇩 +880'], ['+92', '🇵🇰 +92'], ['+977', '🇳🇵 +977'], ['+975', '🇧🇹 +975'],
-                        ['+960', '🇲🇻 +960'], ['+20', '🇪🇬 +20'], ['+7', '🇷🇺 +7'], ['+39', '🇮🇹 +39'],
-                        ['+34', '🇪🇸 +34'], ['+351', '🇵🇹 +351'], ['+48', '🇵🇱 +48'],
-                      ].map(([code, label]) => (
-                        <option key={code} value={code}>{label}</option>
-                      ))}
-                    </select>
+                      🇮🇳 +91
+                    </span>
                     <input
                       id="enquiry-mobile"
                       type="tel"

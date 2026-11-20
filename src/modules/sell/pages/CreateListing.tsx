@@ -2438,45 +2438,46 @@ export default function CreateListing() {
                   return (
                     <>
                       {/* Hero: photo + title + price */}
-                      <div className="rounded-2xl overflow-hidden border-0 bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.30),0_0_0_5px_rgba(0,0,0,0.16)]">
+                      <div className="rounded-xl border border-black bg-gray-100 p-4 sm:p-5 space-y-3">
                         {hasPhoto ? (
-                          <div className="relative">
+                          <div className="relative overflow-hidden rounded-lg">
                             <img loading="lazy" decoding="async" src={images[0]} alt="Listing" className="w-full h-40 sm:h-48 object-cover" />
                             {images.length > 1 && (
                               <span className="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-black rounded-full px-2 py-0.5">+{images.length - 1} more</span>
                             )}
                           </div>
                         ) : (
-                          <div className="h-16 bg-slate-50 border-b-2 border-dashed border-black/15 flex flex-col items-center justify-center gap-0.5">
+                          <div className="h-16 rounded-lg border border-dashed border-black/15 bg-white flex flex-col items-center justify-center gap-0.5">
                             <Upload className="h-3.5 w-3.5 text-gray-400" />
                             <span className="text-[9px] text-gray-400 font-medium">No photos added yet</span>
                           </div>
                         )}
-                        <div className="p-4">
-                          <h3 className="font-black text-base sm:text-lg text-black leading-snug">{title || 'Untitled listing'}</h3>
-                          <div className="flex items-center gap-2 mt-1.5">
+                        <div className="space-y-1">
+                          <h3 className="text-[15px] sm:text-base font-semibold text-gray-900 leading-snug break-words">{title || 'Untitled listing'}</h3>
+                          <div className="flex justify-center pt-4">
                             {priceOption === 'discussion' ? (
-                              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-green-800 border-[1.5px] border-black rounded-md px-2.5 py-1"><IndianRupee className="h-3 w-3" />Open to discussion</span>
+                              <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-800 text-white border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]"><IndianRupee className="h-3 w-3" />Open to discussion</span>
                             ) : (
-                              <span className="text-sm sm:text-base font-black text-black">{price ? `₹${price}` : 'Price not set'}</span>
+                              <span className="text-sm sm:text-base font-bold text-gray-900">{price ? `₹${price}` : 'Price not set'}</span>
                             )}
                           </div>
-                          <div className="flex flex-wrap items-center gap-1.5 mt-3">
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-300 text-gray-900 border border-black/20 rounded-full px-2 py-0.5">
-                              {(() => { const Icon = CATEGORY_ICON[category] ?? LayoutGrid; return <Icon className="h-3 w-3" />; })()}
+                        </div>
+                        <div className="border-t border-gray-100" />
+                        <div className="flex flex-col items-start gap-1.5">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+                              {(() => { const Icon = CATEGORY_ICON[category] ?? LayoutGrid; return <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Icon className="h-2.5 w-2.5 text-white" /></span>; })()}
                               {SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}
                             </span>
                             {!hideCondition && category !== 'jobs' && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-300 text-gray-900 border border-black/20 rounded-full px-2 py-0.5 capitalize">
-                              <BadgeCheck className="h-3 w-3" />{condition}
+                            <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl capitalize shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+                              <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><BadgeCheck className="h-2.5 w-2.5 text-white" /></span>{condition}
                             </span>
                             )}
                             {location && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-slate-300 text-gray-900 border border-black/20 rounded-full px-2 py-0.5">
-                                <MapPin className="h-3 w-3" /> {location}
+                              <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+                                <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><MapPin className="h-2.5 w-2.5 text-white" /></span>{location}
                               </span>
                             )}
-                          </div>
                         </div>
                       </div>
 
@@ -2510,7 +2511,7 @@ export default function CreateListing() {
                                 f.key === 'listingFor' ? Tag :
                                 null;
                               return (
-                                <span key={f.key} className="inline-flex items-center gap-1 text-[11px] font-bold text-black bg-white border border-black/15 rounded-lg px-2 py-1">
+                                <span key={f.key} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
                                   {SpecIcon && <SpecIcon className="h-3 w-3 text-black" />}
                                   {details[f.key]}{f.suffix ? ` ${f.suffix}` : ''}
                                 </span>
