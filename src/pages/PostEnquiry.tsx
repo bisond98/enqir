@@ -28,7 +28,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { splitE164Phone, formatNationalForInput } from "@/lib/phonePrefill";
 import { displayNameForUser } from "@/lib/userDisplayName";
 import { db } from "@/firebase";
-import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, query, limit, getDocs, updateDoc, doc, onSnapshot, getDoc, setDoc } from "firebase/firestore";
+import { firestoreWrite } from "@/lib/firestoreSafe";
 import { uploadToCloudinary, uploadToCloudinaryUnsigned } from "@/integrations/cloudinary";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -147,7 +148,7 @@ const GearShifterIcon = ({ className = "" }: { className?: string }) => (
 
 export default function PostEnquiry() {
   // Version: 3.0 - Multi-step wizard (matching sell listing flow)
-  const { user, isProfileVerified, profileVerificationStatus, loading: authLoading, savedPhone, savedFullName, savedUsername } = useAuth();
+  const { user, isProfileVerified, profileVerificationStatus, loading: authLoading, savedPhone, savedFullName, savedUsername, sendPhoneOTP, verifyPhoneOTP } = useAuth();
   const [searchParams] = useSearchParams();
   const returnTo = searchParams.get('returnTo');
 
@@ -765,16 +766,144 @@ const DEADLINE_STEP = 5;
   // Country code for the mobile number (default: India +91)
   const [countryCode, setCountryCode] = useState("+91");
 
+  // The account's OTP-verified number. Only a verified number may reach an
+  // enquiry (details + call popup); a typed/edited number has to be verified
+  // before it can replace this one.
+  const [verifiedMobileCode, setVerifiedMobileCode] = useState("");
+  const [verifiedMobileNational, setVerifiedMobileNational] = useState("");
+  const [otpStage, setOtpStage] = useState(false);
+  const [verificationId, setVerificationId] = useState<string | null>(null);
+  const [otpListeners, setOtpListeners] = useState(["", "", "", "", "", ""]);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [confirmingOtp, setConfirmingOtp] = useState(false);
+  const [resendSeconds, setResendSeconds] = useState(60);
+  const otpBoxRefs = useRef<Array<HTMLInputElement | null>>([]);
+
+  // What the enquiry is allowed to carry — always the verified number.
+  const verifiedMobileValue = verifiedMobileNational
+    ? `${verifiedMobileCode} ${verifiedMobileNational}`
+    : null;
+  const typedMobileNational = mobileNumber.trim();
+  const typedMobileDigits = typedMobileNational.replace(/\D/g, "");
+  const expectedMobileDigits = countryCode === "+91" ? 10 : 8;
+  const typedMobileIsVerified =
+    !!verifiedMobileNational &&
+    countryCode === verifiedMobileCode &&
+    typedMobileDigits === verifiedMobileNational.replace(/\D/g, "");
+  // Verify is offered only for a complete number that isn't verified yet.
+  const showMobileVerify =
+    !typedMobileIsVerified && typedMobileDigits.length >= expectedMobileDigits;
+
+  // Send an OTP to the number currently in the field.
+  const handleEnquiryOtpSend = async () => {
+    if (!user) return;
+    const expectedLen = countryCode === "+91" ? 10 : 8;
+    if (typedMobileDigits.length < expectedLen) {
+      toast({ title: "Invalid number", description: "Enter a valid mobile number first.", variant: "destructive" });
+      return;
+    }
+    setSendingOtp(true);
+    try {
+      const result = await sendPhoneOTP(`${countryCode}${typedMobileDigits}`);
+      if (result?.error) return;
+      setVerificationId(result.verificationId || null);
+      setOtpListeners(["", "", "", "", "", ""]);
+      setResendSeconds(60);
+      setOtpStage(true);
+      setTimeout(() => otpBoxRefs.current[0]?.focus(), 100);
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  // Correct OTP = the number becomes the account's verified number, so every
+  // enquiry (and the call popup) may use it from now on.
+  const handleEnquiryOtpConfirm = async () => {
+    const code = otpListeners.join("");
+    if (code.length < 6) {
+      toast({ title: "Incomplete OTP", description: "Enter all 6 digits.", variant: "destructive" });
+      return;
+    }
+    if (!verificationId) {
+      toast({ title: "Session expired", description: "Request a new OTP.", variant: "destructive" });
+      setOtpStage(false);
+      return;
+    }
+    setConfirmingOtp(true);
+    try {
+      const result = await verifyPhoneOTP(code, verificationId);
+      if (result?.error) return;
+      const national = mobileNumber.trim();
+      setVerifiedMobileCode(countryCode);
+      setVerifiedMobileNational(national);
+      try {
+        if (user) {
+          await firestoreWrite(
+            setDoc(doc(db, "userProfiles", user.uid), {
+              userId: user.uid,
+              phone: national.replace(/\D/g, ""),
+              countryCode,
+              phoneVerified: true,
+              updatedAt: serverTimestamp(),
+            }, { merge: true }),
+            "Enquiry phone verify profile write"
+          );
+        }
+      } catch (writeError) {
+        console.error("Phone verified but profile save failed:", writeError);
+      }
+      await user?.reload().catch(() => {});
+      setOtpListeners(["", "", "", "", "", ""]);
+      setOtpStage(false);
+      setVerificationId(null);
+    } catch (error) {
+      console.error("Enquiry OTP confirm flow failed:", error);
+    } finally {
+      setConfirmingOtp(false);
+    }
+  };
+
+  const setEnquiryOtpDigit = (index: number, raw: string) => {
+    const digit = raw.replace(/\D/g, "").slice(-1);
+    setOtpListeners((prev) => {
+      const next = [...prev];
+      next[index] = digit;
+      return next;
+    });
+    if (digit && index < 5) otpBoxRefs.current[index + 1]?.focus();
+  };
+
+  const handleEnquiryOtpPaste = (e: React.ClipboardEvent) => {
+    const digits = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!digits) return;
+    e.preventDefault();
+    setOtpListeners(digits.split("").concat(Array(6 - digits.length).fill("")));
+    otpBoxRefs.current[Math.min(digits.length, 5)]?.focus();
+  };
+
+  // Countdown the resend timer while the OTP boxes are open
+  useEffect(() => {
+    if (!otpStage || resendSeconds <= 0) return;
+    const id = setInterval(() => setResendSeconds((s) => s - 1), 1000);
+    return () => clearInterval(id);
+  }, [otpStage, resendSeconds]);
+
   // Auto-fill the contact number from the signed-in user's phone-auth (OTP)
   // number. Only fills an empty field, so restored drafts and user edits win.
   useEffect(() => {
     const phoneToUse = user?.phoneNumber || savedPhone || '';
-    if (phoneToUse && !mobileNumber) {
-      const split = splitE164Phone(phoneToUse);
-      if (split) {
-        setCountryCode(split.code);
-        setMobileNumber(formatNationalForInput(split.national, split.code));
-      }
+    if (!phoneToUse) return;
+    const split = splitE164Phone(phoneToUse);
+    if (!split) return;
+    const national = formatNationalForInput(split.national, split.code);
+    // The account's number is the verified one (it was OTP-verified at sign-in).
+    if (!verifiedMobileNational) {
+      setVerifiedMobileCode(split.code);
+      setVerifiedMobileNational(national);
+    }
+    if (!mobileNumber) {
+      setCountryCode(split.code);
+      setMobileNumber(national);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.phoneNumber, savedPhone]);
@@ -795,6 +924,10 @@ const DEADLINE_STEP = 5;
     if (!canvas) return;
     root.querySelectorAll('select').forEach((node) => {
       const el = node as HTMLSelectElement;
+      // The contact-number country-code picker shares its row with the number
+      // input. Hugging here would shrink the row to the code's text and squeeze
+      // the input away, so that row keeps its normal layout.
+      if (el.parentElement?.querySelector('input')) return;
       // Clear leftovers from an earlier pass so switching category re-measures
       // from the normal width instead of keeping a stale small box.
       if (el.parentElement) {
@@ -1181,7 +1314,7 @@ const DEADLINE_STEP = 5;
             userEmail: safeUserEmail,
             userName: safeUserName,
             notes: notes.trim() || null,
-            mobileNumber: mobileNumber.trim() || null,
+            mobileNumber: verifiedMobileNational || null,
             details: {
               ...(vehicleDetails.type && { vehicleType: vehicleDetails.type }),
           ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
@@ -1348,7 +1481,7 @@ const DEADLINE_STEP = 5;
           userEmail: safeUserEmail,
           userName: safeUserName,
           notes: notes.trim() || null,
-          mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
+          mobileNumber: verifiedMobileValue,
           details: {
             ...(vehicleDetails.type && { vehicleType: vehicleDetails.type }),
           ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
@@ -1529,7 +1662,7 @@ const DEADLINE_STEP = 5;
           userEmail: safeUserEmail,
           userName: safeUserName,
           notes: notes.trim() || null,
-          mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,
+          mobileNumber: verifiedMobileValue,
           details: {
             ...(vehicleDetails.type && { vehicleType: vehicleDetails.type }),
           ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
@@ -1717,7 +1850,7 @@ const DEADLINE_STEP = 5;
         userEmail: safeUserEmail,
         userName: safeUserName,
         notes: notes.trim() || null,
-        mobileNumber: mobileNumber.trim() ? `${countryCode} ${mobileNumber.trim()}` : null,            details: {
+        mobileNumber: verifiedMobileValue,            details: {
               ...(vehicleDetails.type && { vehicleType: vehicleDetails.type }),
           ...(vehicleDetails.brand && { brand: vehicleDetails.brand }),
               ...(vehicleDetails.year && { year: vehicleDetails.year }),
@@ -4802,8 +4935,83 @@ const DEADLINE_STEP = 5;
                       placeholder={'Enter your phone number'}
                       className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-sm !font-medium placeholder:!text-gray-900 placeholder:!font-semibold placeholder:!text-[11px] focus:outline-none focus-visible:!border-black focus-visible:!ring-3 focus-visible:!ring-black/15 transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation"
                     />
+                    {/* Verify only for a complete number that isn't the verified one */}
+                    {showMobileVerify && (
+                      <Button
+                        type="button"
+                        onClick={handleEnquiryOtpSend}
+                        disabled={sendingOtp || confirmingOtp}
+                        className="!h-12 shrink-0 !px-3 !text-[11px] !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-0 disabled:!opacity-60 inline-flex items-center gap-1 !shadow-[0_3px_0_0_rgba(0,0,0,0.14)]"
+                      >
+                        {sendingOtp ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Shield className="h-3.5 w-3.5" />}
+                        Verify
+                      </Button>
+                    )}
                   </div>
+
+                  {/* Only a verified number is attached to the enquiry / call popup */}
+                  {typedMobileIsVerified && (
+                    <p className="mt-1.5 inline-flex items-center gap-1 text-[10px] font-bold text-green-600">
+                      <CheckCircle className="h-3 w-3" /> Verified — this number will be shared
+                    </p>
+                  )}
+
+                  {/* OTP boxes — appear under the number after Verify is clicked */}
+                  {otpStage && (
+                    <div className="mt-2 rounded-2xl border-[1.5px] border-slate-200 bg-slate-50 p-3 space-y-3">
+                      <p className="text-[11px] font-bold text-gray-700">
+                        Enter the 6-digit code sent to {countryCode} {mobileNumber.trim()}
+                      </p>
+                      <div className="flex gap-1.5" onPaste={handleEnquiryOtpPaste}>
+                        {otpListeners.map((d, i) => (
+                          <input
+                            key={i}
+                            ref={(el) => { otpBoxRefs.current[i] = el; }}
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={1}
+                            value={d}
+                            aria-label={`OTP digit ${i + 1}`}
+                            onChange={(e) => setEnquiryOtpDigit(i, e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Backspace" && !d && i > 0) otpBoxRefs.current[i - 1]?.focus();
+                            }}
+                            className="w-9 h-11 text-center text-sm font-bold border-[1.5px] border-slate-200 rounded-xl bg-white focus:outline-none focus-visible:border-black"
+                          />
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={handleEnquiryOtpSend}
+                          disabled={resendSeconds > 0 || sendingOtp}
+                          className="text-[11px] font-bold text-blue-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                        >
+                          {resendSeconds > 0 ? `Resend in ${resendSeconds}s` : "Resend OTP"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setOtpStage(false); setOtpListeners(["", "", "", "", "", ""]); }}
+                          className="text-[11px] font-bold text-slate-500"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                      <Button
+                        type="button"
+                        onClick={handleEnquiryOtpConfirm}
+                        disabled={confirmingOtp || otpListeners.join("").length < 6}
+                        className="!w-full !h-10 !text-xs !bg-black hover:!bg-gray-900 !text-white !font-black !rounded-2xl !border-0 disabled:!opacity-60"
+                      >
+                        {confirmingOtp && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        Confirm OTP
+                      </Button>
+                    </div>
+                  )}
                 </div>
+
+                {/* recaptcha anchor for Firebase phone auth (required, invisible) */}
+                <div id="recaptcha-container" />
 
                 {/* Navigation Buttons — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
                 <div className={`mt-5 flex items-center gap-4 pt-2 border-t border-slate-100 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
