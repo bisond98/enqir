@@ -13,7 +13,7 @@ import { toast } from '@/hooks/use-toast';
 import { createListing } from '../services/sellDb';
 import { SELL_CATEGORIES, SELL_LOCATIONS } from '../constants';
 import { CATEGORY_TILE_IMAGES, CATEGORY_TILE_SCRIM } from '@/constants/categoryTileImages';
-import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES } from '@/constants/categories';
+import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES } from '@/constants/categories';
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
 import { LAPTOP_OTHER, getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
 import { MOBILE_OTHER, getMobileModels, getMobileStorageOptions } from '@/constants/mobileCatalog';
@@ -34,7 +34,6 @@ import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES, ANTIQUE_CONDITIONS, ANTIQUE_DAMAGE_TYPES, ANTIQUE_FUNCTIONAL_STATUSES } from '../categoryDetails';
 import { titleHintsFor } from '../titleHints';
-import { CleaningTypeMultiSelect } from '@/components/CleaningTypeMultiSelect';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
@@ -272,6 +271,15 @@ export default function CreateListing() {
   const [catPage, setCatPage] = useState(0);
   const CATS_PER_PAGE = 10;
   const [title, setTitle] = useState('');
+  // The newest cleaning chip is scrolled into view under the field.
+  const cleaningChipsRef = useRef<HTMLDivElement>(null);
+
+  // Keep the end of a long title visible inside the input, so a title written
+  // by the pickers never hides the part that just changed.
+  useEffect(() => {
+    const el = document.getElementById('listing-title') as HTMLInputElement | null;
+    if (el) el.scrollLeft = el.scrollWidth;
+  }, [title]);
   // Rotating title placeholder — cycles product examples every 3s while the input is empty
   const [titleHintIdx, setTitleHintIdx] = useState(0);
   useEffect(() => {
@@ -334,6 +342,13 @@ export default function CreateListing() {
   const [priceMax, setPriceMax] = useState<string>('');
   const [tags, setTags] = useState<string>('');
   const [details, setDetails] = useState<Record<string, string>>({ listingFor: 'Sale' }); // Real-estate deal type defaults to For Sale
+
+  // Newest cleaning chip scrolls into view; declared after `details` so the
+  // dependency exists when this component first renders.
+  useEffect(() => {
+    const row = cleaningChipsRef.current;
+    if (row) row.scrollLeft = row.scrollWidth;
+  }, [details]);
   // Which real-estate capsule is selected (only one big capsule shows at a time)
   const [estateType, setEstateType] = useState<'' | 'land' | 'built' | 'house' | 'flat' | 'other'>('');
   const [images, setImages] = useState<string[]>([]);
@@ -1487,10 +1502,60 @@ export default function CreateListing() {
                       // the second line, so it is centred in that line instead of being
                       // pushed to the right edge with the rest of the row.
                       <div key={f.key} className={`relative ${shortSubcategory ? 'electronics-pill max-w-full' : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
-                        {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
+                        {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && f.key !== 'cleaningTypes' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
                           <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
                         )}
-                        {f.typeable ? (
+                        {f.key === 'cleaningTypes' ? (() => {
+                          // A native dropdown (so it pops open like Brand/Model)
+                          // that adds each pick to a list below, giving several
+                          // cleaning types without a custom popup.
+                          const picked = details['cleaningTypes'] ? details['cleaningTypes'].split(', ') : [];
+                          return (
+                            <div className="w-full">
+                              <div className="relative">
+                                <select
+                                  value=""
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    if (!v) return;
+                                    // Picks name the listing, the way laptop brand and
+                                    // model do: each cleaning type joins the title.
+                                    const next = picked.includes(v) ? picked : [...picked, v];
+                                    setDetail('cleaningTypes', next.join(', '));
+                                    setTitle(next.join(', '));
+                                  }}
+                                  className="w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 text-[11px] font-semibold text-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)]"
+                                >
+                                  <option value="">Add cleaning type</option>
+                                  {[...CLEANING_SERVICE_TYPES, 'All cleaning', 'Other'].map((t) => (
+                                    <option key={t} value={t}>{t}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                              </div>
+                              {picked.length > 0 && (
+                                <div ref={cleaningChipsRef}
+                                className="mt-2 flex flex-nowrap items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                                  {picked.map((t) => (
+                                    <button
+                                      key={t}
+                                      type="button"
+                                      onClick={() => {
+                                        const next = picked.filter((v) => v !== t);
+                                        setDetail('cleaningTypes', next.join(', '));
+                                        setTitle(next.join(', '));
+                                      }}
+                                      className="inline-flex shrink-0 !min-h-0 items-center gap-1 whitespace-nowrap rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-gray-800"
+                                    >
+                                      {t}
+                                      <X className="h-2.5 w-2.5" />
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })() : f.typeable ? (
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -1844,13 +1909,6 @@ export default function CreateListing() {
                 })()}
                 {!['real-estate', 'real-estate-services'].includes(category) && fieldsForCategoryStep(category, 'description').length > 0 && (
                   <div className="space-y-3 pt-2">
-                    {/* Cleaning types — multi-select (cleaning-services category), fills the description */}
-                    {category === 'cleaning-services' && (
-                      <CleaningTypeMultiSelect
-                        value={details['cleaningTypes'] ? details['cleaningTypes'].split(', ') : []}
-                        onChange={(next) => setDetail('cleaningTypes', next.join(', '))}
-                      />
-                    )}
                     {/* Thrift — Gender → Type → Item; each level appears once its parent is picked */}
                     {category === 'thrift' && (
                       <div className="space-y-2">

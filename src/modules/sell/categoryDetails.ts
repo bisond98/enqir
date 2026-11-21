@@ -399,7 +399,9 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'experience', label: 'Experience', type: 'select', options: ['Fresher', '1-3 years', '3-5 years', '5-10 years', '10+ years'], placeholder: 'Select experience', step: 'details' },
   ],
   'cleaning-services': [
-    { key: 'cleaningTypes', label: 'Cleaning types', type: 'select', options: [...CLEANING_SERVICE_TYPES], placeholder: 'Select cleaning types', step: 'description' },
+    // Picked on the Title tab; CreateListing renders it with the multi-select
+    // cleaning picker styled like every other dropdown.
+    { key: 'cleaningTypes', label: 'Cleaning types', type: 'select', options: [...CLEANING_SERVICE_TYPES], placeholder: 'Select cleaning types', step: 'title' },
   ],
   sneakers: [
     { key: 'sneakerBrand', label: 'Brand', type: 'select', options: SNEAKER_BRANDS, placeholder: 'Select brand', step: 'description' },
@@ -414,7 +416,8 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   ],
   // Agriculture: same shared subcategory dropdown as Electronics.
   'agriculture-farming': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...AGRICULTURE_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    // Picked on the Title tab like Electronics, so the choice can name the listing.
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...AGRICULTURE_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Antiques: same shared subcategory dropdown as Electronics and Agriculture.
   antiques: [

@@ -10,7 +10,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { MapLocationPickerLazy as MapLocationPicker } from "@/components/MapLocationPickerLazy";
-import { CleaningTypeMultiSelect } from "@/components/CleaningTypeMultiSelect";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Headphones, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints, Globe, Watch } from "lucide-react";
@@ -38,7 +37,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
-import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES, PHOTOGRAPHY_SUBCATEGORIES, REAL_ESTATE_SERVICES_SUBCATEGORIES, RENEWABLE_ENERGY_SUBCATEGORIES, SECURITY_SUBCATEGORIES, SOUVENIRS_SUBCATEGORIES, SPORTS_SUBCATEGORIES, TECHNOLOGY_SUBCATEGORIES, TOOLS_EQUIPMENT_SUBCATEGORIES, TRANSPORTATION_SUBCATEGORIES, TRAVEL_SUBCATEGORIES, TUTORING_SUBCATEGORIES, VINTAGE_SUBCATEGORIES, WASTE_MANAGEMENT_SUBCATEGORIES, WEDDING_SUBCATEGORIES, DIGITAL_IT_SUBCATEGORIES } from "@/constants/categories";
+import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES, PHOTOGRAPHY_SUBCATEGORIES, REAL_ESTATE_SERVICES_SUBCATEGORIES, RENEWABLE_ENERGY_SUBCATEGORIES, SECURITY_SUBCATEGORIES, SOUVENIRS_SUBCATEGORIES, SPORTS_SUBCATEGORIES, TECHNOLOGY_SUBCATEGORIES, TOOLS_EQUIPMENT_SUBCATEGORIES, TRANSPORTATION_SUBCATEGORIES, TRAVEL_SUBCATEGORIES, TUTORING_SUBCATEGORIES, VINTAGE_SUBCATEGORIES, WASTE_MANAGEMENT_SUBCATEGORIES, WEDDING_SUBCATEGORIES, DIGITAL_IT_SUBCATEGORIES } from "@/constants/categories";
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { MOBILE_OTHER, getMobileModels } from "@/constants/mobileCatalog";
@@ -642,6 +641,12 @@ const DEADLINE_STEP = 5;
   const isAccom = isAccommodationEnquiry(selectedCategories, category);
   // Cleaning services: which cleaning types (cleaning-services category, multi-select)
   const [cleaningTypes, setCleaningTypes] = useState<string[]>([]);
+  // The newest cleaning chip is scrolled into view under the field.
+  const cleaningChipsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const row = cleaningChipsRef.current;
+    if (row) row.scrollLeft = row.scrollWidth;
+  }, [cleaningTypes]);
   const isCleaning = selectedCategories.includes('cleaning-services') || category === 'cleaning-services';
   const [loading, setLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -3634,10 +3639,41 @@ const DEADLINE_STEP = 5;
                       {/* Cleaning services — multi-select cleaning types (cleaning-services category) */}
                       {isCleaning && (
                         <div className="mb-4">
-                          <CleaningTypeMultiSelect
-                            value={cleaningTypes}
-                            onChange={setCleaningTypes}
-                          />
+                          {/* Native dropdown that adds each pick to a chip list, so
+                              several cleaning types can be chosen in one field. */}
+                          <div className="relative">
+                            <select
+                              value=""
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                if (!v) return;
+                                setCleaningTypes((prev) => (prev.includes(v) ? prev : [...prev, v]));
+                              }}
+                              className="w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 text-[11px] font-semibold text-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)]"
+                              >
+                                <option value="">Add cleaning type</option>
+                                {[...CLEANING_SERVICE_TYPES, 'All cleaning', 'Other'].map((t) => (
+                                  <option key={t} value={t}>{t}</option>
+                                ))}
+                              </select>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                          </div>
+                          {cleaningTypes.length > 0 && (
+                            <div ref={cleaningChipsRef}
+                            className="mt-2 flex flex-nowrap items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                              {cleaningTypes.map((t) => (
+                                <button
+                                  key={t}
+                                  type="button"
+                                  onClick={() => setCleaningTypes((prev) => prev.filter((v) => v !== t))}
+                                  className="inline-flex shrink-0 !min-h-0 items-center gap-1 whitespace-nowrap rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-gray-800"
+                                >
+                                  {t}
+                                  <X className="h-2.5 w-2.5" />
+                                </button>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       )}
                       {/* Repair services — service-type dropdown above the description (repair-services / service category) */}

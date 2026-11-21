@@ -208,6 +208,27 @@ export const CLEANING_SERVICE_TYPES: string[] = [
   'Construction & post-renovation cleaning',
   'Sanitization & disinfection',
   'Housekeeping & maid service',
+  // More of what Indian cleaning services actually sell
+  'Pest control',
+  'AC duct & vent cleaning',
+  'Marble & granite polishing',
+  'Tile & grout cleaning',
+  'Move-in / move-out cleaning',
+  'Balcony & staircase cleaning',
+  'Parking & basement cleaning',
+  'Water tank sanitization',
+  'Swimming pool cleaning',
+  'Solar panel cleaning',
+  'Gutter & rain-water pipe cleaning',
+  'Bird netting & balcony mesh cleaning',
+  'STP & sewage treatment plant cleaning',
+  'Shop & showroom cleaning',
+  'Hotel & restaurant kitchen cleaning',
+  'Hospital & clinic sanitization',
+  'School & college cleaning',
+  'Temple & community hall cleaning',
+  'Warehouse & godown cleaning',
+  'Laundry & dry cleaning pick-up',
 ];
 
 // Electronics subcategory — the dropdown shown in the Description step of both

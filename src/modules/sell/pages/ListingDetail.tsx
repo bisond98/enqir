@@ -811,11 +811,37 @@ export default function ListingDetail() {
                     Job
                   </span>
                 )}
-                {listing.title}
+                {/* Cleaning listings can name a whole list of services, which overflows
+                    a title line — a long one keeps its first words plus the last four
+                    letters and a "...." marker. */}
+                {listing.category === 'cleaning-services' && listing.title && listing.title.length > 60
+                  ? `${listing.title.slice(0, 56)}${listing.title.slice(-4)}....`
+                  : listing.title}
                 {sellerProfile?.isProfileVerified && (
                   <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 shadow-[0_2px_0_0_rgba(0,0,0,0.2)] flex-shrink-0"><CheckCircle className="h-2.5 w-2.5 text-white" /></span>
                 )}
               </h2>
+              {/* Every selected cleaning type, so nothing is lost when the title is
+                  shortened. */}
+              {listing.category === 'cleaning-services' && (() => {
+                const types = String(((listing.details || {}) as Record<string, unknown>).cleaningTypes || '')
+                  .split(',')
+                  .map((t) => t.trim())
+                  .filter(Boolean);
+                if (types.length === 0) return null;
+                return (
+                  <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+                    {types.map((t) => (
+                      <span
+                        key={t}
+                        className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-gray-800"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                );
+              })()}
               {deadlineMs != null && !deadlinePassed && (
                 <span className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-black text-black bg-red-50 border border-black rounded-full px-3 py-1 shadow-[0_2px_0_0_rgba(0,0,0,0.85)]">
                   <Clock className="h-3 w-3 text-red-600" />
