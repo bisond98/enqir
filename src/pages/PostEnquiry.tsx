@@ -3549,111 +3549,107 @@ const DEADLINE_STEP = 5;
                   {step === 2 && (
                     <div className="space-y-2 max-w-lg mx-auto w-full">
                       {/* 'Need' floating label above the title input (step 1) is handled on the title step; here it refers to the enquiry itself */}
-                      {/* Job direction toggle — Hiring vs Seeking (jobs category only), styled like the Dashboard header pill toggle */}
+                      {/* Job direction — To hire / To apply in the same pill the
+                          toggle used, so the control keeps its size. */}
                       {isJobEnquiry(selectedCategories, category) && (
                         <div className="mb-4 flex justify-center">
-                          <div className="inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 gap-1 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
-                            {([
-                              { key: 'hiring' as const, label: 'Hire', icon: Briefcase, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
-                              { key: 'seeking' as const, label: 'Apply', icon: UserSearch, activeColor: 'bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white shadow-[0_3px_0_0_rgba(29,78,216,0.5)]' },
-                            ]).map(({ key, label, icon: Icon, activeColor }) => (
-                              <button
-                                key={key}
-                                type="button"
-                                onClick={() => setJobDirection(key)}
-                                className={cn(
-                                  'flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black transition-all duration-200 whitespace-nowrap',
-                                  jobDirection === key ? activeColor : 'text-black hover:bg-gray-100'
-                                )}
-                              >
-                                <Icon className="h-3.5 w-3.5" />
-                                <span>{label}</span>
-                              </button>
-                            ))}
+                          <div className="relative inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                            <select
+                              aria-label="Job direction"
+                              value={jobDirection}
+                              onChange={(e) => {
+                                const v = e.target.value as 'hiring' | 'seeking' | '';
+                                setJobDirection(v);
+                                // Applying starts with a clean slate: the hiring-side
+                                // picks and typed details are dropped.
+                                if (v === 'seeking') {
+                                  setJobDetails({ experience: '', jobType: '', workMode: '', education: '', stream: '' });
+                                  setJobSkills('');
+                                }
+                              }}
+                              className={`job-direction-pill appearance-none rounded-full pl-5 pr-11 py-2.5 text-xs font-black text-center [text-align-last:center] focus:outline-none focus:ring-1 focus:ring-black ${jobDirection ? 'job-direction-on text-white' : 'text-black'}`}
+                            >
+                              <option value="">To hire / To apply</option>
+                              <option value="hiring">To hire</option>
+                              <option value="seeking">To apply</option>
+                            </select>
+                            <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                           </div>
                         </div>
                       )}
-                      {/* Qualifications — education capsule + stream input (Apply/seeking only), above the pills row */}
-                      {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking' && (
-                        <div className="mb-2 grid grid-cols-2 gap-1.5">
-                          <div className="min-w-0">
-                            <select
-                              value={jobDetails.education}
-                              onChange={(e) => setJobDetails(v => ({ ...v, education: e.target.value }))}
-                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.education ? 'text-[10px] font-semibold text-gray-900' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.education) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
-                            >
-                              <option value="">Education</option>
-                              {['10th pass', '12th pass', 'ITI', 'Diploma', 'Graduate', 'Post Graduate', 'PhD', 'Other'].map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="min-w-0">
-                            <input
+                      {/* Job details — education, stream, experience, job type and
+                          skills: the same set and the same pill styling the Sell
+                          form's Jobs category uses, worded for the direction. */}
+                      {isJobEnquiry(selectedCategories, category) && jobDirection && (() => {
+                        const isHiring = jobDirection === 'hiring';
+                        const box = "w-full appearance-none !rounded-2xl !h-12 sm:!h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200";
+                        const filledBox = "!text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none";
+                        const selCls = (val: string) => `${box} ${val ? `text-[11px] sm:text-xs ${filledBox}` : 'text-[11px] font-semibold text-gray-900'}`;
+                        const schoolLevel = ['10th pass', '12th pass'].includes(jobDetails.education);
+                        return (
+                          <div className="mb-4 space-y-3">
+                            <div className="relative">
+                              <select
+                                value={jobDetails.education}
+                                onChange={(e) => setJobDetails(v => ({ ...v, education: e.target.value, stream: ['10th pass', '12th pass'].includes(e.target.value) ? '' : v.stream }))}
+                                className={selCls(jobDetails.education)}
+                              >
+                                <option value="">{isHiring ? 'Education needed' : 'Your education'}</option>
+                                {['10th pass', '12th pass', 'ITI', 'Diploma', 'Graduate', 'Post Graduate', 'PhD', 'Other'].map((opt) => (
+                                  <option key={opt} value={opt}>{opt}</option>
+                                ))}
+                              </select>
+                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                            {!!jobDetails.education && !schoolLevel && (
+                              <div className="relative">
+                                <Input
+                                  type="text"
+                                  maxLength={35}
+                                  value={jobDetails.stream}
+                                  onChange={(e) => setJobDetails(v => ({ ...v, stream: e.target.value.slice(0, 35) }))}
+                                  placeholder="Stream — e.g., B.Tech CSE"
+                                  className={`${box} placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] ${jobDetails.stream ? `text-[11px] sm:text-xs ${filledBox}` : 'text-[11px] font-semibold text-gray-900'}`}
+                                />
+                              </div>
+                            )}
+                            <div className="relative">
+                              <select
+                                value={jobDetails.experience}
+                                onChange={(e) => setJobDetails(v => ({ ...v, experience: e.target.value }))}
+                                className={selCls(jobDetails.experience)}
+                              >
+                                <option value="">{isHiring ? 'Experience needed' : 'Your experience'}</option>
+                                {['Fresher', '0-1 year', '1-3 years', '3-5 years', '5-10 years', '10+ years'].map((opt) => (
+                                  <option key={opt} value={opt}>{opt}</option>
+                                ))}
+                              </select>
+                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                            <div className="relative">
+                              <select
+                                value={jobDetails.jobType}
+                                onChange={(e) => setJobDetails(v => ({ ...v, jobType: e.target.value }))}
+                                className={selCls(jobDetails.jobType)}
+                              >
+                                <option value="">{isHiring ? 'Job type' : 'Job type you suggest'}</option>
+                                {['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'].map((opt) => (
+                                  <option key={opt} value={opt}>{opt}</option>
+                                ))}
+                              </select>
+                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                            <Input
                               type="text"
-                              maxLength={35}
-                              value={jobDetails.stream}
-                              onChange={(e) => setJobDetails(v => ({ ...v, stream: e.target.value.slice(0, 35) }))}
-                              placeholder="Stream — e.g., B.Tech CSE"
-                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.stream ? 'text-[10px] font-semibold text-gray-900 placeholder:text-[9px] placeholder:text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              maxLength={80}
+                              value={jobSkills}
+                              onChange={(e) => setJobSkills(e.target.value)}
+                              placeholder={isHiring ? 'Skills required' : 'Your skills'}
+                              className={`${box} skills-hint !py-0 !text-[11px] ${jobSkills ? filledBox : 'font-semibold text-gray-900'}`}
                             />
                           </div>
-                        </div>
-                      )}
-                      {/* Job details — experience/job type/work mode dropdowns (jobs category only, like the Sell form) */}
-                      {isJobEnquiry(selectedCategories, category) && jobDirection && (
-                        <div className="mb-4 grid grid-cols-3 gap-1.5">
-                          <div className="min-w-0">
-                            <select
-                              value={jobDetails.experience}
-                              onChange={(e) => setJobDetails(v => ({ ...v, experience: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.experience ? 'text-[10px] font-semibold text-gray-900' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.experience) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
-                            >
-                              <option value="">{jobDirection === 'hiring' ? 'Experience required' : 'Your experience'}</option>
-                              {['Fresher', '0-1 year', '1-3 years', '3-5 years', '5-10 years', '10+ years'].map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="min-w-0">
-                            <select
-                              value={jobDetails.jobType}
-                              onChange={(e) => setJobDetails(v => ({ ...v, jobType: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.jobType ? 'text-[10px] font-semibold text-gray-900' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.jobType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
-                            >
-                              <option value="">Job type</option>
-                              {['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'].map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="min-w-0">
-                            <select
-                              value={jobDetails.workMode}
-                              onChange={(e) => setJobDetails(v => ({ ...v, workMode: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.workMode ? 'text-[10px] font-semibold text-gray-900' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.workMode) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
-                            >
-                              <option value="">Work mode</option>
-                              {['Work from office', 'Work from home', 'Hybrid'].map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                      )}
-                      {/* Job seeker skills input */}
-                      {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking' && (
-                        <div className="mb-4">
-                          <Input
-                            type="text"
-                            maxLength={80}
-                            value={jobSkills}
-                            onChange={(e) => setJobSkills(e.target.value)}
-                            placeholder={jobSkills ? '' : 'Skills — e.g., Tally, Excel, Driving, 2-wheeler license'}
-                            className={`w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
-                          />
-                        </div>
-                      )}
+                        );
+                      })()}
                       {/* Accommodation details — subtype dropdown + gender preference (accommodations category only) */}
                       {isAccom && (
                         <div className="mb-4">
@@ -4759,7 +4755,13 @@ const DEADLINE_STEP = 5;
                               onChange={(e) => {
                                 if (withinDescLimit(e.target.value)) setDescription(e.target.value);
                               }}
-                              placeholder="Specifications, requirements, timeline..."
+                              placeholder={
+                                isJobEnquiry(selectedCategories, category) && jobDirection === 'hiring'
+                                  ? 'Explain the role, responsibilities, and nature of the work. Specify the required skills, qualifications, experience, and expectations.'
+                                  : isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking'
+                                  ? 'Describe your skills, strengths, technical abilities, and areas of expertise in detail. Detail your previous roles, responsibilities, achievements, and relevant work experience.'
+                                  : 'Specifications, requirements, timeline...'
+                              }
                               maxLength={MAX_DESC_CHARS}
                               className="wizard-desc-box rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus
