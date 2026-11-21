@@ -1508,7 +1508,10 @@ export default function CreateListing() {
                       // pushed to the right edge with the rest of the row.
                       <div key={f.key} className={`relative ${shortSubcategory ? 'electronics-pill max-w-full' : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={category === 'bicycles' && (f.key === 'subcategory' || f.key === 'year') ? { marginLeft: 'auto', marginRight: 'auto' } : hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
                         {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && f.key !== 'cleaningTypes' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
-                          <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
+                          // The bicycle year and the jobs "Listing for" pick add no
+                          // label: their placeholder names them, and the node stays in
+                          // place so the spacing does not move.
+                          <p className={`absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide ${(category === 'bicycles' && f.key === 'year') || f.key === 'jobListingFor' ? 'invisible' : ''}`}>{f.label}</p>
                         )}
                         {f.key === 'cleaningTypes' ? (() => {
                           // A native dropdown (so it pops open like Brand/Model)
@@ -1568,7 +1571,7 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
                             placeholder={f.placeholder ?? 'Type year'}
-                            className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium ${category === 'vehicles' && f.key === 'year' ? 'border-2 border-gray-800' : 'border-[1.5px] border-slate-200'} focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white text-black placeholder:text-gray-900 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' ? 'pl-3 pr-3 placeholder:text-[8px] placeholder:tracking-tight' : 'pl-4 pr-4 placeholder:text-[11px]'}${(category === 'car' || category === 'vehicles' || category === 'bicycles') && f.key === 'year' && (details[f.key] ?? '').length === 4 ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
+                            className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium ${category === 'vehicles' && f.key === 'year' ? 'border-2 border-gray-800' : 'border-[1.5px] border-slate-200'} focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white text-black placeholder:text-gray-900 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' ? 'pl-3 pr-3 placeholder:text-[8px] placeholder:tracking-tight' : 'pl-4 pr-4 placeholder:text-[11px]'}${category === 'bicycles' && f.key === 'year' ? ' text-center placeholder:text-center' : ''}${(category === 'car' || category === 'vehicles' || category === 'bicycles') && f.key === 'year' && (details[f.key] ?? '').length === 4 ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
                           />
                         ) : f.type === 'text' ? (
                           <Input
@@ -1586,6 +1589,12 @@ export default function CreateListing() {
                               disabled={(f.key === 'model' && category === 'car' && !details['brand']) || (f.key === 'model' && category === 'audio-headphones' && !details['brand']) || (f.key === 'model' && category === 'laptops' && !details['brand']) || (f.key === 'model' && category === 'camera' && !details['brand']) || (f.key === 'model' && category === 'watches' && !details['brand']) || (f.key === 'model' && category === 'mobiles' && !details['brand']) || (f.key === 'storage' && category === 'mobiles' && !details['model']) || (f.key === 'brand' && category === 'bicycles' && !details['subcategory']) || (f.key === 'model' && category === 'bicycles' && !details['brand'])}
                               onChange={(e) => {
                                 setDetail(f.key, e.target.value);
+                                // Switching a jobs post to "To apply" drops everything
+                                // typed for the hiring side, so the role fields start
+                                // clean.
+                                if (f.key === 'jobListingFor' && e.target.value === 'To apply') {
+                                  ['education', 'stream', 'experience', 'jobType', 'skills'].forEach((k) => setDetail(k, ''));
+                                }
                                 // A different brand invalidates the model and its storage
                                 if (f.key === 'brand' && category === 'laptops') {
                                   setDetail('model', ''); setDetail('storage', ''); setDetail('processor', '');
@@ -2103,18 +2112,32 @@ export default function CreateListing() {
                                       onChange={(e) => setDetail(f.key, f.type === 'number' ? e.target.value.replace(/[^0-9]/g, '').slice(0, 4) : e.target.value)}
                                       placeholder={category === 'vehicles' && f.key === 'variant'
                                         ? (details['brand'] ? 'Enter model name' : 'Select brand first')
+                                        : category === 'jobs' && f.key === 'skills' && details.jobListingFor === 'To apply' ? 'Your skills'
                                         : f.placeholder ?? 'Type here'}
-                                      className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 pl-4 pr-4 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' && (details[f.key] ?? '').length === 4 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 pl-4 pr-4 ${f.key === 'skills' ? 'skills-hint' : 'placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px]'} shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' && (details[f.key] ?? '').length === 4 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
                                     />
                                   ) : (
                                   <div className="relative">
                                     <select
                                       value={details[f.key] ?? ''}
                                       disabled={(f.key === 'storage' && category === 'laptops' && !details['model']) || (f.key === 'processor' && category === 'laptops' && !details['brand'])}
-                                      onChange={(e) => setDetail(f.key, e.target.value)}
+                                      onChange={(e) => {
+                                        setDetail(f.key, e.target.value);
+                                        // School-level education has no stream to name.
+                                        if (f.key === 'education' && ['10th pass', '12th pass'].includes(e.target.value)) setDetail('stream', '');
+                                      }}
                                       className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                                     >
-                                      <option value="">{f.placeholder ?? 'Select'}</option>
+                                      <option value="">{
+                                        // A hiring post asks for what the role needs; an
+                                        // applying post asks for the applicant's own details.
+                                        category === 'jobs' && details.jobListingFor === 'To hire' && f.key === 'education' ? 'Education needed'
+                                        : category === 'jobs' && details.jobListingFor === 'To hire' && f.key === 'experience' ? 'Experience needed'
+                                        : category === 'jobs' && details.jobListingFor === 'To apply' && f.key === 'education' ? 'Your education'
+                                        : category === 'jobs' && details.jobListingFor === 'To apply' && f.key === 'experience' ? 'Your experience'
+                                        : category === 'jobs' && details.jobListingFor === 'To apply' && f.key === 'jobType' ? 'Job type you suggest'
+                                        : f.placeholder ?? 'Select'
+                                      }</option>
                                       {((f.key === 'storage' && category === 'laptops')
                                       ? [...getLaptopStorageOptions(details['brand'] ?? '', details['model'] ?? ''), LAPTOP_OTHER]
                                       : (f.key === 'processor' && category === 'laptops')
@@ -2125,6 +2148,19 @@ export default function CreateListing() {
                                     </select>
                                     <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                                   </div>
+                                  )}
+                                  {/* Jobs: the free-text stream sits directly under
+                                      the education pick, except for 10th and 12th
+                                      pass, which have no stream. */}
+                                  {f.key === 'education' && !!details.education && !['10th pass', '12th pass'].includes(details.education) && (
+                                    <Input
+                                      type="text"
+                                      maxLength={35}
+                                      value={details.stream ?? ''}
+                                      onChange={(e) => setDetail('stream', e.target.value.slice(0, 35))}
+                                      placeholder="Stream — e.g., B.Tech CSE"
+                                      className="w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 pl-4 pr-4 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
+                                    />
                                   )}
                                 </div>
                               ))}
@@ -2185,9 +2221,13 @@ export default function CreateListing() {
                         onChange={(e) => {
                           if (withinDescLimit(e.target.value)) setDescription(e.target.value);
                         }}
-                        placeholder="Condition, accessories, warranty, reason for selling…"
+                        placeholder={category === 'jobs' && details.jobListingFor === 'To hire'
+                          ? 'Explain the role, responsibilities, and nature of the work. Specify the required skills, qualifications, experience, and expectations.'
+                          : category === 'jobs' && details.jobListingFor === 'To apply'
+                          ? 'Describe your skills, strengths, technical abilities, and areas of expertise in detail. Detail your previous roles, responsibilities, achievements, and relevant work experience.'
+                          : 'Condition, accessories, warranty, reason for selling…'}
                         maxLength={MAX_DESC_CHARS}
-                        className="wizard-desc-box rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px] resize-y shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
+                        className={`wizard-desc-box rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:font-medium placeholder:text-[11px] resize-y shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'jobs' && (details.jobListingFor === 'To hire' || details.jobListingFor === 'To apply') ? 'placeholder:text-gray-900 placeholder:font-semibold' : 'placeholder:text-gray-400'}`}
                         autoFocus
                       />
                     </div>
@@ -2627,6 +2667,7 @@ export default function CreateListing() {
                                 f.key === 'processor' ? Cpu :
                                 f.key === 'warranty' ? ShieldCheck :
                                 f.key === 'experience' ? Briefcase :
+                                f.key === 'jobListingFor' ? Tag :
                                 f.key === 'jobType' ? Clock :
                                 f.key === 'workMode' ? Home :
                                 f.key === 'salaryPeriod' ? IndianRupee :

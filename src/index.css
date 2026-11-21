@@ -496,6 +496,7 @@
       line-height: 1.5;
       opacity: 0.6;
     }
+
     
     /* Optimize images for mobile */
     img {
@@ -2926,4 +2927,13 @@ body {
   .wizard-desc-box {
     min-height: 180px !important;
   }
+}
+
+/* The jobs "Skills required" box keeps a dark, fully opaque hint. It sits
+   outside the layers so it beats the placeholder utilities in the markup. */
+.skills-hint::placeholder {
+  color: #111827 !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
 }
