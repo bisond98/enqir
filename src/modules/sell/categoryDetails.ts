@@ -421,71 +421,71 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   ],
   // Antiques: same shared subcategory dropdown as Electronics and Agriculture.
   antiques: [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...ANTIQUES_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...ANTIQUES_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Appliances: same shared subcategory dropdown as the other product categories.
   appliances: [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...APPLIANCE_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...APPLIANCE_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Art: same shared subcategory dropdown as the other product categories.
   art: [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...ART_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...ART_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Baby & Kids: same shared subcategory dropdown as the other product categories.
   'baby-kids': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BABY_KIDS_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BABY_KIDS_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Bags & Luggage: same shared subcategory dropdown as the other product categories.
   'bags-luggage': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BAGS_LUGGAGE_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BAGS_LUGGAGE_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Beauty: same shared subcategory dropdown as the other product categories.
   'beauty-products': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BEAUTY_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BEAUTY_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Bicycles: same shared subcategory dropdown as the other product categories.
   bicycles: [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BICYCLES_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BICYCLES_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Books: same shared subcategory dropdown as the other product categories.
   'books-publications': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BOOKS_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BOOKS_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Childcare: same shared subcategory dropdown as the other categories.
   'childcare-family': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...CHILDCARE_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...CHILDCARE_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Collectibles: same shared subcategory dropdown as the other product categories.
   collectibles: [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...COLLECTIBLES_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...COLLECTIBLES_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Construction: same shared subcategory dropdown as the other categories.
   'construction-renovation': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...CONSTRUCTION_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...CONSTRUCTION_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Education: same shared subcategory dropdown as the other categories.
   'education-training': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...EDUCATION_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...EDUCATION_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Entertainment: same shared subcategory dropdown as the other categories.
   'entertainment-media': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...ENTERTAINMENT_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...ENTERTAINMENT_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Events: same shared subcategory dropdown as the other categories.
   'events-entertainment': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...EVENTS_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...EVENTS_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Fashion: same shared subcategory dropdown as the other categories.
   fashion: [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...FASHION_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...FASHION_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Fitness & Gym: same shared subcategory dropdown as the other categories.
   'fitness-gym-equipment': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...FITNESS_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...FITNESS_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Food: same shared subcategory dropdown as the other categories.
   'food-beverage': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...FOOD_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...FOOD_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Furniture: the shared subcategory dropdown, picked on the Title tab so the
   // sub-type sits next to the listing name (same list as post enquiry).
@@ -494,35 +494,35 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   ],
   // Gaming: same shared subcategory dropdown as the other categories.
   'gaming-recreation': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...GAMING_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...GAMING_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Garden & Outdoor: same shared subcategory dropdown as the other categories.
   'garden-outdoor': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...GARDEN_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...GARDEN_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Government: same shared subcategory dropdown as the other categories.
   'government-public': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...GOVERNMENT_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...GOVERNMENT_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Health: same shared subcategory dropdown as the other categories.
   'health-beauty': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...HEALTH_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...HEALTH_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Home: same shared subcategory dropdown as the other categories.
   home: [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...HOME_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...HOME_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Industrial: same shared subcategory dropdown as the other categories.
   'raw-materials-industrial': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...INDUSTRIAL_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...INDUSTRIAL_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Insurance: same shared subcategory dropdown as the other categories.
   'insurance-services': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...INSURANCE_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...INSURANCE_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Jewellery: same shared subcategory dropdown as the other categories.
   'jewelry-accessories': [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...JEWELLERY_SUBCATEGORIES], placeholder: 'Select', step: 'description' },
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...JEWELLERY_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
   // Thrift: three linked dropdowns in the Description step. The Item options
   // depend on the picked gender, so CreateListing resolves them with

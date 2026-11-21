@@ -1524,14 +1524,14 @@ export default function CreateListing() {
                                     setDetail('cleaningTypes', next.join(', '));
                                     setTitle(next.join(', '));
                                   }}
-                                  className="w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 text-[11px] font-semibold text-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)]"
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 text-[11px] font-semibold text-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] ${picked.length > 0 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none !text-white' : ''}`}
                                 >
                                   <option value="">Add cleaning type</option>
                                   {[...CLEANING_SERVICE_TYPES, 'All cleaning', 'Other'].map((t) => (
                                     <option key={t} value={t}>{t}</option>
                                   ))}
                                 </select>
-                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${picked.length > 0 ? 'text-white' : 'text-gray-800'}`} />
                               </div>
                               {picked.length > 0 && (
                                 <div ref={cleaningChipsRef}
