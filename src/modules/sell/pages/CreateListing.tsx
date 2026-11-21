@@ -17,6 +17,7 @@ import { filterCategoriesBySearch, NO_CONDITION_CATEGORIES, REPAIR_SERVICE_TYPES
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from '../categoryDetails';
 import { LAPTOP_OTHER, getLaptopModels, getLaptopProcessors, getLaptopStorageOptions } from '@/constants/laptopCatalog';
 import { MOBILE_OTHER, getMobileModels, getMobileStorageOptions } from '@/constants/mobileCatalog';
+import { getBicycleBrands, getBicycleModels } from '@/constants/bicycleCatalog';
 import { AUDIO_OTHER, getAudioModels } from '@/constants/audioCatalog';
 import { CAR_MODEL_OTHER, getCarModels, getCarVariants } from '@/constants/carCatalog';
 import { BIKE_MODEL_OTHER, getBikeModels } from '@/constants/bikeCatalog';
@@ -1486,6 +1487,10 @@ export default function CreateListing() {
                             : [...getMobileModels(details['brand'] ?? ''), MOBILE_OTHER])
                         : f.key === 'storage' && category === 'mobiles'
                         ? getMobileStorageOptions(details['brand'] ?? '', details['model'] ?? '')
+                        : f.key === 'brand' && category === 'bicycles'
+                        ? getBicycleBrands(details['subcategory'] ?? '')
+                        : f.key === 'model' && category === 'bicycles'
+                        ? getBicycleModels(details['brand'] ?? '')
                         : (f.options ?? []);
                       // Every dropdown hugs the text it shows (its placeholder, or
                       // the picked value once chosen) instead of a fixed column.
@@ -1501,7 +1506,7 @@ export default function CreateListing() {
                       // A tab with exactly three dropdowns leaves the third one alone on
                       // the second line, so it is centred in that line instead of being
                       // pushed to the right edge with the rest of the row.
-                      <div key={f.key} className={`relative ${shortSubcategory ? 'electronics-pill max-w-full' : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
+                      <div key={f.key} className={`relative ${shortSubcategory ? 'electronics-pill max-w-full' : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={category === 'bicycles' && (f.key === 'subcategory' || f.key === 'year') ? { marginLeft: 'auto', marginRight: 'auto' } : hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
                         {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && f.key !== 'cleaningTypes' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
                           <p className="absolute left-0 right-0 top-full text-[8px] font-bold text-black mt-1 text-center pointer-events-none tracking-wide">{f.label}</p>
                         )}
@@ -1555,7 +1560,7 @@ export default function CreateListing() {
                               )}
                             </div>
                           );
-                        })() : f.typeable ? (
+                        })() : f.typeable || f.type === 'number' ? (
                           <Input
                             type="text"
                             inputMode="numeric"
@@ -1563,7 +1568,7 @@ export default function CreateListing() {
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value.replace(/[^0-9]/g, '').slice(0, 4))}
                             placeholder={f.placeholder ?? 'Type year'}
-                            className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium ${category === 'vehicles' && f.key === 'year' ? 'border-2 border-gray-800' : 'border-[1.5px] border-slate-200'} focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white text-black placeholder:text-gray-900 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' ? 'pl-3 pr-3 placeholder:text-[8px] placeholder:tracking-tight' : 'pl-4 pr-4 placeholder:text-[11px]'}${(category === 'car' || category === 'vehicles') && f.key === 'year' && (details[f.key] ?? '').length === 4 ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
+                            className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium ${category === 'vehicles' && f.key === 'year' ? 'border-2 border-gray-800' : 'border-[1.5px] border-slate-200'} focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 bg-white text-black placeholder:text-gray-900 placeholder:font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' ? 'pl-3 pr-3 placeholder:text-[8px] placeholder:tracking-tight' : 'pl-4 pr-4 placeholder:text-[11px]'}${(category === 'car' || category === 'vehicles' || category === 'bicycles') && f.key === 'year' && (details[f.key] ?? '').length === 4 ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
                           />
                         ) : f.type === 'text' ? (
                           <Input
@@ -1578,7 +1583,7 @@ export default function CreateListing() {
                           <>
                             <select
                               value={details[f.key] ?? ''}
-                              disabled={(f.key === 'model' && category === 'car' && !details['brand']) || (f.key === 'model' && category === 'audio-headphones' && !details['brand']) || (f.key === 'model' && category === 'laptops' && !details['brand']) || (f.key === 'model' && category === 'camera' && !details['brand']) || (f.key === 'model' && category === 'watches' && !details['brand']) || (f.key === 'model' && category === 'mobiles' && !details['brand']) || (f.key === 'storage' && category === 'mobiles' && !details['model'])}
+                              disabled={(f.key === 'model' && category === 'car' && !details['brand']) || (f.key === 'model' && category === 'audio-headphones' && !details['brand']) || (f.key === 'model' && category === 'laptops' && !details['brand']) || (f.key === 'model' && category === 'camera' && !details['brand']) || (f.key === 'model' && category === 'watches' && !details['brand']) || (f.key === 'model' && category === 'mobiles' && !details['brand']) || (f.key === 'storage' && category === 'mobiles' && !details['model']) || (f.key === 'brand' && category === 'bicycles' && !details['subcategory']) || (f.key === 'model' && category === 'bicycles' && !details['brand'])}
                               onChange={(e) => {
                                 setDetail(f.key, e.target.value);
                                 // A different brand invalidates the model and its storage
@@ -1654,6 +1659,23 @@ export default function CreateListing() {
                                   setDetail('storage', '');
                                   const unknownMobile = e.target.value === MOBILE_OTHER || details['brand'] === MOBILE_OTHER;
                                   setTitle(unknownMobile ? '' : [details['brand'], e.target.value].filter(Boolean).join(' '));
+                                }
+                                // Bicycles: type -> brand -> model, and the picks name
+                                // the listing the way laptop brand and model do.
+                                if (f.key === 'subcategory' && category === 'bicycles') {
+                                  setDetail('brand', ''); setDetail('model', '');
+                                  setTitle(e.target.value);
+                                }
+                                if (f.key === 'brand' && category === 'bicycles') {
+                                  setDetail('model', '');
+                                  const bikeType = details['subcategory'] ?? '';
+                                  setTitle(e.target.value === 'Other' ? bikeType : [bikeType, e.target.value].filter(Boolean).join(' '));
+                                }
+                                if (f.key === 'model' && category === 'bicycles') {
+                                  const bikeType = details['subcategory'] ?? '';
+                                  const bikeBrand = details['brand'] ?? '';
+                                  const unknownBike = e.target.value === 'Other' || bikeBrand === 'Other';
+                                  setTitle(unknownBike ? [bikeType, bikeBrand === 'Other' ? '' : bikeBrand].filter(Boolean).join(' ') : [bikeType, bikeBrand, e.target.value].filter(Boolean).join(' '));
                                 }
                                 if (f.key === 'storage' && category === 'mobiles') {
                                   const mobileBrand = details['brand'] ?? '';
@@ -2027,16 +2049,27 @@ export default function CreateListing() {
                               })}
                             </div>
                           )}
+                          {/* Bicycles keep their parts and accessory pickers
+                              together under their own sub-heading. */}
+                          {category === 'bicycles' && selectFields.length > 0 && (
+                            <h3 className="flex items-center justify-center gap-3 text-center text-xs sm:text-sm font-black uppercase tracking-[0.18em] text-gray-900" style={{ marginBottom: '1rem' }}>
+                              <span className="h-[1.5px] w-8 shrink-0 rounded-full bg-gray-900/25" />
+                              Accessories &amp; Maintenance
+                              <span className="h-[1.5px] w-8 shrink-0 rounded-full bg-gray-900/25" />
+                            </h3>
+                          )}
                           {selectFields.length > 0 && (
-                            <div className={`grid gap-3 ${category === 'car' ? 'car-pill grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                            <div className={`grid gap-3 ${category === 'car' ? 'car-pill grid-cols-2' : category === 'bicycles' ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
                               {selectFields.map((f) => (
                                 // On mobile the year box sits at the top of the tab;
                                 // from sm upwards it keeps its array position. Cars
                                 // are the exception: their variant leads the tab.
                                 <div
                                   key={f.key}
-                                  className={`space-y-2 ${f.key === 'year' && category !== 'vehicles' && category !== 'car' ? 'order-first sm:order-none' : ''} ${category === 'car' && (f.key === 'variant' || f.key === 'year') ? 'sm:col-span-2' : ''}`}
-                                  style={selectFields.length === 1 && f.type !== 'text' && f.type !== 'number'
+                                  className={`space-y-2 ${category === 'bicycles' && f.key === 'bicycleRepair' ? 'col-span-2' : category === 'bicycles' && f.key === 'year' ? 'order-first col-span-2' : f.key === 'year' && category !== 'vehicles' && category !== 'car' ? 'order-first sm:order-none' : ''} ${category === 'car' && (f.key === 'variant' || f.key === 'year') ? 'sm:col-span-2' : ''}`}
+                                  style={category === 'bicycles' && f.key === 'bicycleRepair'
+                                    ? { width: 'calc(50% - 0.375rem)', marginLeft: 'auto', marginRight: 'auto' }
+                                    : selectFields.length === 1 && f.type !== 'text' && f.type !== 'number'
                                     ? { width: `${Math.min(320, Math.max(124, Math.round(((details[f.key] || f.placeholder || 'Select').length) * 7.4) + 88))}px`, marginLeft: 'auto' }
                                     : undefined}
                                 >

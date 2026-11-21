@@ -25,6 +25,7 @@ import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES 
 import { MOBILE_BRANDS as SHARED_MOBILE_BRANDS } from '@/constants/mobileCatalog';
 import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES } from '@/constants/categories';
 import { THRIFT_GENDERS, THRIFT_TYPES } from '@/constants/thriftClothing';
+import { BICYCLE_FRAME_TYPES, BICYCLE_PART_TYPES, BICYCLE_ACCESSORY_TYPES, BICYCLE_STORAGE_TYPES, BICYCLE_REPAIR_TYPES } from '@/constants/bicycleCatalog';
 
 // Sneaker sizes — US and UK scales. Adults get the full run; Kids get the
 // children's range. 'Other' always last so users can enter odd sizes.
@@ -188,7 +189,7 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'brand', label: 'Brand', type: 'select', options: CAR_BRANDS, placeholder: 'Select brand', step: 'title' },
     // Model options follow the picked brand (Maruti Suzuki -> Swift, Baleno …);
     // CreateListing resolves them with getCarModels().
-    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Select model', step: 'title' },
+    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Model', step: 'title' },
     // Transmission, year of manufacture and variant moved to the Description
     // tab. Description renders select fields as dropdowns too, so transmission
     // stays a picker (Manual / Automatic) and year a list plus typed entry.
@@ -210,7 +211,7 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'vehicleType', label: 'Type', type: 'select', options: VEHICLE_TYPES, placeholder: 'Select type', step: 'title' },
     // Brand options follow the picked type (Bus -> bus makers); CreateListing
     // resolves them with getVehicleBrandsForType().
-    { key: 'brand', label: 'Brand', type: 'select', options: [], placeholder: 'Select brand', step: 'title' },
+    { key: 'brand', label: 'Brand', type: 'select', options: [], placeholder: 'Brand', step: 'title' },
     // Year and variant sit on the Description tab; the Title tab keeps only the
     // vehicle's identity — type and brand.
     { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., variants of lorry, pickup, truck', step: 'description' },
@@ -445,7 +446,18 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   ],
   // Bicycles: same shared subcategory dropdown as the other product categories.
   bicycles: [
-    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...BICYCLES_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+    // Title carries the bike's identity: type -> brand -> model, each list
+    // following the one above it (BMX offers BMX makers, Haro offers Haro models).
+    { key: 'subcategory', label: 'Bicycle type', type: 'select', options: [...BICYCLES_SUBCATEGORIES], placeholder: 'Bicycle type', step: 'title' },
+    { key: 'brand', label: 'Brand', type: 'select', options: [], placeholder: 'Select brand', step: 'title' },
+    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Select model', step: 'title' },
+    // Year rides with the title in this form; Description keeps the parts pickers.
+    { key: 'year', label: 'Year', type: 'number', placeholder: 'Year', min: 1950, step: 'title' },
+    { key: 'bicycleFrames', label: 'Frames & framesets', type: 'select', options: [...BICYCLE_FRAME_TYPES], placeholder: 'Frames & framesets', step: 'description' },
+    { key: 'bicycleParts', label: 'Parts & components', type: 'select', options: [...BICYCLE_PART_TYPES], placeholder: 'Parts & components', step: 'description' },
+    { key: 'bicycleAccessories', label: 'Accessories', type: 'select', options: [...BICYCLE_ACCESSORY_TYPES], placeholder: 'Accessories', step: 'description' },
+    { key: 'bicycleStorage', label: 'Storage & carriers', type: 'select', options: [...BICYCLE_STORAGE_TYPES], placeholder: 'Storage & carriers', step: 'description' },
+    { key: 'bicycleRepair', label: 'Repair & maintenance', type: 'select', options: [...BICYCLE_REPAIR_TYPES], placeholder: 'Repair & maintenance', step: 'description' },
   ],
   // Books: same shared subcategory dropdown as the other product categories.
   'books-publications': [

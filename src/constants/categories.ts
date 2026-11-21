@@ -509,11 +509,8 @@ export const BICYCLES_SUBCATEGORIES: string[] = [
   'Track & Racing Bicycles',
   'Tricycles',
   'Adaptive & Special Needs Bicycles',
-  'Bicycle Frames & Framesets',
-  'Bicycle Parts & Components',
-  'Bicycle Accessories & Safety Gear',
-  'Bicycle Storage & Carriers',
-  'Bicycle Repair & Maintenance Equipment',
+  // Generic catch-all for a bike that fits none of the types above
+  'Cycle',
   'Other Bicycles & Specialized Cycling Equipment',
 ];
 

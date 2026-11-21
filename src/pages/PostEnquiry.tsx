@@ -41,6 +41,7 @@ import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDE
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
 import { MOBILE_OTHER, getMobileModels } from "@/constants/mobileCatalog";
+import { getBicycleBrands, getBicycleModels, BICYCLE_FRAME_TYPES, BICYCLE_PART_TYPES, BICYCLE_ACCESSORY_TYPES, BICYCLE_STORAGE_TYPES, BICYCLE_REPAIR_TYPES } from "@/constants/bicycleCatalog";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES, getVehicleBrandsForType } from "@/modules/sell/categoryBrands";
 import { getCarModels, getCarVariants } from "@/constants/carCatalog";
 import { getBikeModels } from "@/constants/bikeCatalog";
@@ -292,6 +293,12 @@ const DEADLINE_STEP = 5;
   const [vehicleDetails, setVehicleDetails] = useState<{ type: string; brand: string; model: string; year: string; variant: string; transmission: string; fuelType: string }>({ type: '', brand: '', model: '', year: '', variant: '', transmission: '', fuelType: '' });
   // Mobile details (brand/RAM/memory) — filled when the mobiles category is selected
   const [mobileDetails, setMobileDetails] = useState<{ brand: string; model: string; ram: string; memory: string }>({ brand: '', model: '', ram: '', memory: '' });
+  // Bicycles: type -> brand -> model plus the year and parts pickers, all on the
+  // Description step (the Sell form keeps these on Title).
+  const [bicycleDetails, setBicycleDetails] = useState<{
+    subcategory: string; brand: string; model: string; year: string;
+    frames: string; parts: string; accessories: string; storage: string; repair: string;
+  }>({ subcategory: '', brand: '', model: '', year: '', frames: '', parts: '', accessories: '', storage: '', repair: '' });
   // Laptop details (brand -> model -> processor -> storage) — filled when the laptops category is selected
   const [laptopDetails, setLaptopDetails] = useState<{ brand: string; model: string; processor: string; storage: string }>({ brand: '', model: '', processor: '', storage: '' });
   // Camera details (brand -> model) — filled when the Camera category is selected
@@ -1102,6 +1109,7 @@ const DEADLINE_STEP = 5;
         if (d.notes) setNotes(d.notes);
         if (d.vehicleDetails) setVehicleDetails((prev) => ({ ...prev, ...d.vehicleDetails }));
         if (d.mobileDetails) setMobileDetails({ brand: '', model: '', ram: '', memory: '', ...d.mobileDetails });
+        if (d.bicycleDetails) setBicycleDetails((v) => ({ ...v, ...d.bicycleDetails }));
         if (d.laptopDetails) setLaptopDetails(d.laptopDetails);
         if (d.laptopCustom) setLaptopCustom(d.laptopCustom);
         if (d.watchDetails) setWatchDetails(d.watchDetails);
@@ -1340,7 +1348,34 @@ const DEADLINE_STEP = 5;
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
             ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
+            ...(bicycleDetails.subcategory && { bicycleType: bicycleDetails.subcategory }),
+            ...(bicycleDetails.brand && { bicycleBrand: bicycleDetails.brand }),
+            ...(bicycleDetails.model && { bicycleModel: bicycleDetails.model }),
+            ...(bicycleDetails.year && { bicycleYear: bicycleDetails.year }),
+            ...(bicycleDetails.frames && { bicycleFrames: bicycleDetails.frames }),
+            ...(bicycleDetails.parts && { bicycleParts: bicycleDetails.parts }),
+            ...(bicycleDetails.accessories && { bicycleAccessories: bicycleDetails.accessories }),
+            ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
+            ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
               ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
+              ...(bicycleDetails.subcategory && { bicycleType: bicycleDetails.subcategory }),
+              ...(bicycleDetails.brand && { bicycleBrand: bicycleDetails.brand }),
+              ...(bicycleDetails.model && { bicycleModel: bicycleDetails.model }),
+              ...(bicycleDetails.year && { bicycleYear: bicycleDetails.year }),
+              ...(bicycleDetails.frames && { bicycleFrames: bicycleDetails.frames }),
+              ...(bicycleDetails.parts && { bicycleParts: bicycleDetails.parts }),
+              ...(bicycleDetails.accessories && { bicycleAccessories: bicycleDetails.accessories }),
+              ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
+              ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
+            ...(bicycleDetails.subcategory && { bicycleType: bicycleDetails.subcategory }),
+            ...(bicycleDetails.brand && { bicycleBrand: bicycleDetails.brand }),
+            ...(bicycleDetails.model && { bicycleModel: bicycleDetails.model }),
+            ...(bicycleDetails.year && { bicycleYear: bicycleDetails.year }),
+            ...(bicycleDetails.frames && { bicycleFrames: bicycleDetails.frames }),
+            ...(bicycleDetails.parts && { bicycleParts: bicycleDetails.parts }),
+            ...(bicycleDetails.accessories && { bicycleAccessories: bicycleDetails.accessories }),
+            ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
+            ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
               ...(sneakerBrand && { sneakerBrand }),
               ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
@@ -1509,6 +1544,15 @@ const DEADLINE_STEP = 5;
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
             ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
+            ...(bicycleDetails.subcategory && { bicycleType: bicycleDetails.subcategory }),
+            ...(bicycleDetails.brand && { bicycleBrand: bicycleDetails.brand }),
+            ...(bicycleDetails.model && { bicycleModel: bicycleDetails.model }),
+            ...(bicycleDetails.year && { bicycleYear: bicycleDetails.year }),
+            ...(bicycleDetails.frames && { bicycleFrames: bicycleDetails.frames }),
+            ...(bicycleDetails.parts && { bicycleParts: bicycleDetails.parts }),
+            ...(bicycleDetails.accessories && { bicycleAccessories: bicycleDetails.accessories }),
+            ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
+            ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
             ...(sneakerBrand && { sneakerBrand }),
             ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
@@ -1692,6 +1736,15 @@ const DEADLINE_STEP = 5;
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
             ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
+            ...(bicycleDetails.subcategory && { bicycleType: bicycleDetails.subcategory }),
+            ...(bicycleDetails.brand && { bicycleBrand: bicycleDetails.brand }),
+            ...(bicycleDetails.model && { bicycleModel: bicycleDetails.model }),
+            ...(bicycleDetails.year && { bicycleYear: bicycleDetails.year }),
+            ...(bicycleDetails.frames && { bicycleFrames: bicycleDetails.frames }),
+            ...(bicycleDetails.parts && { bicycleParts: bicycleDetails.parts }),
+            ...(bicycleDetails.accessories && { bicycleAccessories: bicycleDetails.accessories }),
+            ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
+            ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
             ...(sneakerBrand && { sneakerBrand }),
             ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
@@ -1881,7 +1934,34 @@ const DEADLINE_STEP = 5;
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
             ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
+            ...(bicycleDetails.subcategory && { bicycleType: bicycleDetails.subcategory }),
+            ...(bicycleDetails.brand && { bicycleBrand: bicycleDetails.brand }),
+            ...(bicycleDetails.model && { bicycleModel: bicycleDetails.model }),
+            ...(bicycleDetails.year && { bicycleYear: bicycleDetails.year }),
+            ...(bicycleDetails.frames && { bicycleFrames: bicycleDetails.frames }),
+            ...(bicycleDetails.parts && { bicycleParts: bicycleDetails.parts }),
+            ...(bicycleDetails.accessories && { bicycleAccessories: bicycleDetails.accessories }),
+            ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
+            ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
               ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
+              ...(bicycleDetails.subcategory && { bicycleType: bicycleDetails.subcategory }),
+              ...(bicycleDetails.brand && { bicycleBrand: bicycleDetails.brand }),
+              ...(bicycleDetails.model && { bicycleModel: bicycleDetails.model }),
+              ...(bicycleDetails.year && { bicycleYear: bicycleDetails.year }),
+              ...(bicycleDetails.frames && { bicycleFrames: bicycleDetails.frames }),
+              ...(bicycleDetails.parts && { bicycleParts: bicycleDetails.parts }),
+              ...(bicycleDetails.accessories && { bicycleAccessories: bicycleDetails.accessories }),
+              ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
+              ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
+            ...(bicycleDetails.subcategory && { bicycleType: bicycleDetails.subcategory }),
+            ...(bicycleDetails.brand && { bicycleBrand: bicycleDetails.brand }),
+            ...(bicycleDetails.model && { bicycleModel: bicycleDetails.model }),
+            ...(bicycleDetails.year && { bicycleYear: bicycleDetails.year }),
+            ...(bicycleDetails.frames && { bicycleFrames: bicycleDetails.frames }),
+            ...(bicycleDetails.parts && { bicycleParts: bicycleDetails.parts }),
+            ...(bicycleDetails.accessories && { bicycleAccessories: bicycleDetails.accessories }),
+            ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
+            ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
               ...(sneakerBrand && { sneakerBrand }),
               ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
@@ -2296,6 +2376,7 @@ const DEADLINE_STEP = 5;
     setSubcategory('');
     setVehicleDetails({ type: '', brand: '', model: '', year: '', variant: '', transmission: '', fuelType: '' });
     setMobileDetails({ brand: '', model: '', ram: '', memory: '' });
+    setBicycleDetails({ subcategory: '', brand: '', model: '', year: '', frames: '', parts: '', accessories: '', storage: '', repair: '' });
     setLaptopDetails({ brand: '', model: '', processor: '', storage: '' });
     setLaptopCustom({ model: '', processor: '', storage: '' });
     setCameraDetails({ brand: '', model: '' });
@@ -4290,6 +4371,80 @@ const DEADLINE_STEP = 5;
                         );
                       })()}
 
+                      {/* Bicycles — type -> brand -> model, the year and the parts
+                          pickers, all on the Description step in this form. */}
+                      {selectedCategories.includes('bicycles') && (() => {
+                        const BICYCLE_CLS = "w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9";
+                        const selCls = (val: string) => `${BICYCLE_CLS} ${!val ? 'text-[11px] font-semibold text-gray-900' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700'} `;
+                        const brandList = getBicycleBrands(bicycleDetails.subcategory);
+                        const modelList = getBicycleModels(bicycleDetails.brand);
+                        const setB = (patch: Partial<typeof bicycleDetails>) => setBicycleDetails((v) => ({ ...v, ...patch }));
+                        const pickers: { key: keyof typeof bicycleDetails; label: string; options: string[]; disabled?: boolean }[] = [
+                          { key: 'subcategory', label: 'Bicycle type', options: [...BICYCLES_SUBCATEGORIES] },
+                          { key: 'brand', label: 'Brand', options: brandList, disabled: !bicycleDetails.subcategory },
+                          { key: 'model', label: 'Model', options: modelList, disabled: !bicycleDetails.brand },
+                        ];
+                        return (
+                          <div className="mb-6 space-y-3">
+                            {pickers.map((p) => (
+                              <div key={p.key} className="relative">
+                                <select
+                                  value={bicycleDetails[p.key]}
+                                  onChange={(e) => {
+                                    const v = e.target.value;
+                                    if (p.key === 'subcategory') setB({ subcategory: v, brand: '', model: '' });
+                                    else if (p.key === 'brand') setB({ brand: v, model: '' });
+                                    else setB({ model: v });
+                                  }}
+                                  disabled={p.disabled}
+                                  className={`${selCls(bicycleDetails[p.key])} ${p.disabled ? 'bg-slate-100' : ''}`}
+                                >
+                                  <option value="">{p.label}</option>
+                                  {p.options.map((o) => (
+                                    <option key={o} value={o}>{o}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                            ))}
+                            <div className="relative">
+                              <input
+                                type="number"
+                                inputMode="numeric"
+                                min={1950}
+                                max={new Date().getFullYear()}
+                                value={bicycleDetails.year}
+                                onChange={(e) => setB({ year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) })}
+                                placeholder="Year"
+                                className={`${BICYCLE_CLS} placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] ${bicycleDetails.year.length === 4 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !placeholder:text-white' : ''}`}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                            {([
+                              ['frames', 'Frames & framesets', BICYCLE_FRAME_TYPES],
+                              ['parts', 'Parts & components', BICYCLE_PART_TYPES],
+                              ['accessories', 'Accessories', BICYCLE_ACCESSORY_TYPES],
+                              ['storage', 'Storage & carriers', BICYCLE_STORAGE_TYPES],
+                              ['repair', 'Repair & maintenance', BICYCLE_REPAIR_TYPES],
+                            ] as [keyof typeof bicycleDetails, string, string[]][]).map(([key, label, options]) => (
+                              <div key={key} className="relative">
+                                <select
+                                  value={bicycleDetails[key]}
+                                  onChange={(e) => setB({ [key]: e.target.value } as Partial<typeof bicycleDetails>)}
+                                  className={selCls(bicycleDetails[key])}
+                                >
+                                  <option value="">{label}</option>
+                                  {options.map((o) => (
+                                    <option key={o} value={o}>{o}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                            ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
                       {/* Sneaker details — brand + audience + size above the description when the sneakers category is selected */}
                       {selectedCategories.includes('sneakers') && (() => {
                         const sizeList = sneakerAudience === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
