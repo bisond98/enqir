@@ -41,6 +41,7 @@ import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
 import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES, PHOTOGRAPHY_SUBCATEGORIES, REAL_ESTATE_SERVICES_SUBCATEGORIES, RENEWABLE_ENERGY_SUBCATEGORIES, SECURITY_SUBCATEGORIES, SOUVENIRS_SUBCATEGORIES, SPORTS_SUBCATEGORIES, TECHNOLOGY_SUBCATEGORIES, TOOLS_EQUIPMENT_SUBCATEGORIES, TRANSPORTATION_SUBCATEGORIES, TRAVEL_SUBCATEGORIES, TUTORING_SUBCATEGORIES, VINTAGE_SUBCATEGORIES, WASTE_MANAGEMENT_SUBCATEGORIES, WEDDING_SUBCATEGORIES, DIGITAL_IT_SUBCATEGORIES } from "@/constants/categories";
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
+import { MOBILE_OTHER, getMobileModels } from "@/constants/mobileCatalog";
 import { CAR_BRANDS, BIKE_BRANDS, MOBILE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES, getVehicleBrandsForType } from "@/modules/sell/categoryBrands";
 import { getCarModels, getCarVariants } from "@/constants/carCatalog";
 import { getBikeModels } from "@/constants/bikeCatalog";
@@ -256,6 +257,10 @@ const DEADLINE_STEP = 5;
   const [animDir, setAnimDir] = useState<'up' | 'down'>('up');
   const [catPage, setCatPage] = useState(0);
   const [catSearch, setCatSearch] = useState('');
+  // The category the user last moved forward with. Answers on the other tabs
+  // are only dropped when Next is pressed with a *different* category, so a
+  // trip back to the category tab without changing it loses nothing.
+  const committedCategoryRef = useRef('');
   const CATS_PER_PAGE = 10;
   const [title, setTitle] = useState("");
   // Rotating title placeholder — cycles question lines every 3s while the input is empty
@@ -287,7 +292,7 @@ const DEADLINE_STEP = 5;
   // `variant` is free to hold the real model — the same split as the sell form.
   const [vehicleDetails, setVehicleDetails] = useState<{ type: string; brand: string; model: string; year: string; variant: string; transmission: string; fuelType: string }>({ type: '', brand: '', model: '', year: '', variant: '', transmission: '', fuelType: '' });
   // Mobile details (brand/RAM/memory) — filled when the mobiles category is selected
-  const [mobileDetails, setMobileDetails] = useState<{ brand: string; ram: string; memory: string }>({ brand: '', ram: '', memory: '' });
+  const [mobileDetails, setMobileDetails] = useState<{ brand: string; model: string; ram: string; memory: string }>({ brand: '', model: '', ram: '', memory: '' });
   // Laptop details (brand -> model -> processor -> storage) — filled when the laptops category is selected
   const [laptopDetails, setLaptopDetails] = useState<{ brand: string; model: string; processor: string; storage: string }>({ brand: '', model: '', processor: '', storage: '' });
   // Camera details (brand -> model) — filled when the Camera category is selected
@@ -326,7 +331,9 @@ const DEADLINE_STEP = 5;
   const [thriftSize, setThriftSize] = useState('');
   // Thrift gates these dropdowns and their saved details
   const isThriftEnquiry = selectedCategories.includes('thrift') || (category || '').toLowerCase() === 'thrift';
-  const [accommodationGender, setAccommodationGender] = useState<'any' | 'male' | 'female' | 'mixed'>('any');
+  const [accommodationGender, setAccommodationGender] = useState<'' | 'any' | 'male' | 'female' | 'mixed'>('');
+  // Whether the stay allows pets — Yes / No dropdown on the accommodation tab
+  const [accommodationPetFriendly, setAccommodationPetFriendly] = useState<'' | 'yes' | 'no'>('');
   // Repair services: what kind of repair/fix is needed (service category)
   const [repairType, setRepairType] = useState('');
   // Subcategory for the main categories that have their own list (Electronics,
@@ -354,10 +361,6 @@ const DEADLINE_STEP = 5;
   const laptopStorageOptions = laptopDetails.brand
     ? [...getLaptopStorageOptions(laptopDetails.brand, laptopModelValue), LAPTOP_OTHER]
     : [];
-  useEffect(() => {
-    setLaptopDetails({ brand: '', model: '', processor: '', storage: '' });
-    setLaptopCustom({ model: '', processor: '', storage: '' });
-  }, [isLaptop]);
   // Watches: brand -> model only, the model list follows the chosen brand.
   const isWatch =
     selectedCategories.some((c) => (c || '').toLowerCase() === 'watches') ||
@@ -372,10 +375,6 @@ const DEADLINE_STEP = 5;
     : watchDetails.brand === WATCH_OTHER
       ? [WATCH_OTHER]
       : [...getWatchModels(watchDetails.brand), WATCH_OTHER];
-  useEffect(() => {
-    setWatchDetails({ brand: '', model: '' });
-    setWatchCustom({ brand: '', model: '' });
-  }, [isWatch]);
   const isCamera =
     selectedCategories.some((c) => (c || '').toLowerCase() === 'camera') ||
     (category || '').toLowerCase() === 'camera';
@@ -385,10 +384,6 @@ const DEADLINE_STEP = 5;
     : cameraDetails.brand === CAMERA_OTHER
       ? [CAMERA_OTHER]
       : [...getCameraModels(cameraDetails.brand), CAMERA_OTHER];
-  useEffect(() => {
-    setCameraDetails({ brand: '', model: '' });
-    setCameraCustom({ model: '' });
-  }, [isCamera]);
   // Audio & Headphones: brand -> model only, the model list follows the brand.
   const isAudio =
     selectedCategories.some((c) => (c || '').toLowerCase() === 'audio-headphones') ||
@@ -402,10 +397,6 @@ const DEADLINE_STEP = 5;
     : audioDetails.brand === AUDIO_OTHER
       ? [AUDIO_OTHER]
       : [...getAudioModels(audioDetails.brand), AUDIO_OTHER];
-  useEffect(() => {
-    setAudioDetails({ brand: '', model: '' });
-    setAudioCustom({ brand: '', model: '' });
-  }, [isAudio]);
   const isAgriculture =
     selectedCategories.includes('agriculture-farming') ||
     (category || '').toLowerCase().includes('agricultur');
@@ -918,54 +909,58 @@ const DEADLINE_STEP = 5;
   // Every dropdown hugs the text it is showing: small for "Brand", wider once
   // "Royal Enfield" or "Classic 350" is picked. Runs after each render so the
   // box grows and shrinks with the selection.
+  //
+  // Two rules keep it from disturbing the rest of the tab:
+  //  • only a tab that holds exactly ONE dropdown hugs its text — tabs with two
+  //    or more (brand + model, education + stream …) keep their normal widths;
+  //  • only the field's own wrapper is measured, never a flex row it shares
+  //    with another control, so the description box keeps its own size.
   useEffect(() => {
     const root = document.querySelector('.enq-form');
     if (!root) return;
-    const canvas = document.createElement('canvas').getContext('2d');
-    if (!canvas) return;
-    root.querySelectorAll('select').forEach((node) => {
-      const el = node as HTMLSelectElement;
-      // The contact-number country-code picker shares its row with the number
-      // input. Hugging here would shrink the row to the code's text and squeeze
-      // the input away, so that row keeps its normal layout.
-      if (el.parentElement?.querySelector('input')) return;
-      // Clear leftovers from an earlier pass so switching category re-measures
-      // from the normal width instead of keeping a stale small box.
+    const selects = Array.from(root.querySelectorAll('select')) as HTMLSelectElement[];
+    // Clear leftovers from an earlier pass so switching category or step
+    // re-measures from the normal width instead of keeping a stale small box.
+    selects.forEach((el) => {
+      el.style.width = '';
+      el.style.height = '';
+      el.style.fontSize = '';
+      el.style.paddingLeft = '';
+      el.style.paddingRight = '';
       if (el.parentElement) {
         el.parentElement.style.width = '';
         el.parentElement.style.marginLeft = '';
-      }
-      // Shrink the flex column the field sits in, otherwise the black handle is
-      // pinned to a wider column and ends up floating outside the field.
-      let item: HTMLElement | null = el.parentElement;
-      while (item && item.parentElement && window.getComputedStyle(item.parentElement).display !== 'flex') {
-        item = item.parentElement;
-      }
-      // Rows with several dropdowns (car, vehicles, bikes with brand + model …)
-      // keep their normal widths: only a lone dropdown hugs its text.
-      const rowSelects = item?.parentElement ? item.parentElement.querySelectorAll('select').length : 1;
-      if (rowSelects > 1) {
-        item!.style.flex = '';
-        item!.style.width = '';
-        item!.style.marginLeft = '';
-        el.style.width = '';
-        return;
-      }
-      const option = el.selectedOptions[0];
-      const text = (option?.textContent ?? '').trim() || 'Select';
-      const style = window.getComputedStyle(el);
-      canvas.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-      const width = Math.min(320, Math.max(120, Math.round(canvas.measureText(text).width) + 84));
-      if (item && item.parentElement) {
-        item.style.flex = '0 0 auto';
-        item.style.width = `${width}px`;
-        el.style.width = '100%';
-        // A lone dropdown hugs the right edge of its row.
-        item.style.marginLeft = 'auto';
-      } else {
-        el.style.width = `${width}px`;
+        el.parentElement.style.marginRight = '';
       }
     });
+    // Tabs with several dropdowns keep their normal even widths.
+    if (selects.length !== 1) return;
+    const el = selects[0];
+    const wrapper = el.parentElement;
+    if (!wrapper) return;
+    // The contact-number country-code picker shares its row with the number
+    // input. Hugging here would shrink the row to the code's text and squeeze
+    // the input away, so that row keeps its normal layout.
+    if (wrapper.querySelector('input')) return;
+    // Fields marked data-no-hug keep their full width (stay type and the
+    // gender dropdown under it read as normal selects, not chips).
+    if (wrapper.closest('[data-no-hug]')) return;
+    const canvas = document.createElement('canvas').getContext('2d');
+    if (!canvas) return;
+    const option = el.selectedOptions[0];
+    const text = (option?.textContent ?? '').trim() || 'Select';
+    const style = window.getComputedStyle(el);
+    canvas.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+    const rowWidth = wrapper.parentElement?.getBoundingClientRect().width ?? 0;
+    const measured = Math.round(canvas.measureText(text).width) + 84;
+    const width = Math.min(360, rowWidth || 360, Math.max(measured, Math.round(rowWidth * 0.7)));
+    wrapper.style.width = `${width}px`;
+    el.style.width = '100%';
+    // A lone dropdown sits in the centre of its row — auto margins centre it
+    // in a flex row or a block container alike, and sibling controls are never
+    // squeezed because this only runs for the tab's single dropdown.
+    wrapper.style.marginLeft = 'auto';
+    wrapper.style.marginRight = 'auto';
   });
 
   // Reveal the current step's header (#step-top) whenever the form loads or the
@@ -1091,14 +1086,17 @@ const DEADLINE_STEP = 5;
         const d = JSON.parse(draft);
         if (d.title) setTitle(d.title);
         if (d.description) setDescription(d.description);
-        if (d.selectedCategories) setSelectedCategories(d.selectedCategories.slice(0, 1));
+        if (d.selectedCategories) {
+          setSelectedCategories(d.selectedCategories.slice(0, 1));
+          committedCategoryRef.current = d.selectedCategories[0] ?? '';
+        }
         if (d.budget) setBudget(d.budget);
         if (d.budgetOpenToDiscussion) setBudgetOpenToDiscussion(true);
         if (d.location && !isDefaultPinAddress(d.location)) setLocation(d.location);
         if (d.deadline) setDeadline(new Date(d.deadline));
         if (d.notes) setNotes(d.notes);
         if (d.vehicleDetails) setVehicleDetails((prev) => ({ ...prev, ...d.vehicleDetails }));
-        if (d.mobileDetails) setMobileDetails(d.mobileDetails);
+        if (d.mobileDetails) setMobileDetails({ brand: '', model: '', ram: '', memory: '', ...d.mobileDetails });
         if (d.laptopDetails) setLaptopDetails(d.laptopDetails);
         if (d.laptopCustom) setLaptopCustom(d.laptopCustom);
         if (d.watchDetails) setWatchDetails(d.watchDetails);
@@ -1111,6 +1109,7 @@ const DEADLINE_STEP = 5;
         if (d.jobDetails) setJobDetails(d.jobDetails);
         if (d.accommodationType) setAccommodationType(d.accommodationType);
         if (d.accommodationGender) setAccommodationGender(d.accommodationGender);
+        if (d.accommodationPetFriendly) setAccommodationPetFriendly(d.accommodationPetFriendly);
         if (d.thriftGender) setThriftGender(d.thriftGender);
         if (d.thriftType) setThriftType(d.thriftType);
         if (d.thriftItem) setThriftItem(d.thriftItem);
@@ -1186,6 +1185,17 @@ const DEADLINE_STEP = 5;
 
   const goNext = () => {
     if (!canAdvanceFromStep(step)) return;
+    // Moving forward out of the category tab with a different category drops
+    // every answer from the other tabs; with the same category nothing changes.
+    if (step === 1) {
+      const nextCategory = selectedCategories[0] ?? '';
+      if (nextCategory !== committedCategoryRef.current) {
+        // The first category a form is given never wipes anything —
+        // there is nothing committed yet to compare against.
+        if (committedCategoryRef.current) resetFormAnswers();
+        committedCategoryRef.current = nextCategory;
+      }
+    }
     setAnimDir('up');
     setStep((prev) => Math.min(prev + 1, totalSteps - 1));
   };
@@ -1324,6 +1334,8 @@ const DEADLINE_STEP = 5;
               ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+            ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
+              ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
               ...(sneakerBrand && { sneakerBrand }),
               ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
@@ -1491,6 +1503,7 @@ const DEADLINE_STEP = 5;
             ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+            ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
             ...(sneakerBrand && { sneakerBrand }),
             ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
@@ -1499,7 +1512,8 @@ const DEADLINE_STEP = 5;
             ...(jobSkills.trim() && { skills: jobSkills.trim() }),
             ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
             ...(accommodationType && { accommodationType }),
-            ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
+            ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender || 'any' }),
+          ...(accommodationType && accommodationPetFriendly && { petFriendly: accommodationPetFriendly === 'yes' }),
             ...(isThriftEnquiry && thriftGender && { thriftGender }),
             ...(isThriftEnquiry && thriftType && { thriftType }),
             ...(isThriftEnquiry && thriftItem && { thriftItem }),
@@ -1672,6 +1686,7 @@ const DEADLINE_STEP = 5;
             ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
             ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
             ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+            ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
             ...(sneakerBrand && { sneakerBrand }),
             ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
@@ -1680,7 +1695,8 @@ const DEADLINE_STEP = 5;
             ...(jobSkills.trim() && { skills: jobSkills.trim() }),
             ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
           ...(accommodationType && { accommodationType }),
-          ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
+          ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender || 'any' }),
+          ...(accommodationType && accommodationPetFriendly && { petFriendly: accommodationPetFriendly === 'yes' }),
           ...(repairType && { repairType }),
           ...(subcategory && subcategoryOptions && { subcategory }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
@@ -1859,13 +1875,16 @@ const DEADLINE_STEP = 5;
               ...(vehicleDetails.transmission && { transmission: vehicleDetails.transmission }),
               ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
               ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
+            ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
+              ...(mobileDetails.model && { mobileModel: mobileDetails.model }),
               ...(sneakerBrand && { sneakerBrand }),
               ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
           ...(accommodationType && { accommodationType }),
-          ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
+          ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender || 'any' }),
+          ...(accommodationType && accommodationPetFriendly && { petFriendly: accommodationPetFriendly === 'yes' }),
           ...(repairType && { repairType }),
           ...(subcategory && subcategoryOptions && { subcategory }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
@@ -2255,13 +2274,31 @@ const DEADLINE_STEP = 5;
 
   const remainingEnquiries = getRemainingEnquiries();
 
-  // Wipes every category-specific answer (vehicle, mobile, sneaker, job,
-  // real-estate, accommodation, repair, cleaning). Called when the category
-  // changes so answers typed for the previous category can't ride along into
-  // the new enquiry and show up on its detail page.
-  const clearCategoryDetails = () => {
-    setVehicleDetails({ type: '', brand: '', year: '', variant: '', transmission: '', fuelType: '' });
-    setMobileDetails({ brand: '', ram: '', memory: '' });
+  // Wipes every answer the user filled on the form tabs. Called only when the
+  // user moves forward from the category tab with a different category, so
+  // answers typed for the old category can't ride along into the new enquiry
+  // and show up on its detail page. Photos, mobile verification and the chosen
+  // plan are deliberately left alone — they are not category answers.
+  const resetFormAnswers = () => {
+    setTitle('');
+    setDescription('');
+    setBudget('');
+    setBudgetOpenToDiscussion(false);
+    setLocation('');
+    setMapLocation(null);
+    setDeadline(null);
+    setNotes('');
+    setSubcategory('');
+    setVehicleDetails({ type: '', brand: '', model: '', year: '', variant: '', transmission: '', fuelType: '' });
+    setMobileDetails({ brand: '', model: '', ram: '', memory: '' });
+    setLaptopDetails({ brand: '', model: '', processor: '', storage: '' });
+    setLaptopCustom({ model: '', processor: '', storage: '' });
+    setCameraDetails({ brand: '', model: '' });
+    setCameraCustom({ model: '' });
+    setAudioDetails({ brand: '', model: '' });
+    setAudioCustom({ brand: '', model: '' });
+    setWatchDetails({ brand: '', model: '' });
+    setWatchCustom({ brand: '', model: '' });
     setSneakerBrand('');
     setSneakerAudience('Adults');
     setSneakerSize('');
@@ -2272,20 +2309,26 @@ const DEADLINE_STEP = 5;
     setEstateType('');
     setEstateDealType('Buy');
     setAccommodationType('');
-    setAccommodationGender('any');
+    setAccommodationGender('');
+    setAccommodationPetFriendly('');
+    setThriftGender('');
+    setThriftType('');
+    setThriftItem('');
+    setThriftSize('');
     setRepairType('');
     setCleaningTypes([]);
+    setLocationSuggestions([]);
+    setShowLocationSuggestions(false);
+    setErrors({});
   };
 
   // Handle category selection — only ONE category can be selected at a time
   // (tapping another category replaces the current one; tapping the selected
   // one deselects it).
   const handleCategoryToggle = (categoryValue: string) => {
-    const current = selectedCategories[0] ?? '';
-    const categoryChanged = current !== categoryValue;
-    // Moving to a different category (or clearing it) discards the detail
-    // answers that belonged to the old one.
-    if (categoryChanged) clearCategoryDetails();
+    // Picking a category only records the choice: nothing is cleared here.
+    // The answers are dropped when Next is pressed from this tab with a
+    // category that differs from committedCategoryRef.
     setSelectedCategories(prev =>
       prev.includes(categoryValue) ? [] : [categoryValue]
     );
@@ -2628,7 +2671,8 @@ const DEADLINE_STEP = 5;
           ...(jobDetails.stream.trim() && { stream: jobDetails.stream.trim() }),
           ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
           ...(accommodationType && { accommodationType }),
-          ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender }),
+          ...(accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && { genderPreference: accommodationGender || 'any' }),
+          ...(accommodationType && accommodationPetFriendly && { petFriendly: accommodationPetFriendly === 'yes' }),
           ...(repairType && { repairType }),
           ...(subcategory && subcategoryOptions && { subcategory }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
@@ -3450,7 +3494,7 @@ const DEADLINE_STEP = 5;
                             <select
                               value={jobDetails.education}
                               onChange={(e) => setJobDetails(v => ({ ...v, education: e.target.value }))}
-                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.education ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.education) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.education ? 'text-[10px] font-semibold text-gray-900' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.education) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                             >
                               <option value="">Education</option>
                               {['10th pass', '12th pass', 'ITI', 'Diploma', 'Graduate', 'Post Graduate', 'PhD', 'Other'].map((opt) => (
@@ -3465,7 +3509,7 @@ const DEADLINE_STEP = 5;
                               value={jobDetails.stream}
                               onChange={(e) => setJobDetails(v => ({ ...v, stream: e.target.value.slice(0, 35) }))}
                               placeholder="Stream — e.g., B.Tech CSE"
-                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.stream ? 'text-[9px] text-gray-700 placeholder:text-[9px] placeholder:text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
+                              className={`w-full appearance-none rounded-full h-8 sm:h-10 font-semibold text-center border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.stream ? 'text-[10px] font-semibold text-gray-900 placeholder:text-[9px] placeholder:text-gray-700' : 'text-[10px] sm:text-sm text-black'}`}
                             />
                           </div>
                         </div>
@@ -3477,7 +3521,7 @@ const DEADLINE_STEP = 5;
                             <select
                               value={jobDetails.experience}
                               onChange={(e) => setJobDetails(v => ({ ...v, experience: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.experience ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.experience) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.experience ? 'text-[10px] font-semibold text-gray-900' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.experience) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                             >
                               <option value="">{jobDirection === 'hiring' ? 'Experience required' : 'Your experience'}</option>
                               {['Fresher', '0-1 year', '1-3 years', '3-5 years', '5-10 years', '10+ years'].map((opt) => (
@@ -3489,7 +3533,7 @@ const DEADLINE_STEP = 5;
                             <select
                               value={jobDetails.jobType}
                               onChange={(e) => setJobDetails(v => ({ ...v, jobType: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.jobType ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.jobType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.jobType ? 'text-[10px] font-semibold text-gray-900' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.jobType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                             >
                               <option value="">Job type</option>
                               {['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'].map((opt) => (
@@ -3501,7 +3545,7 @@ const DEADLINE_STEP = 5;
                             <select
                               value={jobDetails.workMode}
                               onChange={(e) => setJobDetails(v => ({ ...v, workMode: e.target.value }))}
-                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.workMode ? 'text-[9px] text-gray-700' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.workMode) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                              className={`w-full flex-shrink-0 appearance-none rounded-full h-8 sm:h-10 font-semibold text-center [text-align-last:center] border border-gray-300 shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus-visible:border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-2 pr-2 ${!jobDetails.workMode ? 'text-[10px] font-semibold text-gray-900' : 'text-[10px] sm:text-sm text-black'}${(jobDetails.workMode) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                             >
                               <option value="">Work mode</option>
                               {['Work from office', 'Work from home', 'Hybrid'].map((opt) => (
@@ -3520,50 +3564,71 @@ const DEADLINE_STEP = 5;
                             value={jobSkills}
                             onChange={(e) => setJobSkills(e.target.value)}
                             placeholder={jobSkills ? '' : 'Skills — e.g., Tally, Excel, Driving, 2-wheeler license'}
-                            className={`w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                            className={`w-full rounded-[12px] h-12 sm:h-14 min-h-[48px] font-medium border-[1.5px] border-slate-200 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 pl-4 pr-4 ${!jobSkills ? 'text-[10px] text-gray-700 font-semibold placeholder:text-[10px] placeholder:text-gray-700 placeholder:font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                           />
                         </div>
                       )}
                       {/* Accommodation details — subtype dropdown + gender preference (accommodations category only) */}
                       {isAccom && (
                         <div className="mb-4">
+                          <div className="relative" data-no-hug="stay-type">
                           <select
+                            aria-label="Stay type"
                             value={accommodationType}
                             onChange={(e) => {
                               setAccommodationType(e.target.value);
                               // Reset gender when switching to a subtype where it doesn't apply
                               if (!GENDER_RELEVANT_ACCOMMODATION_TYPES.has(e.target.value)) setAccommodationGender('any');
                             }}
-                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!accommodationType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-4 ${!accommodationType ? 'text-[11px] font-semibold text-gray-900' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                           >
                             <option value="">Stay type</option>
                             {ACCOMMODATION_SUBTYPES.map((s) => (
                               <option key={s.value} value={s.value}>{s.label}</option>
                             ))}
                           </select>
-                          <div className="h-3">
-                            <p className="text-[8px] font-bold text-black text-center tracking-wide">stay type</p>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                           </div>
-                          {/* Gender preference — shared-living subtypes only */}
+                          <div className="h-3" aria-hidden="true" />
+                          {/* Gender preference — shared-living subtypes only, a
+                              dropdown like the stay type above it: Any / Male
+                              only / Female only / Mixed. */}
                           {accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType) && (
-                            <div className="mt-3 flex items-center justify-center gap-1.5 flex-wrap">
-                              {ACCOMMODATION_GENDER_OPTIONS.map(({ value, label }) => (
-                                <button
-                                  key={value}
-                                  type="button"
-                                  onClick={() => setAccommodationGender(value)}
-                                  className={cn(
-                                    'px-4 py-2 rounded-full text-[10px] sm:text-xs font-bold border-2 transition-all duration-150',
-                                    accommodationGender === value
-                                      ? 'bg-blue-600 text-white border-[3px] border-black'
-                                      : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
-                                  )}
+                            <div className="mt-3">
+                              <div className="relative" data-no-hug="gender">
+                                <select
+                                  aria-label="Gender preference"
+                                  value={accommodationGender}
+                                  onChange={(e) => setAccommodationGender(e.target.value as 'any' | 'male' | 'female' | 'mixed')}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${accommodationGender ? 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none' : 'text-[11px] font-semibold text-gray-900'}`}
                                 >
-                                  {label}
-                                </button>
-                              ))}
+                                  <option value="" className="bg-white text-black">Gender</option>
+                                  {ACCOMMODATION_GENDER_OPTIONS.map(({ value, label }) => (
+                                    <option key={value} value={value} className="bg-white text-black">{label}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                              </div>
+                              <div className="h-3" aria-hidden="true" />
                             </div>
                           )}
+                          {/* Pets allowed — Yes / No, shown for every stay type */}
+                          <div className="mt-3">
+                            <div className="relative" data-no-hug="pet-friendly">
+                              <select
+                                aria-label="Pet friendly"
+                                value={accommodationPetFriendly}
+                                onChange={(e) => setAccommodationPetFriendly(e.target.value as '' | 'yes' | 'no')}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-10 ${!accommodationPetFriendly ? 'text-[11px] font-semibold text-gray-900' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                              >
+                                <option value="">Pet friendly</option>
+                                <option value="yes" className="bg-white text-black">Yes</option>
+                                <option value="no" className="bg-white text-black">No</option>
+                              </select>
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                            </div>
+                            <div className="h-3" aria-hidden="true" />
+                          </div>
                         </div>
                       )}
                       {/* Cleaning services — multi-select cleaning types (cleaning-services category) */}
@@ -3583,7 +3648,7 @@ const DEADLINE_STEP = 5;
                             <select
                               value={repairType}
                               onChange={(e) => setRepairType(e.target.value)}
-                              className={`w-full appearance-none rounded-full h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!repairType ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                              className={`w-full appearance-none rounded-full h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!repairType ? 'text-[11px] font-semibold text-gray-900' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
                             >
                               <option value="">What needs fixing?</option>
                               {REPAIR_TYPES.map((t) => (
@@ -3619,7 +3684,7 @@ const DEADLINE_STEP = 5;
                                     else setLaptopDetails((prev) => ({ ...prev, storage: v }));
                                   }}
                                   disabled={field.disabled}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${field.value ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${field.value ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Cancel</option>
                                   {field.options.map((o) => (
@@ -3687,7 +3752,7 @@ const DEADLINE_STEP = 5;
                                     } else setWatchDetails((prev) => ({ ...prev, model: v }));
                                   }}
                                   disabled={field.disabled}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(field.value) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(field.value) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Cancel</option>
                                   {field.options.map((o) => (
@@ -3742,7 +3807,7 @@ const DEADLINE_STEP = 5;
                                     } else setCameraDetails((prev) => ({ ...prev, model: v }));
                                   }}
                                   disabled={field.disabled}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(field.value) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(field.value) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Cancel</option>
                                   {field.options.map((o) => (
@@ -3788,7 +3853,7 @@ const DEADLINE_STEP = 5;
                                     } else setAudioDetails((prev) => ({ ...prev, model: v }));
                                   }}
                                   disabled={field.disabled}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-sm sm:text-base text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(field.value) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 disabled:shadow-none ${!field.value ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs text-black'} ${field.disabled ? 'bg-slate-100' : 'bg-white'}${(field.value) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value=""></option>
                                   {field.options.map((o) => (
@@ -3882,7 +3947,7 @@ const DEADLINE_STEP = 5;
                               <select
                                 value={vehicleDetails.brand}
                                 onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value, model: '', variant: '', transmission: '', fuelType: '' }))}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.brand) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.brand) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                               >
                                 <option value="">Brand</option>
                                 {(isBikeOnly
@@ -3912,7 +3977,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.type}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, type: e.target.value, brand: '', variant: '' }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.type ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base !font-bold text-black'}${(vehicleDetails.type) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.type ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs !font-bold text-black'}${(vehicleDetails.type) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Type</option>
                                       {VEHICLE_TYPES.map((t) => (
@@ -3935,7 +4000,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.model}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, model: e.target.value, variant: '', transmission: '', fuelType: '' }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.model ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.model) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.model ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.model) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Model</option>
                                       {carModelOptions.map((m) => (
@@ -3958,7 +4023,7 @@ const DEADLINE_STEP = 5;
                                       value={vehicleDetails.model}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, model: e.target.value, variant: '' }))}
                                       disabled={!bikeModelOptions.length && vehicleDetails.brand === 'Other'}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.model ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.model) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.model ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.model) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Model</option>
                                       {bikeModelOptions.map((m) => (
@@ -4015,7 +4080,7 @@ const DEADLINE_STEP = 5;
                                   <select
                                     value={vehicleDetails.variant}
                                     onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
-                                    className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.variant) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                    className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.variant) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                   >
                                     <option value="">Variant</option>
                                     {models.map((m) => (
@@ -4038,7 +4103,7 @@ const DEADLINE_STEP = 5;
                                         <select
                                           value={vehicleDetails.variant}
                                           onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
-                                          className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.variant) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                          className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.variant) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                         >
                                           <option value="">Variant</option>
                                           {carVariantOptions.map((v) => (
@@ -4070,7 +4135,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.transmission}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, transmission: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.transmission ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.transmission) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.transmission ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.transmission) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Transmission</option>
                                       {['Manual', 'Automatic'].map((t) => (
@@ -4093,7 +4158,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.fuelType}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, fuelType: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.fuelType ? 'text-[10px] text-black font-semibold' : 'text-sm sm:text-base text-black'}${(vehicleDetails.fuelType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.fuelType ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.fuelType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Fuel</option>
                                       {['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'LPG'].map((f) => (
@@ -4127,49 +4192,63 @@ const DEADLINE_STEP = 5;
                               <div className="flex-1 min-w-0 relative">
                                 <select
                                   value={mobileDetails.brand}
-                                  onChange={(e) => setMobileDetails(v => ({ ...v, brand: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.brand ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(mobileDetails.brand) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  onChange={(e) => setMobileDetails(v => ({ ...v, brand: e.target.value, model: '' }))}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.brand ? 'text-[11px] font-semibold text-gray-900' : 'text-[11px] sm:text-xs text-black'}${(mobileDetails.brand) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Brand</option>
                                   {MOBILE_BRANDS.map((b) => (
                                     <option key={b} value={b}>{b}</option>
                                   ))}
                                 </select>
-                                <ChevronDown className="absolute right-3 top-4 sm:top-5 h-4 w-4 text-gray-500 pointer-events-none" />
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
+                              {/* Model — follows the picked brand */}
+                              <div className="flex-1 min-w-0 relative">
+                                <select
+                                  value={mobileDetails.model}
+                                  onChange={(e) => setMobileDetails(v => ({ ...v, model: e.target.value }))}
+                                  disabled={!mobileDetails.brand}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 pl-4 pr-9 ${!mobileDetails.model ? 'text-[11px] font-semibold text-gray-900' : 'text-[11px] sm:text-xs text-black'} ${mobileDetails.brand ? 'bg-white' : 'bg-slate-100'}${(mobileDetails.model) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                >
+                                  <option value="">Model</option>
+                                  {(mobileDetails.brand === MOBILE_OTHER
+                                    ? [MOBILE_OTHER]
+                                    : [...getMobileModels(mobileDetails.brand), MOBILE_OTHER]).map((m) => (
+                                    <option key={m} value={m}>{m}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                            </div>
+                            <div className="flex items-start justify-between gap-3 mt-3">
                               {/* RAM */}
                               <div className="flex-1 min-w-0 relative">
                                 <select
                                   value={mobileDetails.ram}
                                   onChange={(e) => setMobileDetails(v => ({ ...v, ram: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.ram ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(mobileDetails.ram) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.ram ? 'text-[11px] font-semibold text-gray-900' : 'text-[11px] sm:text-xs text-black'}${(mobileDetails.ram) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">RAM</option>
                                   {RAM_OPTIONS.map((r) => (
                                     <option key={r} value={r}>{r}</option>
                                   ))}
                                 </select>
-                                <ChevronDown className="absolute right-3 top-4 sm:top-5 h-4 w-4 text-gray-500 pointer-events-none" />
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
                               {/* Memory (storage) */}
                               <div className="flex-1 min-w-0 relative">
                                 <select
                                   value={mobileDetails.memory}
                                   onChange={(e) => setMobileDetails(v => ({ ...v, memory: e.target.value }))}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.memory ? 'text-[10px] text-slate-400' : 'text-sm sm:text-base text-black'}${(mobileDetails.memory) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!mobileDetails.memory ? 'text-[11px] font-semibold text-gray-900' : 'text-[11px] sm:text-xs text-black'}${(mobileDetails.memory) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Memory</option>
                                   {MEMORY_OPTIONS.map((m) => (
                                     <option key={m} value={m}>{m}</option>
                                   ))}
                                 </select>
-                                <ChevronDown className="absolute right-3 top-4 sm:top-5 h-4 w-4 text-gray-500 pointer-events-none" />
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
-                            </div>
-                            <div className="h-3 flex items-start justify-between gap-3 mt-0.5">
-                              <p className="flex-1 text-[8px] font-bold text-black text-center tracking-wide">brand</p>
-                              <p className="flex-1 text-[8px] font-bold text-black text-center tracking-wide">ram</p>
-                              <p className="flex-1 text-[8px] font-bold text-black text-center tracking-wide">memory</p>
                             </div>
                           </div>
                         );
@@ -4190,7 +4269,7 @@ const DEADLINE_STEP = 5;
                                       <select
                                         value={sneakerBrand}
                                         onChange={(e) => setSneakerBrand(e.target.value)}
-                                        className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrand ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}${(sneakerBrand) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                        className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrand ? 'text-[9px] text-gray-900 font-semibold' : 'text-[11px] sm:text-sm text-black'}${(sneakerBrand) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                       >
                                         <option value="">Brand</option>
                                         {SNEAKER_BRANDS.map((b) => (
@@ -4207,21 +4286,21 @@ const DEADLINE_STEP = 5;
                                     </>
                                   );
                                 })()}
-                                <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
                               {/* Size — options depend on the audience (Adults default) */}
                               <div className="flex-1 min-w-0 relative">
                                 <select
                                   value={sneakerSize}
                                   onChange={(e) => setSneakerSize(e.target.value)}
-                                  className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-slate-400' : 'text-[11px] sm:text-sm text-black'}${(sneakerSize) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-gray-900 font-semibold' : 'text-[11px] sm:text-sm text-black'}${(sneakerSize) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="">Size</option>
                                   {sizeList.map((s) => (
                                     <option key={s} value={s}>{s}</option>
                                   ))}
                                 </select>
-                                <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
                             </div>
                             {/* Adults / Kids — under brand+size row; switching resets the size */}
@@ -4257,26 +4336,26 @@ const DEADLINE_STEP = 5;
                               <select
                                 value={thriftGender}
                                 onChange={(e) => { setThriftGender(e.target.value); setThriftType(''); setThriftItem(''); setThriftSize(''); }}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftGender ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}${(thriftGender) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftGender ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs text-black'}${(thriftGender) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                               >
                                 <option value="" disabled>Select gender</option>
                                 {THRIFT_GENDERS.map((g) => <option key={g.value} value={g.label}>{g.label}</option>)}
                                 <option value="">Cancel</option>
                               </select>
-                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                             </div>
                             {thriftGender && (
                               <div className="relative">
                                 <select
                                   value={thriftType}
                                   onChange={(e) => { setThriftType(e.target.value); setThriftItem(''); setThriftSize(''); }}
-                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}${(thriftType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftType ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs text-black'}${(thriftType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                 >
                                   <option value="" disabled>Select type</option>
                                   {THRIFT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                                   <option value="">Cancel</option>
                                 </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                               </div>
                             )}
                           </div>
@@ -4285,13 +4364,13 @@ const DEADLINE_STEP = 5;
                               <select
                                 value={thriftItem}
                                 onChange={(e) => setThriftItem(e.target.value)}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftItem ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}${(thriftItem) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftItem ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs text-black'}${(thriftItem) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                               >
                                 <option value="" disabled>Select item</option>
                                 {thriftItemsFor(thriftGender, thriftType).map((item) => <option key={item} value={item}>{item}</option>)}
                                 <option value="">Cancel</option>
                               </select>
-                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                             </div>
                           )}
                           {thriftGender && thriftType && thriftSizesFor(thriftType).length > 0 && (
@@ -4299,13 +4378,13 @@ const DEADLINE_STEP = 5;
                               <select
                                 value={thriftSize}
                                 onChange={(e) => setThriftSize(e.target.value)}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftSize ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base text-black'}${(thriftSize) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!thriftSize ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs text-black'}${(thriftSize) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                               >
                                 <option value="" disabled>Select size</option>
                                 {thriftSizesFor(thriftType).map((sz) => <option key={sz} value={sz}>{sz}</option>)}
                                 <option value="">Cancel</option>
                               </select>
-                              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                             </div>
                           )}
                         </div>
@@ -4339,7 +4418,7 @@ const DEADLINE_STEP = 5;
                                   onChange={(e) => { if (!estateType) setEstateDealType(e.target.value as typeof estateDealType); }}
                                   className={cn(
                                     'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
-                                    !estateDealType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none',
+                                    !estateDealType ? 'text-[10px] text-gray-700 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none',
                                     estateDealType && '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none',
                                     !!estateType && 'opacity-60 cursor-not-allowed'
                                   )}
@@ -4350,7 +4429,7 @@ const DEADLINE_STEP = 5;
                                   ))}
                                   <option value="">Cancel</option>
                                 </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                               </div>
                             </div>
                             {/* Property type dropdown — Land / Plot, Buildings / Commercial, House / Flat, Others (matches the sell form's dropdown). */}
@@ -4370,7 +4449,7 @@ const DEADLINE_STEP = 5;
                                   }}
                                   className={cn(
                                     'w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200',
-                                    !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-sm sm:text-base !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none',
+                                    !estateType ? 'text-[10px] text-gray-700 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none',
                                     estateType && '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none'
                                   )}
                                 >
@@ -4380,7 +4459,7 @@ const DEADLINE_STEP = 5;
                                   ))}
                                   <option value="">Cancel</option>
                                 </select>
-                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
                               </div>
                             </div>
                             {/* Two separate capsules — number input + unit dropdown (only for non-Other types) */}
@@ -4413,7 +4492,7 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={estateDetails.houseBhk}
                                       onChange={(e) => setEstateDetails(v => ({ ...v, houseBhk: e.target.value }))}
-                                      className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] appearance-none pl-4 pr-8 cursor-pointer', !estateDetails.houseBhk ? 'text-slate-400' : 'text-black', estateDetails.houseBhk && '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none')}
+                                      className={cn('h-12 sm:h-14 rounded-full border-2 border-gray-400 bg-white text-center text-xs sm:text-sm font-bold outline-none focus:border-[3px] focus:border-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] appearance-none pl-4 pr-8 cursor-pointer', !estateDetails.houseBhk ? 'text-gray-900 font-semibold' : 'text-black', estateDetails.houseBhk && '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none')}
                                       style={{ textAlignLast: 'center', outline: 'none' } as React.CSSProperties}
                                     >
                                       <option value="">BHK</option>
@@ -4440,7 +4519,7 @@ const DEADLINE_STEP = 5;
                               }}
                               placeholder="Specifications, requirements, timeline..."
                               maxLength={MAX_DESC_CHARS}
-                              className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
+                              className="wizard-desc-box rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus
                             />
                           </div>
@@ -4458,7 +4537,7 @@ const DEADLINE_STEP = 5;
                               }}
                               placeholder="Specifications, requirements, timeline..."
                               maxLength={MAX_DESC_CHARS}
-                              className="rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
+                              className="wizard-desc-box rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus
                             />
                           </div>
@@ -4569,12 +4648,12 @@ const DEADLINE_STEP = 5;
                                 setBudgetOpenToDiscussion(false);
                               }
                             }}
-                            className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit min-w-[152px] sm:min-w-[168px] max-w-full font-medium border-[1.5px] focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${budgetOpenToDiscussion ? 'border-black bg-blue-600 text-[11px] sm:text-xs font-bold text-white shadow-none' : 'border-slate-200 bg-white text-[10px] sm:text-xs font-semibold text-slate-400 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)]'}`}
+                            className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit min-w-[152px] sm:min-w-[168px] max-w-full font-medium border-[1.5px] focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${budgetOpenToDiscussion ? 'border-black bg-blue-600 text-[11px] sm:text-xs font-bold text-white shadow-none' : 'border-slate-200 bg-white text-[10px] sm:text-xs font-semibold text-gray-900 font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)]'}`}
                           >
                             <option value="" className="bg-white text-black">Click here</option>
                             <option value="open-to-discussion" className="bg-white text-black">Open to discussion</option>
                           </select>
-                          <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${budgetOpenToDiscussion ? 'text-white' : 'text-gray-800'}`} />
+                          <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${budgetOpenToDiscussion ? 'text-white' : 'text-gray-800'}`} />
                         </div>
                       </div>
                     </div>
@@ -4787,7 +4866,7 @@ const DEADLINE_STEP = 5;
                           <p className="text-[15px] sm:text-base font-semibold text-gray-900 leading-snug break-words">{title || 'Your enquiry title'}</p>
                           <div className="flex justify-center pt-4">
                             {budget ? (
-                              <p className="text-[13px] sm:text-sm font-semibold text-gray-700">₹{budget}</p>
+                              <p className="text-[11px] sm:text-xs font-semibold text-gray-700">₹{budget}</p>
                             ) : budgetOpenToDiscussion ? (
                               <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-800 text-white border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]"><IndianRupee className="h-3 w-3" />Open to discussion</span>
                             ) : (
@@ -4850,7 +4929,7 @@ const DEADLINE_STEP = 5;
                               localStorage.setItem(ENQUIRY_STORAGE_KEY, JSON.stringify({
                                 title, description, selectedCategories, budget, budgetOpenToDiscussion, location, vehicleDetails, mobileDetails, laptopDetails, laptopCustom, watchDetails, watchCustom, estateDetails, estateType, estateDealType,
                                 deadline: deadline?.toISOString(), notes,
-                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, subcategory, accommodationGender, thriftGender, thriftType, thriftItem, thriftSize, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
+                                referenceImageUrls, mobileNumber, selectedPlanId: selectedPlan?.id, jobDirection, jobSkills, jobDetails, accommodationType, subcategory, accommodationGender, accommodationPetFriendly, thriftGender, thriftType, thriftItem, thriftSize, sneakerBrand, sneakerAudience, sneakerSize, cleaningTypes
                               }));
                               navigate('/profile?returnTo=/post-enquiry');
                             }}

@@ -22,11 +22,11 @@ export const BIKE_BRANDS = [
   'Ultraviolette', 'UM', 'Vespa', 'Voge', 'Yamaha', 'Yezdi', 'Zontes', 'Other',
 ];
 
-export const MOBILE_BRANDS = [
-  'Apple', 'Asus', 'Google', 'Honor', 'Infinix', 'iQOO', 'Itel', 'Jio',
-  'Karbonn', 'Lava', 'Lenovo', 'Micromax', 'Motorola', 'Nokia', 'Nothing',
-  'OnePlus', 'Oppo', 'Other', 'Realme', 'Redmi', 'Samsung', 'Tecno', 'Vivo', 'Xiaomi',
-];
+// Phones live in one catalogue shared by both forms, so the Sell listing and
+// the Post Enquiry form always offer the same brands and the same models behind
+// them. Re-exported here because existing callers import the brand list from
+// this file.
+export { MOBILE_BRANDS } from '@/constants/mobileCatalog';
 
 export const SNEAKER_BRANDS = [
   'Adidas', 'Anta', 'Asics', 'Balenciaga', 'Bata', 'Brooks', 'Campus', 'Converse', 'Crocs', 'Fila',

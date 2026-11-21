@@ -943,6 +943,7 @@ export default function ListingDetail() {
                     serviceMode: 'Service mode',
                     repairType: 'Service type',
                     accommodationType: 'Stay type',
+                    petFriendly: 'Pet friendly',
                     // Condition step
                     productCondition: 'Condition',
                     visibleDamage: 'Visible damage',
@@ -974,7 +975,7 @@ export default function ListingDetail() {
                         {brandLogo && <img decoding="async" src={brandLogo} alt="" className="h-3.5 w-3.5 object-contain flex-shrink-0" loading="lazy" />}
                         {key === 'facing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-0 rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Facing:</span>}
                         {key === 'furnishing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-0 rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Furnishing:</span>}
-                        {String(val)}
+                        {key === 'petFriendly' ? (val === true || val === 'true' ? 'Yes' : 'No') : String(val)}
                         {key === 'furnishing' && <Sofa className="h-3 w-3 text-black flex-shrink-0" />}
                       </span>
                     );

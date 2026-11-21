@@ -2913,3 +2913,17 @@ body {
   stroke-width: 2.75;
   right: 0.5rem;
 }
+
+
+/* Wizard description boxes keep their own height. The global mobile touch
+   rules flatten every textarea to min-height:44px, which left the enquiry and
+   listing description boxes as a thin strip; this restores their own size so
+   they never change with the dropdowns on the same tab. */
+.wizard-desc-box {
+  min-height: 160px !important;
+}
+@media (min-width: 640px) {
+  .wizard-desc-box {
+    min-height: 180px !important;
+  }
+}

@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Store, LayoutDashboard, Tag } from 'lucide-react';
 import { SellTagDoodle } from '@/components/doodles';
-import { SellHeaderDoodles } from '@/components/sellHeaderDoodles';
+import SellHeaderPoster from '@/components/sellHeaderPoster';
 import { EnquiryTrustDoodles } from '@/components/enquiryTrustDoodles';
 
 export default function SellShell({
@@ -54,12 +54,14 @@ export default function SellShell({
     <Layout>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className={`bg-black text-white ${compactHeader ? 'py-4 min-h-[116px] sm:min-h-[124px]' : 'py-6 sm:py-12 lg:py-16'} relative overflow-visible`}>
-          {/* Selling mural filling the whole black header behind the text —
-              the enquiry form's treatment, drawn for a seller. Absolutely
-              positioned, so the header keeps exactly its height. */}
+          {/* Seller poster covering the whole black header behind the text —
+              a wide print sliced to fill, so every header size crops into a
+              composed poster. Absolutely positioned, so the header keeps
+              exactly its height; the scrim keeps the heading first. */}
           {isCreate && (
-            <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">
-              <SellHeaderDoodles className="absolute inset-0 h-full w-full" />
+            <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden">
+              <SellHeaderPoster className="absolute inset-0 h-full w-full" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/25 to-black/70" />
             </div>
           )}
           {/* The marketplace band gets the same trust doodle field the enquiries

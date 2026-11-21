@@ -32,6 +32,7 @@ import {
   ChevronRight,
   MoreHorizontal,
   Check,
+  Dog,
 } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { shortUserId } from '@/lib/userDisplayName';
@@ -85,7 +86,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string; audioBrand?: string; audioModel?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; mobileModel?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string; audioBrand?: string; audioModel?: string } | null;
 }
 
 interface UserProfile {
@@ -949,7 +950,11 @@ const EnquiryDetail = () => {
                       const chips = [
                         ...jobChips,
                         accommodationLabel && { label: 'Stay type', value: accommodationLabel, highlight: true },
-                        d.genderPreference && ['male', 'female', 'other'].includes(String(d.genderPreference).toLowerCase()) && { label: null, value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : 'Other', highlight: true },
+                        d.genderPreference && { label: null, value: d.genderPreference === 'male' ? 'Male only' : d.genderPreference === 'female' ? 'Female only' : d.genderPreference === 'mixed' ? 'Mixed' : d.genderPreference === 'any' ? 'Any' : 'Other', highlight: true },
+                        // Pets: a green dog when the stay allows them, the crossed-out
+                        // paw mark when it doesn't. Both icons are the same size.
+                        d.petFriendly === true && { label: null, value: 'Pet friendly', icon: 'dog' },
+                        d.petFriendly === false && { label: null, value: 'No pets', icon: 'nopets' },
                         d.listingType && { label: 'Looking to', value: d.listingType === 'Buy' ? 'Buy' : d.listingType === 'Rent' ? 'For Rent' : d.listingType === 'Lease' ? 'For Lease' : d.listingType, highlight: true },
                         d.landArea && { label: 'Land / Plot', value: d.landArea, highlight: true },
                         d.builtUpArea && { label: 'Buildings', value: d.builtUpArea, highlight: true },
@@ -960,6 +965,7 @@ const EnquiryDetail = () => {
                         d.transmission && { label: '', value: /transmission/i.test(d.transmission) ? d.transmission : `${d.transmission} Transmission`, icon: 'gear' },
                         d.fuelType && { label: '', value: d.fuelType, icon: 'fuel' },
                         d.mobileBrand && { label: 'Brand', value: d.mobileBrand, icon: 'mobileBrand', logoUrl: getMobileBrandLogoUrl(d.mobileBrand), highlight: true },
+                        d.mobileModel && { label: 'Model', value: String(d.mobileModel), highlight: true },
                         d.ram && { label: 'RAM', value: d.ram, highlight: true },
                         d.memory && { label: 'Memory', value: d.memory, highlight: true },
                         // Laptop picks from the post-enquiry description step
@@ -977,6 +983,12 @@ const EnquiryDetail = () => {
                         (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
                         d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
                         d.repairType && { label: 'Service type', value: d.repairType, highlight: true },
+                        // Thrift dropdowns picked on the description step
+                        d.thriftGender && { label: 'For', value: String(d.thriftGender) },
+                        d.thriftType && { label: 'Type', value: String(d.thriftType) },
+                        d.thriftItem && { label: 'Item', value: String(d.thriftItem) },
+                        d.thriftSize && { label: 'Size', value: String(d.thriftSize) },
+                        Array.isArray(d.cleaningTypes) && d.cleaningTypes.length > 0 && { label: 'Cleaning', value: d.cleaningTypes.join(', ') },
                         // User-picked subcategory: no title, description's type.
                         d.subcategory && { label: null, value: String(d.subcategory), subcategory: true },
                       ].filter(Boolean) as any[];
@@ -986,9 +998,24 @@ const EnquiryDetail = () => {
                           <path d="M12 4v16M5 12h14M5 12v-4M19 12v-4M5 12v4M19 12v4" />
                         </svg>
                       );
+                      const NoPetsIcon = ({ className = "" }: { className?: string }) => (
+                        <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
+                          <circle cx="50" cy="50" r="43" fill="#fff" stroke="#dc2626" strokeWidth="9" />
+                          <g fill="#000">
+                            <ellipse cx="38" cy="32" rx="7" ry="10" transform="rotate(-16 38 32)" />
+                            <ellipse cx="58" cy="30" rx="7" ry="10" transform="rotate(14 58 30)" />
+                            <ellipse cx="24" cy="47" rx="6.5" ry="9" transform="rotate(-32 24 47)" />
+                            <ellipse cx="72" cy="45" rx="6.5" ry="9" transform="rotate(30 72 45)" />
+                            <path d="M32 64c0-8 8-12 16-10 8 2 14 6 16 12 2 6-4 10-11 9-4-.6-6 1-9 1-8 0-12-5-12-12z" />
+                          </g>
+                          <path d="M17 83 L83 17" stroke="#dc2626" strokeWidth="9" strokeLinecap="round" />
+                        </svg>
+                      );
                       const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) => {
                         const isLogo = (icon === 'brand' || icon === 'mobileBrand' || icon === 'sneakerBrand') && !!logoUrl;
                         if (isLogo) return <img decoding="async" src={logoUrl as string} alt="" className="h-[15px] w-[15px] shrink-0 rounded-full object-contain" loading="lazy" />;
+                        if (icon === 'dog') return <Dog className="h-3.5 w-3.5 shrink-0 text-green-600" strokeWidth={2.2} />;
+                        if (icon === 'nopets') return <NoPetsIcon className="h-3.5 w-3.5 shrink-0" />;
                         const glyph = icon === 'gear' ? <GearShifterIcon className="h-[10px] w-[10px]" />
                           : icon === 'fuel' ? <Fuel className="h-[10px] w-[10px]" />
                           : icon === 'calendar' ? <Calendar className="h-[10px] w-[10px]" />

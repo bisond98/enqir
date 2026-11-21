@@ -22,6 +22,7 @@ import { WATCH_BRAND_OPTIONS } from '@/constants/watchCatalog';
 // Values are stored as a flat `details` map on the listing document.
 
 import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES } from './categoryBrands';
+import { MOBILE_BRANDS as SHARED_MOBILE_BRANDS } from '@/constants/mobileCatalog';
 import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES } from '@/constants/categories';
 import { THRIFT_GENDERS, THRIFT_TYPES } from '@/constants/thriftClothing';
 
@@ -169,10 +170,9 @@ const REGISTRATION_STATES = [
 
 export type CategoryDetailsConfig = Record<string, CategoryDetailField[]>;
 
-const MOBILE_BRANDS = [
-  'Apple', 'Samsung', 'OnePlus', 'Xiaomi', 'Redmi', 'Realme', 'Vivo', 'Oppo',
-  'Motorola', 'Nothing', 'Google Pixel', 'Nokia', 'iQOO', 'Asus', 'Infinix', 'Tecno', 'Other',
-];
+// Same brand list the Post Enquiry form offers, straight from the shared
+// mobile catalogue so the Model dropdown always has models for every brand.
+const MOBILE_BRANDS = SHARED_MOBILE_BRANDS;
 
 // Keys must match the laptop catalogue, so the Model dropdown can cascade from
 // whatever brand the seller picked.
@@ -237,7 +237,12 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   ],
   mobiles: [
     { key: 'brand', label: 'Brand', type: 'select', options: MOBILE_BRANDS, placeholder: 'Select brand', step: 'title' },
-    { key: 'storage', label: 'Storage', type: 'select', options: ['16 GB', '32 GB', '64 GB', '128 GB', '256 GB', '512 GB', '1 TB'], placeholder: 'Select storage', step: 'title' },
+    // Model options follow the picked brand (Apple -> iPhones, Samsung -> Galaxy …);
+    // CreateListing resolves them with getMobileModels().
+    { key: 'model', label: 'Model', type: 'select', options: [], placeholder: 'Model', step: 'title' },
+    // Storage options follow the exact model (iPhone 16 Pro -> 256 GB / 512 GB / 1 TB);
+    // CreateListing resolves them with getMobileStorageOptions().
+    { key: 'storage', label: 'Storage', type: 'select', options: [], placeholder: 'Select storage', step: 'title' },
     { key: 'warranty', label: 'Warranty', type: 'select', options: ['Expired', 'Under warranty'], placeholder: 'Select warranty', step: 'details' },
   ],
   // Kitchen & Dining: the 27 subcategories, picked on the Title tab.
