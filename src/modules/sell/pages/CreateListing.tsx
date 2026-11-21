@@ -2049,15 +2049,6 @@ export default function CreateListing() {
                               })}
                             </div>
                           )}
-                          {/* Bicycles keep their parts and accessory pickers
-                              together under their own sub-heading. */}
-                          {category === 'bicycles' && selectFields.length > 0 && (
-                            <h3 className="flex items-center justify-center gap-3 text-center text-xs sm:text-sm font-black uppercase tracking-[0.18em] text-gray-900" style={{ marginBottom: '1rem' }}>
-                              <span className="h-[1.5px] w-8 shrink-0 rounded-full bg-gray-900/25" />
-                              Accessories &amp; Maintenance
-                              <span className="h-[1.5px] w-8 shrink-0 rounded-full bg-gray-900/25" />
-                            </h3>
-                          )}
                           {selectFields.length > 0 && (
                             <div className={`grid gap-3 ${category === 'car' ? 'car-pill grid-cols-2' : category === 'bicycles' ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
                               {selectFields.map((f) => (

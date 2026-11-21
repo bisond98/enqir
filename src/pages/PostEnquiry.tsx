@@ -4006,8 +4006,10 @@ const DEADLINE_STEP = 5;
                           )}
                         </div>
                       )}
-                      {/* Subcategory — Electronics / Agriculture (description step) */}
-                      {subcategoryOptions && (
+                      {/* Subcategory — Electronics / Agriculture (description step).
+                          Bicycles skip it: their own "Bicycle type" picker below
+                          already carries the same list and drives brand/model. */}
+                      {subcategoryOptions && !isBicycles && (
                         <div className="mb-4">
                           <div className="relative">
                             <select
@@ -4386,7 +4388,10 @@ const DEADLINE_STEP = 5;
                         ];
                         return (
                           <div className="mb-6 space-y-3">
-                            {pickers.map((p) => (
+                            {/* Type + Brand share the top row; Model takes the
+                                full width underneath, centred on the same grid. */}
+                            <div className="grid grid-cols-2 gap-3">
+                            {pickers.slice(0, 2).map((p) => (
                               <div key={p.key} className="relative">
                                 <select
                                   value={bicycleDetails[p.key]}
@@ -4407,7 +4412,30 @@ const DEADLINE_STEP = 5;
                                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
                             ))}
-                            <div className="relative">
+                            </div>
+                            {/* Model — one Brand-sized picker, centred under the row */}
+                            <div className="grid grid-cols-4 gap-3">
+                              {pickers.slice(2).map((p) => (
+                                <div key={p.key} className="relative col-span-2 col-start-2">
+                                  <select
+                                    value={bicycleDetails[p.key]}
+                                    onChange={(e) => setB({ model: e.target.value })}
+                                    disabled={p.disabled}
+                                    className={`${selCls(bicycleDetails[p.key])} ${p.disabled ? 'bg-slate-100' : ''}`}
+                                  >
+                                    <option value="">{p.label}</option>
+                                    {p.options.map((o) => (
+                                      <option key={o} value={o}>{o}</option>
+                                    ))}
+                                  </select>
+                                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                                </div>
+                              ))}
+                            </div>
+                            {/* Year — a Brand-sized input, centred like Model, with
+                                the same space above it as below it. */}
+                            <div className="grid grid-cols-6 gap-3" style={{ marginTop: '1.75rem' }}>
+                            <div className="relative col-span-2 col-start-3">
                               <input
                                 type="number"
                                 inputMode="numeric"
@@ -4416,18 +4444,23 @@ const DEADLINE_STEP = 5;
                                 value={bicycleDetails.year}
                                 onChange={(e) => setB({ year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) })}
                                 placeholder="Year"
-                                className={`${BICYCLE_CLS} placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] ${bicycleDetails.year.length === 4 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !placeholder:text-white' : ''}`}
+                                className={`${BICYCLE_CLS} !rounded-full !border-0 text-center shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] placeholder:text-center placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ${bicycleDetails.year.length === 4 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white' : ''}`}
                               />
                             </div>
-                            <div className="grid grid-cols-2 gap-2">
+                            </div>
+                            <div className="grid grid-cols-2 gap-2" style={{ marginTop: '1.75rem' }}>
                             {([
                               ['frames', 'Frames & framesets', BICYCLE_FRAME_TYPES],
                               ['parts', 'Parts & components', BICYCLE_PART_TYPES],
                               ['accessories', 'Accessories', BICYCLE_ACCESSORY_TYPES],
                               ['storage', 'Storage & carriers', BICYCLE_STORAGE_TYPES],
-                              ['repair', 'Repair & maintenance', BICYCLE_REPAIR_TYPES],
+                              ['repair', 'Maintenance', BICYCLE_REPAIR_TYPES],
                             ] as [keyof typeof bicycleDetails, string, string[]][]).map(([key, label, options]) => (
-                              <div key={key} className="relative">
+                              <div
+                                key={key}
+                                className={key === 'repair' ? "relative col-span-2" : "relative"}
+                                style={key === 'repair' ? { width: 'calc(50% - 0.25rem)', justifySelf: 'center' } : undefined}
+                              >
                                 <select
                                   value={bicycleDetails[key]}
                                   onChange={(e) => setB({ [key]: e.target.value } as Partial<typeof bicycleDetails>)}
