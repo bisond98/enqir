@@ -94,7 +94,7 @@ const DEFAULT_CENTER = { lat: 20.5937, lng: 78.9629 };
 function geolocationErrorMessage(code: number, fallback: string): string {
   switch (code) {
     case 1:
-      return "Permission denied. Enable location for this site in your browser settings, or pick a point on the map.";
+      return "Location permission is blocked. Allow it for this site in your browser settings — and turn on your phone's Location Services — then try again, or pick a point on the map.";
     case 2:
       return "Position unavailable. Check GPS / network, or pick on the map.";
     case 3:
@@ -131,9 +131,6 @@ export function MapLocationPicker({
   const [placeOpen, setPlaceOpen] = useState(false);
   const [pickedLabel, setPickedLabel] = useState<string | null>(null);
   const pickedLabelRef = useRef<string | null>(null);
-  // Lets the async permission pre-check invoke the current attempt's denial
-  // handler (the handler locals don't exist yet when the query is issued).
-  const showPermissionDeniedRef = useRef<(() => void) | null>(null);
   // Cleans up an in-flight "Use my location" attempt (timers + GPS watcher)
   // and marks it finished so queued callbacks become no-ops.
   const geoCleanupRef = useRef<(() => void) | null>(null);
@@ -322,16 +319,18 @@ export function MapLocationPicker({
 
     setGeoLoading(true);
 
-    // If the site's location permission is already remembered as DENIED, the
-    // browser will not re-show the prompt — the request just fails silently.
-    // Detect that up front so we can tell the user to unblock it in settings.
+    // Note (do not shortcut on this): some browsers report "denied" for a site
+    // that has never been asked, and several in-app browsers and WebViews get
+    // it wrong outright. This flag only makes the failure message show without
+    // a pointless second try — the request itself is always attempted, because
+    // skipping it is exactly what left new users staring at "enable location in
+    // settings" with no permission dialog.
+    let permissionPreviouslyDenied = false;
     if (navigator.permissions?.query) {
       navigator.permissions
         .query({ name: "geolocation" as PermissionName })
         .then((status) => {
-          if (status.state === "denied") {
-            showPermissionDeniedRef.current?.();
-          }
+          permissionPreviouslyDenied = status.state === "denied";
         })
         .catch(() => {}); // Safari may not support this query — ignore
     }
@@ -357,6 +356,7 @@ export function MapLocationPicker({
     let tFail: ReturnType<typeof setTimeout> | undefined;
     let t2: ReturnType<typeof setTimeout> | undefined;
     let tWatchEnd: ReturnType<typeof setTimeout> | undefined;
+    let tFirst: ReturnType<typeof setTimeout> | undefined;
 
     const stopWatch = () => {
       if (watchId !== null && navigator.geolocation) {
@@ -370,6 +370,7 @@ export function MapLocationPicker({
       clearTimeout(tFail);
       clearTimeout(t2);
       clearTimeout(tWatchEnd);
+      clearTimeout(tFirst);
     };
 
     // Ends the attempt for good - queued GPS callbacks after this are no-ops.
@@ -459,59 +460,52 @@ export function MapLocationPicker({
       setGeoLoading(false);
       setGeoError(geolocationErrorMessage(1, ""));
     };
-    showPermissionDeniedRef.current = showPermissionDenied;
     geoCleanupRef.current = cleanup;
 
-    startPrecisionWatch();
+    let startedSources = false;
 
-    // Fallback schedule:
-    //   8s - drop an approximate pin if we only have a coarse answer so far
-    //        (still upgradeable, NOT confirmed)
-    //  16s - absolute deadline (geolocation can hang entirely on some
-    //        machines): approximate pin if we have one, real error otherwise
-    tEarly = setTimeout(placeApproximate, 8_000);
-    t2 = setTimeout(() => {
+    // A fix at or under PRECISION_MAX_ACCURACY is committed; anything coarser
+    // is held as a provisional pin so a better fix can still take over.
+    const onFix = (pos: GeolocationPosition) => {
       if (finished) return;
-      if (best) { placeApproximate(); return; }
-      finished = true;
-      cleanup();
-      setGeoLoading(false);
-      setGeoError(
-        gpsErrorCode
-          ? geolocationErrorMessage(gpsErrorCode, "Could not determine your location. Check your connection, or pick a point on the map.")
-          : "Could not determine your location. Check your connection, or pick a point on the map."
-      );
-    }, 16_000);
+      const c = pos.coords;
+      if (!Number.isFinite(c.latitude) || !Number.isFinite(c.longitude)) return;
+      const acc = Number.isFinite(c.accuracy) ? c.accuracy : Number.MAX_SAFE_INTEGER;
+      if (acc <= PRECISION_MAX_ACCURACY) {
+        commit(c.latitude, c.longitude);
+        return;
+      }
+      recordCoarse(c.latitude, c.longitude, acc);
+    };
 
-    // Source 1: GPS - the accurate fix. Confirmed ONLY when street-level; a
-    // coarse first answer is held as provisional instead of being committed.
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          if (finished) return;
-          const c = pos.coords;
-          if (!Number.isFinite(c.latitude) || !Number.isFinite(c.longitude)) return;
-          const acc = Number.isFinite(c.accuracy) ? c.accuracy : Number.MAX_SAFE_INTEGER;
-          if (acc <= PRECISION_MAX_ACCURACY) {
-            commit(c.latitude, c.longitude);
-          } else {
-            recordCoarse(c.latitude, c.longitude, acc);
-          }
-        },
-        (err) => {
-          gpsErrorCode = err.code;
-          if (err.code === 1) {
-            // Permission denied: every other source will be denied too, and an
-            // IP guess would hide the real problem. Surface it immediately.
-            showPermissionDenied();
-            return;
-          }
-          // GPS unavailable/timeout: if the network/IP fix already answered,
-          // show an approximate pin quickly instead of spinning for 16s.
-          tFail = setTimeout(() => { if (!finished && best) placeApproximate(); }, 3_000);
-        },
-        { enableHighAccuracy: true, timeout: 15_000, maximumAge: 0 }
-      );
+    // Every other source (precise watcher, coarse network fix, IP guess) and
+    // the fallback timers start only once the FIRST request has settled, so no
+    // second request competes with the permission dialog.
+    const startBackgroundSources = () => {
+      if (finished || startedSources) return;
+      startedSources = true;
+      clearTimeout(tFirst);
+
+      // Fallback schedule:
+      //   8s - drop an approximate pin if we only have a coarse answer so far
+      //        (still upgradeable, NOT confirmed)
+      //  16s - absolute deadline (geolocation can hang entirely on some
+      //        machines): approximate pin if we have one, real error otherwise
+      tEarly = setTimeout(placeApproximate, 8_000);
+      t2 = setTimeout(() => {
+        if (finished) return;
+        if (best) { placeApproximate(); return; }
+        finished = true;
+        cleanup();
+        setGeoLoading(false);
+        setGeoError(
+          gpsErrorCode
+            ? geolocationErrorMessage(gpsErrorCode, "Could not determine your location. Check your connection, or pick a point on the map.")
+            : "Could not determine your location. Check your connection, or pick a point on the map."
+        );
+      }, 16_000);
+
+      startPrecisionWatch();
 
       // Source 2: network location - fast, coarse; held as a provisional result.
       navigator.geolocation.getCurrentPosition(
@@ -524,16 +518,59 @@ export function MapLocationPicker({
         () => {},
         { enableHighAccuracy: false, timeout: 8_000, maximumAge: 60_000 }
       );
-    }
 
-    // Source 3: IP-based location - always available, city/village-level
-    // accuracy. Lowest-priority provisional result: only ever used to place an
-    // approximate pin if nothing better answers; never confirmed on its own.
-    (async () => {
-      const loc = await ipLocate();
-      if (finished) return;
-      if (loc) recordCoarse(loc.lat, loc.lng, 20_000);
-    })();
+      // Source 3: IP-based location - always available, city/village-level
+      // accuracy. Lowest-priority provisional result: only ever used to place
+      // an approximate pin if nothing better answers; never confirmed on its own.
+      (async () => {
+        const loc = await ipLocate();
+        if (finished) return;
+        if (loc) recordCoarse(loc.lat, loc.lng, 20_000);
+      })();
+    };
+
+    // Source 1: ONE GPS request first — a single request is what makes the
+    // phone show its permission dialog. Sending several geolocation requests at
+    // the same moment makes some phones (iOS Safari especially) answer all but
+    // the first with PERMISSION_DENIED while the dialog is still open, so a new
+    // user never saw a prompt and landed straight on "enable location in
+    // settings".
+    const requestFix = (onDenied: () => void) => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          onFix(pos);
+          startBackgroundSources();
+        },
+        (err) => {
+          gpsErrorCode = err.code;
+          if (err.code === 1) {
+            onDenied();
+            return;
+          }
+          // GPS unavailable/timeout: if a coarse answer lands, show it quickly.
+          tFail = setTimeout(() => { if (!finished && best) placeApproximate(); }, 3_000);
+          startBackgroundSources();
+        },
+        { enableHighAccuracy: true, timeout: 15_000, maximumAge: 0 }
+      );
+    };
+
+    requestFix(() => {
+      // Already remembered as blocked: no dialog will appear, so explain it.
+      if (permissionPreviouslyDenied) {
+        showPermissionDenied();
+        return;
+      }
+      // Otherwise the denial can land before the dialog was actually answered
+      // (iOS answers extra requests that way). Give the device one more try.
+      tFail = setTimeout(() => {
+        if (finished) return;
+        requestFix(showPermissionDenied);
+      }, 800);
+    });
+
+    // If that first request never calls back at all, carry on with the rest.
+    tFirst = setTimeout(startBackgroundSources, 4_000);
 
   }, [ipLocate]);
   const autoLocateFiredRef = useRef(false);

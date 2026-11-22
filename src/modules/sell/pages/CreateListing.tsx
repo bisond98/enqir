@@ -36,6 +36,8 @@ import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES, ANTIQUE_CONDITIONS, ANTIQUE_DAMAGE_TYPES, ANTIQUE_FUNCTIONAL_STATUSES } from '../categoryDetails';
 import { titleHintsFor } from '../titleHints';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
+import { canAutoScroll, canAutoFocus, resetAutoScrollGuard } from '@/utils/autoScrollGuard';
+import { prefetchCategoryTiles } from '@/utils/prefetchCategoryTiles';
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
@@ -418,7 +420,10 @@ export default function CreateListing() {
       setOtpListeners(['', '', '', '', '', '']);
       setResendSeconds(60);
       setOtpStage(true);
-      setTimeout(() => otpBoxRefs.current[0]?.focus(), 100);
+      setTimeout(() => {
+        if (!canAutoFocus()) return;
+        otpBoxRefs.current[0]?.focus();
+      }, 100);
     } finally {
       setSendingOtp(false);
     }
@@ -606,12 +611,20 @@ export default function CreateListing() {
     localStorage.removeItem(STORAGE_KEY);
       // Scroll down to publish listing button after restoring
       setTimeout(() => {
+        if (!canAutoScroll()) return;
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }, 300);
     }
   }, []);
 
   const isVerifiedOrPending = isProfileVerified;
+
+  // A fresh visit starts with auto-reveal available; touching the phone turns
+  // every automatic jump off for the rest of the visit.
+  useEffect(() => {
+    resetAutoScrollGuard();
+    prefetchCategoryTiles();
+  }, []);
 
   useEffect(() => {
     // Check sessionStorage in case React state was lost due to Razorpay history manipulation
@@ -874,8 +887,11 @@ export default function CreateListing() {
     }
   };
 
+  // Step changes reveal the step heading, but only until the seller touches the
+  // phone — after that the page belongs to the finger, not the wizard.
   const scrollToInput = () => {
     requestAnimationFrame(() => {
+      if (!canAutoScroll()) return;
       const el = document.getElementById('step-top');
       if (el) {
         const rect = el.getBoundingClientRect();
@@ -1430,7 +1446,7 @@ export default function CreateListing() {
                   placeholder=""
                   className="rounded-2xl h-12 sm:h-14 text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
                   maxLength={1000}
-                  autoFocus
+                  autoFocus={canAutoFocus()}
                 />
                 {/* Rotating placeholder — dull examples roll down inside the input box every 3s;
                     Vehicles rolls truck / earthmover / tractor models instead of product examples */}
@@ -2228,7 +2244,7 @@ export default function CreateListing() {
                           : 'Condition, accessories, warranty, reason for selling…'}
                         maxLength={MAX_DESC_CHARS}
                         className={`wizard-desc-box rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:font-medium placeholder:text-[11px] resize-y shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'jobs' && (details.jobListingFor === 'To hire' || details.jobListingFor === 'To apply') ? 'placeholder:text-gray-900 placeholder:font-semibold' : 'placeholder:text-gray-400'}`}
-                        autoFocus
+                        autoFocus={canAutoFocus()}
                       />
                     </div>
                   </>
@@ -2276,7 +2292,10 @@ export default function CreateListing() {
                     // Mobile: the map sheet leaves the page scrolled mid-form, so glide
                     // back to the top to reveal the chosen location card in place.
                     if (window.matchMedia('(max-width: 640px)').matches) {
-                      window.setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 150);
+                      window.setTimeout(() => {
+                        if (!canAutoScroll()) return;
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }, 150);
                     }
                   }}
                 />
@@ -2476,7 +2495,7 @@ export default function CreateListing() {
                       inputMode="decimal"
                       maxLength={13}
                       className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-8 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold text-lg"
-                      autoFocus
+                      autoFocus={canAutoFocus()}
                     />
                   </div>
                 </div>

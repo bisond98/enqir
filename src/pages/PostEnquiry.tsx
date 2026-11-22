@@ -71,6 +71,8 @@ import { WATCH_BRAND_OPTIONS, WATCH_OTHER, getWatchModels } from '@/constants/wa
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
+import { canAutoScroll, canAutoFocus, resetAutoScrollGuard } from '@/utils/autoScrollGuard';
+import { prefetchCategoryTiles } from '@/utils/prefetchCategoryTiles';
 import { useToast } from "@/components/ui/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
@@ -814,7 +816,10 @@ const DEADLINE_STEP = 5;
       setOtpListeners(["", "", "", "", "", ""]);
       setResendSeconds(60);
       setOtpStage(true);
-      setTimeout(() => otpBoxRefs.current[0]?.focus(), 100);
+      setTimeout(() => {
+        if (!canAutoFocus()) return;
+        otpBoxRefs.current[0]?.focus();
+      }, 100);
     } finally {
       setSendingOtp(false);
     }
@@ -975,11 +980,18 @@ const DEADLINE_STEP = 5;
     wrapper.style.marginRight = 'auto';
   });
 
+  // A fresh visit always starts with auto-reveal available; the guard then
+  // switches every automatic jump off for good once the phone is touched.
+  useEffect(() => {
+    resetAutoScrollGuard();
+    prefetchCategoryTiles();
+  }, []);
+
   // Reveal the current step's header (#step-top) whenever the form loads or the
   // user moves to another step — on mobile and desktop — so the icon and the
   // "What are you looking for?" heading are always in view. On mobile it also
   // re-reveals when the on-screen keyboard opens. This is the single owner of
-  // step scrolling.
+  // step scrolling, and it stays off once the user has scrolled or touched.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const isMobile = window.innerWidth < 640;
@@ -989,6 +1001,7 @@ const DEADLINE_STEP = 5;
       requestAnimationFrame(() => {
         const el = anchor();
         if (!el) return;
+        if (!canAutoScroll()) return;
         const r = el.getBoundingClientRect();
         // On the keyboard path, skip when the header is already fully visible —
         // re-centering it is what made the page jump up and down on its own.
@@ -1020,6 +1033,7 @@ const DEADLINE_STEP = 5;
   useEffect(() => {
     if (idVerificationResult?.matches && idVerificationCardRef.current) {
       setTimeout(() => {
+        if (!canAutoScroll()) return;
         idVerificationCardRef.current?.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
@@ -3362,7 +3376,7 @@ const DEADLINE_STEP = 5;
                         placeholder=""
                         className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-0 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
                         maxLength={1000}
-                        autoFocus
+                        autoFocus={canAutoFocus()}
                       />
                       {/* Rotating placeholder — dull question lines roll down inside the input box every 3s */}
                       {!title && (
@@ -4740,7 +4754,7 @@ const DEADLINE_STEP = 5;
                               placeholder="Specifications, requirements, timeline..."
                               maxLength={MAX_DESC_CHARS}
                               className="wizard-desc-box rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
-                              autoFocus
+                              autoFocus={canAutoFocus()}
                             />
                           </div>
                         </>
@@ -4764,7 +4778,7 @@ const DEADLINE_STEP = 5;
                               }
                               maxLength={MAX_DESC_CHARS}
                               className="wizard-desc-box rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
-                              autoFocus
+                              autoFocus={canAutoFocus()}
                             />
                           </div>
                         </>
@@ -4812,10 +4826,11 @@ const DEADLINE_STEP = 5;
                           setShowLocationSuggestions(false);
                           // Mobile: bring the picked location card itself into view
                           // (just below the header) instead of jumping to the top of the page
-                          if (window.matchMedia('(max-width: 640px)').matches) {
+                          if (window.matchMedia('(max-width: 640px)').matches && canAutoScroll()) {
                             window.setTimeout(() => {
                               const el = locationStepRef.current;
                               if (!el) return;
+                              if (!canAutoScroll()) return;
                               const r = el.getBoundingClientRect();
                               const target = Math.max(0, window.scrollY + r.top - 96);
                               if (Math.abs(target - window.scrollY) > 8) {
@@ -4853,7 +4868,7 @@ const DEADLINE_STEP = 5;
                             placeholder="50,000"
                             inputMode="decimal"
                             className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-8 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold text-lg"
-                            autoFocus
+                            autoFocus={canAutoFocus()}
                           />
                         </div>
                       </div>
