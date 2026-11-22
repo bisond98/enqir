@@ -71,7 +71,7 @@ import { WATCH_BRAND_OPTIONS, WATCH_OTHER, getWatchModels } from '@/constants/wa
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
-import { canAutoScroll, canAutoFocus, resetAutoScrollGuard } from '@/utils/autoScrollGuard';
+import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealStepTop } from '@/utils/autoScrollGuard';
 import { prefetchCategoryTiles } from '@/utils/prefetchCategoryTiles';
 import { useToast } from "@/components/ui/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
@@ -999,14 +999,19 @@ const DEADLINE_STEP = 5;
     // One-frame delayed so the browser finishes its own refocus scroll first
     const reveal = (force = false) => {
       requestAnimationFrame(() => {
-        const el = anchor();
-        if (!el) return;
         if (!canAutoScroll()) return;
-        const r = el.getBoundingClientRect();
-        // On the keyboard path, skip when the header is already fully visible —
-        // re-centering it is what made the page jump up and down on its own.
-        if (!force && r.top >= 0 && r.bottom <= window.innerHeight) return;
-        window.scrollTo({ top: Math.max(0, window.scrollY + r.top - 8), behavior: 'smooth' });
+        const el = anchor();
+        if (!force && el) {
+          const r = el.getBoundingClientRect();
+          // On the keyboard path, skip when the header is already fully visible —
+          // re-centering it is what made the page jump up and down on its own.
+          if (r.top >= 0 && r.bottom <= window.innerHeight) return;
+        }
+        // Load and step changes land the tab's title at the top of the screen
+        // and hold it there while the page settles. This also covers the load
+        // where the form is not in the DOM yet (sign-in restore), because
+        // revealStepTop keeps retrying until the heading exists.
+        revealStepTop('step-top', 10);
       });
     };
     // Load and every step change: put the heading near the top.

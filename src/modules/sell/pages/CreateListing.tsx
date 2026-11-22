@@ -36,7 +36,7 @@ import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES, ANTIQUE_CONDITIONS, ANTIQUE_DAMAGE_TYPES, ANTIQUE_FUNCTIONAL_STATUSES } from '../categoryDetails';
 import { titleHintsFor } from '../titleHints';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
-import { canAutoScroll, canAutoFocus, resetAutoScrollGuard } from '@/utils/autoScrollGuard';
+import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealStepTop } from '@/utils/autoScrollGuard';
 import { prefetchCategoryTiles } from '@/utils/prefetchCategoryTiles';
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
@@ -626,6 +626,15 @@ export default function CreateListing() {
     prefetchCategoryTiles();
   }, []);
 
+  // The listing form opens already scrolled to its tab's title, and each step
+  // change re-reveals it — until the seller touches the phone.
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      if (!canAutoScroll()) return;
+      revealStepTop('step-top', 20);
+    });
+  }, [step]);
+
   useEffect(() => {
     // Check sessionStorage in case React state was lost due to Razorpay history manipulation
     if (sessionStorage.getItem('listing-published') === 'true') {
@@ -892,13 +901,7 @@ export default function CreateListing() {
   const scrollToInput = () => {
     requestAnimationFrame(() => {
       if (!canAutoScroll()) return;
-      const el = document.getElementById('step-top');
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        window.scrollTo({ top: window.scrollY + rect.top - 20, behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      revealStepTop('step-top', 20);
     });
   };
 

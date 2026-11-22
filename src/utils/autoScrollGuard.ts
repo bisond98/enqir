@@ -35,6 +35,41 @@ export function canAutoScroll(): boolean {
   return !userInteracted;
 }
 
+/**
+ * Puts the step heading (`#step-top`) at the top of the viewport and keeps it
+ * there while the page is still settling, so a form tab opens already scrolled
+ * to its title instead of on the marketing block above it.
+ *
+ * Instant on mobile rather than smooth: a smooth animation started before the
+ * last chunk, image or font lands finishes somewhere else — that is how the
+ * heading used to drift back off screen. The retries below re-assert the
+ * position through those late layout shifts, and every one of them gives way
+ * the moment the page belongs to the finger.
+ */
+export function revealStepTop(anchorId = 'step-top', offset = 10): void {
+  if (typeof window === 'undefined') return;
+  const smooth = window.innerWidth >= 640;
+  const apply = () => {
+    if (!canAutoScroll()) return;
+    const el = document.getElementById(anchorId);
+    if (!el) return;
+    const top = Math.max(0, Math.round(window.scrollY + el.getBoundingClientRect().top - offset));
+    if (Math.abs(top - window.scrollY) <= 1) return;
+    window.scrollTo({
+      top,
+      behavior: smooth ? 'smooth' : ('instant' as ScrollBehavior),
+    });
+  };
+  apply();
+  // Retries cover everything that lands after the first frame: the sign-in
+  // restore that swaps the loading screen for the form, the step animation,
+  // lazy chunks, images and fonts. Each attempt is a no-op once the heading is
+  // already in place, and all of them stop as soon as the page is touched.
+  for (const ms of [120, 320, 650, 1000, 1500, 2200, 3000]) {
+    window.setTimeout(apply, ms);
+  }
+}
+
 /** Called when the wizard mounts so a fresh visit starts with the reveal intact. */
 export function resetAutoScrollGuard(): void {
   userInteracted = false;
