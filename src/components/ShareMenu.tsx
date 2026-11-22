@@ -5,6 +5,7 @@ import { WhatsAppIcon, XIcon, FacebookIcon } from '@/components/BrandIcons';
 import { toast } from '@/hooks/use-toast';
 import { shareToTarget } from '@/lib/socialShare';
 import type { SocialShareTarget } from '@/lib/socialShare';
+import StatusCardStudio from '@/components/StatusCardStudio';
 
 interface ShareMenuProps {
   open: boolean;
@@ -28,6 +29,7 @@ interface ShareMenuProps {
 export default function ShareMenu({ open, onClose, anchorRef, title, text, url, imageUrl, onShared }: ShareMenuProps) {
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [studioOpen, setStudioOpen] = useState(false);
 
   const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
 
@@ -81,6 +83,13 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
   if (!open) return null;
 
   const handleShare = (target: SocialShareTarget) => {
+    // Status posts a black-and-white card image, not a coloured text block.
+    if (target === 'whatsapp_status') {
+      onClose();
+      onShared?.();
+      setStudioOpen(true);
+      return;
+    }
     onClose();
     onShared?.();
     setTimeout(async () => {
@@ -169,6 +178,13 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
         {copiedKey === 'copy' ? 'Copied!' : 'Copy Link'}
       </button>
     </div>
+    <StatusCardStudio
+      open={studioOpen}
+      onClose={() => setStudioOpen(false)}
+      title={title}
+      text={text}
+      url={url}
+    />
     </>,
     document.body
   );

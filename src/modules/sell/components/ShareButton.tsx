@@ -3,7 +3,8 @@ import { createPortal } from 'react-dom';
 import { Share2, Copy, Check, Smartphone, Mail } from 'lucide-react';
 import { WhatsAppIcon, XIcon, FacebookIcon } from '@/components/BrandIcons';
 import { toast } from '@/hooks/use-toast';
-import { shareListing } from '../services/shareService';
+import { shareListing, generateShareMessage, getListingUrl } from '../services/shareService';
+import StatusCardStudio from '@/components/StatusCardStudio';
 import type { SellListing } from '../types';
 
 interface ShareButtonProps {
@@ -16,6 +17,7 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
+  const [studioOpen, setStudioOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
 
   const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
@@ -67,6 +69,12 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
 
   const handleShare = useCallback(async (platform: 'whatsapp' | 'twitter' | 'facebook' | 'copy' | 'native' | 'whatsapp_status' | 'instagram_dm' | 'instagram_story' | 'email') => {
     setIsOpen(false);
+
+    // Status gets the black card image, not the coloured text block.
+    if (platform === 'whatsapp_status') {
+      setStudioOpen(true);
+      return;
+    }
     
     // Small delay to ensure menu closes before opening share window
     setTimeout(async () => {
@@ -181,6 +189,15 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
         {variant === 'full' && <span>Share</span>}
       </button>
       {menu}
+      {studioOpen && (
+        <StatusCardStudio
+          open={studioOpen}
+          onClose={() => setStudioOpen(false)}
+          title={listing.title}
+          text={generateShareMessage(listing)}
+          url={getListingUrl(listing.id)}
+        />
+      )}
     </div>
   );
 }
