@@ -1240,9 +1240,9 @@ const EnquiryDetail = () => {
                         onClick={openShareMenu}
                         aria-label="Share enquiry"
                         title="Share"
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white text-black transition-colors hover:bg-neutral-100 active:scale-95 touch-manipulation"
+                        className="flex h-12 w-12 items-center justify-center rounded-full border-[1.5px] border-black bg-white text-black shadow-[0_4px_0_0_rgba(0,0,0,0.85)] transition-all hover:bg-neutral-50 active:translate-y-[3px] active:shadow-[0_1px_0_0_rgba(0,0,0,0.85)] touch-manipulation"
                       >
-                        <Share2 className="h-[17px] w-[17px]" strokeWidth={1.8} />
+                        <Share2 className="h-5 w-5" strokeWidth={2} />
                       </button>
                     </div>
                   </div>
