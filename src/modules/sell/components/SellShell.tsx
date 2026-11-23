@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Store, LayoutDashboard, Tag } from 'lucide-react';
 import { SellTagDoodle } from '@/components/doodles';
 import SellHeaderPoster from '@/components/sellHeaderPoster';
-import { EnquiryTrustDoodles } from '@/components/enquiryTrustDoodles';
+import HeaderPoster from '@/components/headerPoster';
 
 export default function SellShell({
   title,
@@ -64,11 +64,18 @@ export default function SellShell({
               <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/25 to-black/70" />
             </div>
           )}
-          {/* The marketplace band gets the same trust doodle field the enquiries
-              header uses — safe selling, fair payment, filled edge to edge. */}
+          {/* The marketplace band wears a photographic trust poster behind the
+              heading. It is absolutely positioned, so the header keeps its height. */}
           {isShop && (
-            <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">
-              <EnquiryTrustDoodles className="absolute inset-0 h-full w-full" />
+            <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden">
+              <HeaderPoster
+                word="SHOP"
+                chip="SAFE DEALS"
+                caption="VERIFIED SELLERS"
+                tagLabel="FAIR PRICE"
+                className="absolute inset-0 h-full w-full"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-black/55" />
             </div>
           )}
           {compactHeader && (

@@ -12,9 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { APP_CATEGORIES, categoryForQuery, postInCategory } from "@/constants/categories";
 import { SlidersHorizontal, IndianRupee, LayoutGrid, Map as MapIcon, Navigation } from "lucide-react";
-import { EnquiryTrustDoodles } from "@/components/enquiryTrustDoodles";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
+import HeaderPoster from "@/components/headerPoster";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -5342,9 +5342,17 @@ export default function EnquiryWall() {
       >
         {/* Header - Matching Seller Form Background - Full Width - Dark High Depth Black */}
         <div className="bg-black text-white py-4 min-h-[116px] sm:min-h-[124px] relative overflow-hidden flex items-center justify-center px-4">
-            {/* Trust mural filling the band behind the title — safe selling, fair payment */}
-            <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 text-white/20">
-              <EnquiryTrustDoodles className="absolute inset-0 h-full w-full" />
+            {/* Photographic trust poster filling the band behind the title — verified
+                buyers, real deals. Absolutely positioned, so the band keeps its height. */}
+            <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0">
+              <HeaderPoster
+                word="ENQIR"
+                chip="REAL BUYERS"
+                caption="VERIFIED ENQUIRIES"
+                tagLabel="VERIFIED"
+                className="absolute inset-0 h-full w-full"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/20 to-black/55" />
             </div>
             {/* Back — returns to wherever the user came from */}
             <button
