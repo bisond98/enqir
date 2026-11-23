@@ -880,8 +880,41 @@ const EnquiryDetail = () => {
                 {/* Card Content - Enhanced White Background */}
                 <CardContent className="relative z-10 p-1 sm:p-6 lg:p-7">
                   {/* Title block — LOOKING FOR pill, title, reference image, spec chips */}
-                  <div className={`${plainLayout ? 'rounded-t-[18px] rounded-b-none bg-white px-5 pb-2 pt-5 shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10)]' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
-                    <div className="flex items-start gap-3">
+                  <div className={`relative ${plainLayout ? 'rounded-t-[18px] rounded-b-none bg-white px-5 pb-2 pt-5 shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10)]' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
+                    {/* More actions — plain black dots at the tile's top-right */}
+                    <div className="absolute right-3 top-3 z-20">
+                      <button
+                        ref={moreBtnRef}
+                        onClick={() => setMoreMenuOpen(o => !o)}
+                        aria-label="More actions"
+                        aria-expanded={moreMenuOpen}
+                        title="More"
+                        className="flex h-9 w-9 items-center justify-center rounded-full text-black transition-colors hover:bg-neutral-100 active:scale-95 touch-manipulation"
+                      >
+                        <MoreHorizontal className="h-[19px] w-[19px]" strokeWidth={2.2} />
+                      </button>
+                      {moreMenuOpen && (
+                        <div ref={moreMenuRef} className="absolute right-0 top-full z-30 mt-1 w-48 overflow-hidden rounded-xl border border-black/[0.08] bg-white py-1 shadow-lg">
+                          <button
+                            onClick={() => { handleSave(); setMoreMenuOpen(false); }}
+                            className="flex min-h-[44px] w-full items-center gap-2.5 border-b border-neutral-100 px-3.5 py-3 text-left text-xs font-semibold text-black transition-colors hover:bg-neutral-50"
+                          >
+                            <Bookmark className={`h-4 w-4 shrink-0 ${savedEnquiries.includes(enquiry.id) ? 'fill-black' : ''}`} />
+                            {savedEnquiries.includes(enquiry.id) ? 'Remove from saved' : 'Save enquiry'}
+                          </button>
+                          {user && enquiry.userId !== user.uid && (
+                            <button
+                              onClick={() => { setMoreMenuOpen(false); navigate(`/report-user/${enquiry.userId}?enquiryId=${enquiry.id}`); }}
+                              className="flex min-h-[44px] w-full items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black transition-colors hover:bg-neutral-50"
+                            >
+                              <Flag className="h-4 w-4 shrink-0 text-red-600" />
+                              Flag / Report
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-start gap-3 pr-10">
                       <div className="min-w-0 flex-1">
                         {plainLayout ? (
                           <span className="flex items-center gap-2">
@@ -1211,36 +1244,6 @@ const EnquiryDetail = () => {
                       >
                         <Share2 className="h-[17px] w-[17px]" strokeWidth={1.8} />
                       </button>
-                      <button
-                        ref={moreBtnRef}
-                        onClick={() => setMoreMenuOpen(o => !o)}
-                        aria-label="More actions"
-                        aria-expanded={moreMenuOpen}
-                        title="More"
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-green-700 text-white transition-colors hover:bg-green-800 active:scale-95 touch-manipulation"
-                      >
-                        <MoreHorizontal className="h-[17px] w-[17px]" strokeWidth={1.8} />
-                      </button>
-                      {moreMenuOpen && (
-                        <div ref={moreMenuRef} className="absolute right-0 top-full z-30 mt-2 w-48 overflow-hidden rounded-xl border border-black/[0.08] bg-white py-1 shadow-lg">
-                          <button
-                            onClick={() => { handleSave(); setMoreMenuOpen(false); }}
-                            className="flex min-h-[44px] w-full items-center gap-2.5 border-b border-neutral-100 px-3.5 py-3 text-left text-xs font-semibold text-black transition-colors hover:bg-neutral-50"
-                          >
-                            <Bookmark className={`h-4 w-4 shrink-0 ${savedEnquiries.includes(enquiry.id) ? 'fill-black' : ''}`} />
-                            {savedEnquiries.includes(enquiry.id) ? 'Remove from saved' : 'Save enquiry'}
-                          </button>
-                          {user && enquiry.userId !== user.uid && (
-                            <button
-                              onClick={() => { setMoreMenuOpen(false); navigate(`/report-user/${enquiry.userId}?enquiryId=${enquiry.id}`); }}
-                              className="flex min-h-[44px] w-full items-center gap-2.5 px-3.5 py-3 text-left text-xs font-semibold text-black transition-colors hover:bg-neutral-50"
-                            >
-                              <Flag className="h-4 w-4 shrink-0 text-red-600" />
-                              Flag / Report
-                            </button>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </div>
 
