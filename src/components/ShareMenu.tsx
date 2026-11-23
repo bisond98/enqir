@@ -26,7 +26,7 @@ interface ShareMenuProps {
  * Instagram DM and Instagram Story targets, matching the listing
  * ShareButton's physical-button menu style.
  */
-function ShareRow({
+export function ShareRow({
   icon,
   tile,
   label,
