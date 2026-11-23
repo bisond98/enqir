@@ -256,6 +256,21 @@ const withinDescLimit = (text: string) => text.length <= MAX_DESC_CHARS && count
 // `deadline` field on the doc, so adding a category here is all it takes.
 const DEADLINE_CATEGORIES = new Set(['food-beverage', 'jobs', 'agriculture-farming']);
 
+/**
+ * The title the pet pickers write for the seller, the way the laptop picker
+ * builds "Brand Model 512GB": breed + type first ("Siberian Husky Dog"), then
+ * the training on the end ("... - Basic obedience training"). "Other ..." picks
+ * carry no product name, so they are left out and the seller writes their own.
+ */
+function petListingTitle(details: Record<string, string>, overrides: Record<string, string> = {}) {
+  const d = { ...details, ...overrides };
+  const named = (v?: string) => (v && !v.startsWith('Other ') ? v : '');
+  const name = [named(d.petBreed), named(d.subcategory)].filter(Boolean).join(' ');
+  const training = named(d.petTraining);
+  if (!name) return training;
+  return training ? `${name} - ${training}` : name;
+}
+
 export default function CreateListing() {
   const { user, isProfileVerified, loading: authLoading, savedPhone, savedFullName, savedUsername, sendPhoneOTP, verifyPhoneOTP } = useAuth();
   const navigate = useNavigate();
@@ -1529,8 +1544,8 @@ export default function CreateListing() {
                       // A tab with exactly three dropdowns leaves the third one alone on
                       // the second line, so it is centred in that line instead of being
                       // pushed to the right edge with the rest of the row.
-                      <div key={f.key} className={`relative ${shortSubcategory ? 'electronics-pill max-w-full' : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={category === 'bicycles' && (f.key === 'subcategory' || f.key === 'year') ? { marginLeft: 'auto', marginRight: 'auto' } : hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
-                        {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && f.key !== 'cleaningTypes' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
+                      <div key={f.key} className={`relative ${category === 'pets' ? (f.key === 'petBreed' ? 'w-[62%]' : 'w-[47%]') : shortSubcategory ? 'electronics-pill max-w-full' : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={category === 'bicycles' && (f.key === 'subcategory' || f.key === 'year') ? { marginLeft: 'auto', marginRight: 'auto' } : hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
+                        {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && f.key !== 'cleaningTypes' && category !== 'pets' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
                           // The bicycle year and the jobs "Listing for" pick add no
                           // label: their placeholder names them, and the node stays in
                           // place so the spacing does not move.
@@ -1698,16 +1713,23 @@ export default function CreateListing() {
                                   setDetail('brand', ''); setDetail('model', '');
                                   setTitle(e.target.value);
                                 }
-                                // Pets: a new pet type clears its breed and training,
-                                // and the picks name the listing ("Siberian Husky Dog").
+                                // Pets: a new pet type clears the breed that belonged
+                                // to the old one and names the listing the way the
+                                // laptop picker does: type first, then breed + type
+                                // ("Siberian Husky Dog"). "Other ..." has no name worth
+                                // filling in, so the seller writes the title instead.
                                 if (f.key === 'subcategory' && category === 'pets') {
                                   // Training is its own pick, so a new pet type only
                                   // clears the breed that belonged to the old one.
                                   setDetail('petBreed', '');
-                                  setTitle(e.target.value);
+                                  setTitle(petListingTitle(details, { subcategory: e.target.value, petBreed: '' }));
                                 }
                                 if (f.key === 'petBreed' && category === 'pets') {
-                                  setTitle([e.target.value, details['subcategory']].filter(Boolean).join(' '));
+                                  setTitle(petListingTitle(details, { petBreed: e.target.value }));
+                                }
+                                // Training joins the same title after the pet name.
+                                if (f.key === 'petTraining' && category === 'pets') {
+                                  setTitle(petListingTitle(details, { petTraining: e.target.value }));
                                 }
                                 if (f.key === 'brand' && category === 'bicycles') {
                                   setDetail('model', '');
@@ -1756,7 +1778,7 @@ export default function CreateListing() {
                                   }
                                 }
                               }}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''} ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''} ${!details[f.key] ? (category === 'pets' ? 'text-[11px] sm:text-xs text-transparent' : 'text-[10px] text-transparent') : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                             >
                               <option value="">Cancel</option>
                               {fieldOptions.map((opt) => (

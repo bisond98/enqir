@@ -547,7 +547,7 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   // Title tab so the picks can name the listing. The breed list follows the
   // type via petBreedsFor().
   pets: [
-    { key: 'petTraining', label: 'Training', type: 'select', options: [...PET_TRAINING_OPTIONS], placeholder: 'Select training', step: 'title' },
+    { key: 'petTraining', label: 'Training', type: 'select', options: [...PET_TRAINING_OPTIONS], placeholder: 'Trainings', step: 'title' },
     { key: 'subcategory', label: 'Pet type', type: 'select', options: [...PET_TYPES], placeholder: 'Pets', step: 'title' },
     { key: 'petBreed', label: 'Breed', type: 'select', options: [], placeholder: 'Select breed', step: 'title' },
   ],

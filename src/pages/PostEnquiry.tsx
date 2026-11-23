@@ -4072,7 +4072,7 @@ const DEADLINE_STEP = 5;
                                 ? 'border-blue-700 bg-gradient-to-r from-blue-600 to-blue-700 text-sm sm:text-base font-bold text-white focus-visible:ring-3 focus-visible:ring-white/50'
                                 : 'border-slate-200 bg-gradient-to-b from-white to-slate-50 text-xs sm:text-sm font-bold text-slate-900 hover:border-slate-300 hover:to-slate-100 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
                             >
-                              <option value="">Training</option>
+                              <option value="">Trainings</option>
                               {PET_TRAINING_OPTIONS.map((t) => (
                                 <option key={t} value={t} className="bg-white text-black">{t}</option>
                               ))}
