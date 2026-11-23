@@ -543,12 +543,13 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   'jewelry-accessories': [
     { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...JEWELLERY_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
-  // Pets: pet type -> breed -> training, all on the Title tab so the picks can
-  // name the listing. The breed list follows the type via petBreedsFor().
+  // Pets: training stands alone and comes first, then pet type -> breed on the
+  // Title tab so the picks can name the listing. The breed list follows the
+  // type via petBreedsFor().
   pets: [
+    { key: 'petTraining', label: 'Training', type: 'select', options: [...PET_TRAINING_OPTIONS], placeholder: 'Select training', step: 'title' },
     { key: 'subcategory', label: 'Pet type', type: 'select', options: [...PET_TYPES], placeholder: 'Pet type', step: 'title' },
     { key: 'petBreed', label: 'Breed', type: 'select', options: [], placeholder: 'Select breed', step: 'title' },
-    { key: 'petTraining', label: 'Training', type: 'select', options: [...PET_TRAINING_OPTIONS], placeholder: 'Select training', step: 'title' },
   ],
   // Office Supplies: the shared subcategory dropdown on the Title tab.
   'office-supplies': [
@@ -591,9 +592,8 @@ export function isFieldHiddenForDetails(field: CategoryDetailField, details: Rec
   // Thrift: Type appears only after a gender is picked, Item after a type.
   if (field.key === 'thriftType') return !details['thriftGender'];
   if (field.key === 'thriftItem') return !details['thriftType'];
-  // Pets: breed and training appear once a pet type is picked, and the breed
-  // list only exists for types that have one (supplies and "Other" do not).
+  // Pets: the breed appears once a pet type is picked, and only for types that
+  // have a breed list (supplies and "Other" do not). Training is independent.
   if (field.key === 'petBreed') return !details['subcategory'] || petBreedsFor(details['subcategory']).length === 0;
-  if (field.key === 'petTraining') return !details['subcategory'];
   return false;
 }

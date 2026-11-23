@@ -1701,7 +1701,9 @@ export default function CreateListing() {
                                 // Pets: a new pet type clears its breed and training,
                                 // and the picks name the listing ("Siberian Husky Dog").
                                 if (f.key === 'subcategory' && category === 'pets') {
-                                  setDetail('petBreed', ''); setDetail('petTraining', '');
+                                  // Training is its own pick, so a new pet type only
+                                  // clears the breed that belonged to the old one.
+                                  setDetail('petBreed', '');
                                   setTitle(e.target.value);
                                 }
                                 if (f.key === 'petBreed' && category === 'pets') {

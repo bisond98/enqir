@@ -4058,6 +4058,34 @@ const DEADLINE_STEP = 5;
                           )}
                         </div>
                       )}
+                      {/* Pets — training is its own pick and comes first, before the
+                          pet type it applies to. */}
+                      {isPets && (
+                        <div className="mb-4">
+                          <div className="relative">
+                            <select
+                              id="enquiry-pet-training"
+                              aria-label="Choose training"
+                              value={petTraining}
+                              onChange={(e) => setPetTraining(e.target.value)}
+                              className={`w-full appearance-none rounded-full h-12 sm:h-14 pl-5 pr-14 text-left border-2 transition-all duration-200 focus:outline-none shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] ${petTraining
+                                ? 'border-blue-700 bg-gradient-to-r from-blue-600 to-blue-700 text-sm sm:text-base font-bold text-white focus-visible:ring-3 focus-visible:ring-white/50'
+                                : 'border-slate-200 bg-gradient-to-b from-white to-slate-50 text-xs sm:text-sm font-bold text-slate-900 hover:border-slate-300 hover:to-slate-100 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
+                            >
+                              <option value="">Training</option>
+                              {PET_TRAINING_OPTIONS.map((t) => (
+                                <option key={t} value={t} className="bg-white text-black">{t}</option>
+                              ))}
+                            </select>
+                            <span
+                              aria-hidden="true"
+                              className={`pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-200 ${petTraining ? 'bg-white text-black' : 'bg-black text-white'}`}
+                            >
+                              <ChevronDown className="chev-badge h-4 w-4" strokeWidth={2.5} />
+                            </span>
+                          </div>
+                        </div>
+                      )}
                       {/* Subcategory — Electronics / Agriculture (description step).
                           Bicycles skip it: their own "Bicycle type" picker below
                           already carries the same list and drives brand/model. */}
@@ -4070,9 +4098,9 @@ const DEADLINE_STEP = 5;
                               value={subcategory}
                               onChange={(e) => {
                                 setSubcategory(e.target.value);
-                                // A new pet type owns a different breed list.
+                                // A new pet type owns a different breed list. Training
+                                // stands on its own, so it is left alone.
                                 setPetBreed('');
-                                setPetTraining('');
                               }}
                               className={`w-full appearance-none rounded-full h-12 sm:h-14 pl-5 pr-14 text-left border-2 transition-all duration-200 focus:outline-none shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] ${subcategory
                                 ? 'border-blue-700 bg-gradient-to-r from-blue-600 to-blue-700 text-sm sm:text-base font-bold text-white focus-visible:ring-3 focus-visible:ring-white/50'
@@ -4094,7 +4122,7 @@ const DEADLINE_STEP = 5;
                         </div>
                       )}
                       {/* Pets — breed follows the picked pet type (Dog → dog breeds,
-                          Cat → cat breeds), then what training the pet needs. */}
+                          Cat → cat breeds). */}
                       {isPets && subcategory && petBreedsFor(subcategory).length > 0 && (
                         <div className="mb-4">
                           <div className="relative">
@@ -4117,32 +4145,6 @@ const DEADLINE_STEP = 5;
                             <span
                               aria-hidden="true"
                               className={`pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-200 ${petBreed ? 'bg-white text-black' : 'bg-black text-white'}`}
-                            >
-                              <ChevronDown className="chev-badge h-4 w-4" strokeWidth={2.5} />
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      {isPets && subcategory && petBreedsFor(subcategory).length > 0 && (
-                        <div className="mb-4">
-                          <div className="relative">
-                            <select
-                              id="enquiry-pet-training"
-                              aria-label="Choose training"
-                              value={petTraining}
-                              onChange={(e) => setPetTraining(e.target.value)}
-                              className={`w-full appearance-none rounded-full h-12 sm:h-14 pl-5 pr-14 text-left border-2 transition-all duration-200 focus:outline-none shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] ${petTraining
-                                ? 'border-blue-700 bg-gradient-to-r from-blue-600 to-blue-700 text-sm sm:text-base font-bold text-white focus-visible:ring-3 focus-visible:ring-white/50'
-                                : 'border-slate-200 bg-gradient-to-b from-white to-slate-50 text-xs sm:text-sm font-bold text-slate-900 hover:border-slate-300 hover:to-slate-100 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
-                            >
-                              <option value="">Training</option>
-                              {PET_TRAINING_OPTIONS.map((t) => (
-                                <option key={t} value={t} className="bg-white text-black">{t}</option>
-                              ))}
-                            </select>
-                            <span
-                              aria-hidden="true"
-                              className={`pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-200 ${petTraining ? 'bg-white text-black' : 'bg-black text-white'}`}
                             >
                               <ChevronDown className="chev-badge h-4 w-4" strokeWidth={2.5} />
                             </span>
