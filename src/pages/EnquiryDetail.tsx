@@ -732,13 +732,22 @@ const EnquiryDetail = () => {
   const plainLayout = true;
   // Divider between rows is an inset hairline (via ::before) so it stops short
   // of the card's left and right edges instead of running edge to edge.
-  const plainRowCls = 'relative flex items-center gap-3.5 bg-white px-5 py-4 shadow-[-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10)] '
+  const plainShellCls = 'relative bg-white px-5 py-6 shadow-[-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10)] '
     + 'before:absolute before:left-6 before:right-6 before:top-0 before:h-px before:bg-black/[0.09] before:content-[\'\']';
+  const plainRowCls = `flex items-center gap-3.5 ${plainShellCls}`;
+  // Detail sections stack their label chip above the icon + value row, so the
+  // heading never collides with the icon on short rows.
+  const plainSectionCls = `flex flex-col ${plainShellCls}`;
   // Label chips match the "for sale" detail page: borderless white chips with a
   // solid extruded edge (no outline), so the detail pages share one chip language.
-  const labelChip3d = 'shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]';
-  const plainLabelCls = 'inline-flex items-center whitespace-nowrap text-[9.5px] font-bold uppercase leading-none tracking-[0.16em] text-neutral-400';
-  const pillLabelCls = `inline-flex items-center whitespace-nowrap rounded-xl border-0 bg-white px-2.5 py-1 text-[9px] font-black uppercase leading-none tracking-[0.06em] text-neutral-900 ${labelChip3d}`;
+  const labelChip3d = 'shadow-[0_-1px_0_0_rgba(17,24,39,0.06),-1px_0_0_0_rgba(17,24,39,0.06),1px_0_0_0_rgba(17,24,39,0.06),0_2px_0_0_rgba(17,24,39,0.12),0_6px_10px_-6px_rgba(17,24,39,0.16)]';
+  // Section sub-headings (Description, Budget, Location, Deadline...) wear the
+  // For Sale detail page's bordered red label chip, so both detail pages read
+  // the same way.
+  const sectionLabelCls = 'section-label';
+  // Nudged left of the text column, but kept off the card's left border.
+  const plainLabelCls = sectionLabelCls;
+  const pillLabelCls = sectionLabelCls;
   const discCls = 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-600 shadow-[0_2px_4px_rgba(185,28,28,0.28)]';
   const glyphCls = 'text-white';
 
@@ -1086,35 +1095,40 @@ const EnquiryDetail = () => {
 
                   {/* Description */}
                   {plainLayout ? (
-                    <div className={`${plainRowCls} items-start`}>
-                      <span className={discCls}>
-                        <FileText className={`h-[15px] w-[15px] ${glyphCls}`} aria-hidden="true" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className={plainLabelCls}>Description</p>
-                        <p className="mt-2 whitespace-pre-line break-words text-[13px] font-medium leading-[1.65] text-neutral-700">{enquiry.description}</p>
+                    <div className={plainSectionCls}>
+                      <div className="flex items-start gap-5">
+                        <div className="flex flex-col items-start">
+                          <span className={discCls}>
+                          <FileText className={`h-[15px] w-[15px] ${glyphCls}`} aria-hidden="true" />
+                          </span>
+                        </div>
+                        <p className="min-w-0 flex-1 whitespace-pre-line break-words text-[13px] font-medium leading-[1.65] text-neutral-700">{enquiry.description}</p>
                       </div>
                     </div>
                   ) : (
                     <div className="mt-3.5 rounded-[14px] border border-black/[0.08] bg-white p-4">
-                      <div className="mb-2.5 flex items-center gap-2">
-                        <FileText className="h-[15px] w-[15px] text-neutral-900" aria-hidden="true" />
-                        <h2 className={pillLabelCls}>Description</h2>
+                      <h2 className={`${pillLabelCls} mb-2.5 w-full text-left`}>Description</h2>
+                      <div className="flex items-start gap-2">
+                        <FileText className="mt-[2px] h-[15px] w-[15px] shrink-0 text-neutral-900" aria-hidden="true" />
+                        <p className="min-w-0 flex-1 whitespace-pre-line break-words text-[13px] leading-[1.6] text-neutral-700">{enquiry.description}</p>
                       </div>
-                      <p className="whitespace-pre-line break-words text-[13px] leading-[1.6] text-neutral-700">{enquiry.description}</p>
                     </div>
                   )}
 
                   {/* Budget */}
-                  <div className={plainLayout ? plainRowCls : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
-                    <span className={discCls}>
-                      <IndianRupee className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={2} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className={plainLayout ? plainLabelCls : pillLabelCls}>{budgetLabel}</p>
-                      <p className="mt-2 break-words text-[19px] font-semibold leading-tight tracking-[-0.01em] text-neutral-900">
-                        {enquiry.budgetOpenToDiscussion ? 'Open to discussion' : formatBudget(enquiry.budget)}
-                      </p>
+                  <div className={plainLayout ? plainSectionCls : 'mt-2.5 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
+                    {!plainLayout && <p className={`${pillLabelCls} mb-2 w-full text-left`}>{budgetLabel}</p>}
+                    <div className={plainLayout ? 'relative' : 'flex items-center gap-3'}>
+                      <div className="flex flex-col items-start">
+                        <span className={discCls}>
+                        <IndianRupee className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={2} />
+                        </span>
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center text-center">
+                        <p className={plainLayout ? 'break-words text-[19px] font-semibold leading-tight tracking-[-0.01em] text-neutral-900' : 'mt-2 break-words text-[19px] font-semibold leading-tight tracking-[-0.01em] text-neutral-900'}>
+                          {enquiry.budgetOpenToDiscussion ? 'Open to discussion' : formatBudget(enquiry.budget)}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
@@ -1125,63 +1139,77 @@ const EnquiryDetail = () => {
                     onClick={() => setShowLocationPopup(true)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowLocationPopup(true); } }}
                     title="Show full location"
-                    className={`${plainLayout ? `${plainRowCls} cursor-pointer transition-colors hover:bg-neutral-50 focus:outline-none focus-visible:bg-neutral-50` : 'mt-2.5 flex cursor-pointer items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5 transition-colors hover:bg-neutral-50 focus:outline-none focus-visible:bg-neutral-50'}`}
+                    className={`${plainLayout ? `${plainSectionCls} cursor-pointer transition-colors hover:bg-neutral-50 focus:outline-none focus-visible:bg-neutral-50` : 'mt-2.5 cursor-pointer rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5 transition-colors hover:bg-neutral-50 focus:outline-none focus-visible:bg-neutral-50'}`}
                   >
-                    <span className={discCls}>
-                      <MapPin className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className={plainLayout ? plainLabelCls : pillLabelCls}>Location</p>
-                      <p className="mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900">{enquiry.location}</p>
+                    {!plainLayout && <p className={`${pillLabelCls} mb-2 w-full text-left`}>Location</p>}
+                    <div className={plainLayout ? 'flex items-start gap-5' : 'flex items-center gap-3'}>
+                      <div className="flex flex-col items-start">
+                        <span className={discCls}>
+                        <MapPin className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                        </span>
+                      </div>
+                      <div className="min-w-0 flex-1 text-center">
+                        <p className={plainLayout ? 'break-words text-[13px] font-medium leading-[1.6] text-neutral-900' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'}>At {enquiry.location}</p>
+                      </div>
+                      <ChevronRight className="h-[18px] w-[18px] shrink-0 text-neutral-400" aria-hidden="true" strokeWidth={2} />
                     </div>
-                    <ChevronRight className="h-[18px] w-[18px] shrink-0 text-neutral-400" aria-hidden="true" strokeWidth={2} />
                   </div>
 
                   {/* Deadline + live countdown */}
-                  <div className={plainLayout ? plainRowCls : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
-                    <span className={discCls}>
-                      <Calendar className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className={plainLayout ? plainLabelCls : pillLabelCls}>Deadline</p>
-                      {enquiry.deadline ? (
-                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-                          {formatDeadlineReadable(enquiry.deadline) && (
-                            <p className="mt-1.5 text-[13px] font-bold leading-tight text-neutral-900">
-                              {formatDeadlineReadable(enquiry.deadline)}
-                            </p>
-                          )}
-                          <span className="shrink-0 border-l border-neutral-200 pl-2.5"><CountdownTimer deadline={enquiry.deadline} /></span>
-                        </div>
-                      ) : (
-                        <p className="mt-2 text-[13px] font-medium leading-tight text-neutral-500">No deadline</p>
-                      )}
+                  <div className={plainLayout ? plainSectionCls : 'mt-2.5 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
+                    {!plainLayout && <p className={`${pillLabelCls} mb-2 w-full text-left`}>Deadline</p>}
+                    <div className={plainLayout ? 'relative' : 'flex items-center gap-3'}>
+                      <div className="flex flex-col items-start">
+                        <span className={discCls}>
+                        <Calendar className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                        </span>
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center text-center">
+                        {enquiry.deadline ? (
+                          <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5">
+                            {formatDeadlineReadable(enquiry.deadline) && (
+                              <p className={plainLayout ? 'text-[13px] font-bold leading-tight text-neutral-900' : 'mt-1.5 text-[13px] font-bold leading-tight text-neutral-900'}>
+                                before {formatDeadlineReadable(enquiry.deadline)}
+                              </p>
+                            )}
+                            <span className="shrink-0 border-l border-neutral-200 pl-2.5"><CountdownTimer deadline={enquiry.deadline} /></span>
+                          </div>
+                        ) : (
+                          <p className={plainLayout ? 'text-[13px] font-medium leading-tight text-neutral-500' : 'mt-2 text-[13px] font-medium leading-tight text-neutral-500'}>No deadline</p>
+                        )}
+                      </div>
                     </div>
                   </div>
 
                   {/* Posted */}
-                  <div className={plainLayout ? `${plainRowCls}` : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
-                    <span className={discCls}>
-                      <Clock className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className={plainLayout ? plainLabelCls : pillLabelCls}>Posted</p>
-                      <p className="mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
-                        {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
-                      </p>
+                  <div className={plainLayout ? plainSectionCls : 'mt-2.5 rounded-[14px] border border-black/[0.07] bg-white px-3.5 py-2.5'}>
+                    {!plainLayout && <p className={`${pillLabelCls} mb-2 w-full text-left`}>Posted</p>}
+                    <div className={plainLayout ? 'relative' : 'flex items-center gap-3'}>
+                      <div className="flex flex-col items-start">
+                        <span className={discCls}>
+                        <Clock className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                        </span>
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center text-center">
+                        <p className={plainLayout ? 'break-words text-[13px] font-medium leading-[1.6] text-neutral-900' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'} title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                          Posted on {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Reference images — card row, between Posted and Additional notes */}
                   {enquiry.referenceImages && enquiry.referenceImages.length > 0 && (
                     plainLayout ? (
-                      <div className={`${plainRowCls} items-start`}>
-                        <span className={discCls}>
+                      <div className={plainSectionCls}>
+                        <div className="flex items-start gap-5">
+                        <div className="flex flex-col items-start">
+                          <span className={discCls}>
                           <ImageIcon className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
-                        </span>
+                          </span>
+                        </div>
                         <div className="min-w-0 flex-1">
-                          <p className={plainLabelCls}>Reference images ({enquiry.referenceImages.length})</p>
-                          <div className="mt-3 flex gap-2.5 overflow-x-auto pb-1">
+                          <div className="flex gap-2.5 overflow-x-auto pb-1">
                             {enquiry.referenceImages.map((imageUrl, index) => (
                               <button
                                 key={index}
@@ -1194,6 +1222,7 @@ const EnquiryDetail = () => {
                               </button>
                             ))}
                           </div>
+                        </div>
                         </div>
                       </div>
                     ) : (
@@ -1223,18 +1252,21 @@ const EnquiryDetail = () => {
 
                   {/* Additional notes */}
                   {enquiry.notes && (
-                    <div className={plainLayout ? `${plainRowCls}` : 'mt-2.5 flex items-center gap-3 rounded-[14px] border border-black/[0.05] bg-neutral-100 px-3.5 py-2.5'}>
-                      <span className={discCls}>
-                      <MessageSquare className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
-                    </span>
-                      <div className="min-w-0 flex-1">
-                        <p className={plainLayout ? plainLabelCls : pillLabelCls}>Additional notes</p>
-                        <p className="mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900">{enquiry.notes}</p>
+                    <div className={plainLayout ? plainSectionCls : 'mt-2.5 rounded-[14px] border border-black/[0.05] bg-neutral-100 px-3.5 py-2.5'}>
+                      {!plainLayout && <p className={`${pillLabelCls} mb-2 w-full text-left`}>Additional notes</p>}
+                      <div className={plainLayout ? 'flex items-start gap-5' : 'flex items-center gap-3'}>
+                        <div className="flex flex-col items-start">
+                          <span className={discCls}>
+                          <MessageSquare className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                          </span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className={plainLayout ? 'break-words text-[13px] font-medium leading-[1.6] text-neutral-900' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'}>{enquiry.notes}</p>
+                        </div>
                       </div>
                     </div>
                   )}
 
-                  
                   {/* Posted by + share — last row of the card, under Additional notes */}
                   <div className={`${plainRowCls} justify-between rounded-b-[18px] !shadow-[-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]`}>
                     <div className="flex min-w-0 flex-1 items-center gap-1.5 pr-2">

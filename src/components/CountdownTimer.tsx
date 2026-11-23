@@ -198,7 +198,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
         }`}
         style={{ backgroundColor: '#dc2626', borderColor: '#000000', color: 'white' }}
       >
-        {formatTimeLeft()}
+        {formatTimeLeft()}{!isExpired && ' left'}
       </Badge>
     </div>
   );
