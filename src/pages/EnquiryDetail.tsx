@@ -739,8 +739,8 @@ const EnquiryDetail = () => {
   const labelChip3d = 'shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]';
   const plainLabelCls = 'inline-flex items-center whitespace-nowrap text-[9.5px] font-bold uppercase leading-none tracking-[0.16em] text-neutral-400';
   const pillLabelCls = `inline-flex items-center whitespace-nowrap rounded-xl border-0 bg-white px-2.5 py-1 text-[9px] font-black uppercase leading-none tracking-[0.06em] text-neutral-900 ${labelChip3d}`;
-  const discCls = 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-neutral-100 ring-1 ring-inset ring-black/[0.05]';
-  const glyphCls = 'text-neutral-700';
+  const discCls = 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-600 shadow-[0_2px_4px_rgba(185,28,28,0.28)]';
+  const glyphCls = 'text-white';
 
   // Helper function to filter admin notes - hide technical details
   const formatAdminNotes = (notes: string | undefined): string | null => {
