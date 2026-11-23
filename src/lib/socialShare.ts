@@ -6,9 +6,9 @@
  * - WhatsApp Status: no web deep link exists. On mobile the native share
  *   sheet (Web Share API) surfaces it when the app is installed. On desktop
  *   we copy the content and open WhatsApp Web.
- * - Instagram DM/Story: deliberately NOT offered as direct targets —
- *   Instagram blocks websites from pre-filling content (no share-intent
- *   URL exists). The native share sheet covers it on mobile.
+ * - Instagram DM/Story: Instagram has no web share intent, so on a phone these
+ *   hand off to the native share sheet (Instagram appears as a target); on
+ *   desktop the text is copied and Instagram is opened to paste it.
  */
 
 export type SocialShareTarget =
@@ -17,7 +17,9 @@ export type SocialShareTarget =
   | 'twitter'
   | 'facebook'
   | 'email'
-  | 'copy';
+  | 'copy'
+  | 'instagram_dm'
+  | 'instagram_story';
 
 export interface SocialShareContent {
   title: string;
@@ -147,6 +149,25 @@ export async function shareToTarget(
       const body = fullText;
       openUrl(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
       return { success: true, message: 'Opening your mail app…' };
+    }
+
+    case 'instagram_dm':
+    case 'instagram_story': {
+      // No web intent exists — hand off to the phone's share sheet, else copy.
+      if (isMobileDevice() && navigator.share) {
+        const shared = await openNativeShareSheet(content);
+        if (shared) return { success: true, message: 'Pick Instagram to finish' };
+      }
+      const copied = await copyText(fullText);
+      if (!isMobileDevice()) openUrl('https://www.instagram.com/');
+      return {
+        success: copied,
+        message: copied
+          ? target === 'instagram_story'
+            ? 'Copied! Paste it into your Instagram Story.'
+            : 'Copied! Paste it in an Instagram DM.'
+          : 'Could not copy — please copy the link manually.',
+      };
     }
 
     case 'copy': {

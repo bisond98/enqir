@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Share2, Copy, Check, Smartphone, Mail, X } from 'lucide-react';
-import { WhatsAppIcon, XIcon, FacebookIcon } from '@/components/BrandIcons';
+import { WhatsAppIcon, XIcon, FacebookIcon, InstagramIcon } from '@/components/BrandIcons';
 import { toast } from '@/hooks/use-toast';
 import { shareListing, generateShareMessage, getListingUrl } from '../services/shareService';
 import StatusCardStudio from '@/components/StatusCardStudio';
@@ -64,7 +64,7 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
   useEffect(() => {
     if (isOpen && !isMobile && btnRef.current) {
       const rect = btnRef.current.getBoundingClientRect();
-      const menuHeight = 430;
+      const menuHeight = 560;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const margin = 8;
@@ -177,6 +177,20 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
             label="Facebook"
             hint="Share to your feed"
             onClick={() => handleShare('facebook')}
+          />
+          <ShareRow
+            icon={<InstagramIcon className="h-[18px] w-[18px] text-white" />}
+            tile="bg-gradient-to-br from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]"
+            label="Instagram"
+            hint="Send it in a DM"
+            onClick={() => handleShare('instagram_dm')}
+          />
+          <ShareRow
+            icon={<InstagramIcon className="h-[18px] w-[18px] text-white" />}
+            tile="bg-gradient-to-br from-[#ee2a7b] to-[#6228d7]"
+            label="Instagram Story"
+            hint="Share to your story"
+            onClick={() => handleShare('instagram_story')}
           />
           <ShareRow
             icon={<XIcon className="h-[16px] w-[16px] text-white" />}
