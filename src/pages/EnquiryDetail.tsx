@@ -1232,9 +1232,21 @@ const EnquiryDetail = () => {
                   )}
 
                   
-                  {/* Share / more — last row of the card, under Additional notes */}
+                  {/* Posted by + share — last row of the card, under Additional notes */}
                   <div className={`${plainRowCls} justify-between rounded-b-[18px] !shadow-[-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]`}>
-                    <div className={`relative flex shrink-0 items-center gap-2 ${plainLayout ? 'w-full flex-row-reverse justify-between' : ''}`}>
+                    <div className="flex min-w-0 flex-1 items-center gap-1.5 pr-2">
+                      <span className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
+                        {posterProfile?.profilePicture ? (
+                          <img loading="lazy" decoding="async" src={posterProfile.profilePicture} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <User className="h-[10px] w-[10px] text-white fill-white" />
+                        )}
+                      </span>
+                      <p className="min-w-0 truncate text-[9.5px] font-normal text-neutral-500">
+                        Posted by <span className="font-semibold text-neutral-900">{posterProfile?.username?.trim() || shortUserId(enquiry.userId)}</span>
+                      </p>
+                    </div>
+                    <div className="relative flex shrink-0 items-center gap-2">
                       <button
                         ref={shareBtnRef}
                         onClick={openShareMenu}
@@ -1245,22 +1257,6 @@ const EnquiryDetail = () => {
                         <Share2 className="h-6 w-6" strokeWidth={2} />
                       </button>
                     </div>
-                  </div>
-
-                  {/* Posted by */}
-                  <div className={`flex gap-3 ${plainLayout ? 'mt-4 flex-col' : 'mt-5 items-center justify-between'}`}>
-                    <div className={`flex min-w-0 items-center gap-1.5 ${plainLayout ? 'ml-auto mr-3 w-fit justify-end rounded-full border border-black bg-white px-2 py-[3px]' : ''}`}>
-                                          <span className={`flex h-[22px] w-[22px] shrink-0 items-center justify-center overflow-hidden rounded-full ${posterProfile?.profilePicture ? 'bg-neutral-100' : 'bg-black'}`}>
-                                            {posterProfile?.profilePicture ? (
-                                              <img loading="lazy" decoding="async" src={posterProfile.profilePicture} alt="" className="h-full w-full object-cover" />
-                                            ) : (
-                                              <User className="h-[10px] w-[10px] text-white fill-white" />
-                                            )}
-                                          </span>
-                                          <p className="min-w-0 truncate text-[9.5px] font-normal text-neutral-500">
-                                            Posted by <span className="font-semibold text-neutral-900">{posterProfile?.username?.trim() || shortUserId(enquiry.userId)}</span>
-                                          </p>
-                                        </div>
                   </div>
 
                   {/* Social share targets — WhatsApp, WhatsApp Status, Instagram DM & Story */}
