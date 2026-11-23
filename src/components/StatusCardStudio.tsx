@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Check, Copy, Download, Share2, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-type CardStyle = 'editorial' | 'poster' | 'framed';
+type CardStyle = 'classic' | 'ticket' | 'blueprint' | 'banner' | 'editorial' | 'poster' | 'framed';
 
 interface StatusCardStudioProps {
   open: boolean;
@@ -21,12 +21,393 @@ const CARD_H = 1920;
 const PAD = 112;
 
 const STYLES: { id: CardStyle; label: string }[] = [
+  { id: 'classic', label: 'Classic' },
+  { id: 'ticket', label: 'Ticket' },
+  { id: 'blueprint', label: 'Blueprint' },
+  { id: 'banner', label: 'Banner' },
   { id: 'editorial', label: 'Editorial' },
   { id: 'poster', label: 'Poster' },
   { id: 'framed', label: 'Framed' },
 ];
 
 const FONT = "'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif";
+const MONO = "'SF Mono', 'Menlo', 'Consolas', monospace";
+
+/** Shield outline — the Enqir mark used at the top of the status card. */
+function shieldPath(ctx: CanvasRenderingContext2D, cx: number, top: number, w: number, h: number) {
+  const half = w / 2;
+  ctx.beginPath();
+  ctx.moveTo(cx, top);
+  ctx.lineTo(cx + half, top + h * 0.2);
+  ctx.lineTo(cx + half, top + h * 0.55);
+  ctx.quadraticCurveTo(cx + half, top + h * 0.86, cx, top + h);
+  ctx.quadraticCurveTo(cx - half, top + h * 0.86, cx - half, top + h * 0.55);
+  ctx.lineTo(cx - half, top + h * 0.2);
+  ctx.closePath();
+}
+
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+/** Shrink a headline until it fits the given width in at most `maxLines`. */
+function fitHeadline(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+  startSize: number,
+  maxLines: number,
+  weight = 800
+) {
+  let size = startSize;
+  ctx.font = `${weight} ${size}px ${FONT}`;
+  let lines = wrap(ctx, text, maxWidth);
+  while (lines.length > maxLines && size > 48) {
+    size -= 6;
+    ctx.font = `${weight} ${size}px ${FONT}`;
+    lines = wrap(ctx, text, maxWidth);
+  }
+  return { lines: lines.slice(0, maxLines), size };
+}
+
+/** Size a single line down until it fits the given width. */
+function fitLine(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+  startSize: number,
+  weight: number,
+  family: string
+) {
+  let size = startSize;
+  ctx.font = `${weight} ${size}px ${family}`;
+  while (ctx.measureText(text).width > maxWidth && size > 18) {
+    size -= 2;
+    ctx.font = `${weight} ${size}px ${family}`;
+  }
+  return size;
+}
+
+function ctaAndBody(details: string[]) {
+  const i = details.findIndex((d) => d.includes('\uD83D\uDC47'));
+  const cta = (i >= 0 ? details[i].replace(/\uD83D\uDC47/g, '') : 'Click here to close the deal').trim();
+  return { cta, body: details.filter((_, idx) => idx !== i) };
+}
+
+/** Cream ticket on black — headline, perfs, dashed rule, black footer. */
+function drawTicket(ctx: CanvasRenderingContext2D, title: string, kicker: string, details: string[], url: string) {
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+  const m = 64;
+  roundRect(ctx, m, m, CARD_W - m * 2, CARD_H - m * 2, 52);
+  ctx.fillStyle = '#f4f1ea';
+  ctx.fill();
+
+  const inset = m + 72;
+  const innerW = CARD_W - inset * 2;
+
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#111111';
+  ctx.font = `600 30px ${MONO}`;
+  ctx.letterSpacing = '6px';
+  ctx.fillText('ENQIR.IN · STATUS', inset, m + 108);
+  ctx.letterSpacing = '0px';
+
+  ctx.strokeStyle = '#111111';
+  ctx.lineWidth = 6;
+  ctx.lineJoin = 'round';
+  shieldPath(ctx, CARD_W - inset - 34, m + 50, 68, 84);
+  ctx.stroke();
+
+  const { cta, body } = ctaAndBody(details);
+  const head = fitHeadline(ctx, (kicker || title).toUpperCase(), innerW, 92, 4);
+  let y = m + 260;
+  ctx.fillStyle = '#111111';
+  ctx.font = `800 ${head.size}px ${FONT}`;
+  for (const line of head.lines) {
+    ctx.fillText(line, inset, y);
+    y += Math.round(head.size * 1.14);
+  }
+
+  y += 34;
+  ctx.strokeStyle = '#bbb3a4';
+  ctx.lineWidth = 3;
+  ctx.setLineDash([16, 14]);
+  ctx.beginPath();
+  ctx.moveTo(inset, y);
+  ctx.lineTo(CARD_W - inset, y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  y += 92;
+  ctx.fillStyle = '#2b2b2b';
+  ctx.font = `400 44px ${FONT}`;
+  const lines: string[] = [];
+  for (const d of body) lines.push(...wrap(ctx, d, innerW));
+  const room = Math.max(0, Math.floor((CARD_H - m - 360 - y) / 64) + 1);
+  for (const line of lines.slice(0, Math.min(9, room))) {
+    ctx.fillText(line, inset, y);
+    y += 64;
+  }
+
+  // Black footer band with the call to action and the link — it sits under the
+  // details, but never past the bottom of the ticket.
+  const footerH = 260;
+  const footerTop = CARD_H - m - footerH;
+  ctx.fillStyle = '#111111';
+  roundRect(ctx, m, footerTop, CARD_W - m * 2, footerH, 40);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `700 44px ${FONT}`;
+  ctx.fillText(cta, inset, footerTop + 96);
+  const link = url.replace(/^https?:\/\//, '');
+  const linkSize = fitLine(ctx, link, innerW - 24, 34, 500, MONO);
+  ctx.fillStyle = 'rgba(255,255,255,0.72)';
+  ctx.font = `500 ${linkSize}px ${MONO}`;
+  ctx.fillText(link, inset, footerTop + 186);
+}
+
+/** Navy blueprint — grid paper, blue hairline accents, mono labels. */
+function drawBlueprint(ctx: CanvasRenderingContext2D, title: string, kicker: string, details: string[], url: string) {
+  ctx.fillStyle = '#08101f';
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+  ctx.strokeStyle = 'rgba(96,165,250,0.14)';
+  ctx.lineWidth = 2;
+  for (let x = 0; x <= CARD_W; x += 60) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CARD_H); ctx.stroke();
+  }
+  for (let y = 0; y <= CARD_H; y += 60) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CARD_W, y); ctx.stroke();
+  }
+
+  const m = 96;
+  const innerW = CARD_W - m * 2;
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#60a5fa';
+  ctx.font = `600 28px ${MONO}`;
+  ctx.letterSpacing = '8px';
+  ctx.fillText('ENQIR.IN', m, m + 40);
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(147,197,253,0.55)';
+  ctx.fillText('STATUS CARD', CARD_W - m, m + 40);
+  ctx.letterSpacing = '0px';
+
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 4;
+  shieldPath(ctx, m + 42, m + 96, 84, 104);
+  ctx.stroke();
+
+  const { cta, body } = ctaAndBody(details);
+  const head = fitHeadline(ctx, (kicker || title).toUpperCase(), innerW, 88, 4);
+  let y = m + 320;
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `700 ${head.size}px ${FONT}`;
+  for (const line of head.lines) {
+    ctx.fillText(line, m, y);
+    y += Math.round(head.size * 1.12);
+  }
+
+  y += 40;
+  ctx.fillStyle = '#3b82f6';
+  ctx.fillRect(m, y, 120, 4);
+  y += 96;
+
+  ctx.fillStyle = '#a9c8ff';
+  ctx.font = `400 42px ${FONT}`;
+  const lines: string[] = [];
+  for (const d of body) lines.push(...wrap(ctx, d, innerW));
+  const room = Math.max(0, Math.floor((CARD_H - 460 - y) / 62) + 1);
+  for (const line of lines.slice(0, Math.min(9, room))) {
+    ctx.fillText(line, m, y);
+    y += 62;
+  }
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `700 46px ${FONT}`;
+  ctx.fillText(cta, m, CARD_H - 380);
+
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(m, CARD_H - 316, innerW, 116);
+  const link = url.replace(/^https?:\/\//, '');
+  const linkSize = fitLine(ctx, link, innerW - 56, 34, 500, MONO);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `500 ${linkSize}px ${MONO}`;
+  ctx.fillText(link, m + 28, CARD_H - 316 + 70);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(147,197,253,0.7)';
+  ctx.font = `500 30px ${MONO}`;
+  ctx.fillText('enqir.in', CARD_W - m, CARD_H - 130);
+}
+
+/** Split banner — giant headline up top, blue information band below. */
+function drawBanner(ctx: CanvasRenderingContext2D, title: string, kicker: string, details: string[], url: string) {
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+
+  const m = 96;
+  const innerW = CARD_W - m * 2;
+  const bandTop = CARD_H - 760;
+
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = `600 28px ${MONO}`;
+  ctx.letterSpacing = '8px';
+  ctx.fillText('ENQIR.IN', m, 150);
+  ctx.letterSpacing = '0px';
+
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 20;
+  ctx.lineJoin = 'round';
+  shieldPath(ctx, CARD_W / 2, 300, 118, 146);
+  ctx.stroke();
+
+  const { cta, body } = ctaAndBody(details);
+  const head = fitHeadline(ctx, (kicker || title).toUpperCase(), innerW, 104, 5);
+  let y = 640;
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `800 ${head.size}px ${FONT}`;
+  for (const line of head.lines) {
+    ctx.fillText(line, m, y);
+    y += Math.round(head.size * 1.1);
+  }
+
+  // Blue information band
+  ctx.fillStyle = '#1d4ed8';
+  ctx.fillRect(0, bandTop, CARD_W, 760);
+
+  let dy = bandTop + 130;
+  ctx.fillStyle = 'rgba(255,255,255,0.95)';
+  ctx.font = `400 42px ${FONT}`;
+  const lines: string[] = [];
+  for (const d of body) lines.push(...wrap(ctx, d, innerW));
+  const room = Math.max(0, Math.floor((bandTop + 400 - dy) / 60) + 1);
+  for (const line of lines.slice(0, Math.min(6, room))) {
+    ctx.fillText(line, m, dy);
+    dy += 60;
+  }
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `700 46px ${FONT}`;
+  ctx.fillText(cta, m, bandTop + 500);
+
+  const link = url.replace(/^https?:\/\//, '');
+  const linkSize = fitLine(ctx, link, innerW - 240, 32, 500, MONO);
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.font = `500 ${linkSize}px ${MONO}`;
+  ctx.fillText(link, m, bandTop + 590);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `500 36px ${MONO}`;
+  ctx.fillText('enqir.in', CARD_W - m, bandTop + 690);
+}
+
+/**
+ * The reference poster: black canvas, shield mark, the need as a centred
+ * uppercase headline, the emoji detail lines under it, a closing call to
+ * action, the link in a white box and the wordmark in the corner.
+ */
+function drawClassic(
+  ctx: CanvasRenderingContext2D,
+  title: string,
+  kicker: string,
+  details: string[],
+  url: string
+) {
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+
+  // Shield mark
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 26;
+  ctx.lineJoin = 'round';
+  shieldPath(ctx, CARD_W / 2, 250, 152, 186);
+  ctx.stroke();
+
+  const maxW = CARD_W - 200;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+
+  // Headline — share text's first line already reads "WANTED: …"
+  const headline = (kicker || title || '').toUpperCase();
+  let size = 92;
+  ctx.font = `800 ${size}px ${FONT}`;
+  let lines = wrap(ctx, headline, maxW);
+  while (lines.length > 4 && size > 54) {
+    size -= 6;
+    ctx.font = `800 ${size}px ${FONT}`;
+    lines = wrap(ctx, headline, maxW);
+  }
+  let y = 700;
+  const lead = Math.round(size * 1.16);
+  ctx.fillStyle = '#ffffff';
+  for (const line of lines.slice(0, 5)) {
+    ctx.fillText(line, CARD_W / 2, y);
+    y += lead;
+  }
+
+  // Closing call to action travels with the share text; the reference wording
+  // is the fallback.
+  const ctaIndex = details.findIndex((d) => d.includes('\uD83D\uDC47'));
+  const cta = (ctaIndex >= 0 ? details[ctaIndex].replace(/\uD83D\uDC47/g, '') : 'Click here to close the deal').trim();
+  const body = details.filter((_, i) => i !== ctaIndex);
+
+  // Detail lines
+  y += 74;
+  ctx.font = `400 46px ${FONT}`;
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  const detailLines: string[] = [];
+  for (const raw of body) detailLines.push(...wrap(ctx, raw, maxW));
+  // Never let the details run into the call to action and the link box.
+  const roomForDetails = Math.max(0, Math.floor((CARD_H - 470 - y) / 72) + 1);
+  for (const line of detailLines.slice(0, Math.min(10, roomForDetails))) {
+    ctx.fillText(line, CARD_W / 2, y);
+    y += 72;
+  }
+
+  // Call to action, left aligned above the link box
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `700 54px ${FONT}`;
+  ctx.fillText(cta, 90, CARD_H - 400);
+
+  // Link in a white box
+  const boxTop = CARD_H - 330;
+  const boxH = 132;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(90, boxTop, CARD_W - 180, boxH);
+  const link = url.replace(/^https?:\/\//, '');
+  let linkSize = 40;
+  ctx.font = `500 ${linkSize}px ${MONO}`;
+  while (ctx.measureText(link).width > CARD_W - 260 && linkSize > 22) {
+    linkSize -= 2;
+    ctx.font = `500 ${linkSize}px ${MONO}`;
+  }
+  ctx.fillStyle = '#000000';
+  ctx.fillText(link, 128, boxTop + boxH / 2 + linkSize * 0.36);
+
+  // Wordmark
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = `500 46px ${MONO}`;
+  ctx.fillText('enqir.in', CARD_W - 90, CARD_H - 150);
+}
 
 /** Break a line into lines that fit `maxWidth` at the given font. */
 function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
@@ -54,6 +435,23 @@ export function drawCard(
   details: string[],
   url: string
 ) {
+  if (style === 'classic') {
+    drawClassic(ctx, title, kicker, details, url);
+    return;
+  }
+  if (style === 'ticket') {
+    drawTicket(ctx, title, kicker, details, url);
+    return;
+  }
+  if (style === 'blueprint') {
+    drawBlueprint(ctx, title, kicker, details, url);
+    return;
+  }
+  if (style === 'banner') {
+    drawBanner(ctx, title, kicker, details, url);
+    return;
+  }
+
   ctx.clearRect(0, 0, CARD_W, CARD_H);
 
   // Deep black backdrop with a soft lift at the top so the type sits in light.
@@ -157,7 +555,7 @@ function splitText(text: string, url: string) {
 }
 
 export default function StatusCardStudio({ open, onClose, title, text, url }: StatusCardStudioProps) {
-  const [style, setStyle] = useState<CardStyle>('editorial');
+  const [style, setStyle] = useState<CardStyle>('classic');
   const [copied, setCopied] = useState(false);
   const [sharing, setSharing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
