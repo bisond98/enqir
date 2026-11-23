@@ -3404,7 +3404,7 @@ const DEADLINE_STEP = 5;
                 </div>
 
                 {/* Step Content */}
-                <div key={step} className="space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
+                <div key={step} className="enquiry-wizard space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
 
                   {/* Step 0: Title */}
                   {step === 0 && (

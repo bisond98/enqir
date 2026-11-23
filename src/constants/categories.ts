@@ -7,6 +7,7 @@
 import { THRIFT_SEARCH_ITEMS } from './thriftClothing';
 import { CATEGORY_BRAND_KEYWORDS } from './brandSearchKeywords';
 import { AUDIO_SUBCATEGORIES } from './audioCatalog';
+import { PET_TYPES, PET_TRAINING_OPTIONS, PET_BREEDS } from './petsCatalog';
 
 export interface AppCategory {
   value: string;
@@ -2557,6 +2558,32 @@ export function postInCategory(
   return options.some((o) => norm(o) === wanted);
 }
 
+// Every pet type, breed and training option, lower-cased: a search for any of
+// them ("husky", "arapaima", "crate training") belongs to the Pets tile.
+const PET_SEARCH_TERMS: Array<{ text: string; words: string[] }> = [
+  ...PET_TYPES,
+  ...PET_TRAINING_OPTIONS,
+  ...Object.values(PET_BREEDS).flat(),
+].map((t) => {
+  const text = t.toLowerCase();
+  return { text, words: text.split(/[^a-z0-9]+/).filter(Boolean) };
+});
+
+/** True when the typed query names a pet type, breed or training kind. */
+function isPetsSearch(query: string): boolean {
+  if (query.length < 3) return false;
+  const words = query.split(/[^a-z0-9]+/).filter(Boolean);
+  return PET_SEARCH_TERMS.some(({ text, words: termWords }) => {
+    if (words.length > 1) {
+      // "potty training" finds "Potty / crate training".
+      return words.every((w) => termWords.some((tw) => tw.startsWith(w)));
+    }
+    // Whole-word match, with prefixes only from 4 letters up, so "car" never
+    // rides on "Cardigan" while "husk" still finds "Husky".
+    return termWords.some((tw) => tw === query || (query.length >= 4 && tw.startsWith(query))) || text === query;
+  });
+}
+
 export function filterCategoriesBySearch<T extends AppCategory>(categories: T[], query: string, minResults = 3): T[] {
   const q = query.trim().toLowerCase();
   if (!q) return categories;
@@ -2649,6 +2676,16 @@ export function filterCategoriesBySearch<T extends AppCategory>(categories: T[],
     const groupPresent = new Set(groupInResult.map(c => c.value));
     const groupMissing = priority.filter(c => !groupPresent.has(c.value));
     result = [...groupInResult, ...groupMissing, ...result.filter(c => !priorityValues.has(c.value))];
+  }
+
+  // Pet type / breed / training queries never name the Pets tile itself, so it
+  // leads the list: "husky", "dog", "arapaima", "potty training" → Pets first.
+  if (isPetsSearch(q)) {
+    const pets = categories.find(c => c.value === 'pets');
+    if (pets) {
+      chosen.add('pets');
+      result = [pets, ...result.filter(c => c.value !== 'pets')];
+    }
   }
   return result;
 }
