@@ -2078,7 +2078,7 @@ const SellerResponse = () => {
                       });
                     }
                   }}
-                  className={`!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-[0.5px] !border-black !shadow-[0_6px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] !transition-all !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none ${
+                  className={`!w-full !h-16 !text-lg !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-0 !shadow-none active:!shadow-none !transition-colors !duration-150 disabled:!opacity-50 disabled:!cursor-not-allowed !relative !overflow-hidden touch-manipulation select-none ${
                     submitting ? 'opacity-70 cursor-not-allowed' : ''
                   }`}
                   disabled={!price || submitting}
