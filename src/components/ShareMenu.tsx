@@ -26,6 +26,11 @@ interface ShareMenuProps {
  * Instagram DM and Instagram Story targets, matching the listing
  * ShareButton's physical-button menu style.
  */
+/** The card preview studio is for local design work only. */
+const isLocalPreview = () =>
+  typeof window !== 'undefined' &&
+  /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/.test(window.location.hostname);
+
 export default function ShareMenu({ open, onClose, anchorRef, title, text, url, imageUrl, onShared }: ShareMenuProps) {
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -80,11 +85,15 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
     }
   }, [open, anchorRef]);
 
-  if (!open) return null;
+  // The status-card studio lives in the same portal, so it must survive the
+  // menu closing — that close is what opens the studio.
+  if (!open && !studioOpen) return null;
 
   const handleShare = (target: SocialShareTarget) => {
-    // Status posts a black-and-white card image, not a coloured text block.
-    if (target === 'whatsapp_status') {
+    // Status posts a card image, not a coloured text block. The card studio is
+    // a design preview shown only on localhost — in production Status shares
+    // straight away with no extra popup.
+    if (target === 'whatsapp_status' && isLocalPreview()) {
       onClose();
       onShared?.();
       setStudioOpen(true);
@@ -108,6 +117,8 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
 
   return createPortal(
     <>
+      {open && (
+        <>
       {/* Blur/dim backdrop behind the share menu — tap anywhere to close */}
       <div
         className="fixed inset-0 bg-black/20 backdrop-blur-[3px]"
@@ -177,13 +188,16 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
         {copiedKey === 'copy' ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 text-gray-500" />}
         {copiedKey === 'copy' ? 'Copied!' : 'Copy Link'}
       </button>
-    </div>
+      </div>
+        </>
+      )}
     <StatusCardStudio
       open={studioOpen}
       onClose={() => setStudioOpen(false)}
       title={title}
       text={text}
       url={url}
+      imageUrl={imageUrl}
     />
     </>,
     document.body

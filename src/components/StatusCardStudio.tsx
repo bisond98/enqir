@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Check, Copy, Download, Share2, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-type CardStyle = 'classic' | 'ticket' | 'blueprint' | 'banner' | 'editorial' | 'poster' | 'framed';
+type CardStyle = 'classic' | 'photo' | 'paper' | 'ticket' | 'blueprint' | 'banner' | 'editorial' | 'poster' | 'framed';
 
 interface StatusCardStudioProps {
   open: boolean;
@@ -14,6 +14,8 @@ interface StatusCardStudioProps {
   text: string;
   /** Link shown at the foot of the card. */
   url: string;
+  /** Listing / enquiry photo used by the Photo design. */
+  imageUrl?: string;
 }
 
 const CARD_W = 1080;
@@ -22,6 +24,8 @@ const PAD = 112;
 
 const STYLES: { id: CardStyle; label: string }[] = [
   { id: 'classic', label: 'Classic' },
+  { id: 'photo', label: 'Photo' },
+  { id: 'paper', label: 'Paper' },
   { id: 'ticket', label: 'Ticket' },
   { id: 'blueprint', label: 'Blueprint' },
   { id: 'banner', label: 'Banner' },
@@ -98,10 +102,42 @@ function fitLine(
   return size;
 }
 
+/** A call to action that shrinks, then wraps to two lines — never clipped. */
+function drawCta(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  baseline: number,
+  maxWidth: number,
+  startSize: number,
+  weight: number,
+  family: string
+) {
+  let size = startSize;
+  ctx.font = `${weight} ${size}px ${family}`;
+  while (ctx.measureText(text).width > maxWidth && size > 30) {
+    size -= 2;
+    ctx.font = `${weight} ${size}px ${family}`;
+  }
+  const lines = wrap(ctx, text, maxWidth).slice(0, 2);
+  const lead = Math.round(size * 1.18);
+  let y = baseline - (lines.length - 1) * lead;
+  for (const line of lines) {
+    ctx.fillText(line, x, y);
+    y += lead;
+  }
+}
+
 function ctaAndBody(details: string[]) {
   const i = details.findIndex((d) => d.includes('\uD83D\uDC47'));
   const cta = (i >= 0 ? details[i].replace(/\uD83D\uDC47/g, '') : 'Click here to close the deal').trim();
-  return { cta, body: details.filter((_, idx) => idx !== i) };
+  const body = details
+    .filter((_, idx) => idx !== i)
+    // Share lines may end in a separator that reads as a stray mark once the
+    // line is its own row on the poster.
+    .map((line) => line.replace(/\s*[|·]\s*$/, '').trim())
+    .filter(Boolean);
+  return { cta, body };
 }
 
 /** Cream ticket on black — headline, perfs, dashed rule, black footer. */
@@ -169,8 +205,7 @@ function drawTicket(ctx: CanvasRenderingContext2D, title: string, kicker: string
   roundRect(ctx, m, footerTop, CARD_W - m * 2, footerH, 40);
   ctx.fill();
   ctx.fillStyle = '#ffffff';
-  ctx.font = `700 44px ${FONT}`;
-  ctx.fillText(cta, inset, footerTop + 96);
+  drawCta(ctx, cta, inset, footerTop + 96, innerW, 44, 700, FONT);
   const link = url.replace(/^https?:\/\//, '');
   const linkSize = fitLine(ctx, link, innerW - 24, 34, 500, MONO);
   ctx.fillStyle = 'rgba(255,255,255,0.72)';
@@ -236,8 +271,7 @@ function drawBlueprint(ctx: CanvasRenderingContext2D, title: string, kicker: str
   }
 
   ctx.fillStyle = '#ffffff';
-  ctx.font = `700 46px ${FONT}`;
-  ctx.fillText(cta, m, CARD_H - 380);
+  drawCta(ctx, cta, m, CARD_H - 380, innerW, 46, 700, FONT);
 
   ctx.strokeStyle = '#3b82f6';
   ctx.lineWidth = 3;
@@ -303,8 +337,7 @@ function drawBanner(ctx: CanvasRenderingContext2D, title: string, kicker: string
   }
 
   ctx.fillStyle = '#ffffff';
-  ctx.font = `700 46px ${FONT}`;
-  ctx.fillText(cta, m, bandTop + 500);
+  drawCta(ctx, cta, m, bandTop + 500, innerW, 46, 700, FONT);
 
   const link = url.replace(/^https?:\/\//, '');
   const linkSize = fitLine(ctx, link, innerW - 240, 32, 500, MONO);
@@ -316,6 +349,158 @@ function drawBanner(ctx: CanvasRenderingContext2D, title: string, kicker: string
   ctx.fillStyle = '#ffffff';
   ctx.font = `500 36px ${MONO}`;
   ctx.fillText('enqir.in', CARD_W - m, bandTop + 690);
+}
+
+/** Full-bleed photo with a dark scrim, the type stacked over the bottom third. */
+function drawPhoto(
+  ctx: CanvasRenderingContext2D,
+  title: string,
+  kicker: string,
+  details: string[],
+  url: string,
+  photo: HTMLImageElement | null
+) {
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+
+  if (photo && photo.width && photo.height) {
+    // Cover-fit: fill the whole card, crop the overflow evenly.
+    const scale = Math.max(CARD_W / photo.width, CARD_H / photo.height);
+    const w = photo.width * scale;
+    const h = photo.height * scale;
+    ctx.drawImage(photo, (CARD_W - w) / 2, (CARD_H - h) / 2, w, h);
+  }
+
+  // Scrim: light at the top for the wordmark, deep at the bottom for the type.
+  const scrim = ctx.createLinearGradient(0, 0, 0, CARD_H);
+  scrim.addColorStop(0, 'rgba(0,0,0,0.55)');
+  scrim.addColorStop(0.3, 'rgba(0,0,0,0.08)');
+  scrim.addColorStop(0.55, 'rgba(0,0,0,0.45)');
+  scrim.addColorStop(1, 'rgba(0,0,0,0.95)');
+  ctx.fillStyle = scrim;
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+
+  const m = 90;
+  const innerW = CARD_W - m * 2;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = `600 28px ${MONO}`;
+  ctx.letterSpacing = '8px';
+  ctx.fillText('ENQIR.IN', m, 124);
+  ctx.letterSpacing = '0px';
+
+  const { cta, body } = ctaAndBody(details);
+  const boxTop = CARD_H - 340;
+  const boxH = 112;
+  const ctaBase = boxTop - 70;
+
+  // Details, bottom-up above the call to action.
+  ctx.font = `400 40px ${FONT}`;
+  const detailLines: string[] = [];
+  for (const d of body) detailLines.push(...wrap(ctx, d, innerW));
+  const shown = detailLines.slice(0, 4);
+  const lead = 54;
+  const lastDetailBase = ctaBase - 76;
+  const firstDetailBase = lastDetailBase - (shown.length - 1) * lead;
+  ctx.fillStyle = 'rgba(255,255,255,0.86)';
+  shown.forEach((line, i) => ctx.fillText(line, m, firstDetailBase + i * lead));
+
+  // Headline above the details.
+  const head = fitHeadline(ctx, (kicker || title).toUpperCase(), innerW, 84, 3);
+  const headLead = Math.round(head.size * 1.12);
+  const lastHeadBase = firstDetailBase - 70;
+  const firstHeadBase = lastHeadBase - (head.lines.length - 1) * headLead;
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `800 ${head.size}px ${FONT}`;
+  head.lines.forEach((line, i) => ctx.fillText(line, m, firstHeadBase + i * headLead));
+
+  // CTA
+  ctx.fillStyle = '#ffffff';
+  drawCta(ctx, cta, m, ctaBase, innerW, 46, 700, FONT);
+
+  // Link in a white box
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(m, boxTop, innerW, boxH);
+  const link = url.replace(/^https?:\/\//, '');
+  const linkSize = fitLine(ctx, link, innerW - 56, 34, 500, MONO);
+  ctx.fillStyle = '#000000';
+  ctx.font = `500 ${linkSize}px ${MONO}`;
+  ctx.fillText(link, m + 28, boxTop + boxH / 2 + linkSize * 0.36);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.font = `500 36px ${MONO}`;
+  ctx.fillText('enqir.in', CARD_W - m, CARD_H - 110);
+}
+
+/** Paper: white card, black type — the light counterpart of Classic. */
+function drawPaper(ctx: CanvasRenderingContext2D, title: string, kicker: string, details: string[], url: string) {
+  ctx.fillStyle = '#f8f7f4';
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+
+  ctx.strokeStyle = 'rgba(17,24,39,0.10)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(44, 44, CARD_W - 88, CARD_H - 88);
+
+  const m = 96;
+  const innerW = CARD_W - m * 2;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#111827';
+  ctx.font = `600 28px ${MONO}`;
+  ctx.letterSpacing = '8px';
+  ctx.fillText('ENQIR.IN', m, 158);
+  ctx.letterSpacing = '0px';
+
+  ctx.strokeStyle = '#111827';
+  ctx.lineWidth = 18;
+  ctx.lineJoin = 'round';
+  shieldPath(ctx, CARD_W / 2, 300, 112, 138);
+  ctx.stroke();
+
+  const { cta, body } = ctaAndBody(details);
+  const head = fitHeadline(ctx, (kicker || title).toUpperCase(), innerW, 92, 4);
+  const headLead = Math.round(head.size * 1.14);
+  let y = 660;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#111827';
+  ctx.font = `800 ${head.size}px ${FONT}`;
+  for (const line of head.lines) {
+    ctx.fillText(line, CARD_W / 2, y);
+    y += headLead;
+  }
+
+  y += 74;
+  ctx.font = `400 44px ${FONT}`;
+  ctx.fillStyle = '#4b5563';
+  const detailLines: string[] = [];
+  for (const d of body) detailLines.push(...wrap(ctx, d, innerW));
+  const room = Math.max(0, Math.floor((CARD_H - 500 - y) / 66) + 1);
+  for (const line of detailLines.slice(0, Math.min(9, room))) {
+    ctx.fillText(line, CARD_W / 2, y);
+    y += 66;
+  }
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#111827';
+  drawCta(ctx, cta, m, CARD_H - 400, innerW, 50, 700, FONT);
+
+  // Black link box with white type
+  const boxTop = CARD_H - 330;
+  const boxH = 118;
+  ctx.fillStyle = '#111827';
+  ctx.fillRect(m, boxTop, innerW, boxH);
+  const link = url.replace(/^https?:\/\//, '');
+  const linkSize = fitLine(ctx, link, innerW - 56, 34, 500, MONO);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `500 ${linkSize}px ${MONO}`;
+  ctx.fillText(link, m + 28, boxTop + boxH / 2 + linkSize * 0.36);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = '#111827';
+  ctx.font = `500 40px ${MONO}`;
+  ctx.fillText('enqir.in', CARD_W - m, CARD_H - 150);
 }
 
 /**
@@ -364,9 +549,7 @@ function drawClassic(
 
   // Closing call to action travels with the share text; the reference wording
   // is the fallback.
-  const ctaIndex = details.findIndex((d) => d.includes('\uD83D\uDC47'));
-  const cta = (ctaIndex >= 0 ? details[ctaIndex].replace(/\uD83D\uDC47/g, '') : 'Click here to close the deal').trim();
-  const body = details.filter((_, i) => i !== ctaIndex);
+  const { cta, body } = ctaAndBody(details);
 
   // Detail lines
   y += 74;
@@ -384,8 +567,7 @@ function drawClassic(
   // Call to action, left aligned above the link box
   ctx.textAlign = 'left';
   ctx.fillStyle = '#ffffff';
-  ctx.font = `700 54px ${FONT}`;
-  ctx.fillText(cta, 90, CARD_H - 400);
+  drawCta(ctx, cta, 90, CARD_H - 400, CARD_W - 180, 54, 700, FONT);
 
   // Link in a white box
   const boxTop = CARD_H - 330;
@@ -433,8 +615,17 @@ export function drawCard(
   title: string,
   kicker: string,
   details: string[],
-  url: string
+  url: string,
+  photo: HTMLImageElement | null = null
 ) {
+  if (style === 'photo') {
+    drawPhoto(ctx, title, kicker, details, url, photo);
+    return;
+  }
+  if (style === 'paper') {
+    drawPaper(ctx, title, kicker, details, url);
+    return;
+  }
   if (style === 'classic') {
     drawClassic(ctx, title, kicker, details, url);
     return;
@@ -554,54 +745,124 @@ function splitText(text: string, url: string) {
   return { kicker, details };
 }
 
-export default function StatusCardStudio({ open, onClose, title, text, url }: StatusCardStudioProps) {
+export default function StatusCardStudio({ open, onClose, title, text, url, imageUrl }: StatusCardStudioProps) {
   const [style, setStyle] = useState<CardStyle>('classic');
   const [copied, setCopied] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
+  // The exported PNG is prepared ahead of time so the native share sheet can
+  // be opened straight from the tap (a mobile browser drops the user gesture
+  // if anything is awaited first).
+  const [file, setFile] = useState<File | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const justOpenedRef = useRef(0);
 
   const { kicker, details } = useMemo(() => splitText(text, url), [text, url]);
+  // The Photo design is only offered when there is a picture to show.
+  const styles = useMemo(() => STYLES.filter((s) => s.id !== 'photo' || !!imageUrl), [imageUrl]);
+
+  useEffect(() => {
+    if (!imageUrl) {
+      setPhoto(null);
+      return;
+    }
+    let cancelled = false;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      if (!cancelled) setPhoto(img);
+    };
+    img.onerror = () => {
+      if (!cancelled) setPhoto(null);
+    };
+    img.src = imageUrl;
+    return () => {
+      cancelled = true;
+    };
+  }, [imageUrl]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (!justOpenedRef.current) justOpenedRef.current = Date.now();
+    // The first tap that opened the sheet must not immediately close it.
+    const closeGuard = setTimeout(() => {
+      justOpenedRef.current = 0;
+    }, 400);
+    return () => clearTimeout(closeGuard);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
-    drawCard(ctx, style, title, kicker, details, url);
-  }, [open, style, title, kicker, details, url]);
+    drawCard(ctx, style, title, kicker, details, url, photo);
+    setFile(null);
+    const timer = setTimeout(() => {
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const name = `enqir-status-${(title || 'post').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.png`;
+        setFile(new File([blob], name, { type: 'image/png' }));
+      }, 'image/png');
+    }, 60);
+    return () => clearTimeout(timer);
+  }, [open, style, title, kicker, details, url, photo]);
 
   if (!open) return null;
+
+  const guardedClose = () => {
+    if (justOpenedRef.current) return;
+    onClose();
+  };
 
   const toBlob = () =>
     new Promise<Blob | null>((resolve) => {
       const canvas = canvasRef.current;
-      if (!canvas) return resolve(null);
+      if (!canvas || !canvas.toBlob) return resolve(null);
       canvas.toBlob((blob) => resolve(blob), 'image/png');
+      // Never leave the button spinning if the encoder stalls.
+      setTimeout(() => resolve(null), 4000);
     });
 
   const fileName = () =>
     `enqir-status-${(title || 'post').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.png`;
 
+  const saveImage = async (blob: Blob) => {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName();
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 4000);
+    toast({ title: 'Image saved', description: 'Attach this image to your WhatsApp Status.' });
+  };
+
   const handleShare = async () => {
+    if (sharing) return;
+    // Share the already-prepared file straight from the tap. The share sheet is
+    // the only way a website can hand an image to WhatsApp Status.
+    const ready = file;
+    if (ready && typeof navigator !== 'undefined' && navigator.share && navigator.canShare?.({ files: [ready] })) {
+      setSharing(true);
+      try {
+        await navigator.share({ files: [ready], text: `${title}\n${url}` });
+        onClose();
+        return;
+      } catch (err: any) {
+        // Cancelling is not an error; anything else falls through to saving.
+        if (err?.name === 'AbortError') {
+          setSharing(false);
+          return;
+        }
+      } finally {
+        setSharing(false);
+      }
+    }
+
     setSharing(true);
     try {
-      const blob = await toBlob();
+      const blob = ready ? ready : await toBlob();
       if (!blob) throw new Error('no image');
-      const file = new File([blob], fileName(), { type: 'image/png' });
-      const canShareFiles =
-        typeof navigator !== 'undefined' &&
-        !!navigator.canShare &&
-        navigator.canShare({ files: [file] });
-      if (canShareFiles) {
-        await navigator.share({ files: [file], text: `${title}\n${url}` });
-      } else {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = fileName();
-        link.click();
-        URL.revokeObjectURL(link.href);
-        toast({ title: 'Image saved', description: 'Attach this image to your WhatsApp Status.' });
-      }
+      await saveImage(blob);
     } catch {
       toast({ title: 'Could not share', description: 'Download the image and post it manually.', variant: 'destructive' });
     } finally {
@@ -610,13 +871,8 @@ export default function StatusCardStudio({ open, onClose, title, text, url }: St
   };
 
   const handleDownload = async () => {
-    const blob = await toBlob();
-    if (!blob) return;
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName();
-    link.click();
-    URL.revokeObjectURL(link.href);
+    const blob = file ?? (await toBlob());
+    if (blob) await saveImage(blob);
   };
 
   const handleCopy = async () => {
@@ -630,36 +886,56 @@ export default function StatusCardStudio({ open, onClose, title, text, url }: St
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-3xl overflow-hidden rounded-2xl border-2 border-black bg-white shadow-[0_10px_0_0_rgba(0,0,0,0.25)]">
-        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+    <div
+      className="fixed inset-0 z-[10000] flex items-end justify-center bg-black/60 backdrop-blur-[2px] sm:items-center sm:p-6"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) guardedClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Share to WhatsApp Status"
+        onClick={(e) => e.stopPropagation()}
+        className="flex max-h-[94vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[26px] bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.22)] sm:max-h-[88vh] sm:max-w-3xl sm:rounded-3xl"
+      >
+        <div className="flex items-start justify-between gap-3 px-5 pb-1 pt-4">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Status card</p>
-            <h3 className="text-sm font-black text-black">Black &amp; white preview</h3>
+            <h3 className="text-[15px] font-semibold tracking-tight text-gray-900">Share to Status</h3>
+            <p className="mt-0.5 text-[11px] text-gray-500">1080 × 1920 — the full-screen size WhatsApp Status uses</p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close" className="rounded-full p-1.5 hover:bg-gray-100">
-            <X className="h-4 w-4 text-black" />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="-mr-1 rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
+          >
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="grid gap-4 p-4 sm:grid-cols-[240px_1fr]">
-          <div className="mx-auto w-[240px] overflow-hidden rounded-xl border border-gray-300 bg-black shadow-[0_6px_18px_rgba(0,0,0,0.25)]">
-            <canvas ref={canvasRef} width={CARD_W} height={CARD_H} className="block h-auto w-full" />
+        <div className="grid gap-5 overflow-y-auto px-5 pb-5 pt-3 sm:grid-cols-[240px_1fr] sm:items-start">
+          <div className="mx-auto w-full max-w-[210px] sm:max-w-none">
+            <div className="overflow-hidden rounded-2xl bg-black ring-1 ring-black/10">
+              <canvas ref={canvasRef} width={CARD_W} height={CARD_H} className="block h-auto w-full" />
+            </div>
+            <p className="mt-2 text-center text-[10px] font-medium tracking-wide text-gray-400">Live preview</p>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex min-w-0 flex-col gap-4">
             <div>
-              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em] text-gray-500">Style</p>
-              <div className="flex flex-wrap gap-2">
-                {STYLES.map((s) => (
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-400">Design</p>
+              <div className="flex flex-wrap gap-1.5">
+                {styles.map((s) => (
                   <button
                     key={s.id}
                     type="button"
                     onClick={() => setStyle(s.id)}
-                    className={`rounded-full border px-3 py-1.5 text-[11px] font-bold transition-colors ${
+                    aria-pressed={style === s.id}
+                    className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors ${
                       style === s.id
-                        ? 'border-black bg-black text-white'
-                        : 'border-gray-300 bg-white text-gray-800 hover:border-gray-400'
+                        ? 'border-gray-900 bg-gray-900 text-white'
+                        : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
                     {s.label}
@@ -668,36 +944,39 @@ export default function StatusCardStudio({ open, onClose, title, text, url }: St
               </div>
             </div>
 
-            <p className="text-[11px] leading-relaxed text-gray-600">
-              The card exports at 1080 × 1920 — full-screen WhatsApp Status size, black background, white type.
+            <p className="hidden text-[11px] leading-relaxed text-gray-500 sm:block">
+              Pick a layout, then share. The image saves to your gallery ready for Status, and the link is copied
+              alongside it.
             </p>
 
-            <div className="mt-auto flex flex-wrap gap-2">
+            <div className="flex flex-col gap-2 sm:mt-auto">
               <button
                 type="button"
                 onClick={handleShare}
                 disabled={sharing}
-                className="inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 text-[11px] font-black text-white disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-[12px] font-semibold text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
               >
-                <Share2 className="h-3.5 w-3.5" />
-                {sharing ? 'Preparing…' : 'Share image'}
+                <Share2 className="h-4 w-4" />
+                {sharing ? 'Preparing image…' : 'Share image'}
               </button>
-              <button
-                type="button"
-                onClick={handleDownload}
-                className="inline-flex items-center gap-2 rounded-full border border-black px-4 py-2 text-[11px] font-black text-black"
-              >
-                <Download className="h-3.5 w-3.5" />
-                Download
-              </button>
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-[11px] font-black text-gray-800"
-              >
-                {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
-                {copied ? 'Copied' : 'Copy text'}
-              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3 py-2.5 text-[11px] font-semibold text-gray-800 transition-colors hover:bg-gray-50"
+                >
+                  <Download className="h-4 w-4" />
+                  Download
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3 py-2.5 text-[11px] font-semibold text-gray-800 transition-colors hover:bg-gray-50"
+                >
+                  {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                  {copied ? 'Copied' : 'Copy text'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

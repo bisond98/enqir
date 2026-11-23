@@ -13,6 +13,11 @@ interface ShareButtonProps {
   className?: string;
 }
 
+/** The card preview studio is for local design work only. */
+const isLocalPreview = () =>
+  typeof window !== 'undefined' &&
+  /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/.test(window.location.hostname);
+
 export default function ShareButton({ listing, variant = 'icon', className = '' }: ShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -70,8 +75,9 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
   const handleShare = useCallback(async (platform: 'whatsapp' | 'twitter' | 'facebook' | 'copy' | 'native' | 'whatsapp_status' | 'instagram_dm' | 'instagram_story' | 'email') => {
     setIsOpen(false);
 
-    // Status gets the black card image, not the coloured text block.
-    if (platform === 'whatsapp_status') {
+    // Status gets the card image, not the coloured text block. The card studio
+    // is a localhost design preview; in production Status shares directly.
+    if (platform === 'whatsapp_status' && isLocalPreview()) {
       setStudioOpen(true);
       return;
     }
@@ -196,6 +202,7 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
           title={listing.title}
           text={generateShareMessage(listing)}
           url={getListingUrl(listing.id)}
+          imageUrl={listing.images?.[0]}
         />
       )}
     </div>
