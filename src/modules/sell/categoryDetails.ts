@@ -548,7 +548,7 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   // type via petBreedsFor().
   pets: [
     { key: 'petTraining', label: 'Training', type: 'select', options: [...PET_TRAINING_OPTIONS], placeholder: 'Select training', step: 'title' },
-    { key: 'subcategory', label: 'Pet type', type: 'select', options: [...PET_TYPES], placeholder: 'Pet type', step: 'title' },
+    { key: 'subcategory', label: 'Pet type', type: 'select', options: [...PET_TYPES], placeholder: 'Pets', step: 'title' },
     { key: 'petBreed', label: 'Breed', type: 'select', options: [], placeholder: 'Select breed', step: 'title' },
   ],
   // Office Supplies: the shared subcategory dropdown on the Title tab.

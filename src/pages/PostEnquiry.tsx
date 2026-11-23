@@ -4106,7 +4106,7 @@ const DEADLINE_STEP = 5;
                                 ? 'border-blue-700 bg-gradient-to-r from-blue-600 to-blue-700 text-sm sm:text-base font-bold text-white focus-visible:ring-3 focus-visible:ring-white/50'
                                 : 'border-slate-200 bg-gradient-to-b from-white to-slate-50 text-xs sm:text-sm font-bold text-slate-900 hover:border-slate-300 hover:to-slate-100 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
                             >
-                              <option value="">Select</option>
+                              <option value="">{isPets ? 'Pets' : 'Select'}</option>
                               {subcategoryOptions.map((s) => (
                                 <option key={s} value={s} className="bg-white text-black">{s}</option>
                               ))}
@@ -4866,7 +4866,11 @@ const DEADLINE_STEP = 5;
                       )}
                       {!selectedCategories.includes('real-estate') && (
                         <>
-                          <div className="relative">
+                          {/* Pets: breathing room between the pet picks and the
+                              description box below. */}
+                          {/* !mt-10 beats the step container's space-y-4, which
+                              otherwise pins every sibling to a 1rem gap. */}
+                          <div className={isPets ? 'relative !mt-10' : 'relative'}>
                             <AiDescriptionBar onRun={runDescriptionAI} generating={aiGenerating} />
                             <Textarea
                               id="enquiry-desc"
