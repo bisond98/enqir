@@ -5,7 +5,7 @@ import { WhatsAppIcon, XIcon, FacebookIcon } from '@/components/BrandIcons';
 import { toast } from '@/hooks/use-toast';
 import { shareToTarget } from '@/lib/socialShare';
 import type { SocialShareTarget } from '@/lib/socialShare';
-import StatusCardStudio, { shareStatusCard } from '@/components/StatusCardStudio';
+import StatusCardStudio from '@/components/StatusCardStudio';
 
 interface ShareMenuProps {
   open: boolean;
@@ -26,11 +26,6 @@ interface ShareMenuProps {
  * Instagram DM and Instagram Story targets, matching the listing
  * ShareButton's physical-button menu style.
  */
-/** The card preview studio is for local design work only. */
-const isLocalPreview = () =>
-  typeof window !== 'undefined' &&
-  /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/.test(window.location.hostname);
-
 export default function ShareMenu({ open, onClose, anchorRef, title, text, url, imageUrl, onShared }: ShareMenuProps) {
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -90,10 +85,9 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
   if (!open && !studioOpen) return null;
 
   const handleShare = (target: SocialShareTarget) => {
-    // Status posts a card image, not a coloured text block. The card studio is
-    // a design preview shown only on localhost — in production Status shares
-    // straight away with no extra popup.
-    if (target === 'whatsapp_status' && isLocalPreview()) {
+    // Status posts a card image, not a coloured text block — open the studio so
+    // the design can be picked before sharing.
+    if (target === 'whatsapp_status') {
       onClose();
       onShared?.();
       setStudioOpen(true);
@@ -101,18 +95,6 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
     }
     onClose();
     onShared?.();
-
-    // On the live site Status shares the card image directly — no popup.
-    if (target === 'whatsapp_status') {
-      shareStatusCard({ title, text, url, imageUrl }).then((result) => {
-        if (result === 'saved') {
-          toast({ title: 'Image saved', description: 'Attach this image to your WhatsApp Status.' });
-        } else if (result === 'failed') {
-          toast({ title: 'Could not share', description: 'Download the image and post it manually.', variant: 'destructive' });
-        }
-      });
-      return;
-    }
 
     setTimeout(async () => {
       const result = await shareToTarget(target, { title, text, url, imageUrl });

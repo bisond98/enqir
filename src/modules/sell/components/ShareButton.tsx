@@ -4,7 +4,7 @@ import { Share2, Copy, Check, Smartphone, Mail } from 'lucide-react';
 import { WhatsAppIcon, XIcon, FacebookIcon } from '@/components/BrandIcons';
 import { toast } from '@/hooks/use-toast';
 import { shareListing, generateShareMessage, getListingUrl } from '../services/shareService';
-import StatusCardStudio, { shareStatusCard } from '@/components/StatusCardStudio';
+import StatusCardStudio from '@/components/StatusCardStudio';
 import type { SellListing } from '../types';
 
 interface ShareButtonProps {
@@ -12,11 +12,6 @@ interface ShareButtonProps {
   variant?: 'icon' | 'full';
   className?: string;
 }
-
-/** The card preview studio is for local design work only. */
-const isLocalPreview = () =>
-  typeof window !== 'undefined' &&
-  /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])$/.test(window.location.hostname);
 
 export default function ShareButton({ listing, variant = 'icon', className = '' }: ShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,27 +70,10 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
   const handleShare = useCallback(async (platform: 'whatsapp' | 'twitter' | 'facebook' | 'copy' | 'native' | 'whatsapp_status' | 'instagram_dm' | 'instagram_story' | 'email') => {
     setIsOpen(false);
 
-    // Status gets the card image, not the coloured text block. The card studio
-    // is a localhost design preview; in production Status shares directly.
-    if (platform === 'whatsapp_status' && isLocalPreview()) {
-      setStudioOpen(true);
-      return;
-    }
-    
-    // On the live site Status shares the card image directly — no popup.
+    // Status gets the card image, not the coloured text block — open the studio
+    // so a design can be picked before sharing.
     if (platform === 'whatsapp_status') {
-      shareStatusCard({
-        title: listing.title,
-        text: generateShareMessage(listing),
-        url: getListingUrl(listing.id),
-        imageUrl: listing.images?.[0],
-      }).then((result) => {
-        if (result === 'saved') {
-          toast({ title: 'Image saved', description: 'Attach this image to your WhatsApp Status.' });
-        } else if (result === 'failed') {
-          toast({ title: 'Could not share', description: 'Download the image and post it manually.', variant: 'destructive' });
-        }
-      });
+      setStudioOpen(true);
       return;
     }
 
