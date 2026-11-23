@@ -1901,7 +1901,7 @@ const SellerResponse = () => {
                     />
                     <label
                       htmlFor="response-images"
-                      className="block w-full text-center !rounded-xl !border !border-black bg-blue-600 hover:bg-blue-700 text-white !transition-all !duration-200 py-3 text-sm font-black cursor-pointer !shadow-[0_5px_0_0_rgba(0,0,0,0.85),0_8px_12px_rgba(0,0,0,0.25)] hover:!shadow-[0_6px_0_0_rgba(0,0,0,0.85),0_10px_16px_rgba(0,0,0,0.28)] hover:!translate-y-[-1px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85),0_3px_6px_rgba(0,0,0,0.20)] active:!translate-y-[4px] touch-manipulation select-none"
+                      className="block w-full text-center !rounded-xl !border-0 bg-blue-600 hover:bg-blue-700 text-white !transition-colors !duration-200 py-3 text-sm font-black cursor-pointer !shadow-none touch-manipulation select-none"
                     >
                       {isHiringEnquiry
                         ? (images.length === 0 ? 'Choose Resume' : 'Add More Files')
@@ -1996,7 +1996,7 @@ const SellerResponse = () => {
                       }));
                       navigate(`/profile?returnTo=/respond/${enquiryId}`);
                     }}
-                    className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-2xl !border-[1.5px] !border-black !bg-blue-600 hover:!bg-blue-700 !transition-all !duration-150 group !shadow-[0_4px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[3px] touch-manipulation select-none"
+                    className="w-full flex items-center gap-3 p-3 sm:p-4 !rounded-2xl !border-0 !bg-blue-600 hover:!bg-blue-700 !transition-colors !duration-150 group !shadow-none touch-manipulation select-none"
                   >
                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                       <ShieldCheck className="h-5 w-5 text-white" />
