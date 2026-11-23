@@ -3291,7 +3291,7 @@ const DEADLINE_STEP = 5;
 
           {/* Main Form - Multi-step wizard (matching sell listing) */}
           {!isSubmitted && (
-            <Card className="enq-form border border-black border-t-0 rounded-none rounded-b-2xl sm:rounded-b-3xl bg-white shadow-[0_0_18px_rgba(0,0,0,0.14),0_0_34px_rgba(0,0,0,0.08)] overflow-hidden">
+            <Card className="enq-form border border-black border-t-0 rounded-none rounded-b-2xl sm:rounded-b-3xl bg-white shadow-none hover:shadow-none overflow-hidden">
               <div className="space-y-2 pb-4 px-5 sm:px-6 lg:px-8 pt-4">
                 <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
                   <div
