@@ -3027,9 +3027,13 @@ body {
    exactly: a black capsule with no outline, the same soft depth, a centred
    white placeholder, and the arrow sitting in a black disc inside a white
    ring. Values already picked keep the markup's blue fill. */
-.enquiry-wizard select:not(:disabled) {
+/* The black fill only dresses an empty picker: once a value is chosen the
+   markup's blue gradient takes over again. */
+.enquiry-wizard select:not(:disabled):not([class*="from-blue-"]):not([class*="bg-blue-"]) {
   background-image: none !important;
   background-color: #000 !important;
+}
+.enquiry-wizard select:not(:disabled) {
   border-width: 0 !important;
   border-radius: 9999px !important;
   padding-right: 3rem !important;
