@@ -2502,12 +2502,10 @@ export default function CreateListing() {
                 </div>
                 {/* Open to discussion — alternative to entering a specific price */}
                 <div className="flex items-center justify-end gap-3">
-                  <Label htmlFor="price-option" className="text-[9px] sm:text-[10px] font-bold text-black whitespace-nowrap">
-                    Not fixed yet?
-                  </Label>
-                  <div className="relative">
+                  <div className="relative ml-auto" style={{ marginRight: 0 }}>
                     <select
                       id="price-option"
+                      style={{ width: 200 }}
                       value={priceOption}
                       onChange={(e) => {
                         const v = e.target.value as '' | 'discussion';
@@ -2518,11 +2516,23 @@ export default function CreateListing() {
                           setPriceMax('');
                         }
                       }}
-                      className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] w-fit min-w-[152px] sm:min-w-[168px] max-w-full font-medium border-[1.5px] focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${priceOption === 'discussion' ? 'border-black bg-blue-600 text-[11px] sm:text-xs font-bold text-white shadow-none' : 'border-slate-200 bg-white text-[10px] sm:text-xs font-semibold text-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)]'}`}
+                      className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] max-w-full font-medium border-[1.5px] focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${priceOption === 'discussion' ? 'border-black bg-blue-600 text-[11px] sm:text-xs font-bold text-white shadow-none' : 'border-slate-200 bg-white text-[10px] sm:text-xs font-semibold text-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)]'}`}
                     >
-                      <option value="" className="bg-white text-black">Click here</option>
+                      <option value="" className="bg-white text-black"></option>
                       <option value="discussion" className="bg-white text-black">Open to discussion</option>
                     </select>
+                    {/* Empty-state caption matches the post-enquiry budget picker:
+                        the question at the left edge, "Click here" near the round
+                        chevron handle. Hidden once a value is picked. */}
+                    {!priceOption && (
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 flex items-center justify-between pl-4 pr-[52px] text-[10px] sm:text-xs font-semibold text-gray-900"
+                      >
+                        <span>Not fixed yet?</span>
+                        <span>Click here</span>
+                      </span>
+                    )}
                     <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${priceOption === 'discussion' ? 'text-white' : 'text-gray-800'}`} />
                   </div>
                 </div>

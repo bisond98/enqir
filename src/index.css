@@ -2886,6 +2886,15 @@ body {
   border-width: 0 !important;
 }
 
+/* Post-enquiry: a dropdown reads grey while nothing is picked, matching the sell
+   listing form; once a value is picked the markup's blue fill + white text take
+   over again. Shape, depth and the black round handle stay as they were. */
+.enq-form select:not([multiple]):not([class*="from-blue-"]):not([class*="bg-blue-"]) {
+  background-color: #d1d5db;
+  background-image: none;
+  border-color: #d1d5db;
+}
+
 /* Post-enquiry: every typed field on the wizard tabs carries the same thin black
    outline on its top, left and right edges; the bottom edge stays open. Each
    field keeps its own size, corner shape and depth. */
@@ -2968,7 +2977,7 @@ body {
    looks like a picker rather than a typed field. Once a value is picked the
    markup's blue fill + white text take over again — this rule steps aside for
    it. Shape, depth, size and the black round handle stay as they were. */
-.sell-form-card select:not([multiple]) {
+.sell-form-card select:not([multiple]):not([class*="from-blue-"]):not([class*="bg-blue-"]) {
   background-color: #d1d5db;
   background-image: none;
   border-color: #d1d5db;
