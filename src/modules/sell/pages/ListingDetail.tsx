@@ -804,8 +804,37 @@ export default function ListingDetail() {
         <div className="relative">
           <div className="p-6 sm:p-7 pb-10 sm:pb-14">
             {/* Title */}
-            <div className="w-full text-center">
-              <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight inline-flex items-center justify-center gap-2 flex-wrap">
+            <div className="relative w-full text-center">
+              {/* More actions — plain black dots beside the title */}
+              <button
+                ref={moreBtnRef}
+                onClick={() => {
+                  if (moreMenuOpen) {
+                    setMoreMenuOpen(false);
+                    return;
+                  }
+                  const rect = moreBtnRef.current?.getBoundingClientRect();
+                  if (!rect) {
+                    setMoreMenuOpen(true);
+                    return;
+                  }
+                  const width = 192;
+                  const menuHeight = 176; // 3 rows incl. padding (owner: Save / Panel / Delete)
+                  const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8));
+                  const opensUp = rect.bottom + menuHeight + 8 > window.innerHeight && rect.top > menuHeight + 8;
+                  const desiredTop = opensUp ? rect.top - menuHeight - 6 : rect.bottom + 6;
+                  const top = Math.max(8, Math.min(desiredTop, window.innerHeight - menuHeight - 8));
+                  setMoreMenuPos({ top, left });
+                  setMoreMenuOpen(true);
+                }}
+                aria-label="More actions"
+                aria-expanded={moreMenuOpen}
+                title="More"
+                className="absolute right-0 top-0 z-20 flex h-9 w-9 items-center justify-center rounded-full text-black transition-colors hover:bg-neutral-100 active:scale-95 touch-manipulation"
+              >
+                <MoreHorizontal className="h-[19px] w-[19px]" strokeWidth={2.2} />
+              </button>
+              <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight inline-flex items-center justify-center gap-2 flex-wrap px-10">
                 {listing.category === 'jobs' && (
                   <span className="inline-flex items-center bg-red-600 text-white text-[11px] sm:text-[13px] font-black font-chip uppercase tracking-wide px-2.5 py-1 sm:py-1.5 rounded-xl shadow-[0_2px_0_0_rgba(0,0,0,0.25)]">
                     Job
@@ -1061,35 +1090,10 @@ export default function ListingDetail() {
                   </span>
                 )}
                 <div className="relative w-full flex flex-row-reverse items-center justify-between gap-2.5 sm:w-auto sm:flex-col sm:items-start sm:justify-start sm:mx-0 sm:ml-auto">
-                  <ShareButton listing={listing} className="[&>svg]:!h-5 [&>svg]:!w-5 [&>svg]:!text-white !text-white !bg-green-700 hover:!bg-green-800 !w-10 !h-10 !p-0 !rounded-full !border-0 flex items-center justify-center" />
-                  <button
-                    ref={moreBtnRef}
-                    onClick={() => {
-                      if (moreMenuOpen) {
-                        setMoreMenuOpen(false);
-                        return;
-                      }
-                      const rect = moreBtnRef.current?.getBoundingClientRect();
-                      if (!rect) {
-                        setMoreMenuOpen(true);
-                        return;
-                      }
-                      const width = 192;
-                      const menuHeight = 176; // 3 rows incl. padding (owner: Save / Panel / Delete)
-                      const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8));
-                      const opensUp = rect.bottom + menuHeight + 8 > window.innerHeight && rect.top > menuHeight + 8;
-                      const desiredTop = opensUp ? rect.top - menuHeight - 6 : rect.bottom + 6;
-                      const top = Math.max(8, Math.min(desiredTop, window.innerHeight - menuHeight - 8));
-                      setMoreMenuPos({ top, left });
-                      setMoreMenuOpen(true);
-                    }}
-                    aria-label="More actions"
-                    aria-expanded={moreMenuOpen}
-                    title="More"
-                    className="w-10 h-10 rounded-full bg-green-700 text-white flex items-center justify-center hover:bg-green-800 transition-all active:scale-95 touch-manipulation"
-                  >
-                    <MoreHorizontal className="h-5 w-5" />
-                  </button>
+                  <ShareButton
+                    listing={listing}
+                    className="[&>svg]:!h-6 [&>svg]:!w-6 [&>svg]:!text-black !text-black !bg-white hover:!bg-neutral-50 !w-14 !h-14 !p-0 !rounded-full !border-[1.5px] !border-black !shadow-none flex items-center justify-center"
+                  />
                   {/* Dim + blur the page behind the ⋯ menu, like the share popup */}
                   {moreMenuOpen && (
                     <div
