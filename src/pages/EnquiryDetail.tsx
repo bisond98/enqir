@@ -732,15 +732,15 @@ const EnquiryDetail = () => {
   const plainLayout = true;
   // Divider between rows is an inset hairline (via ::before) so it stops short
   // of the card's left and right edges instead of running edge to edge.
-  const plainRowCls = 'relative flex items-center gap-3 bg-white px-5 py-3.5 shadow-[-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10)] '
+  const plainRowCls = 'relative flex items-center gap-3.5 bg-white px-5 py-4 shadow-[-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10)] '
     + 'before:absolute before:left-6 before:right-6 before:top-0 before:h-px before:bg-black/[0.09] before:content-[\'\']';
   // Label chips match the "for sale" detail page: borderless white chips with a
   // solid extruded edge (no outline), so the detail pages share one chip language.
   const labelChip3d = 'shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]';
-  const plainLabelCls = `inline-flex items-center whitespace-nowrap rounded-xl border-0 bg-white px-2.5 py-1 text-[9px] font-black uppercase leading-none tracking-[0.06em] text-neutral-900 ${labelChip3d}`;
+  const plainLabelCls = 'inline-flex items-center whitespace-nowrap text-[9.5px] font-bold uppercase leading-none tracking-[0.16em] text-neutral-400';
   const pillLabelCls = `inline-flex items-center whitespace-nowrap rounded-xl border-0 bg-white px-2.5 py-1 text-[9px] font-black uppercase leading-none tracking-[0.06em] text-neutral-900 ${labelChip3d}`;
-  const discCls = 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-600';
-  const glyphCls = 'text-white';
+  const discCls = 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-neutral-100 ring-1 ring-inset ring-black/[0.05]';
+  const glyphCls = 'text-neutral-700';
 
   // Helper function to filter admin notes - hide technical details
   const formatAdminNotes = (notes: string | undefined): string | null => {
@@ -1089,7 +1089,7 @@ const EnquiryDetail = () => {
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className={plainLabelCls}>Description</p>
-                        <p className="mt-1 whitespace-pre-line break-words text-[11.5px] font-semibold leading-[1.614] text-neutral-900">{enquiry.description}</p>
+                        <p className="mt-2 whitespace-pre-line break-words text-[13px] font-medium leading-[1.65] text-neutral-700">{enquiry.description}</p>
                       </div>
                     </div>
                   ) : (
@@ -1109,7 +1109,7 @@ const EnquiryDetail = () => {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className={plainLayout ? plainLabelCls : pillLabelCls}>{budgetLabel}</p>
-                      <p className="mt-1.5 break-words text-[17px] font-bold leading-tight text-neutral-900">
+                      <p className="mt-2 break-words text-[19px] font-semibold leading-tight tracking-[-0.01em] text-neutral-900">
                         {enquiry.budgetOpenToDiscussion ? 'Open to discussion' : formatBudget(enquiry.budget)}
                       </p>
                     </div>
@@ -1129,7 +1129,7 @@ const EnquiryDetail = () => {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className={plainLayout ? plainLabelCls : pillLabelCls}>Location</p>
-                      <p className="mt-1.5 break-words text-[11.5px] font-semibold leading-[1.614] text-neutral-900">{enquiry.location}</p>
+                      <p className="mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900">{enquiry.location}</p>
                     </div>
                     <ChevronRight className="h-[18px] w-[18px] shrink-0 text-neutral-400" aria-hidden="true" strokeWidth={2} />
                   </div>
@@ -1151,7 +1151,7 @@ const EnquiryDetail = () => {
                           <span className="shrink-0 border-l border-neutral-200 pl-2.5"><CountdownTimer deadline={enquiry.deadline} /></span>
                         </div>
                       ) : (
-                        <p className="mt-1.5 text-[14px] font-bold leading-tight text-neutral-500">No deadline</p>
+                        <p className="mt-2 text-[13px] font-medium leading-tight text-neutral-500">No deadline</p>
                       )}
                     </div>
                   </div>
@@ -1163,7 +1163,7 @@ const EnquiryDetail = () => {
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className={plainLayout ? plainLabelCls : pillLabelCls}>Posted</p>
-                      <p className="break-words text-[11.5px] font-semibold leading-[1.614] text-neutral-900" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                      <p className="mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900" title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
                         {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
                       </p>
                     </div>
@@ -1178,7 +1178,7 @@ const EnquiryDetail = () => {
                         </span>
                         <div className="min-w-0 flex-1">
                           <p className={plainLabelCls}>Reference images ({enquiry.referenceImages.length})</p>
-                          <div className="mt-2 flex gap-2.5 overflow-x-auto pb-1">
+                          <div className="mt-3 flex gap-2.5 overflow-x-auto pb-1">
                             {enquiry.referenceImages.map((imageUrl, index) => (
                               <button
                                 key={index}
@@ -1226,7 +1226,7 @@ const EnquiryDetail = () => {
                     </span>
                       <div className="min-w-0 flex-1">
                         <p className={plainLayout ? plainLabelCls : pillLabelCls}>Additional notes</p>
-                        <p className="mt-1.5 break-words text-[11.5px] font-semibold leading-[1.614] text-neutral-900">{enquiry.notes}</p>
+                        <p className="mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900">{enquiry.notes}</p>
                       </div>
                     </div>
                   )}
@@ -1242,7 +1242,7 @@ const EnquiryDetail = () => {
                           <User className="h-[10px] w-[10px] text-white fill-white" />
                         )}
                       </span>
-                      <p className="min-w-0 truncate text-[9.5px] font-normal text-neutral-500">
+                      <p className="min-w-0 truncate text-[11px] font-normal tracking-[0.01em] text-neutral-500">
                         Posted by <span className="font-semibold text-neutral-900">{posterProfile?.username?.trim() || shortUserId(enquiry.userId)}</span>
                       </p>
                     </div>
