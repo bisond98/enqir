@@ -953,7 +953,7 @@ export default function StatusCardStudio({ open, onClose, title, text, url, imag
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[10000] flex items-end justify-center bg-black/60 backdrop-blur-[2px] sm:items-center sm:p-6"
+      className="backdrop-fade fixed inset-0 z-[10000] flex items-end justify-center bg-black/60 backdrop-blur-[2px] sm:items-center sm:p-6"
       onClick={(e) => {
         if (e.target === e.currentTarget) guardedClose();
       }}
@@ -963,7 +963,7 @@ export default function StatusCardStudio({ open, onClose, title, text, url, imag
         aria-modal="true"
         aria-label="Share to WhatsApp Status"
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[94vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[26px] bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.22)] sm:max-h-[88vh] sm:max-w-3xl sm:rounded-3xl"
+        className="sheet-rise flex max-h-[94vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[26px] bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.22)] sm:max-h-[88vh] sm:max-w-3xl sm:rounded-3xl"
       >
         <div className="flex items-start justify-between gap-3 px-5 pb-1 pt-4">
           <div>

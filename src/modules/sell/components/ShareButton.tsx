@@ -116,7 +116,7 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
     <>
       {/* Dim backdrop — tap anywhere to close */}
       <div
-        className={`fixed inset-0 ${isMobile ? 'bg-black/40' : 'bg-transparent'}`}
+        className={`fixed inset-0 backdrop-fade ${isMobile ? 'bg-black/40' : 'bg-transparent'}`}
         style={{ zIndex: 9998 }}
         aria-hidden="true"
         onClick={() => setIsOpen(false)}
@@ -127,8 +127,8 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
         aria-label="Share listing"
         className={
           isMobile
-            ? 'fixed inset-x-0 bottom-0 overflow-y-auto rounded-t-[26px] border-t border-gray-200 bg-white px-3 pb-6 pt-2 shadow-[0_-16px_50px_rgba(0,0,0,0.18)]'
-            : 'fixed w-[272px] overflow-y-auto rounded-2xl border border-gray-200/80 bg-white/95 p-1.5 shadow-[0_18px_50px_-12px_rgba(0,0,0,0.35)] backdrop-blur-xl'
+            ? 'sheet-rise fixed inset-x-0 bottom-0 overflow-y-auto rounded-t-[26px] border-t border-gray-200 bg-white px-3 pb-6 pt-2 shadow-[0_-16px_50px_rgba(0,0,0,0.18)]'
+            : 'menu-pop fixed w-[272px] overflow-y-auto rounded-2xl border border-gray-200/80 bg-white/95 p-1.5 shadow-[0_18px_50px_-12px_rgba(0,0,0,0.35)] backdrop-blur-xl'
         }
         style={
           isMobile
