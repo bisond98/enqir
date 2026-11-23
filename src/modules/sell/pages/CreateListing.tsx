@@ -33,6 +33,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapLocationPickerLazy as MapLocationPicker } from '@/components/MapLocationPickerLazy';
 import type { MapLocationAddress } from '@/types/mapLocation';
 import { LogIn, UserPlus } from 'lucide-react';
+import { PET_TYPES, PET_TRAINING_OPTIONS, petBreedsFor, OFFICE_SUPPLIES_SUBCATEGORIES } from '@/constants/petsCatalog';
 import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES, ANTIQUE_CONDITIONS, ANTIQUE_DAMAGE_TYPES, ANTIQUE_FUNCTIONAL_STATUSES } from '../categoryDetails';
 import { titleHintsFor } from '../titleHints';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
@@ -1470,6 +1471,9 @@ export default function CreateListing() {
                 {fieldsForCategoryStep(category, 'title').length > 0 && (
                   <div className="order-first flex flex-wrap items-center justify-end gap-3 -mt-1" style={{ marginBottom: '1rem' }}>
                     {fieldsForCategoryStep(category, 'title').map((f, fieldIdx) => {
+                      // Pets keep the breed/training pickers hidden until a pet type
+                      // is chosen (same gating the Description-step fields use).
+                      if (isFieldHiddenForDetails(f, details)) return null;
                       // Laptop models are the ones the picked brand actually sells.
                       // The picked brand's models, plus Other for anything unlisted
                       const fieldOptions = f.key === 'brand' && category === 'vehicles'
@@ -1504,6 +1508,8 @@ export default function CreateListing() {
                             : [...getMobileModels(details['brand'] ?? ''), MOBILE_OTHER])
                         : f.key === 'storage' && category === 'mobiles'
                         ? getMobileStorageOptions(details['brand'] ?? '', details['model'] ?? '')
+                        : f.key === 'petBreed' && category === 'pets'
+                        ? petBreedsFor(details['subcategory'] ?? '')
                         : f.key === 'brand' && category === 'bicycles'
                         ? getBicycleBrands(details['subcategory'] ?? '')
                         : f.key === 'model' && category === 'bicycles'
@@ -1691,6 +1697,15 @@ export default function CreateListing() {
                                 if (f.key === 'subcategory' && category === 'bicycles') {
                                   setDetail('brand', ''); setDetail('model', '');
                                   setTitle(e.target.value);
+                                }
+                                // Pets: a new pet type clears its breed and training,
+                                // and the picks name the listing ("Siberian Husky Dog").
+                                if (f.key === 'subcategory' && category === 'pets') {
+                                  setDetail('petBreed', ''); setDetail('petTraining', '');
+                                  setTitle(e.target.value);
+                                }
+                                if (f.key === 'petBreed' && category === 'pets') {
+                                  setTitle([e.target.value, details['subcategory']].filter(Boolean).join(' '));
                                 }
                                 if (f.key === 'brand' && category === 'bicycles') {
                                   setDetail('model', '');

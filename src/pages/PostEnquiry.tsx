@@ -37,6 +37,7 @@ import { realtimeAI } from "@/services/ai/realtimeAI";
 import VerificationStatus from "@/components/VerificationStatus";
 import TimeLimitSelector from "@/components/TimeLimitSelector";
 import { PAYMENT_PLANS, PaymentPlan } from "@/config/paymentPlans";
+import { PET_TYPES, PET_TRAINING_OPTIONS, petBreedsFor, OFFICE_SUPPLIES_SUBCATEGORIES } from "@/constants/petsCatalog";
 import { APP_CATEGORIES, filterCategoriesBySearch, ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, ACCOMMODATION_GENDER_OPTIONS, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES, PHOTOGRAPHY_SUBCATEGORIES, REAL_ESTATE_SERVICES_SUBCATEGORIES, RENEWABLE_ENERGY_SUBCATEGORIES, SECURITY_SUBCATEGORIES, SOUVENIRS_SUBCATEGORIES, SPORTS_SUBCATEGORIES, TECHNOLOGY_SUBCATEGORIES, TOOLS_EQUIPMENT_SUBCATEGORIES, TRANSPORTATION_SUBCATEGORIES, TRAVEL_SUBCATEGORIES, TUTORING_SUBCATEGORIES, VINTAGE_SUBCATEGORIES, WASTE_MANAGEMENT_SUBCATEGORIES, WEDDING_SUBCATEGORIES, DIGITAL_IT_SUBCATEGORIES } from "@/constants/categories";
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from "@/constants/thriftClothing";
 import { categoriesRequireImage } from "@/lib/imageRequiredCategories";
@@ -534,6 +535,12 @@ const DEADLINE_STEP = 5;
   const isWedding =
     selectedCategories.includes('wedding-events') ||
     (category || '').toLowerCase().includes('wedding');
+  const isPets =
+    selectedCategories.includes('pets') ||
+    (category || '').toLowerCase() === 'pets';
+  const isOfficeSupplies =
+    selectedCategories.includes('office-supplies') ||
+    (category || '').toLowerCase() === 'office-supplies';
   const isDigitalIT =
     selectedCategories.includes('digital-it-services') ||
     (category || '').toLowerCase().includes('digital-it');
@@ -641,10 +648,20 @@ const DEADLINE_STEP = 5;
                                                                                                       ? WASTE_MANAGEMENT_SUBCATEGORIES
                                                                                                       : isWedding
                                                                                                         ? WEDDING_SUBCATEGORIES
-                                                                                                        : null;
+                                                                                                        : isPets
+                                                                                                          ? PET_TYPES
+                                                                                                          : isOfficeSupplies
+                                                                                                            ? OFFICE_SUPPLIES_SUBCATEGORIES
+                                                                                                            : null;
+  // Pets cascade: the pet type drives the breed list, and the training pick
+  // belongs to that pet, so a new pet type clears both.
+  const [petBreed, setPetBreed] = useState('');
+  const [petTraining, setPetTraining] = useState('');
   useEffect(() => {
     setSubcategory('');
-  }, [isDigitalIT, isElectronics, isAgriculture, isAntiques, isAppliances, isArt, isBabyKids, isBagsLuggage, isBeauty, isBicycles, isBooks, isChildcare, isCollectibles, isConstruction, isEducation, isEntertainment, isEvents, isFashion, isFitness, isFood, isFurniture, isGaming, isGarden, isGovernment, isHealth, isHome, isIndustrial, isInsurance, isJewellery, isKitchenDining, isLegal, isMarketing, isMedicalEquipment, isMemorabilia, isMusicalAccessories, isMusicalInstruments, isMusicalServices, isNonProfit, isPhotographyServices, isRealEstateServices, isRenewableEnergy, isSecurity, isSouvenirs, isSports, isTechnology, isToolsEquipment, isTransportation, isTravel, isTutoring, isVintage, isWasteManagement, isWedding]);
+    setPetBreed('');
+    setPetTraining('');
+  }, [isDigitalIT, isPets, isOfficeSupplies, isElectronics, isAgriculture, isAntiques, isAppliances, isArt, isBabyKids, isBagsLuggage, isBeauty, isBicycles, isBooks, isChildcare, isCollectibles, isConstruction, isEducation, isEntertainment, isEvents, isFashion, isFitness, isFood, isFurniture, isGaming, isGarden, isGovernment, isHealth, isHome, isIndustrial, isInsurance, isJewellery, isKitchenDining, isLegal, isMarketing, isMedicalEquipment, isMemorabilia, isMusicalAccessories, isMusicalInstruments, isMusicalServices, isNonProfit, isPhotographyServices, isRealEstateServices, isRenewableEnergy, isSecurity, isSouvenirs, isSports, isTechnology, isToolsEquipment, isTransportation, isTravel, isTutoring, isVintage, isWasteManagement, isWedding]);
   const isAccommodationEnquiry = (cats: string[], legacy?: string) =>
     [...cats, legacy ?? ''].some((c) => c && c.toLowerCase().includes('accommodation'));
   const isAccom = isAccommodationEnquiry(selectedCategories, category);
@@ -1158,6 +1175,8 @@ const DEADLINE_STEP = 5;
         if (d.thriftSize) setThriftSize(d.thriftSize);
         if (d.repairType) setRepairType(d.repairType);
         if (d.subcategory) setSubcategory(d.subcategory);
+        if (d.petBreed) setPetBreed(d.petBreed);
+        if (d.petTraining) setPetTraining(d.petTraining);
         if (Array.isArray(d.cleaningTypes)) setCleaningTypes(d.cleaningTypes);
         if (d.sneakerAudience) setSneakerAudience(d.sneakerAudience);
         if (d.sneakerSize) setSneakerSize(d.sneakerSize);
@@ -1598,6 +1617,8 @@ const DEADLINE_STEP = 5;
             ...(isThriftEnquiry && thriftSize && { thriftSize }),
             ...(repairType && { repairType }),
             ...(subcategory && subcategoryOptions && { subcategory }),
+            ...(isPets && petBreed && { petBreed }),
+            ...(isPets && petTraining && { petTraining }),
             ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
             ...(laptopModelValue && { laptopModel: laptopModelValue }),
             ...(watchBrandValue && { watchBrand: watchBrandValue }),
@@ -1786,6 +1807,8 @@ const DEADLINE_STEP = 5;
           ...(accommodationType && accommodationPetFriendly && { petFriendly: accommodationPetFriendly === 'yes' }),
           ...(repairType && { repairType }),
           ...(subcategory && subcategoryOptions && { subcategory }),
+          ...(isPets && petBreed && { petBreed }),
+          ...(isPets && petTraining && { petTraining }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
           ...(laptopModelValue && { laptopModel: laptopModelValue }),
           ...(watchBrandValue && { watchBrand: watchBrandValue }),
@@ -2001,6 +2024,8 @@ const DEADLINE_STEP = 5;
           ...(accommodationType && accommodationPetFriendly && { petFriendly: accommodationPetFriendly === 'yes' }),
           ...(repairType && { repairType }),
           ...(subcategory && subcategoryOptions && { subcategory }),
+          ...(isPets && petBreed && { petBreed }),
+          ...(isPets && petTraining && { petTraining }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
           ...(laptopModelValue && { laptopModel: laptopModelValue }),
           ...(watchBrandValue && { watchBrand: watchBrandValue }),
@@ -2790,6 +2815,8 @@ const DEADLINE_STEP = 5;
           ...(accommodationType && accommodationPetFriendly && { petFriendly: accommodationPetFriendly === 'yes' }),
           ...(repairType && { repairType }),
           ...(subcategory && subcategoryOptions && { subcategory }),
+          ...(isPets && petBreed && { petBreed }),
+          ...(isPets && petTraining && { petTraining }),
           ...(laptopDetails.brand && { laptopBrand: laptopDetails.brand }),
           ...(laptopModelValue && { laptopModel: laptopModelValue }),
           ...(watchBrandValue && { watchBrand: watchBrandValue }),
@@ -4041,7 +4068,12 @@ const DEADLINE_STEP = 5;
                               id="enquiry-subcategory"
                               aria-label="Choose a type"
                               value={subcategory}
-                              onChange={(e) => setSubcategory(e.target.value)}
+                              onChange={(e) => {
+                                setSubcategory(e.target.value);
+                                // A new pet type owns a different breed list.
+                                setPetBreed('');
+                                setPetTraining('');
+                              }}
                               className={`w-full appearance-none rounded-full h-12 sm:h-14 pl-5 pr-14 text-left border-2 transition-all duration-200 focus:outline-none shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] ${subcategory
                                 ? 'border-blue-700 bg-gradient-to-r from-blue-600 to-blue-700 text-sm sm:text-base font-bold text-white focus-visible:ring-3 focus-visible:ring-white/50'
                                 : 'border-slate-200 bg-gradient-to-b from-white to-slate-50 text-xs sm:text-sm font-bold text-slate-900 hover:border-slate-300 hover:to-slate-100 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
@@ -4055,6 +4087,62 @@ const DEADLINE_STEP = 5;
                             <span
                               aria-hidden="true"
                               className={`pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-200 ${subcategory ? 'bg-white text-black' : 'bg-black text-white'}`}
+                            >
+                              <ChevronDown className="chev-badge h-4 w-4" strokeWidth={2.5} />
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      {/* Pets — breed follows the picked pet type (Dog → dog breeds,
+                          Cat → cat breeds), then what training the pet needs. */}
+                      {isPets && subcategory && petBreedsFor(subcategory).length > 0 && (
+                        <div className="mb-4">
+                          <div className="relative">
+                            <select
+                              id="enquiry-pet-breed"
+                              aria-label={subcategory === 'Pet Food & Supplies' ? 'Choose a supply type' : 'Choose a breed'}
+                              value={petBreed}
+                              onChange={(e) => setPetBreed(e.target.value)}
+                              className={`w-full appearance-none rounded-full h-12 sm:h-14 pl-5 pr-14 text-left border-2 transition-all duration-200 focus:outline-none shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] ${petBreed
+                                ? 'border-blue-700 bg-gradient-to-r from-blue-600 to-blue-700 text-sm sm:text-base font-bold text-white focus-visible:ring-3 focus-visible:ring-white/50'
+                                : 'border-slate-200 bg-gradient-to-b from-white to-slate-50 text-xs sm:text-sm font-bold text-slate-900 hover:border-slate-300 hover:to-slate-100 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
+                            >
+                              <option value="">
+                                {subcategory === 'Pet Food & Supplies' ? 'Supply type' : subcategory === 'Fish' ? 'Fish type' : subcategory === 'Bird' ? 'Bird species' : 'Breed'}
+                              </option>
+                              {petBreedsFor(subcategory).map((b) => (
+                                <option key={b} value={b} className="bg-white text-black">{b}</option>
+                              ))}
+                            </select>
+                            <span
+                              aria-hidden="true"
+                              className={`pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-200 ${petBreed ? 'bg-white text-black' : 'bg-black text-white'}`}
+                            >
+                              <ChevronDown className="chev-badge h-4 w-4" strokeWidth={2.5} />
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      {isPets && subcategory && petBreedsFor(subcategory).length > 0 && (
+                        <div className="mb-4">
+                          <div className="relative">
+                            <select
+                              id="enquiry-pet-training"
+                              aria-label="Choose training"
+                              value={petTraining}
+                              onChange={(e) => setPetTraining(e.target.value)}
+                              className={`w-full appearance-none rounded-full h-12 sm:h-14 pl-5 pr-14 text-left border-2 transition-all duration-200 focus:outline-none shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] ${petTraining
+                                ? 'border-blue-700 bg-gradient-to-r from-blue-600 to-blue-700 text-sm sm:text-base font-bold text-white focus-visible:ring-3 focus-visible:ring-white/50'
+                                : 'border-slate-200 bg-gradient-to-b from-white to-slate-50 text-xs sm:text-sm font-bold text-slate-900 hover:border-slate-300 hover:to-slate-100 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15'}`}
+                            >
+                              <option value="">Training</option>
+                              {PET_TRAINING_OPTIONS.map((t) => (
+                                <option key={t} value={t} className="bg-white text-black">{t}</option>
+                              ))}
+                            </select>
+                            <span
+                              aria-hidden="true"
+                              className={`pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 sm:h-10 sm:w-10 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-200 ${petTraining ? 'bg-white text-black' : 'bg-black text-white'}`}
                             >
                               <ChevronDown className="chev-badge h-4 w-4" strokeWidth={2.5} />
                             </span>

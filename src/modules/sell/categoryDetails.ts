@@ -25,6 +25,7 @@ import { CAR_BRANDS, BIKE_BRANDS, SNEAKER_BRANDS, VEHICLE_BRANDS, VEHICLE_TYPES 
 import { MOBILE_BRANDS as SHARED_MOBILE_BRANDS } from '@/constants/mobileCatalog';
 import { ACCOMMODATION_SUBTYPES, GENDER_RELEVANT_ACCOMMODATION_TYPES, REPAIR_SERVICE_TYPES, CLEANING_SERVICE_TYPES, ELECTRONICS_SUBCATEGORIES, AGRICULTURE_SUBCATEGORIES, ANTIQUES_SUBCATEGORIES, APPLIANCE_SUBCATEGORIES, ART_SUBCATEGORIES, BABY_KIDS_SUBCATEGORIES, BAGS_LUGGAGE_SUBCATEGORIES, BEAUTY_SUBCATEGORIES, BICYCLES_SUBCATEGORIES, BOOKS_SUBCATEGORIES, CHILDCARE_SUBCATEGORIES, COLLECTIBLES_SUBCATEGORIES, CONSTRUCTION_SUBCATEGORIES, EDUCATION_SUBCATEGORIES, ENTERTAINMENT_SUBCATEGORIES, EVENTS_SUBCATEGORIES, FASHION_SUBCATEGORIES, FITNESS_SUBCATEGORIES, FOOD_SUBCATEGORIES, FURNITURE_SUBCATEGORIES, GAMING_SUBCATEGORIES, GARDEN_SUBCATEGORIES, GOVERNMENT_SUBCATEGORIES, HEALTH_SUBCATEGORIES, HOME_SUBCATEGORIES, INDUSTRIAL_SUBCATEGORIES, INSURANCE_SUBCATEGORIES, JEWELLERY_SUBCATEGORIES, KITCHEN_DINING_SUBCATEGORIES, LEGAL_SUBCATEGORIES, MARKETING_SUBCATEGORIES, MEDICAL_EQUIPMENT_SUBCATEGORIES, MEMORABILIA_SUBCATEGORIES, MUSICAL_ACCESSORIES_SUBCATEGORIES, MUSICAL_INSTRUMENTS_SUBCATEGORIES, MUSICAL_SERVICES_SUBCATEGORIES, NON_PROFIT_SUBCATEGORIES } from '@/constants/categories';
 import { THRIFT_GENDERS, THRIFT_TYPES } from '@/constants/thriftClothing';
+import { PET_TYPES, PET_TRAINING_OPTIONS, petBreedsFor, OFFICE_SUPPLIES_SUBCATEGORIES } from '@/constants/petsCatalog';
 import { BICYCLE_FRAME_TYPES, BICYCLE_PART_TYPES, BICYCLE_ACCESSORY_TYPES, BICYCLE_STORAGE_TYPES, BICYCLE_REPAIR_TYPES } from '@/constants/bicycleCatalog';
 
 // Sneaker sizes — US and UK scales. Adults get the full run; Kids get the
@@ -542,6 +543,17 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   'jewelry-accessories': [
     { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...JEWELLERY_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
+  // Pets: pet type -> breed -> training, all on the Title tab so the picks can
+  // name the listing. The breed list follows the type via petBreedsFor().
+  pets: [
+    { key: 'subcategory', label: 'Pet type', type: 'select', options: [...PET_TYPES], placeholder: 'Pet type', step: 'title' },
+    { key: 'petBreed', label: 'Breed', type: 'select', options: [], placeholder: 'Select breed', step: 'title' },
+    { key: 'petTraining', label: 'Training', type: 'select', options: [...PET_TRAINING_OPTIONS], placeholder: 'Select training', step: 'title' },
+  ],
+  // Office Supplies: the shared subcategory dropdown on the Title tab.
+  'office-supplies': [
+    { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...OFFICE_SUPPLIES_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
+  ],
   // Thrift: three linked dropdowns in the Description step. The Item options
   // depend on the picked gender, so CreateListing resolves them with
   // thriftItemsFor() instead of listing 140 strings here.
@@ -579,5 +591,9 @@ export function isFieldHiddenForDetails(field: CategoryDetailField, details: Rec
   // Thrift: Type appears only after a gender is picked, Item after a type.
   if (field.key === 'thriftType') return !details['thriftGender'];
   if (field.key === 'thriftItem') return !details['thriftType'];
+  // Pets: breed and training appear once a pet type is picked, and the breed
+  // list only exists for types that have one (supplies and "Other" do not).
+  if (field.key === 'petBreed') return !details['subcategory'] || petBreedsFor(details['subcategory']).length === 0;
+  if (field.key === 'petTraining') return !details['subcategory'];
   return false;
 }

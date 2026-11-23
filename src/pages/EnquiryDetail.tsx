@@ -86,7 +86,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; mobileModel?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string; audioBrand?: string; audioModel?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; mobileModel?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; petBreed?: string; petTraining?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string; audioBrand?: string; audioModel?: string } | null;
 }
 
 interface UserProfile {
@@ -1024,6 +1024,9 @@ const EnquiryDetail = () => {
                         Array.isArray(d.cleaningTypes) && d.cleaningTypes.length > 0 && { label: 'Cleaning', value: d.cleaningTypes.join(', ') },
                         // User-picked subcategory: no title, description's type.
                         d.subcategory && { label: null, value: String(d.subcategory), subcategory: true },
+                        // Pets: the breed (no label, like the pet type) and the training.
+                        d.petBreed && { label: null, value: String(d.petBreed), subcategory: true },
+                        d.petTraining && { label: 'Training', value: String(d.petTraining) },
                       ].filter(Boolean) as any[];
                       if (chips.length === 0) return null;
                       const GearShifterIcon = ({ className = "" }: { className?: string }) => (
