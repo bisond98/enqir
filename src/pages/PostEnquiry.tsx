@@ -71,7 +71,7 @@ import { WATCH_BRAND_OPTIONS, WATCH_OTHER, getWatchModels } from '@/constants/wa
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
-import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealStepTop } from '@/utils/autoScrollGuard';
+import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealNewStep, revealStepTop } from '@/utils/autoScrollGuard';
 import { prefetchCategoryTiles } from '@/utils/prefetchCategoryTiles';
 import { useToast } from "@/components/ui/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
@@ -995,27 +995,18 @@ const DEADLINE_STEP = 5;
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const isMobile = window.innerWidth < 640;
-    const anchor = () => document.getElementById('step-top');
-    // One-frame delayed so the browser finishes its own refocus scroll first
-    const reveal = (force = false) => {
-      requestAnimationFrame(() => {
-        if (!canAutoScroll()) return;
-        const el = anchor();
-        if (!force && el) {
-          const r = el.getBoundingClientRect();
-          // On the keyboard path, skip when the header is already fully visible —
-          // re-centering it is what made the page jump up and down on its own.
-          if (r.top >= 0 && r.bottom <= window.innerHeight) return;
-        }
-        // Load and step changes land the tab's title at the top of the screen
-        // and hold it there while the page settles. This also covers the load
-        // where the form is not in the DOM yet (sign-in restore), because
-        // revealStepTop keeps retrying until the heading exists.
-        revealStepTop('step-top', 10);
-      });
-    };
-    // Load and every step change: put the heading near the top.
-    reveal(true);
+    // Load and every step change open the tab on its heading. A step change is
+    // a deliberate move to a new tab, not the page wandering under the finger,
+    // so revealNewStep re-arms the guard and places the title at the top. The
+    // first touch, swipe or key on the new tab stops every later jump, so the
+    // tab stays where the user put it. Before this, a step change kept the
+    // previous tab's scroll offset: the Description tab opened sitting on the
+    // big empty textarea with its heading scrolled off above it.
+    // Called straight away rather than from requestAnimationFrame: a tab that
+    // is not visible never runs animation frames, which silently skipped the
+    // reveal. revealStepTop retries until the heading exists, so a form that
+    // mounts later (sign-in restore) is still covered.
+    revealNewStep('step-top', 10);
     // Keyboard handling below is mobile-only.
     if (!isMobile) return;
     const vv = (window as any).visualViewport as VisualViewport | undefined;
@@ -1027,7 +1018,17 @@ const DEADLINE_STEP = 5;
       // form — the random up/down jumps reported on mobile.
       const shrink = lastHeight - vv.height; // >0 keyboard opening, <0 closing
       lastHeight = vv.height;
-      if (shrink > 40) reveal();
+      if (shrink <= 40) return;
+      // Only while this tab still belongs to the wizard.
+      if (!canAutoScroll()) return;
+      const el = document.getElementById('step-top');
+      if (el) {
+        const r = el.getBoundingClientRect();
+        // Skip when the header is already fully visible — re-centering it is
+        // what made the page jump up and down on its own.
+        if (r.top >= 0 && r.bottom <= window.innerHeight) return;
+      }
+      revealStepTop('step-top', 10);
     };
     vv.addEventListener('resize', onResize);
     return () => vv.removeEventListener('resize', onResize);

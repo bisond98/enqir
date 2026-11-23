@@ -36,7 +36,7 @@ import { LogIn, UserPlus } from 'lucide-react';
 import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES, ANTIQUE_CONDITIONS, ANTIQUE_DAMAGE_TYPES, ANTIQUE_FUNCTIONAL_STATUSES } from '../categoryDetails';
 import { titleHintsFor } from '../titleHints';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
-import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealStepTop } from '@/utils/autoScrollGuard';
+import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealNewStep } from '@/utils/autoScrollGuard';
 import { prefetchCategoryTiles } from '@/utils/prefetchCategoryTiles';
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
@@ -627,12 +627,13 @@ export default function CreateListing() {
   }, []);
 
   // The listing form opens already scrolled to its tab's title, and each step
-  // change re-reveals it — until the seller touches the phone.
+  // change opens the new tab on its title. Inside a tab the page stays put once
+  // the seller touches it.
   useEffect(() => {
-    requestAnimationFrame(() => {
-      if (!canAutoScroll()) return;
-      revealStepTop('step-top', 20);
-    });
+    // Called straight away rather than from requestAnimationFrame: in a tab
+    // that is not visible the browser never runs animation frames, so a
+    // deferred reveal was silently skipped and the form opened at scroll 0.
+    revealNewStep('step-top', 20);
   }, [step]);
 
   useEffect(() => {
@@ -896,13 +897,10 @@ export default function CreateListing() {
     }
   };
 
-  // Step changes reveal the step heading, but only until the seller touches the
-  // phone — after that the page belongs to the finger, not the wizard.
+  // Step changes open the new tab on its heading; once the seller touches that
+  // tab the page belongs to the finger, not the wizard.
   const scrollToInput = () => {
-    requestAnimationFrame(() => {
-      if (!canAutoScroll()) return;
-      revealStepTop('step-top', 20);
-    });
+    revealNewStep('step-top', 20);
   };
 
   // Wipes every answer the seller filled on the other steps. Called only when

@@ -65,7 +65,17 @@ export function revealStepTop(anchorId = 'step-top', offset = 10): void {
   // restore that swaps the loading screen for the form, the step animation,
   // lazy chunks, images and fonts. Each attempt is a no-op once the heading is
   // already in place, and all of them stop as soon as the page is touched.
-  for (const ms of [120, 320, 650, 1000, 1500, 2200, 3000]) {
+  //
+  // On a phone the window is longer because the wizard can mount well after
+  // this call: a form that waits on the restored session only paints its
+  // heading seconds in, and the list used to run out before it existed — which
+  // is why a tab could still open on the middle of its content. Nothing extra
+  // happens on desktop, where the short list is enough and smooth scrolling
+  // makes a late re-assertion more noticeable.
+  const retries = smooth
+    ? [120, 320, 650, 1000, 1500, 2200, 3000]
+    : [120, 320, 650, 1000, 1500, 2200, 3000, 4200, 5600, 7000];
+  for (const ms of retries) {
     window.setTimeout(apply, ms);
   }
 }
@@ -73,6 +83,21 @@ export function revealStepTop(anchorId = 'step-top', offset = 10): void {
 /** Called when the wizard mounts so a fresh visit starts with the reveal intact. */
 export function resetAutoScrollGuard(): void {
   userInteracted = false;
+}
+
+/**
+ * Moving to another step is a deliberate move to a new tab, not the page
+ * wandering on its own: the new tab opens on its title even though the tap
+ * that got us here already counted as interaction. Without this the wizard
+ * kept the previous step's scroll offset, so the Description tab opened with
+ * the big empty textarea at the top and its heading scrolled away above it.
+ *
+ * The guard is re-armed straight after, so the first touch, swipe or key the
+ * user makes on the new tab stops every one of the reveal's retries.
+ */
+export function revealNewStep(anchorId = 'step-top', offset = 10): void {
+  resetAutoScrollGuard();
+  revealStepTop(anchorId, offset);
 }
 
 /** Focus-driven jumps count as automatic scrolling on the same terms. */
