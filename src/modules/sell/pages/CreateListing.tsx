@@ -1123,7 +1123,7 @@ export default function CreateListing() {
         navigate(-1);
       }}
     >
-      <Card className="border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
+      <Card className="sell-form-card border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
         <CardHeader className="space-y-2 pb-4">
           <Progress value={progressPct} className="h-2 rounded-full bg-slate-200 [&>div]:bg-[#15803d]" />
         </CardHeader>

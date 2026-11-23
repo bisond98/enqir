@@ -2886,6 +2886,18 @@ body {
   border-width: 0 !important;
 }
 
+/* Post-enquiry: every typed field on the wizard tabs carries the same thin black
+   outline on its top, left and right edges; the bottom edge stays open. Each
+   field keeps its own size, corner shape and depth. */
+.enq-form input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]),
+.enq-form textarea {
+  border-top: 1px solid #000 !important;
+  border-left: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
+  border-bottom-width: 0 !important;
+}
+
+
 /* Firebase invisible reCAPTCHA: keep the widget mounted but out of the layout,
    and keep Google's floating badge off the Post Enquiry button. */
 #recaptcha-container {
@@ -2939,6 +2951,27 @@ body {
   .wizard-desc-box {
     min-height: 180px !important;
   }
+}
+
+/* Sell listing wizard: every typed field on the tabs carries the same thin black
+   outline on its top, left and right edges; the bottom edge stays open. Each
+   field keeps its own size, corner shape and depth. */
+.sell-form-card input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]):not([type="color"]),
+.sell-form-card textarea {
+  border-top: 1px solid #000 !important;
+  border-left: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
+  border-bottom-width: 0 !important;
+}
+
+/* Sell listing wizard: a dropdown reads grey while nothing is picked, so it
+   looks like a picker rather than a typed field. Once a value is picked the
+   markup's blue fill + white text take over again — this rule steps aside for
+   it. Shape, depth, size and the black round handle stay as they were. */
+.sell-form-card select:not([multiple]) {
+  background-color: #d1d5db;
+  background-image: none;
+  border-color: #d1d5db;
 }
 
 /* The jobs "Skills required" box keeps a dark, fully opaque hint. It sits
