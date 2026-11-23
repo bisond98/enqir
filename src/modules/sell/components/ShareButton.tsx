@@ -4,7 +4,7 @@ import { Share2, Copy, Check, Smartphone, Mail } from 'lucide-react';
 import { WhatsAppIcon, XIcon, FacebookIcon } from '@/components/BrandIcons';
 import { toast } from '@/hooks/use-toast';
 import { shareListing, generateShareMessage, getListingUrl } from '../services/shareService';
-import StatusCardStudio from '@/components/StatusCardStudio';
+import StatusCardStudio, { shareStatusCard } from '@/components/StatusCardStudio';
 import type { SellListing } from '../types';
 
 interface ShareButtonProps {
@@ -82,6 +82,23 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
       return;
     }
     
+    // On the live site Status shares the card image directly — no popup.
+    if (platform === 'whatsapp_status') {
+      shareStatusCard({
+        title: listing.title,
+        text: generateShareMessage(listing),
+        url: getListingUrl(listing.id),
+        imageUrl: listing.images?.[0],
+      }).then((result) => {
+        if (result === 'saved') {
+          toast({ title: 'Image saved', description: 'Attach this image to your WhatsApp Status.' });
+        } else if (result === 'failed') {
+          toast({ title: 'Could not share', description: 'Download the image and post it manually.', variant: 'destructive' });
+        }
+      });
+      return;
+    }
+
     // Small delay to ensure menu closes before opening share window
     setTimeout(async () => {
       const result = await shareListing(listing, platform);

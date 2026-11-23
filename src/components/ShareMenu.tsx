@@ -5,7 +5,7 @@ import { WhatsAppIcon, XIcon, FacebookIcon } from '@/components/BrandIcons';
 import { toast } from '@/hooks/use-toast';
 import { shareToTarget } from '@/lib/socialShare';
 import type { SocialShareTarget } from '@/lib/socialShare';
-import StatusCardStudio from '@/components/StatusCardStudio';
+import StatusCardStudio, { shareStatusCard } from '@/components/StatusCardStudio';
 
 interface ShareMenuProps {
   open: boolean;
@@ -101,6 +101,19 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
     }
     onClose();
     onShared?.();
+
+    // On the live site Status shares the card image directly — no popup.
+    if (target === 'whatsapp_status') {
+      shareStatusCard({ title, text, url, imageUrl }).then((result) => {
+        if (result === 'saved') {
+          toast({ title: 'Image saved', description: 'Attach this image to your WhatsApp Status.' });
+        } else if (result === 'failed') {
+          toast({ title: 'Could not share', description: 'Download the image and post it manually.', variant: 'destructive' });
+        }
+      });
+      return;
+    }
+
     setTimeout(async () => {
       const result = await shareToTarget(target, { title, text, url, imageUrl });
       if (result.success) {

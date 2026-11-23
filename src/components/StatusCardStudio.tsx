@@ -745,6 +745,73 @@ function splitText(text: string, url: string) {
   return { kicker, details };
 }
 
+const cardFileName = (title: string) =>
+  `enqir-status-${(title || 'post').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.png`;
+
+function loadCardImage(src: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+export type StatusCardShareResult = 'shared' | 'saved' | 'cancelled' | 'failed';
+
+/**
+ * Renders the status card and hands it to the native share sheet, with a
+ * download fallback. Used where the card must be shared without showing the
+ * designer popup (i.e. on the live site).
+ */
+export async function shareStatusCard({
+  title,
+  text,
+  url,
+  imageUrl,
+  style = 'classic',
+}: {
+  title: string;
+  text: string;
+  url: string;
+  imageUrl?: string;
+  style?: CardStyle;
+}): Promise<StatusCardShareResult> {
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = CARD_W;
+    canvas.height = CARD_H;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return 'failed';
+
+    const { kicker, details } = splitText(text, url);
+    const photo = style === 'photo' && imageUrl ? await loadCardImage(imageUrl) : null;
+    drawCard(ctx, style, title, kicker, details, url, photo);
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((b) => resolve(b), 'image/png');
+      setTimeout(() => resolve(null), 4000);
+    });
+    if (!blob) return 'failed';
+
+    const file = new File([blob], cardFileName(title), { type: 'image/png' });
+    if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ files: [file], text: `${title}\n${url}` });
+      return 'shared';
+    }
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = file.name;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 4000);
+    return 'saved';
+  } catch (err: any) {
+    return err?.name === 'AbortError' ? 'cancelled' : 'failed';
+  }
+}
+
 export default function StatusCardStudio({ open, onClose, title, text, url, imageUrl }: StatusCardStudioProps) {
   const [style, setStyle] = useState<CardStyle>('classic');
   const [copied, setCopied] = useState(false);
@@ -824,8 +891,7 @@ export default function StatusCardStudio({ open, onClose, title, text, url, imag
       setTimeout(() => resolve(null), 4000);
     });
 
-  const fileName = () =>
-    `enqir-status-${(title || 'post').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.png`;
+  const fileName = () => cardFileName(title);
 
   const saveImage = async (blob: Blob) => {
     const link = document.createElement('a');
