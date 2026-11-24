@@ -99,15 +99,25 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
 
     // Small delay to ensure menu closes before opening share window
     setTimeout(async () => {
-      const result = await shareListing(listing, platform);
-      if (result.success) {
-        toast({ title: 'Shared!', description: result.message });
-        if (platform === 'copy') {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
+      try {
+        const result = await shareListing(listing, platform);
+        if (result.success) {
+          toast({ title: 'Shared!', description: result.message });
+          if (platform === 'copy') {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          }
+        } else {
+          toast({ title: 'Failed', description: result.message, variant: 'destructive' });
         }
-      } else {
-        toast({ title: 'Failed', description: result.message, variant: 'destructive' });
+      } catch (err) {
+        // Same failure surface as a rejected share — never an unhandled throw.
+        console.error('Share failed:', err);
+        toast({
+          title: 'Failed',
+          description: 'Sharing is unavailable right now — please copy the link instead.',
+          variant: 'destructive',
+        });
       }
     }, 100);
   }, [listing]);
@@ -184,13 +194,6 @@ export default function ShareButton({ listing, variant = 'icon', className = '' 
             label="Instagram"
             hint="Send it in a DM"
             onClick={() => handleShare('instagram_dm')}
-          />
-          <ShareRow
-            icon={<InstagramIcon className="h-[18px] w-[18px] text-white" />}
-            tile="bg-gradient-to-br from-[#ee2a7b] to-[#6228d7]"
-            label="Instagram Story"
-            hint="Share to your story"
-            onClick={() => handleShare('instagram_story')}
           />
           <ShareRow
             icon={<XIcon className="h-[16px] w-[16px] text-white" />}

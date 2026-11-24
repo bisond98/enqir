@@ -155,15 +155,26 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
     onShared?.();
 
     setTimeout(async () => {
-      const result = await shareToTarget(target, { title, text, url, imageUrl });
-      if (result.success) {
-        toast({ title: 'Share', description: result.message });
-        if (target === 'copy') {
-          setCopiedKey(target);
-          setTimeout(() => setCopiedKey(null), 2000);
+      try {
+        const result = await shareToTarget(target, { title, text, url, imageUrl });
+        if (result.success) {
+          toast({ title: 'Share', description: result.message });
+          if (target === 'copy') {
+            setCopiedKey(target);
+            setTimeout(() => setCopiedKey(null), 2000);
+          }
+        } else {
+          toast({ title: 'Failed', description: result.message, variant: 'destructive' });
         }
-      } else {
-        toast({ title: 'Failed', description: result.message, variant: 'destructive' });
+      } catch (err) {
+        // A blocked popup, denied clipboard or failed share sheet must not
+        // surface as an unhandled rejection — show the same failure toast.
+        console.error('Share failed:', err);
+        toast({
+          title: 'Failed',
+          description: 'Sharing is unavailable right now — please copy the link instead.',
+          variant: 'destructive',
+        });
       }
     }, 100);
   };
@@ -242,13 +253,6 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
             label="Instagram"
             hint="Send it in a DM"
             onClick={() => handleShare('instagram_dm')}
-          />
-          <ShareRow
-            icon={<InstagramIcon className="h-[18px] w-[18px] text-white" />}
-            tile="bg-gradient-to-br from-[#ee2a7b] to-[#6228d7]"
-            label="Instagram Story"
-            hint="Share to your story"
-            onClick={() => handleShare('instagram_story')}
           />
           <ShareRow
             icon={<XIcon className="h-[16px] w-[16px] text-white" />}

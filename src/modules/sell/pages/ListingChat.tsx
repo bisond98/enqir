@@ -283,6 +283,10 @@ export default function ListingChat() {
         });
       setMessages(msgs);
       setTimeout(() => chatContainerRef.current?.scrollTo({ top: chatContainerRef.current.scrollHeight }), 100);
+    }, (err) => {
+      // Listener errors (dropped network, revoked read) stay non-fatal: the
+      // chat keeps whatever messages it already rendered.
+      console.error('Listing chat listener error:', err);
     });
     return () => unsub();
   }, [id, buyerId, blockedUsers]);
