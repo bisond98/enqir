@@ -2349,10 +2349,10 @@ const Dashboard = () => {
                                 )}
                               </div>
                               {/* Category doodle, inked white straight onto the black header */}
-                              <div className="pointer-events-none absolute left-1.5 top-1/2 z-0 -translate-y-1/2">
+                              <div className="pointer-events-none absolute left-0 top-1/2 z-0 -translate-y-1/2">
                                 <CategoryDoodle
                                   category={enquiry.category}
-                                  className="block h-16 w-auto sm:h-[72px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.2] [&_*]:[opacity:1]"
+                                  className="block h-10 w-auto sm:h-14 [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2] [&_*]:[opacity:1]"
                                 />
                               </div>
                               {/* Elegant pattern overlay */}
@@ -2620,10 +2620,10 @@ const Dashboard = () => {
                               </div>
 
                               {/* Category doodle, inked white straight onto the black header */}
-                              <div className="pointer-events-none absolute left-1.5 top-1/2 z-0 -translate-y-1/2">
+                              <div className="pointer-events-none absolute left-0 top-1/2 z-0 -translate-y-1/2">
                                 <CategoryDoodle
                                   category={listing.category}
-                                  className="block h-16 w-auto sm:h-[72px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.2] [&_*]:[opacity:1]"
+                                  className="block h-10 w-auto sm:h-14 [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2] [&_*]:[opacity:1]"
                                 />
                               </div>
                               {/* Listed date, just left of the 3-dot menu */}
@@ -3008,10 +3008,10 @@ const Dashboard = () => {
                             </div>
 
                             {/* Category doodle, inked white straight onto the black header */}
-                            <div className="pointer-events-none absolute left-1.5 top-1/2 z-0 -translate-y-1/2">
+                            <div className="pointer-events-none absolute left-0 top-1/2 z-0 -translate-y-1/2">
                               <CategoryDoodle
                                 category={respondedCategory}
-                                className="block h-16 w-auto sm:h-[72px] [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2.2] [&_*]:[opacity:1]"
+                                className="block h-10 w-auto sm:h-14 [&_*]:[stroke:#fff] [&_*]:[fill:transparent] [&_*]:[stroke-width:2] [&_*]:[opacity:1]"
                               />
                             </div>
                             {/* Elegant pattern overlay */}
@@ -3020,7 +3020,7 @@ const Dashboard = () => {
                             {/* Shine effect on hover */}
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 transition-opacity duration-500"></div>
                             
-                            <div className="relative flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5 lg:gap-2 xl:gap-2.5">
+                            <div className="relative flex min-w-0 flex-1 flex-col gap-2 pl-14 sm:gap-2.5 sm:pl-16 lg:gap-2 xl:gap-2.5">
                               <div className="flex w-full items-center justify-end gap-2 sm:gap-3 lg:gap-2.5 xl:gap-3">
                                 <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-1.5 xl:gap-2 flex-shrink-0">
                                   {((submission as any).isProfileVerified || (submission as any).userVerified || submission.isIdentityVerified) && (
