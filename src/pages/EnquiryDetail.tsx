@@ -652,9 +652,7 @@ const EnquiryDetail = () => {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   };
 
@@ -748,8 +746,8 @@ const EnquiryDetail = () => {
   // Nudged left of the text column, but kept off the card's left border.
   const plainLabelCls = sectionLabelCls;
   const pillLabelCls = sectionLabelCls;
-  const discCls = 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-600 shadow-[0_2px_4px_rgba(185,28,28,0.28)]';
-  const glyphCls = 'text-white';
+  const discCls = 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-800 ring-1 ring-red-900/35 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),inset_0_-2px_3px_rgba(120,20,20,0.55),0_3px_5px_rgba(127,29,29,0.35),0_1px_1px_rgba(0,0,0,0.18)]';
+  const glyphCls = 'text-white drop-shadow-[0_1px_1px_rgba(90,15,15,0.55)]';
 
   // Helper function to filter admin notes - hide technical details
   const formatAdminNotes = (notes: string | undefined): string | null => {
@@ -1102,7 +1100,7 @@ const EnquiryDetail = () => {
                           <FileText className={`h-[15px] w-[15px] ${glyphCls}`} aria-hidden="true" />
                           </span>
                         </div>
-                        <p className="min-w-0 flex-1 whitespace-pre-line break-words text-[13px] font-medium leading-[1.65] text-neutral-700">{enquiry.description}</p>
+                        <p className="min-w-0 flex-1 pl-[51px] whitespace-pre-line break-words text-[13px] font-medium leading-[1.65] text-neutral-900">{enquiry.description}</p>
                       </div>
                     </div>
                   ) : (
@@ -1124,7 +1122,7 @@ const EnquiryDetail = () => {
                         <IndianRupee className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={2} />
                         </span>
                       </div>
-                      <div className="absolute inset-0 flex items-center justify-center text-center">
+                      <div className="absolute inset-y-0 left-[99px] right-5 flex items-center justify-start text-left">
                         <p className={plainLayout ? 'break-words text-[19px] font-semibold leading-tight tracking-[-0.01em] text-neutral-900' : 'mt-2 break-words text-[19px] font-semibold leading-tight tracking-[-0.01em] text-neutral-900'}>
                           {enquiry.budgetOpenToDiscussion ? 'Open to discussion' : formatBudget(enquiry.budget)}
                         </p>
@@ -1148,8 +1146,8 @@ const EnquiryDetail = () => {
                         <MapPin className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                         </span>
                       </div>
-                      <div className="min-w-0 flex-1 text-center">
-                        <p className={plainLayout ? 'break-words text-[13px] font-medium leading-[1.6] text-neutral-900' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'}>At {enquiry.location}</p>
+                      <div className="min-w-0 flex-1 pl-[51px] text-left">
+                        <p className={plainLayout ? 'break-words text-[13px] font-medium leading-[1.6] text-neutral-900' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'}><span className="font-bold text-black">At</span> {enquiry.location}</p>
                       </div>
                       <ChevronRight className="h-[18px] w-[18px] shrink-0 text-neutral-400" aria-hidden="true" strokeWidth={2} />
                     </div>
@@ -1164,12 +1162,12 @@ const EnquiryDetail = () => {
                         <Calendar className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                         </span>
                       </div>
-                      <div className="absolute inset-0 flex items-center justify-center text-center">
+                      <div className="absolute inset-y-0 left-[99px] right-5 flex items-center justify-start text-left">
                         {enquiry.deadline ? (
-                          <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5">
+                          <div className="flex flex-nowrap items-center justify-start gap-x-2.5">
                             {formatDeadlineReadable(enquiry.deadline) && (
-                              <p className={plainLayout ? 'text-[13px] font-bold leading-tight text-neutral-900' : 'mt-1.5 text-[13px] font-bold leading-tight text-neutral-900'}>
-                                before {formatDeadlineReadable(enquiry.deadline)}
+                              <p className={plainLayout ? 'whitespace-nowrap text-[13px] font-bold leading-tight text-black' : 'mt-1.5 whitespace-nowrap text-[13px] font-bold leading-tight text-black'}>
+                                <span className="font-extrabold text-black">before</span> {formatDeadlineReadable(enquiry.deadline)}
                               </p>
                             )}
                             <span className="shrink-0 border-l border-neutral-200 pl-2.5"><CountdownTimer deadline={enquiry.deadline} /></span>
@@ -1190,9 +1188,9 @@ const EnquiryDetail = () => {
                         <Clock className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                         </span>
                       </div>
-                      <div className="absolute inset-0 flex items-center justify-center text-center">
+                      <div className="absolute inset-y-0 left-[99px] right-5 flex items-center justify-start text-left">
                         <p className={plainLayout ? 'break-words text-[13px] font-medium leading-[1.6] text-neutral-900' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'} title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
-                          Posted on {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
+                          <span className="font-bold text-black">Posted on</span> {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
                         </p>
                       </div>
                     </div>

@@ -2160,7 +2160,7 @@ export default function CreateListing() {
                                         onChange={(e) => setDetail(f.key, e.target.value)}
                                         className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                                       >
-                                        <option value="">Select variant</option>
+                                        <option value="">Variant</option>
                                         {getCarVariants(details['brand'] ?? '', details['model'] ?? '').map((opt) => (
                                           <option key={opt} value={opt}>{opt}</option>
                                         ))}
@@ -2168,7 +2168,7 @@ export default function CreateListing() {
                                       </select>
                                       {!details[f.key] && (
                                         <span className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 truncate px-4 pr-12 text-center text-[10px] font-semibold text-white">
-                                          Select variant
+                                          Variant
                                         </span>
                                       )}
                                       <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
