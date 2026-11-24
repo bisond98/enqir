@@ -138,16 +138,17 @@ const AiDescriptionBar = ({ onRun, generating }: { onRun: () => void; generating
   </button>
 );
 
-// Hand-drawn H-pattern gear shifter icon (manual car gearbox)
+
+// Manual gearbox: circled H-pattern shifter gate (white on the black pill)
 const GearShifterIcon = ({ className = "" }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 4v16M5 12h14M5 12v-4M19 12v-4M5 12v4M19 12v4" />
-    <circle cx="5" cy="6" r="1.6" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="4" r="1.6" fill="currentColor" stroke="none" />
-    <circle cx="19" cy="6" r="1.6" fill="currentColor" stroke="none" />
-    <circle cx="5" cy="18" r="1.6" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="20" r="1.6" fill="currentColor" stroke="none" />
-    <circle cx="19" cy="18" r="1.6" fill="currentColor" stroke="none" />
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M7 7v9.5M12 7v9.5M17 7v6M7 13h10" strokeWidth={2.4} />
+    <circle cx="7" cy="6.2" r="1.45" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="6.2" r="1.45" fill="currentColor" stroke="none" />
+    <circle cx="17" cy="6.2" r="1.45" fill="currentColor" stroke="none" />
+    <circle cx="7" cy="17.3" r="1.45" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="17.3" r="1.45" fill="currentColor" stroke="none" />
   </svg>
 );
 
@@ -4369,14 +4370,20 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.transmission}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, transmission: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.transmission ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.transmission) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      aria-label="Transmission"
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${vehicleDetails.transmission ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!vehicleDetails.transmission ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                                     >
                                       <option value="">Transmission</option>
                                       {['Manual', 'Automatic'].map((t) => (
                                         <option key={t} value={t}>{t}</option>
                                       ))}
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                                    {!vehicleDetails.transmission && (
+                                      <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center pr-6">
+                                        <GearShifterIcon className="h-5 w-5 text-white" />
+                                      </span>
+                                    )}
+                                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-white" strokeWidth={2.5} />
                                   </div>
                                   <div className="h-3">
                                   </div>
@@ -4387,14 +4394,20 @@ const DEADLINE_STEP = 5;
                                     <select
                                       value={vehicleDetails.fuelType}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, fuelType: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.fuelType ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.fuelType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      aria-label="Fuel type"
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${vehicleDetails.fuelType ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!vehicleDetails.fuelType ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                                     >
                                       <option value="">Fuel</option>
                                       {['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'LPG'].map((f) => (
                                         <option key={f} value={f}>{f}</option>
                                       ))}
                                     </select>
-                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                                    {!vehicleDetails.fuelType && (
+                                      <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center pr-6">
+                                        <Fuel className="h-5 w-5 text-white" strokeWidth={2.25} aria-hidden="true" />
+                                      </span>
+                                    )}
+                                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-white" strokeWidth={2.5} />
                                   </div>
                                   <div className="h-3">
                                   </div>

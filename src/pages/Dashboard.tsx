@@ -2451,11 +2451,12 @@ const Dashboard = () => {
                                         setShareMenuEnquiryId(enquiry.id);
                                         setShareMenuOpen(true);
                                       }}
+                                      onPointerDown={(e) => e.stopPropagation()}
                                       aria-label="Share enquiry"
                                       title="Share"
-                                      className="flex h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 items-center justify-center rounded-full bg-green-600 text-white ring-[8px] ring-green-100 transition-colors hover:bg-green-700 active:scale-95 touch-manipulation shadow-[0_10px_24px_-14px_rgba(22,163,74,0.9)]"
+                                      className="flex h-14 w-14 sm:h-16 sm:w-16 flex-shrink-0 items-center justify-center rounded-full bg-green-600 text-white ring-[6px] ring-green-100 transition-colors hover:bg-green-700 active:scale-95 touch-manipulation shadow-[0_8px_20px_-12px_rgba(22,163,74,0.9)]"
                                     >
-                                      <Share2 className="h-9 w-9 sm:h-10 sm:w-10" strokeWidth={1.8} />
+                                      <Share2 className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={1.8} />
                                     </button>
                                   </div>
                                   
@@ -2505,7 +2506,7 @@ const Dashboard = () => {
                               </Button>
                               
                                 {/* Share + Delete Buttons - Mobile/Tablet Only */}
-                                <div className="relative flex items-center justify-center w-full pt-5 sm:pt-7">
+                                <div className="relative flex items-center justify-end w-full pt-5 pr-1 sm:pt-7 sm:pr-2">
                                   {/* Share — pushed to the right edge of the row (detail page's green round share) */}
                                   <button
                                     type="button"
@@ -2516,11 +2517,12 @@ const Dashboard = () => {
                                       setShareMenuEnquiryId(enquiry.id);
                                       setShareMenuOpen(true);
                                     }}
+                                    onPointerDown={(e) => e.stopPropagation()}
                                     aria-label="Share enquiry"
                                     title="Share"
-                                    className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-green-600 text-white ring-[8px] ring-green-100 transition-colors hover:bg-green-700 active:scale-95 touch-manipulation shadow-[0_10px_24px_-14px_rgba(22,163,74,0.9)]"
+                                    className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-green-600 text-white ring-[6px] ring-green-100 transition-colors hover:bg-green-700 active:scale-95 touch-manipulation shadow-[0_8px_20px_-12px_rgba(22,163,74,0.9)]"
                                   >
-                                    <Share2 className="h-9 w-9" strokeWidth={1.8} />
+                                    <Share2 className="h-6 w-6" strokeWidth={1.8} />
                                   </button>
                                 </div>
                             </div>
@@ -2534,7 +2536,9 @@ const Dashboard = () => {
                       {shareEnquiry && (
                         <ShareMenu
                           open={shareMenuOpen}
-                          onClose={() => { setShareMenuOpen(false); setShareMenuEnquiryId(null); }}
+                          // Keep the enquiry id while the menu closes: WhatsApp Status opens the
+                          // status-card studio inside ShareMenu, and unmounting it would drop it.
+                          onClose={() => setShareMenuOpen(false)}
                           anchorRef={shareAnchorRef}
                           title={shareEnquiry.title}
                           text={buildEnquiryShareText(shareEnquiry, `${window.location.origin}/enquiry/${shareEnquiry.id}`)}

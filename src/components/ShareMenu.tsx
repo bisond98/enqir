@@ -188,12 +188,13 @@ export default function ShareMenu({ open, onClose, anchorRef, title, text, url, 
         className={`fixed inset-0 backdrop-fade ${isMobile ? 'bg-black/40' : 'bg-transparent'}`}
         style={{ zIndex: 9998 }}
         aria-hidden="true"
-        onClick={onClose}
+        onClick={(e) => { e.stopPropagation(); onClose(); }}
       />
       <div
         data-enquiry-share-menu
         role="dialog"
         aria-label="Share enquiry"
+        onClick={(e) => e.stopPropagation()}
         className={
           isMobile
             ? 'sheet-rise fixed inset-x-0 bottom-0 overflow-y-auto rounded-t-[26px] border-t border-gray-200 bg-white px-3 pb-6 pt-2 shadow-[0_-16px_50px_rgba(0,0,0,0.18)]'

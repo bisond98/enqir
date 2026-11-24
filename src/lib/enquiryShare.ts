@@ -64,16 +64,17 @@ const isAccommodationEnquiry = (enquiry: ShareableEnquiry): boolean =>
   );
 
 /**
- * Show only the state (e.g. "Kerala") of a location in shares — never the
- * country. A trailing "India" part is skipped; if nothing but the country
- * remains, no location is shown.
+ * Show the district and state (e.g. "Ernakulam, Kerala") of a location in
+ * shares — never the country or pin code. Falls back to whatever place names
+ * remain; if nothing but the country remains, no location is shown.
  */
 const locationStateOnly = (location?: string): string | null => {
   if (!location) return null;
   const parts = location.split(',').map((s) => s.trim()).filter(Boolean);
-  // Skip the country and bare pin codes — show the last actual place name
+  // Skip the country and bare pin codes — keep the last two place names
+  // (district, state) so shares say where it is, not just the state.
   const names = parts.filter((p) => p.toLowerCase() !== 'india' && !/^\d{4,8}$/.test(p));
-  return names.length ? names[names.length - 1] : null;
+  return names.length ? names.slice(-2).join(', ') : null;
 };
 
 /**

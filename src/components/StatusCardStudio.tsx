@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { Check, Copy, Download, Share2, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-type CardStyle = 'classic' | 'photo' | 'paper' | 'ticket' | 'blueprint' | 'banner' | 'editorial' | 'poster' | 'framed';
+type CardStyle = 'classic' | 'photo' | 'paper' | 'ticket' | 'blueprint' | 'banner' | 'editorial' | 'poster' | 'framed' | 'post';
 
 interface StatusCardStudioProps {
   open: boolean;
@@ -21,17 +21,20 @@ interface StatusCardStudioProps {
 const CARD_W = 1080;
 const CARD_H = 1920;
 const PAD = 112;
+// The card is drawn in 1080 × 1920 design units but rasterised at 2× (2160 ×
+// 3840). WhatsApp and the gallery downscale on upload, so handing them a
+// double-size PNG keeps the type and the shield mark crisp instead of soft.
+const EXPORT_SCALE = 2;
 
 const STYLES: { id: CardStyle; label: string }[] = [
+  { id: 'post', label: 'Post' },
   { id: 'classic', label: 'Classic' },
   { id: 'photo', label: 'Photo' },
   { id: 'paper', label: 'Paper' },
   { id: 'ticket', label: 'Ticket' },
   { id: 'blueprint', label: 'Blueprint' },
   { id: 'banner', label: 'Banner' },
-  { id: 'editorial', label: 'Editorial' },
   { id: 'poster', label: 'Poster' },
-  { id: 'framed', label: 'Framed' },
 ];
 
 const FONT = "'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif";
@@ -609,6 +612,105 @@ function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): st
   return lines;
 }
 
+/**
+ * "Post" design — a plain white social-post card: the Enqir avatar, the name
+ * with a blue verified tick and the @handle, then the whole share message
+ * underneath, centred, with the link at the foot. Every line of the share text
+ * is drawn (wrapped), so no detail is dropped.
+ */
+function drawPost(
+  ctx: CanvasRenderingContext2D,
+  title: string,
+  kicker: string,
+  details: string[],
+  url: string
+) {
+  ctx.clearRect(0, 0, CARD_W, CARD_H);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, CARD_W, CARD_H);
+
+  const contentW = CARD_W - 200;
+
+  // ---- Header: avatar + name + verified tick + handle, as one centred group
+  const name = 'Enqir.in';
+  const handle = '@enqir.in';
+  const avatar = 108;
+  const gap = 28;
+  ctx.font = `700 38px ${FONT}`;
+  const nameW = ctx.measureText(name).width;
+  ctx.font = `400 28px ${FONT}`;
+  const handleW = ctx.measureText(handle).width;
+  const blockW = Math.max(nameW + 44, handleW);
+  const groupX = (CARD_W - (avatar + gap + blockW)) / 2;
+  const groupY = 640;
+
+  // Avatar disc with the shield mark
+  ctx.fillStyle = '#0f1419';
+  ctx.beginPath();
+  ctx.arc(groupX + avatar / 2, groupY + avatar / 2, avatar / 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 8;
+  ctx.lineJoin = 'round';
+  shieldPath(ctx, groupX + avatar / 2, groupY + 34, 52, 62);
+  ctx.stroke();
+
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#0f1419';
+  ctx.font = `700 38px ${FONT}`;
+  ctx.fillText(name, groupX + avatar + gap, groupY + 50);
+
+  // Blue verified tick after the name
+  const tickX = groupX + avatar + gap + nameW + 14;
+  const tickY = groupY + 34;
+  ctx.fillStyle = '#1d9bf0';
+  ctx.beginPath();
+  ctx.arc(tickX + 14, tickY + 14, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(tickX + 8, tickY + 15);
+  ctx.lineTo(tickX + 12, tickY + 19);
+  ctx.lineTo(tickX + 21, tickY + 9);
+  ctx.stroke();
+  ctx.lineCap = 'butt';
+
+  ctx.fillStyle = '#536471';
+  ctx.font = `400 28px ${FONT}`;
+  ctx.fillText(handle, groupX + avatar + gap, groupY + 88);
+
+  // ---- Body: the share message, centred — headline first, then every detail
+  let y = groupY + avatar + 110;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#0f1419';
+  ctx.font = `400 34px ${FONT}`;
+  const lines: string[] = [];
+  for (const raw of [kicker, ...details].filter(Boolean)) {
+    lines.push(...wrap(ctx, raw, contentW));
+  }
+  const lead = 52;
+  const footerRoom = 340;
+  const maxLines = Math.max(1, Math.floor((CARD_H - footerRoom - y) / lead));
+  for (const line of lines.slice(0, maxLines)) {
+    ctx.fillText(line, CARD_W / 2, y);
+    y += lead;
+  }
+
+  // ---- Foot: link + wordmark
+  ctx.fillStyle = '#536471';
+  ctx.font = `500 28px ${FONT}`;
+  ctx.fillText(url.replace(/^https?:\/\//, ''), CARD_W / 2, CARD_H - 210);
+
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = `600 26px ${FONT}`;
+  ctx.letterSpacing = '6px';
+  ctx.fillText('ENQIR.IN', CARD_W / 2, CARD_H - 150);
+  ctx.letterSpacing = '0px';
+}
+
 export function drawCard(
   ctx: CanvasRenderingContext2D,
   style: CardStyle,
@@ -618,6 +720,10 @@ export function drawCard(
   url: string,
   photo: HTMLImageElement | null = null
 ) {
+  if (style === 'post') {
+    drawPost(ctx, title, kicker, details, url);
+    return;
+  }
   if (style === 'photo') {
     drawPhoto(ctx, title, kicker, details, url, photo);
     return;
@@ -676,6 +782,10 @@ export function drawCard(
 
   let y = style === 'poster' ? 470 : 430;
 
+  // Headline size is needed before the kicker so the gap between them always
+  // clears the headline's ascenders (a fixed gap overlapped on the big poster).
+  const headlineSize = style === 'poster' ? 104 : title.length > 42 ? 76 : 88;
+
   // Kicker (short category line from the share text)
   if (kicker) {
     ctx.fillStyle = 'rgba(255,255,255,0.62)';
@@ -687,11 +797,10 @@ export function drawCard(
       y += 48;
     }
     ctx.letterSpacing = '0px';
-    y += 30;
+    y += Math.round(headlineSize * 0.95);
   }
 
   // Headline
-  const headlineSize = style === 'poster' ? 104 : title.length > 42 ? 76 : 88;
   ctx.fillStyle = '#ffffff';
   ctx.font = `600 ${headlineSize}px ${FONT}`;
   const titleLines = wrap(ctx, title, contentW).slice(0, 5);
@@ -780,13 +889,23 @@ export async function shareStatusCard({
 }): Promise<StatusCardShareResult> {
   try {
     const canvas = document.createElement('canvas');
-    canvas.width = CARD_W;
-    canvas.height = CARD_H;
+    canvas.width = CARD_W * EXPORT_SCALE;
+    canvas.height = CARD_H * EXPORT_SCALE;
     const ctx = canvas.getContext('2d');
     if (!ctx) return 'failed';
 
     const { kicker, details } = splitText(text, url);
     const photo = style === 'photo' && imageUrl ? await loadCardImage(imageUrl) : null;
+    // Draw with the webfont in place, so the raster is not made from a
+    // fallback face that would look rougher than the on-screen preview.
+    try {
+      await (document as any).fonts?.ready;
+    } catch {
+      /* fonts API unavailable — draw with whatever is loaded */
+    }
+    ctx.setTransform(EXPORT_SCALE, 0, 0, EXPORT_SCALE, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     drawCard(ctx, style, title, kicker, details, url, photo);
 
     const blob = await new Promise<Blob | null>((resolve) => {
@@ -863,6 +982,10 @@ export default function StatusCardStudio({ open, onClose, title, text, url, imag
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
+    // Same double-size raster as the export, drawn in design units.
+    ctx.setTransform(EXPORT_SCALE, 0, 0, EXPORT_SCALE, 0, 0);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     drawCard(ctx, style, title, kicker, details, url, photo);
     setFile(null);
     const timer = setTimeout(() => {
@@ -983,7 +1106,7 @@ export default function StatusCardStudio({ open, onClose, title, text, url, imag
         <div className="grid gap-5 overflow-y-auto px-5 pb-5 pt-3 sm:grid-cols-[240px_1fr] sm:items-start">
           <div className="mx-auto w-full max-w-[210px] sm:max-w-none">
             <div className="overflow-hidden rounded-2xl bg-black ring-1 ring-black/10">
-              <canvas ref={canvasRef} width={CARD_W} height={CARD_H} className="block h-auto w-full" />
+              <canvas ref={canvasRef} width={CARD_W * EXPORT_SCALE} height={CARD_H * EXPORT_SCALE} className="block h-auto w-full" />
             </div>
             <p className="mt-2 text-center text-[10px] font-medium tracking-wide text-gray-400">Live preview</p>
           </div>
