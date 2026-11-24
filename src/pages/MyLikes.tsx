@@ -394,14 +394,21 @@ const MyLikes = () => {
               <button
                 type="button"
                 onClick={() => setDropdownOpen(v => !v)}
-                className="relative w-full h-16 sm:h-16 flex items-center text-base sm:text-lg !border-[1.5px] !border-black focus:!border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 !bg-blue-600 hover:!bg-blue-700 !text-white transition-colors duration-150 font-black !rounded-2xl !overflow-hidden touch-manipulation select-none"
+                className={`relative w-full appearance-none rounded-2xl h-16 sm:h-16 flex items-center font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 pl-5 pr-14 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 overflow-hidden touch-manipulation select-none ${effective.length > 0 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black !text-transparent'}`}
               >
-                <SlidersHorizontal className="h-4 w-4 sm:h-5 sm:w-5 ml-4 mr-2 text-white flex-shrink-0 relative z-10" />
-                <span className="flex-1 text-center truncate relative z-10">Categories</span>
+                <SlidersHorizontal className="h-5 w-5 mr-2.5 flex-shrink-0 relative z-10" />
+                <span className={`flex-1 text-center truncate relative z-10 ${effective.length > 0 ? 'text-base sm:text-lg !font-bold !text-white' : 'text-[13px] text-transparent'}`}>Categories</span>
                 {effective.length > 0 && (
-                  <span className="bg-white/20 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex-shrink-0 relative z-10">{effective.length}</span>
+                  <span className="bg-white/20 text-white text-[10px] font-black px-2 py-0.5 rounded-full flex-shrink-0 relative z-10 mr-1">{effective.length}</span>
                 )}
-                <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 ml-2 mr-4 transition-transform relative z-10 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                {effective.length === 0 && (
+                  <span className="pointer-events-none absolute left-0 right-0 top-1/2 z-10 -translate-y-1/2 truncate px-4 pr-14 text-center text-[13px] font-semibold text-white">Categories</span>
+                )}
+                <span className="pointer-events-none absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
+                    <ChevronDown className={`h-4 w-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} strokeWidth={2.75} />
+                  </span>
+                </span>
               </button>
 
               {dropdownOpen && (
