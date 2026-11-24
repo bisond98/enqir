@@ -4364,47 +4364,37 @@ const DEADLINE_STEP = 5;
                                   </div>
                                 )}
                                 {/* Transmission — the widest of the three */}
-                                <div className="flex-[1.2] min-w-0">
+                                <div className="flex-1 min-w-0">
                                   <div className="relative">
                                     <select
                                       value={vehicleDetails.transmission}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, transmission: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.transmission ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.transmission) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.transmission ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.transmission) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Transmission</option>
                                       {['Manual', 'Automatic'].map((t) => (
                                         <option key={t} value={t}>{t}</option>
                                       ))}
                                     </select>
-                                    {/* Same black round handle the Sell form's car fields use */}
-                                    <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-                                      <span className="flex items-center justify-center h-6 w-6 rounded-full bg-black">
-                                        <ChevronDown className="chev-badge h-3.5 w-3.5 text-white" strokeWidth={2.75} />
-                                      </span>
-                                    </div>
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                                   </div>
                                   <div className="h-3">
                                   </div>
                                 </div>
                                 {/* Fuel Type — the narrowest of the three */}
-                                <div className="flex-[0.8] min-w-0">
+                                <div className="flex-1 min-w-0">
                                   <div className="relative">
                                     <select
                                       value={vehicleDetails.fuelType}
                                       onChange={(e) => setVehicleDetails(v => ({ ...v, fuelType: e.target.value }))}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.fuelType ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.fuelType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.fuelType ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.fuelType) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
                                     >
                                       <option value="">Fuel</option>
                                       {['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid', 'LPG'].map((f) => (
                                         <option key={f} value={f}>{f}</option>
                                       ))}
                                     </select>
-                                    {/* Same black round handle the Sell form's car fields use */}
-                                    <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
-                                      <span className="flex items-center justify-center h-6 w-6 rounded-full bg-black">
-                                        <ChevronDown className="chev-badge h-3.5 w-3.5 text-white" strokeWidth={2.75} />
-                                      </span>
-                                    </div>
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                                   </div>
                                   <div className="h-3">
                                   </div>

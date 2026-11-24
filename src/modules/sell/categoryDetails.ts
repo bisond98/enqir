@@ -199,8 +199,8 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., VXI, ZXI (O), LXI CNG', step: 'description' },
     // Year sits directly under the variant pick.
     { key: 'year', label: 'Year of manufacture', type: 'number', placeholder: 'e.g., 2021', min: 1950, step: 'description' },
-    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
-    { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
+    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Transmission', step: 'description' },
+    { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Fuel type', step: 'description' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },
     { key: 'accidentHistory', label: 'Accident history', type: 'select', options: ['No accidents', 'Minor accidents', 'Major accidents'], placeholder: 'Select accident history', step: 'details' },
@@ -218,8 +218,8 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
     { key: 'variant', label: 'Variant', type: 'text', placeholder: 'e.g., variants of lorry, pickup, truck', step: 'description' },
     // Typed year, not a dropdown: a 4-digit box on the Description tab.
     { key: 'year', label: 'Year of manufacture', type: 'number', placeholder: 'e.g., 2021', min: 1950, step: 'description' },
-    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Select transmission', step: 'description' },
-    { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Select fuel', step: 'description' },
+    { key: 'transmission', label: 'Transmission', type: 'select', options: ['Manual', 'Automatic'], placeholder: 'Transmission', step: 'description' },
+    { key: 'fuel', label: 'Fuel type', type: 'select', options: ['Petrol', 'Diesel', 'CNG', 'Electric', 'Hybrid'], placeholder: 'Fuel type', step: 'description' },
     { key: 'kmsDriven', label: 'Kilometers driven', type: 'number', placeholder: 'Kilometers driven', suffix: 'km', min: 0, step: 'details' },
     { key: 'ownership', label: 'Ownership', type: 'select', options: ['1st owner', '2nd owner', '3rd owner', '4+ owner'], placeholder: 'Select owner', step: 'details' },
     { key: 'accidentHistory', label: 'Accident history', type: 'select', options: ['No accidents', 'Minor accidents', 'Major accidents'], placeholder: 'Select accident history', step: 'details' },

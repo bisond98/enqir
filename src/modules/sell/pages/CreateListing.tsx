@@ -2117,14 +2117,14 @@ export default function CreateListing() {
                             </div>
                           )}
                           {selectFields.length > 0 && (
-                            <div className={`grid gap-3 ${category === 'car' ? 'car-pill grid-cols-2' : category === 'bicycles' ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                            <div className={`grid gap-3 ${category === 'car' ? 'car-pill grid-cols-2' : category === 'bicycles' || category === 'vehicles' ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
                               {selectFields.map((f) => (
                                 // On mobile the year box sits at the top of the tab;
                                 // from sm upwards it keeps its array position. Cars
                                 // are the exception: their variant leads the tab.
                                 <div
                                   key={f.key}
-                                  className={`space-y-2 ${category === 'bicycles' && f.key === 'bicycleRepair' ? 'col-span-2' : category === 'bicycles' && f.key === 'year' ? 'order-first col-span-2' : f.key === 'year' && category !== 'vehicles' && category !== 'car' ? 'order-first sm:order-none' : ''} ${category === 'car' && (f.key === 'variant' || f.key === 'year') ? 'sm:col-span-2' : ''}`}
+                                  className={`space-y-2 ${category === 'bicycles' && f.key === 'bicycleRepair' ? 'col-span-2' : category === 'bicycles' && f.key === 'year' ? 'order-first col-span-2' : f.key === 'year' && category !== 'vehicles' && category !== 'car' ? 'order-first sm:order-none' : ''} ${category === 'car' && (f.key === 'variant' || f.key === 'year') ? 'sm:col-span-2' : ''} ${category === 'vehicles' && (f.type === 'text' || f.type === 'number') ? 'col-span-2' : ''}`}
                                   style={category === 'bicycles' && f.key === 'bicycleRepair'
                                     ? { width: 'calc(50% - 0.375rem)', marginLeft: 'auto', marginRight: 'auto' }
                                     : selectFields.length === 1 && f.type !== 'text' && f.type !== 'number'
@@ -2136,22 +2136,29 @@ export default function CreateListing() {
                                       <select
                                         value={details[f.key] ?? ''}
                                         onChange={(e) => setDetail(f.key, e.target.value)}
-                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                                       >
-                                        <option value="">Select model</option>
+                                        <option value="">Model</option>
                                         {getVehicleModels(details['brand'] ?? '', details['vehicleType'] ?? '').map((opt) => (
                                           <option key={opt} value={opt}>{opt}</option>
                                         ))}
                                         <option value={VEHICLE_MODEL_OTHER}>Other</option>
                                       </select>
-                                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                      {!details[f.key] && (
+                                        <span className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 truncate px-4 pr-12 text-center text-[10px] font-semibold text-white">
+                                          Model
+                                        </span>
+                                      )}
+                                      <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                                        <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+                                      </span>
                                     </div>
                                   ) : category === 'car' && f.key === 'variant' && getCarVariants(details['brand'] ?? '', details['model'] ?? '').length > 0 ? (
                                     <div className="relative">
                                       <select
                                         value={details[f.key] ?? ''}
                                         onChange={(e) => setDetail(f.key, e.target.value)}
-                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                                       >
                                         <option value="">Select variant</option>
                                         {getCarVariants(details['brand'] ?? '', details['model'] ?? '').map((opt) => (
@@ -2159,7 +2166,14 @@ export default function CreateListing() {
                                         ))}
                                         <option value="Other">Other</option>
                                       </select>
-                                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                      {!details[f.key] && (
+                                        <span className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 truncate px-4 pr-12 text-center text-[10px] font-semibold text-white">
+                                          Select variant
+                                        </span>
+                                      )}
+                                      <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                                        <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+                                      </span>
                                     </div>
                                   ) : f.type === 'text' || f.type === 'number' ? (
                                     <Input
@@ -2172,7 +2186,7 @@ export default function CreateListing() {
                                         ? (details['brand'] ? 'Enter model name' : 'Select brand first')
                                         : category === 'jobs' && f.key === 'skills' && details.jobListingFor === 'To apply' ? 'Your skills'
                                         : f.placeholder ?? 'Type here'}
-                                      className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 pl-4 pr-4 ${f.key === 'skills' ? 'skills-hint' : 'placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px]'} shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'car' && f.key === 'year' && (details[f.key] ?? '').length === 4 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
+                                      className={`w-full rounded-2xl h-12 sm:h-14 text-sm sm:text-base font-medium border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 pl-4 pr-4 ${f.key === 'skills' ? 'skills-hint' : 'placeholder:text-gray-400 placeholder:font-medium placeholder:text-[11px]'} shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${(category === 'car' || category === 'vehicles') && f.key === 'year' && (details[f.key] ?? '').length === 4 ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
                                     />
                                   ) : (
                                   <div className="relative">
@@ -2184,7 +2198,7 @@ export default function CreateListing() {
                                         // School-level education has no stream to name.
                                         if (f.key === 'education' && ['10th pass', '12th pass'].includes(e.target.value)) setDetail('stream', '');
                                       }}
-                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                                      className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                                     >
                                       <option value="">{
                                         // A hiring post asks for what the role needs; an
@@ -2204,7 +2218,25 @@ export default function CreateListing() {
                                         <option key={opt} value={opt}>{opt}</option>
                                       ))}
                                     </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                                    {!details[f.key] && (
+                                      <span className="pointer-events-none absolute left-0 right-0 top-1/2 flex -translate-y-1/2 items-center justify-center px-4 pr-12 text-center text-[10px] font-semibold text-white">
+                                        {f.key === 'transmission' ? (
+                                          <img src="/icons/gear-shifter.png" alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
+                                        ) : f.key === 'fuel' ? (
+                                          <span className="flex h-5 w-5 items-center justify-center rounded-full border-[1.5px] border-white">
+                                            <Fuel className="h-3 w-3" strokeWidth={2.25} />
+                                          </span>
+                                        ) : category === 'jobs' && details.jobListingFor === 'To hire' && f.key === 'education' ? 'Education needed'
+                                        : category === 'jobs' && details.jobListingFor === 'To hire' && f.key === 'experience' ? 'Experience needed'
+                                        : category === 'jobs' && details.jobListingFor === 'To apply' && f.key === 'education' ? 'Your education'
+                                        : category === 'jobs' && details.jobListingFor === 'To apply' && f.key === 'experience' ? 'Your experience'
+                                        : category === 'jobs' && details.jobListingFor === 'To apply' && f.key === 'jobType' ? 'Job type you suggest'
+                                        : f.placeholder ?? 'Select'}
+                                      </span>
+                                    )}
+                                    <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                                      <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+                                    </span>
                                   </div>
                                   )}
                                   {/* Jobs: the free-text stream sits directly under
