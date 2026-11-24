@@ -746,8 +746,8 @@ const EnquiryDetail = () => {
   // Nudged left of the text column, but kept off the card's left border.
   const plainLabelCls = sectionLabelCls;
   const pillLabelCls = sectionLabelCls;
-  const discCls = 'flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-b from-red-500 via-red-600 to-red-800 ring-1 ring-red-900/35 shadow-[inset_0_1px_1px_rgba(255,255,255,0.5),inset_0_-2px_3px_rgba(120,20,20,0.55),0_3px_5px_rgba(127,29,29,0.35),0_1px_1px_rgba(0,0,0,0.18)]';
-  const glyphCls = 'text-white drop-shadow-[0_1px_1px_rgba(90,15,15,0.55)]';
+  const discCls = 'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-600';
+  const glyphCls = 'text-white';
 
   // Helper function to filter admin notes - hide technical details
   const formatAdminNotes = (notes: string | undefined): string | null => {
@@ -887,7 +887,7 @@ const EnquiryDetail = () => {
                 {/* Card Content - Enhanced White Background */}
                 <CardContent className="relative z-10 p-1 sm:p-6 lg:p-7">
                   {/* Title block — LOOKING FOR pill, title, reference image, spec chips */}
-                  <div className={`relative ${plainLayout ? 'rounded-t-[18px] rounded-b-none bg-white px-5 pb-2 pt-5 shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10)]' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
+                  <div className={`relative ${plainLayout ? 'rounded-t-[18px] rounded-b-none bg-white px-5 pb-2 pt-5 shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_10px_14px_-8px_rgba(17,24,39,0.22)]' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
                     {/* More actions — plain black dots at the tile's top-right */}
                     <div className="absolute right-3 top-3 z-20">
                       <button
@@ -934,24 +934,40 @@ const EnquiryDetail = () => {
                             Looking for
                           </span>
                         )}
-                        <h1 className={`break-words font-heading font-extrabold tracking-[-0.02em] text-neutral-900 ${plainLayout ? 'mt-2 text-[32px] leading-[1.05]' : 'mt-2 text-[25px] leading-[1.15]'}`}>
-                          {enquiry.title}
-                          {((userProfile?.isProfileVerified ||
-                             userProfile?.isVerified ||
-                             userProfile?.trustBadge ||
-                             userProfile?.isIdentityVerified) ||
-                            enquiry.idFrontImage ||
-                            enquiry.idBackImage ||
-                            enquiry.isProfileVerified ||
-                            enquiry.userProfileVerified ||
-                            (enquiry as any).userVerified) && (
-                            <span
-                              className="mb-1 ml-1.5 inline-flex h-[0.7em] w-[0.7em] shrink-0 items-center justify-center rounded-full bg-blue-500 align-baseline"
-                              aria-hidden="true"
-                            >
-                              <Check className="h-[0.52em] w-[0.52em] text-white" strokeWidth={3.5} />
-                            </span>
-                          )}
+                        <h1 className={`break-words font-heading font-extrabold tracking-[-0.02em] text-neutral-900 ${plainLayout ? 'mt-2 text-[29px] leading-[1.08] [text-wrap:balance]' : 'mt-2 text-[25px] leading-[1.15]'}`}>
+                          {(() => {
+                            const titleText = String(enquiry.title ?? '');
+                            const lastSpace = titleText.lastIndexOf(' ');
+                            const head = lastSpace >= 0 ? titleText.slice(0, lastSpace + 1) : '';
+                            const tail = lastSpace >= 0 ? titleText.slice(lastSpace + 1) : titleText;
+                            const isVerified = !!((userProfile?.isProfileVerified ||
+                              userProfile?.isVerified ||
+                              userProfile?.trustBadge ||
+                              userProfile?.isIdentityVerified) ||
+                              enquiry.idFrontImage ||
+                              enquiry.idBackImage ||
+                              enquiry.isProfileVerified ||
+                              enquiry.userProfileVerified ||
+                              (enquiry as any).userVerified);
+                            // The last word and the badge share one nowrap box, so the badge always
+                            // trails the title's final word instead of wrapping onto its own line.
+                            return (
+                              <>
+                                {head}
+                                <span className="whitespace-nowrap">
+                                  {tail}
+                                  {isVerified && (
+                                    <span
+                                      className="mb-1 ml-1 inline-flex h-[0.7em] w-[0.7em] shrink-0 items-center justify-center rounded-full bg-blue-500 align-baseline"
+                                      aria-hidden="true"
+                                    >
+                                      <Check className="h-[0.52em] w-[0.52em] text-white" strokeWidth={3.5} />
+                                    </span>
+                                  )}
+                                </span>
+                              </>
+                            );
+                          })()}
                         </h1>
                       </div>
                       {enquiry.referenceImages?.[0] && (
@@ -1056,7 +1072,7 @@ const EnquiryDetail = () => {
                       );
                       const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) => {
                         const isLogo = (icon === 'brand' || icon === 'mobileBrand' || icon === 'sneakerBrand') && !!logoUrl;
-                        if (isLogo) return <img decoding="async" src={logoUrl as string} alt="" className="h-[15px] w-[15px] shrink-0 rounded-full object-contain" loading="lazy" />;
+                        if (isLogo) return <img decoding="async" src={logoUrl as string} alt="" className="h-5 w-5 shrink-0 rounded-full object-contain" loading="lazy" />;
                         if (icon === 'dog') return <Dog className="h-3.5 w-3.5 shrink-0 text-green-600" strokeWidth={2.2} />;
                         if (icon === 'nopets') return <NoPetsIcon className="h-3.5 w-3.5 shrink-0" />;
                         const glyph = icon === 'gear' ? <GearShifterIcon className="h-[10px] w-[10px]" />
@@ -1068,20 +1084,21 @@ const EnquiryDetail = () => {
                         return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-black bg-black text-white">{glyph}</span>;
                       };
                       return (
-                        <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mt-6 justify-center' : 'mt-5 justify-center'}`}>
+                        <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mb-4 mt-6 justify-center' : 'mb-1 mt-5 justify-center'}`}>
                           {chips.map((c: any) => (
                             c.subcategory ? (
-                              <span key={c.value} className={`inline-flex max-w-full items-center whitespace-normal break-words rounded-full border border-neutral-300 bg-white px-2 py-[5px] text-neutral-900 ${plainLayout ? 'text-[10px] font-medium leading-[1.4]' : 'text-[11px] leading-[1.45]'}`}>
+                              <span key={c.value} className={`inline-flex max-w-full items-center whitespace-normal break-words rounded-xl border-0 bg-white px-2.5 py-1 text-left font-bold font-chip text-black shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] ${plainLayout ? 'text-[11px] leading-relaxed' : 'text-[11px] leading-[1.45]'}`}>
                                 {c.value}
                               </span>
                             ) : c.big ? (
-                              <span key={c.label || c.value} className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-red-600 px-3.5 py-[9px] text-[11px] font-bold uppercase tracking-[0.04em] text-white">
+                              <span key={c.label || c.value} className="inline-flex items-center justify-center gap-1 whitespace-nowrap rounded-xl border-0 bg-white px-2.5 py-1 text-[11px] font-black font-chip uppercase text-black shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+                                {c.label ? <span className="text-[6px] font-semibold whitespace-nowrap rounded-[3px] border-0 bg-red-600 px-[3px] py-[1px] uppercase leading-none tracking-wide text-white">{c.label}:</span> : null}
                                 {c.value}
                               </span>
                             ) : (
-                              <span key={c.label || c.value} className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-neutral-300 bg-white px-3 py-[7px] text-[12px] font-medium leading-none text-neutral-900">
+                              <span key={c.label || c.value} className="inline-flex items-center gap-1 whitespace-nowrap rounded-xl border-0 bg-white px-2.5 py-1 text-[11px] font-black font-chip leading-none text-black shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
                                 <ChipIcon icon={c.icon} logoUrl={c.logoUrl} />
-                                {c.label ? <span className="text-[8.5px] font-semibold uppercase tracking-[0.08em] text-neutral-400">{c.label}</span> : null}
+                                {c.label ? <span className="text-[6px] font-semibold whitespace-nowrap rounded-[3px] border-0 bg-red-600 px-[3px] py-[1px] uppercase leading-none tracking-wide text-white">{c.label}:</span> : null}
                                 {c.value}
                               </span>
                             )
@@ -1097,18 +1114,18 @@ const EnquiryDetail = () => {
                       <div className="flex items-start gap-5">
                         <div className="flex flex-col items-start">
                           <span className={discCls}>
-                          <FileText className={`h-[15px] w-[15px] ${glyphCls}`} aria-hidden="true" />
+                          <FileText className={`h-5 w-5 ${glyphCls}`} aria-hidden="true" />
                           </span>
                         </div>
-                        <p className="min-w-0 flex-1 pl-[51px] whitespace-pre-line break-words text-[13px] font-medium leading-[1.65] text-neutral-900">{enquiry.description}</p>
+                        <p className="min-w-0 flex-1 pl-[43px] whitespace-pre-line break-words font-read text-[14px] font-semibold leading-[1.65] tracking-[-0.008em] text-black antialiased">{enquiry.description}</p>
                       </div>
                     </div>
                   ) : (
                     <div className="mt-3.5 rounded-[14px] border border-black/[0.08] bg-white p-4">
                       <h2 className={`${pillLabelCls} mb-2.5 w-full text-left`}>Description</h2>
                       <div className="flex items-start gap-2">
-                        <FileText className="mt-[2px] h-[15px] w-[15px] shrink-0 text-neutral-900" aria-hidden="true" />
-                        <p className="min-w-0 flex-1 whitespace-pre-line break-words text-[13px] leading-[1.6] text-neutral-700">{enquiry.description}</p>
+                        <FileText className="mt-[2px] h-5 w-5 shrink-0 text-neutral-900" aria-hidden="true" />
+                        <p className="min-w-0 flex-1 whitespace-pre-line break-words text-[13px] leading-[1.6] text-black">{enquiry.description}</p>
                       </div>
                     </div>
                   )}
@@ -1119,11 +1136,11 @@ const EnquiryDetail = () => {
                     <div className={plainLayout ? 'relative' : 'flex items-center gap-3'}>
                       <div className="flex flex-col items-start">
                         <span className={discCls}>
-                        <IndianRupee className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={2} />
+                        <IndianRupee className={`h-[18px] w-[18px] ${glyphCls}`} aria-hidden="true" strokeWidth={2} />
                         </span>
                       </div>
                       <div className="absolute inset-y-0 left-[99px] right-5 flex items-center justify-start text-left">
-                        <p className={plainLayout ? 'break-words text-[19px] font-semibold leading-tight tracking-[-0.01em] text-neutral-900' : 'mt-2 break-words text-[19px] font-semibold leading-tight tracking-[-0.01em] text-neutral-900'}>
+                        <p className={plainLayout ? 'font-read break-words text-[20px] font-extrabold leading-[1.15] tracking-[-0.02em] text-black tabular-nums antialiased sm:text-[19px]' : 'mt-2 break-words text-[19px] font-semibold leading-tight tracking-[-0.01em] text-neutral-900'}>
                           {enquiry.budgetOpenToDiscussion ? 'Open to discussion' : formatBudget(enquiry.budget)}
                         </p>
                       </div>
@@ -1143,11 +1160,11 @@ const EnquiryDetail = () => {
                     <div className={plainLayout ? 'flex items-start gap-5' : 'flex items-center gap-3'}>
                       <div className="flex flex-col items-start">
                         <span className={discCls}>
-                        <MapPin className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                        <MapPin className={`h-[18px] w-[18px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                         </span>
                       </div>
-                      <div className="min-w-0 flex-1 pl-[51px] text-left">
-                        <p className={plainLayout ? 'break-words text-[13px] font-medium leading-[1.6] text-neutral-900' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'}><span className="font-bold text-black">At</span> {enquiry.location}</p>
+                      <div className="min-w-0 flex-1 pl-[43px] text-left">
+                        <p className={plainLayout ? 'font-read break-words text-[13.5px] font-semibold leading-[1.6] tracking-[-0.006em] text-neutral-900 antialiased' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'}><span className="font-bold text-black">At</span> {enquiry.location}</p>
                       </div>
                       <ChevronRight className="h-[18px] w-[18px] shrink-0 text-neutral-400" aria-hidden="true" strokeWidth={2} />
                     </div>
@@ -1159,15 +1176,15 @@ const EnquiryDetail = () => {
                     <div className={plainLayout ? 'relative' : 'flex items-center gap-3'}>
                       <div className="flex flex-col items-start">
                         <span className={discCls}>
-                        <Calendar className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                        <Calendar className={`h-[18px] w-[18px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                         </span>
                       </div>
                       <div className="absolute inset-y-0 left-[99px] right-5 flex items-center justify-start text-left">
                         {enquiry.deadline ? (
                           <div className="flex flex-nowrap items-center justify-start gap-x-2.5">
                             {formatDeadlineReadable(enquiry.deadline) && (
-                              <p className={plainLayout ? 'whitespace-nowrap text-[13px] font-bold leading-tight text-black' : 'mt-1.5 whitespace-nowrap text-[13px] font-bold leading-tight text-black'}>
-                                <span className="font-extrabold text-black">before</span> {formatDeadlineReadable(enquiry.deadline)}
+                              <p className={plainLayout ? 'font-read whitespace-nowrap text-[13.5px] font-bold leading-tight tracking-[-0.006em] text-neutral-900 antialiased' : 'mt-1.5 whitespace-nowrap text-[13px] font-bold leading-tight text-black'}>
+                                <span className="font-read font-bold text-black">before</span> {formatDeadlineReadable(enquiry.deadline)}
                               </p>
                             )}
                             <span className="shrink-0 border-l border-neutral-200 pl-2.5"><CountdownTimer deadline={enquiry.deadline} /></span>
@@ -1185,11 +1202,11 @@ const EnquiryDetail = () => {
                     <div className={plainLayout ? 'relative' : 'flex items-center gap-3'}>
                       <div className="flex flex-col items-start">
                         <span className={discCls}>
-                        <Clock className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                        <Clock className={`h-[18px] w-[18px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                         </span>
                       </div>
                       <div className="absolute inset-y-0 left-[99px] right-5 flex items-center justify-start text-left">
-                        <p className={plainLayout ? 'break-words text-[13px] font-medium leading-[1.6] text-neutral-900' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'} title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
+                        <p className={plainLayout ? 'font-read break-words text-[13.5px] font-semibold leading-[1.6] tracking-[-0.006em] text-neutral-900 antialiased' : 'mt-2 break-words text-[13px] font-medium leading-[1.6] text-neutral-900'} title={enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}>
                           <span className="font-bold text-black">Posted on</span> {enquiry.createdAt ? formatDate(enquiry.createdAt) : 'Recently'}
                         </p>
                       </div>
@@ -1203,7 +1220,7 @@ const EnquiryDetail = () => {
                         <div className="flex items-start gap-5">
                         <div className="flex flex-col items-start">
                           <span className={discCls}>
-                          <ImageIcon className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                          <ImageIcon className={`h-[18px] w-[18px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                           </span>
                         </div>
                         <div className="min-w-0 flex-1">
@@ -1226,7 +1243,7 @@ const EnquiryDetail = () => {
                     ) : (
                       <div className="mt-3.5 rounded-[14px] border border-black/[0.08] bg-white p-4">
                         <div className="mb-3 flex items-center gap-2">
-                          <ImageIcon className="h-[15px] w-[15px] text-neutral-900" aria-hidden="true" />
+                          <ImageIcon className="h-5 w-5 text-neutral-900" aria-hidden="true" />
                           <h2 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
                             Reference images ({enquiry.referenceImages.length})
                           </h2>
@@ -1255,7 +1272,7 @@ const EnquiryDetail = () => {
                       <div className={plainLayout ? 'flex items-start gap-5' : 'flex items-center gap-3'}>
                         <div className="flex flex-col items-start">
                           <span className={discCls}>
-                          <MessageSquare className={`h-[13px] w-[13px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
+                          <MessageSquare className={`h-[18px] w-[18px] ${glyphCls}`} aria-hidden="true" strokeWidth={1.9} />
                           </span>
                         </div>
                         <div className="min-w-0 flex-1">
@@ -1320,7 +1337,7 @@ const EnquiryDetail = () => {
                         </button>
                         <button
                           onClick={() => navigate('/dashboard')}
-                          className="w-full h-[50px] sm:h-[54px] !text-[15px] !rounded-2xl !border-[1.5px] !border-black relative overflow-hidden transition-all !duration-150 active:!translate-y-[4px] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] !bg-gray-200 hover:!bg-gray-50 !text-black !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] font-black touch-manipulation select-none"
+                          className="w-full h-[50px] sm:h-[54px] !text-[15px] !rounded-2xl !border-0 relative overflow-hidden transition-colors !duration-150 !bg-gray-200 hover:!bg-gray-50 active:!bg-gray-300 !text-black !shadow-none font-black touch-manipulation select-none"
                         >
                           <span className="relative z-10">View Dashboard</span>
                         </button>
