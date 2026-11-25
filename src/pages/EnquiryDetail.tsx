@@ -86,7 +86,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; mobileModel?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; petBreed?: string; petTraining?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string; audioBrand?: string; audioModel?: string; sneakerGender?: string; sneakerModel?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; mobileModel?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; petBreed?: string; petTraining?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string; audioBrand?: string; audioModel?: string; sneakerBrand?: string; sneakerAudience?: string; sneakerModel?: string; sneakerSize?: string } | null;
 }
 
 interface UserProfile {
@@ -1036,8 +1036,7 @@ const EnquiryDetail = () => {
                         d.laptopProcessor && { label: 'Processor', value: String(d.laptopProcessor), highlight: true },
                         d.laptopStorage && { label: 'Storage', value: String(d.laptopStorage), highlight: true },
                         d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },
-                        (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
-                        d.sneakerGender && { label: 'For', value: String(d.sneakerGender), highlight: true },
+                        (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), highlight: true },
                         d.sneakerModel && { label: 'Model', value: String(d.sneakerModel), highlight: true },
                         d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
                         d.repairType && { label: 'Service type', value: d.repairType, highlight: true },

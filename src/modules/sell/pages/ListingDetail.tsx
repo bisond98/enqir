@@ -989,7 +989,6 @@ export default function ListingDetail() {
                     furnishing: 'Furnishing',
                     sneakerBrand: 'Brand',
                     sneakerAudience: '',
-                    sneakerGender: 'For',
                     sneakerModel: 'Model',
                     sneakerSize: 'Size',
                     salaryPeriod: 'Salary',

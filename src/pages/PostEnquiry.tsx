@@ -61,7 +61,7 @@ const withinDescLimit = (text: string) => text.length <= MAX_DESC_CHARS && count
 import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
 import { getCarBrandLogoUrl } from "@/lib/carBrandLogos";
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from "@/modules/sell/categoryDetails";
-import { SNEAKER_GENDERS, getSneakerBrands, getSneakerModels } from "@/constants/sneakerCatalog";
+import { SNEAKER_AUDIENCES, getSneakerBrands, getSneakerModels } from "@/constants/sneakerCatalog";
 import {
   LAPTOP_BRAND_OPTIONS,
   LAPTOP_OTHER,
@@ -318,7 +318,6 @@ const DEADLINE_STEP = 5;
   const [watchDetails, setWatchDetails] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
   const [watchCustom, setWatchCustom] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
   // Sneaker details — gender leads, then only that gender's brands/models show.
-  const [sneakerGender, setSneakerGender] = useState<'' | 'Men' | 'Ladies' | 'Unisex' | 'Kids'>('');
   const [sneakerBrand, setSneakerBrand] = useState('');
   const [sneakerModel, setSneakerModel] = useState('');
   // Audience is derived from the gender (Kids swaps the size scale).
@@ -1183,7 +1182,6 @@ const DEADLINE_STEP = 5;
         if (d.petTraining) setPetTraining(d.petTraining);
         if (Array.isArray(d.cleaningTypes)) setCleaningTypes(d.cleaningTypes);
         if (d.sneakerAudience) setSneakerAudience(d.sneakerAudience);
-        if (d.sneakerGender) setSneakerGender(d.sneakerGender);
         if (d.sneakerModel) setSneakerModel(String(d.sneakerModel));
         if (d.sneakerSize) setSneakerSize(d.sneakerSize);
         if (d.referenceImageUrls) setReferenceImageUrls(d.referenceImageUrls);
@@ -1431,7 +1429,7 @@ const DEADLINE_STEP = 5;
             ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
             ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
               ...(sneakerBrand && { sneakerBrand }),
-              ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
+              ...((sneakerAudience || sneakerSize || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerModel && { sneakerModel }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...(jobDirection && { jobDirection }),
@@ -1608,7 +1606,7 @@ const DEADLINE_STEP = 5;
             ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
             ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
             ...(sneakerBrand && { sneakerBrand }),
-            ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
+            ...((sneakerAudience || sneakerSize || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerModel && { sneakerModel }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
@@ -1802,7 +1800,7 @@ const DEADLINE_STEP = 5;
             ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
             ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
             ...(sneakerBrand && { sneakerBrand }),
-            ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
+            ...((sneakerAudience || sneakerSize || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerModel && { sneakerModel }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
@@ -2021,7 +2019,7 @@ const DEADLINE_STEP = 5;
             ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
             ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
               ...(sneakerBrand && { sneakerBrand }),
-              ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
+              ...((sneakerAudience || sneakerSize || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerModel && { sneakerModel }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
@@ -2805,7 +2803,7 @@ const DEADLINE_STEP = 5;
           ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
           ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
           ...(sneakerBrand && { sneakerBrand }),
-          ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
+          ...((sneakerAudience || sneakerSize || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerModel && { sneakerModel }) }),
           ...(mobileDetails.ram && { ram: mobileDetails.ram }),
           ...(mobileDetails.memory && { memory: mobileDetails.memory }),
           ...(jobDirection && { jobDirection }),
@@ -4619,41 +4617,39 @@ const DEADLINE_STEP = 5;
                           </div>
                         );
                       })()}
-                      {/* Sneaker details — gender first, then only that gender's brands,
-                          models and size scale (Kids listings get kids sizes only). */}
+                      {/* Sneaker details — Adults or Kids first, then the brand,
+                          model and the size scale that matches (kids listings only
+                          offer kids models and kids sizes). */}
                       {selectedCategories.includes('sneakers') && (() => {
-                        const sizeList = sneakerAudience === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
-                        const brandOptions = sneakerGender
-                          ? getSneakerBrands(sneakerGender)
-                          : SNEAKER_BRANDS.filter((b) => b !== 'Other');
-                        const modelOptions = sneakerBrand ? getSneakerModels(sneakerBrand, sneakerGender) : [];
-                        const pillCls = (filled: boolean) => `w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${filled ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : 'border-black text-gray-900 text-[9px] font-semibold'}`;
+                        const audience = sneakerAudience || 'Adults';
+                        const sizeList = audience === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
+                        const brandOptions = getSneakerBrands(audience);
+                        const modelOptions = sneakerBrand ? getSneakerModels(sneakerBrand, audience) : [];
+                        const pillCls = (filled: boolean) => `w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-[8px] text-center [text-align-last:center] border-2 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${filled ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : 'border-black text-gray-900 text-[8px] font-semibold'}`;
                         return (
                           <div className="mb-6">
                             <div className="flex items-start justify-between gap-3">
-                              {/* Gender — drives the brand, model and size lists */}
+                              {/* Adults / Kids — drives the brand, model and size lists */}
                               <div className="flex-1 min-w-0 relative">
                                 <select
-                                  value={sneakerGender}
+                                  value={audience}
                                   onChange={(e) => {
-                                    const g = e.target.value as '' | 'Men' | 'Ladies' | 'Unisex' | 'Kids';
-                                    setSneakerGender(g);
+                                    setSneakerAudience(e.target.value as 'Adults' | 'Kids');
                                     setSneakerBrand('');
                                     setSneakerModel('');
                                     setSneakerSize('');
-                                    setSneakerAudience(g === 'Kids' ? 'Kids' : 'Adults');
                                   }}
-                                  aria-label="Sneaker gender"
-                                  className={pillCls(!!sneakerGender)}
+                                  aria-label="Sneaker audience"
+                                  className={pillCls(true)}
                                 >
-                                  <option value="">Gender</option>
-                                  {SNEAKER_GENDERS.map((g) => (
-                                    <option key={g} value={g}>{g}</option>
+                                  {SNEAKER_AUDIENCES.map((a) => (
+                                    <option key={a} value={a}>{a}</option>
                                   ))}
                                 </select>
                                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
-                              {/* Brand — only the brands that make this gender's shoes */}
+                              {/* Brand — every brand for adults, only kids makers for kids;
+                                  the picked brand shows its logo inside the button. */}
                               <div className="flex-[2] min-w-0 relative">
                                 {(() => {
                                   const sneakerLogo = sneakerBrand ? getSneakerBrandLogoUrl(sneakerBrand) : null;
@@ -4661,15 +4657,15 @@ const DEADLINE_STEP = 5;
                                     <>
                                       <select
                                         value={sneakerBrand}
-                                        disabled={!sneakerGender}
                                         onChange={(e) => { setSneakerBrand(e.target.value); setSneakerModel(''); }}
                                         aria-label="Sneaker brand"
-                                        className={`${pillCls(!!sneakerBrand)} ${!sneakerBrand && sneakerLogo ? 'pl-10' : ''} ${!sneakerGender ? 'bg-slate-100 text-gray-400' : ''}`}
+                                        className={`${pillCls(!!sneakerBrand)} ${sneakerLogo ? 'pl-10' : ''}`}
                                       >
                                         <option value="">Brand</option>
                                         {brandOptions.map((b) => (
                                           <option key={b} value={b}>{b}</option>
                                         ))}
+                                        <option value="Other">Other</option>
                                       </select>
                                       {sneakerLogo && (
                                         <img decoding="async" src={sneakerLogo}
@@ -4685,7 +4681,7 @@ const DEADLINE_STEP = 5;
                               </div>
                             </div>
                             <div className="flex items-start justify-between gap-3 mt-2">
-                              {/* Model — only this brand's models for the picked gender */}
+                              {/* Model — the brand's adult range, or its kids models */}
                               <div className="flex-[2] min-w-0 relative">
                                 <select
                                   value={sneakerModel}
@@ -4702,7 +4698,7 @@ const DEADLINE_STEP = 5;
                                 </select>
                                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
-                              {/* Size — kids scale for Kids, adult scale otherwise */}
+                              {/* Size — kids scale for Kids, adult scale for Adults */}
                               <div className="flex-1 min-w-0 relative">
                                 <select
                                   value={sneakerSize}

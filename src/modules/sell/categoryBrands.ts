@@ -3,14 +3,17 @@
 // 'Other' is always last so the free choice sits where people expect it.
 
 export const CAR_BRANDS = [
-  'Aston Martin', 'Audi', 'Audi RS', 'Bentley', 'BMW', 'BMW M', 'BYD',
-  'Chevrolet', 'Citroën', 'Daewoo', 'Datsun', 'Ferrari', 'Fiat', 'Force',
-  'Ford', 'Hindustan Motors', 'Honda', 'Hyundai', 'Isuzu', 'Jaguar', 'Jeep',
-  'Kia', 'Lamborghini', 'Land Rover', 'Lexus', 'Mahindra', 'Maruti Suzuki',
-  'Maserati', 'McLaren', 'Mercedes-AMG', 'Mercedes-Benz', 'MG', 'Mini',
-  'Mitsubishi', 'Nissan', 'Opel', 'Peugeot', 'Porsche', 'Premier', 'Renault',
-  'Rolls-Royce', 'San Motors', 'Skoda', 'Tata', 'Tesla', 'Toyota', 'VinFast',
-  'Volkswagen', 'Volvo', 'Other',
+  'Alfa Romeo', 'Aston Martin', 'Audi', 'Audi RS', 'Austin', 'Bentley', 'BMW',
+  'BMW M', 'Bugatti', 'BYD', 'Cadillac', 'Chevrolet', 'Chrysler', 'Citroën',
+  'Daewoo', 'Datsun', 'Dodge', 'Ferrari', 'Fiat', 'Force', 'Ford', 'GMC',
+  'Hillman', 'Hindustan Motors', 'Honda', 'Hummer', 'Hyundai', 'Ineos', 'Isuzu',
+  'Jaecoo', 'Jaguar', 'Jeep', 'Kia', 'Koenigsegg', 'Lamborghini', 'Land Rover',
+  'Lexus', 'Lotus', 'Mahindra', 'Maruti Suzuki', 'Maserati', 'Maybach',
+  'McLaren', 'Mercedes-AMG', 'Mercedes-Benz', 'MG', 'Mini', 'Mitsubishi',
+  'Morris', 'Nissan', 'Omoda', 'Opel', 'Pagani', 'Peugeot', 'Porsche', 'Premier',
+  'Renault', 'Rolls-Royce', 'Rover', 'Saab', 'San Motors', 'Shelby', 'Simca',
+  'Sipani', 'Skoda', 'Standard', 'Tata', 'Tesla', 'Toyota', 'Triumph', 'Vauxhall',
+  'VinFast', 'Volkswagen', 'Volvo', 'Wiesmann', 'Wolseley', 'Other',
 ];
 
 export const BIKE_BRANDS = [
@@ -30,10 +33,17 @@ export const BIKE_BRANDS = [
 export { MOBILE_BRANDS } from '@/constants/mobileCatalog';
 
 export const SNEAKER_BRANDS = [
-  'Adidas', 'Anta', 'Asics', 'Balenciaga', 'Bata', 'Brooks', 'Campus', 'Converse', 'Crocs', 'Fila',
-  'Hoka', 'Jordan', 'K-Swiss', 'Lacoste', 'Li-Ning', 'Merrell', 'Mizuno', 'New Balance', 'Nike', 'On Running',
-  'Puma', 'Reebok', 'Salomon', 'Saucony', 'Skechers', 'Sparx', 'Under Armour', 'Vans', 'Veja', 'Woodland', 'Yonex',
-  'Yeezy', 'Other',
+  '361 Degrees', 'Adidas', 'Alexander McQueen', 'Allbirds', 'Altra', 'Anta', "Arc'teryx", 'Ariat',
+  'Asics', 'Autry', 'Balenciaga', 'Bape', 'Bata', 'Blundstone', 'Brooks', 'Camper',
+  'Campus', 'CAT', 'Clarks', 'Columbia', 'Common Projects', 'Converse', 'Crocs', 'Danner',
+  'Diadora', 'Dr. Martens', 'Ecco', 'Fear of God', 'Fila', 'Gola', 'Golden Goose', 'Hey Dude',
+  'Hoka', 'Hummel', 'Inov-8', 'Joma', 'Jordan', 'K-Swiss', 'Karhu', 'Keds',
+  'Keen', 'La Sportiva', 'Lacoste', 'Le Coq Sportif', 'Li-Ning', 'Lotto', 'Lowa', 'Merrell',
+  'Mizuno', 'New Balance', 'Nike', 'No Bull', 'Off-White', 'On Running', 'Onitsuka Tiger', 'Palladium',
+  'Peak', 'Puma', 'Red Wing', 'Reebok', 'Rick Owens', 'Salomon', 'Saucony', 'Scarpa',
+  'Skechers', 'Solovair', 'Sorel', 'Sparx', 'Superga', 'The North Face', 'Timberland', 'Toms',
+  'Topo Athletic', 'UGG', 'Umbro', 'Under Armour', 'Vans', 'Veja', 'Vibram', 'Vivobarefoot',
+  'Wolverine', 'Woodland', 'Xero Shoes', 'Yeezy', 'Yonex', 'Other',
 ];
 
 // Commercial, construction and farm vehicle makers — trucks, lorries, pickups,

@@ -1,132 +1,362 @@
 // Sneaker catalogue — gender-first picker used by the Sell listing form and the
 // Post Enquiry form.
 //
-// The picker starts with the gender (Men / Ladies / Unisex / Kids). The brand
-// list then shows only brands that make shoes for that gender (unisex styles
-// count for Men and Ladies), and the model list only that gender's models —
-// unisex models are always included. Kids listings only offer kids sizes.
+// The picker starts with Adults or Kids. Adults gets every brand and its whole
+// grown-up range (men's, women's and unisex models together); Kids gets only the
+// brands that make kids shoes, only those kids models, and only kids sizes.
+//
+// Model lists carry the mainstream families, the hyped silhouettes and the
+// collaboration lines people actually search for (Travis Scott, Off-White,
+// A Ma Maniére, Salehe Bembury, Kiko Kostadinov …), so a rare pair is reachable
+// without typing it into "Other".
 
-export type SneakerGender = 'Men' | 'Ladies' | 'Unisex' | 'Kids';
+type GenderModels = { men: string[]; ladies: string[]; kids: string[]; unisex: string[] };
 
-export const SNEAKER_GENDERS: SneakerGender[] = ['Men', 'Ladies', 'Unisex', 'Kids'];
+const cuts = (family: string, suffixes: string[]) => suffixes.map((s) => `${family} ${s}`);
+const gens = (family: string, numbers: string[]) => numbers.map((n) => `${family} ${n}`);
 
-type GenderModels = {
-  men: string[];
-  ladies: string[];
-  kids: string[];
-  unisex: string[];
-};
-
-// Model names per brand. Every brand in SNEAKER_BRANDS has an entry, so no brand
-// is missing from the gender pickers.
 const SNEAKER_MODELS: Record<string, GenderModels> = {
   Nike: {
-    men: ['Air Force 1', "Air Force 1 '07", 'Air Max 90', 'Air Max 95', 'Air Max 97', 'Air Max 270', 'Air Max 720', 'Dunk Low', 'Dunk High', 'Cortez', 'Pegasus 40', 'Pegasus 41', 'Revolution 7', 'Downshifter 13', 'Vomero 17', 'Invincible 3', 'Court Vision Low'],
-    ladies: ['Air Force 1 Shadow', 'Air Max 270', 'Air Max 90', 'Dunk Low', 'Court Vision', 'Pegasus 40', 'Revolution 7', 'Waffle Debut', 'Daybreak', 'Blazer Low'],
-    kids: ['Air Force 1', 'Dunk Low', 'Court Borough Low', 'Revolution 7', 'Air Max 90', 'Star Runner'],
-    unisex: ['Dunk Low', "Air Force 1 '07", "Blazer Mid '77", 'Air Max 90', 'Cortez'],
+    men: [
+      ...cuts('Air Force 1', ['Low', 'Mid', 'High', '07', 'Shadow', 'React']),
+      ...cuts('Air Max', ['1', '90', '95', '97', '98', '270', '720', 'BW', 'Plus', 'TN', 'Tailwind 5', 'SC', 'Command', 'Impact 4', 'Terrascape 97']),
+      ...cuts('Dunk', ['Low', 'Mid', 'High', 'SB Low', 'SB High']),
+      ...cuts('Blazer', ['Low 77', 'Mid 77', 'High 77', 'Low Pro', 'Mid Pro']),
+      ...gens('Pegasus', ['38', '39', '40', '41', 'Trail 4', 'Plus']),
+      ...gens('Vomero', ['16', '17', '18']),
+      ...gens('Winflo', ['10', '11']),
+      ...gens('Downshifter', ['12', '13', '14']),
+      ...gens('Revolution', ['5', '6', '7']),
+      ...gens('Structure', ['24', '25']),
+      ...gens('Free Run', ['5', '6']),
+      ...cuts('Court Vision', ['Low', 'Mid', 'High']),
+      ...gens('LeBron', ['20', '21', '22']),
+      ...gens('KD', ['16', '17', '18']),
+      ...gens('Giannis Freak', ['5', '6']),
+      ...gens('Ja', ['1', '2']),
+      ...gens('G.T.', ['Cut 3', 'Hustle 3', 'Jump 2']),
+      ...gens('Zoom Fly', ['5', '6']),
+      ...gens('Alphafly', ['3']),
+      ...gens('Vaporfly', ['3']),
+      ...gens('Invincible', ['3']),
+      ...gens('Infinity Run', ['4']),
+      ...gens('Metcon', ['9']),
+      ...gens('Free Metcon', ['5']),
+      ...cuts('SB Janoski', ['OG', 'Slip']),
+      'Cortez', 'Daybreak', 'Waffle Debut', 'Waffle Trainer 2', 'Internationalist',
+      'P-6000', 'V2K Run', 'C1TY', 'Air Huarache', 'Air Presto', 'Air Zoom Spiridon',
+      'ACG Mountain Fly 2', 'ACG Lowcate',
+      // Collaborations and hype colourways
+      'Off-White x Nike Dunk Low', 'Off-White x Nike Air Force 1', 'Off-White x Nike Air Max 90',
+      'Travis Scott x Nike Air Max 1', 'Travis Scott x Nike Air Trainer 1',
+      'Sacai x Nike VaporWaffle', 'Sacai x Nike LDWaffle',
+      'Fragment x Nike Dunk High', 'Union x Nike Dunk Low', 'AMBUSH x Nike Dunk High',
+      'CDG x Nike Air Max 95', 'Supreme x Nike Air Force 1', 'Kaws x Nike Air Max 90',
+      'Ben & Jerry x Nike SB Dunk Low', 'Grateful Dead x Nike SB Dunk Low',
+      'Jarritos x Nike SB Dunk Low', 'Parra x Nike SB Dunk Low',
+      'Carhartt WIP x Nike SB Dunk Low', 'Civilist x Nike SB Dunk Low',
+      'Concepts x Nike SB Dunk Low', 'MSCHF x Nike Air Max 97',
+    ],
+    ladies: ['Air Force 1 Shadow', 'Air Force 1 Low (W)', 'Air Max 90 (W)', 'Air Max 270 (W)', 'Dunk Low (W)', 'Pegasus 41 (W)', 'Vomero 17 (W)', 'Air Zoom Bella 6', 'Alate', 'Motiva', 'Air Max Dia', 'Air Max Verona', 'Air Force 1 Sage Low', 'Court Legacy (W)', 'Waffle Debut (W)', 'Off-White x Nike Dunk Low (W)'],
+    kids: [
+      ...cuts('Air Force 1', ['Low', 'Mid', 'High']),
+      ...cuts('Dunk', ['Low', 'Mid']),
+      ...cuts('Court Borough', ['Low', 'Mid', 'Low 2']),
+      ...gens('Revolution', ['6', '7']),
+      ...gens('Pegasus', ['40', '41']),
+      'Star Runner 4', 'Air Max 90', 'Air Max 270', 'Air Max SC', 'Flex Runner 3',
+      'Tanrun', 'Waffle Debut', 'Cortez',
+    ],
+    unisex: [
+      ...cuts('Dunk', ['Low', 'Mid', 'High']),
+      ...cuts('Air Force 1', ['07', 'Low', 'Mid', 'High']),
+      ...cuts('Air Max', ['90', '95', '97']),
+      ...cuts('Blazer', ['Mid 77', 'Low 77']),
+      'Cortez', 'SB Dunk Low',
+      'Off-White x Nike Dunk Low', 'Travis Scott x Nike Air Max 1',
+      'Sacai x Nike VaporWaffle', 'Ben & Jerry x Nike SB Dunk Low',
+    ],
   },
   Adidas: {
-    men: ['Ultraboost Light', 'Ultraboost 24', 'NMD_R1', 'NMD_S1', 'Superstar', 'Stan Smith', 'Samba OG', 'Gazelle', 'Campus 00s', 'Forum Low', 'Duramo SL', 'Runfalcon 5', 'Adizero SL', 'Solarglide 6', 'Response 4'],
-    ladies: ['Ultraboost Light', 'Superstar', 'Stan Smith', 'Samba OG', 'Gazelle', 'Duramo SL', 'Runfalcon 5', 'Advantage', 'Grand Court'],
-    kids: ['Superstar', 'Stan Smith', 'Runfalcon 5', 'Tensaur Run', 'Duramo SL', 'RapidaZen'],
-    unisex: ['Samba OG', 'Gazelle', 'Superstar', 'Stan Smith', 'Campus 00s'],
+    men: [
+      ...gens('Ultraboost', ['1.0', '5.0', '22', '24', 'Light']),
+      ...cuts('NMD', ['R1', 'S1', 'V3']),
+      ...cuts('ZX', ['500', '700', '750', '8000', '1K Boost']),
+      'Superstar', 'Stan Smith', 'Samba OG', 'Samba Classic', 'Gazelle', 'Gazelle Indoor',
+      'Campus 00s', 'Campus 80s', 'Forum Low', 'Forum Mid', 'Forum High',
+      'Handball Spezial', 'SL 72', 'Country OG', 'Trimm Trab', 'Munchen', 'Dragon', 'Ozweego',
+      ...gens('Adizero', ['SL', 'Adios Pro 3', 'Boston 12', 'Takumi Sen 9']),
+      ...gens('Solarglide', ['6']),
+      ...gens('Supernova', ['Rise', 'Cushion 3']),
+      ...gens('Duramo', ['SL', 'Speed']),
+      ...gens('Runfalcon', ['4', '5']),
+      'Response 4', 'Advantage', 'Grand Court 2.0', 'VL Court 3.0', 'Breaknet 2.0',
+      'Hoops 3.0', 'Dame 9', 'Harden 8', 'Trae 3', 'Don Issue 6', 'AE 1',
+      'Predator Elite', 'Copa Pure 2', 'Barricade 13', 'Defiant Speed 2',
+      'Y-3 Qasa', 'Y-3 Kaiwa', 'Y-3 Runner 4D',
+      // Collaborations
+      'Bad Bunny x Campus', 'Bad Bunny x Forum Low', 'Bad Bunny x Response CL',
+      'Pharrell x NMD Hu', 'Pharrell x Samba', 'BAPE x Superstar', 'Gucci x Gazelle',
+      'Wales Bonner x Samba', 'Wales Bonner x Country OG', 'Sporty & Rich x Samba',
+      'Brain Dead x Samba', 'JJJJound x Samba', 'Clot x Superstar', 'Prada x Superstar',
+      'Balenciaga x Stan Smith', 'Sean Wotherspoon x ZX 8000', 'Kith x Samba',
+    ],
+    ladies: ['Gazelle Bold', 'Astir', 'Samba OG (W)', 'Campus 00s (W)', 'Superstar (W)', 'Stan Smith (W)', 'Ultraboost Light (W)', 'Solarglide 6 (W)', 'Wales Bonner x Samba (W)', 'Sporty & Rich x Samba'],
+    kids: [
+      'Superstar', 'Stan Smith', 'Runfalcon 5', 'Tensaur Run', 'Duramo SL', 'RapidaZen',
+      'Grand Court', 'Samba OG', 'Gazelle', 'Campus 00s', 'Ultraboost Light',
+    ],
+    unisex: [
+      'Samba OG', 'Gazelle', 'Gazelle Indoor', 'Superstar', 'Stan Smith',
+      'Campus 00s', 'Handball Spezial', 'SL 72', 'Country OG',
+      'Bad Bunny x Campus', 'Wales Bonner x Samba', 'Pharrell x NMD Hu',
+    ],
   },
   Puma: {
-    men: ['Suede Classic', 'Suede XL', 'RS-X', 'RS-Z', 'Smashic', 'Rider FV', 'Softride', 'Velocity Nitro 3', 'Deviate Nitro 3', 'Future Rider', 'Court Rider', 'Rebound Joy'],
-    ladies: ['Suede Classic', 'Carina', 'Carina Street', 'Softride', 'Smash', 'Cali', 'Rider FV'],
-    kids: ['Suede Classic', 'Smash', 'Carina', 'Rebound', 'RS-X'],
-    unisex: ['Suede Classic', 'RS-X', 'Rider FV'],
+    men: [
+      'Suede Classic', 'Suede XL', 'Suede Vintage', 'Clyde', 'Roma', 'Basket Classic',
+      ...cuts('RS', ['X', 'Z', 'Connect', 'Fast', 'X Efekt']),
+      'Rider FV', 'Rider Play', 'Future Rider', 'Wild Rider', 'CA Pro', 'Slipstream',
+      'Palermo', 'Speedcat', 'Mostro', 'GV Special', 'Court Rider', 'Rebound Joy',
+      'Softride Enzo', 'Softride Sophia', ...gens('Velocity Nitro', ['3']),
+      ...gens('Deviate Nitro', ['3']), ...gens('ForeverRun Nitro', ['2']),
+      ...gens('Magnify Nitro', ['2']), ...gens('Electrify Nitro', ['3']),
+      'MB.03', 'MB.02', 'All-Pro Nitro', 'Fusion Nitro', 'Smashic', 'X-Ray Speed',
+      'Rihanna Fenty x Creeper', 'A$AP Rocky x Mostro', 'A$AP Rocky x Inhale',
+      'Skepta x Suede', 'BAPE x Suede', 'J. Cole x RS-Dreamer',
+      'Rick and Morty x MB.01', 'Porsche x RS-X', 'BMW M x RS-X',
+    ],
+    ladies: ['Carina', 'Carina Street', 'Cali Dream', 'Suede XL (W)', 'Speedcat (W)', 'Rihanna Fenty x Creeper', 'Deviate Nitro 3 (W)'],
+    kids: [
+      'Suede Classic', 'Smash', 'Carina', 'Rebound', 'RS-X', 'Caven', 'Future Rider',
+      'Softride', 'Palermo', 'MB.03',
+    ],
+    unisex: ['Suede Classic', 'Suede XL', 'RS-X', 'Rider FV', 'Palermo', 'Speedcat', 'Mostro'],
   },
   Reebok: {
-    men: ['Classic Leather', 'Club C 85', 'Club C Revenge', 'Nano X4', 'Energen Tech', 'Floatride Energy 5', 'BB 4000', 'Court Advance'],
-    ladies: ['Classic Leather', 'Club C 85', 'Princess', 'Floatride Energy 5', 'Nano X4'],
-    kids: ['Classic Leather', 'Club C', 'Energen'],
-    unisex: ['Club C 85', 'Classic Leather'],
-  },
-  'New Balance': {
-    men: ['574', '550', '327', '530', '9060', '2002R', '1906R', '1080v13', '880v14', 'Fresh Foam X More'],
-    ladies: ['574', '327', '550', '530', '9060', 'Fresh Foam X', '1080v13'],
-    kids: ['574', '327', '530', '455'],
-    unisex: ['574', '327', '550', '2002R', '9060'],
-  },
-  Asics: {
-    men: ['Gel-Kayano 31', 'Gel-Kayano 30', 'Gel-Nimbus 26', 'Gel-Nimbus 25', 'GT-2000 13', 'GT-1000 13', 'Gel-Contend 9', 'Gel-Cumulus 26', 'Novablast 4', 'Superblast 2'],
-    ladies: ['Gel-Kayano 31', 'Gel-Nimbus 26', 'GT-2000 13', 'Gel-Contend 9', 'Gel-Cumulus 26', 'Novablast 4'],
-    kids: ['Gel-Contend', 'Pre Excite', 'Gel-Noosa Tri'],
-    unisex: ['Gel-Kayano 31', 'Novablast 4'],
+    men: ['Classic Leather', 'Club C 85', 'Club C Revenge', 'Club C Vintage', 'Nano X4',
+      'Energen Tech', 'Floatride Energy 5', 'BB 4000', 'Court Advance', 'Question Mid',
+      'Answer IV', 'Instapump Fury', 'Shaq Attaq', 'Kamikaze II',
+      'Reebok x Palace Club C', 'Reebok x Maison Margiela Classic Leather',
+      'Reebok x Cardi B Club C', 'Reebok x JJJJound Club C'],
+    ladies: ['Princess', 'Club C 85 (W)', 'Classic Leather (W)', 'Floatride Energy 5 (W)', 'Club C Cardi'],
+    kids: ['Classic Leather', 'Club C', 'Energen', 'Nano X4'],
+    unisex: ['Club C 85', 'Classic Leather', 'Instapump Fury', 'Reebok x Palace Club C'],
   },
   Jordan: {
-    men: ['Air Jordan 1 Low', 'Air Jordan 1 Mid', 'Air Jordan 1 High OG', 'Air Jordan 3', 'Air Jordan 4', 'Air Jordan 5', 'Air Jordan 11 Low', 'Air Jordan 12', 'Luka 3', 'Tatum 2', 'Zion 3'],
-    ladies: ['Air Jordan 1 Low', 'Air Jordan 1 Mid', 'Air Jordan 4', 'Luka 3'],
-    kids: ['Air Jordan 1 Low', 'Air Jordan 1 Mid', 'Air Jordan 4', 'Luka 3'],
-    unisex: ['Air Jordan 1 Low', 'Air Jordan 1 Mid'],
+    men: [
+      ...cuts('Air Jordan 1', ['Low', 'Mid', 'High', 'High OG', 'Low OG', 'Zoom CMFT', 'Element', 'Elevate', 'KO']),
+      ...cuts('Air Jordan 2', ['Low', 'Mid', 'High']),
+      ...cuts('Air Jordan 3', ['Retro', 'Low']),
+      ...cuts('Air Jordan 4', ['Retro', 'RM']),
+      ...cuts('Air Jordan 5', ['Retro', 'Low']),
+      ...cuts('Air Jordan 6', ['Retro', 'Low']),
+      ...cuts('Air Jordan 7', ['Retro']),
+      ...cuts('Air Jordan 8', ['Retro']),
+      ...cuts('Air Jordan 9', ['Retro']),
+      ...cuts('Air Jordan 10', ['Retro']),
+      ...cuts('Air Jordan 11', ['Retro', 'Low', 'IE Low']),
+      ...cuts('Air Jordan 12', ['Retro', 'Low']),
+      ...cuts('Air Jordan 13', ['Retro', 'Low']),
+      ...cuts('Air Jordan 14', ['Retro', 'Low']),
+      ...gens('Luka', ['1', '2', '3', '4']),
+      ...gens('Tatum', ['1', '2', '3']),
+      ...gens('Zion', ['1', '2', '3', '4']),
+      'Why Not Zer0.6', 'CP3.XVI', 'Air Jordan Spizike Low', 'Jordan Super.Fly 5',
+      'Jumpman MVP', 'Air Jordan True Flight',
+      // Travis Scott / Cactus Jack and the rest of the collab shelf
+      'Travis Scott x Air Jordan 1 Low', 'Travis Scott x Air Jordan 1 High',
+      'Travis Scott x Air Jordan 4', 'Travis Scott x Air Jordan 6',
+      'Travis Scott x Air Jordan 11 Low', 'Travis Scott x Air Jordan 33',
+      'Travis Scott x Jumpman Jack',
+      'Off-White x Air Jordan 1', 'Off-White x Air Jordan 4', 'Off-White x Air Jordan 5',
+      'Dior x Air Jordan 1 Low', 'Dior x Air Jordan 1 High',
+      'A Ma Maniére x Air Jordan 1', 'A Ma Maniére x Air Jordan 3',
+      'A Ma Maniére x Air Jordan 4', 'A Ma Maniére x Air Jordan 5',
+      'Union x Air Jordan 1', 'Union x Air Jordan 2', 'Union x Air Jordan 4',
+      'Fragment x Air Jordan 1', 'Trophy Room x Air Jordan 1', 'SoleFly x Air Jordan 1',
+      'Aleali May x Air Jordan 1', 'J Balvin x Air Jordan 1', 'J Balvin x Air Jordan 3',
+      'DJ Khaled x Air Jordan 3', 'Doernbecher Air Jordan 1',
+      'PSG x Air Jordan 1', 'PSG x Air Jordan 4', 'Supreme x Air Jordan 5',
+    ],
+    ladies: ['Air Jordan 1 Elevate Low', 'Air Jordan 1 Elevate High', 'Air Jordan 1 Brooklyn', 'Air Jordan 1 Low (W)', 'Air Jordan 1 Mid (W)', 'Air Jordan 4 Retro (W)', 'Air Jordan 11 Low (W)', 'Luka 3 (W)', 'A Ma Maniére x Air Jordan 3 (W)'],
+    kids: [
+      ...cuts('Air Jordan 1', ['Low', 'Mid', 'High OG']),
+      ...cuts('Air Jordan 3', ['Retro']),
+      ...cuts('Air Jordan 4', ['Retro']),
+      ...cuts('Air Jordan 11', ['Low']),
+      'Luka 3', 'Tatum 2', 'Zion 3', 'Jordan Spizike Low',
+    ],
+    unisex: [
+      ...cuts('Air Jordan 1', ['Low', 'Mid', 'High OG', 'Low OG']),
+      ...cuts('Air Jordan 4', ['Retro']),
+      ...cuts('Air Jordan 11', ['Low', 'Retro']),
+      'Travis Scott x Air Jordan 1 Low', 'Travis Scott x Air Jordan 4',
+      'Off-White x Air Jordan 1', 'A Ma Maniére x Air Jordan 3',
+    ],
+  },
+  'New Balance': {
+    men: [
+      ...gens('', ['574', '550', '530', '327', '9060', '2002R', '1906R', '1080v13', '880v14',
+        '990v6', '991', '993', '1500', '237', '57/40', 'XC-72', 'WRPD Runner', '1000',
+        'Fresh Foam X More', 'FuelCell Rebel v4', 'FuelCell SuperComp Trainer v2']),
+      'Salehe Bembury x 2002R', 'Joe Freshgoods x 990', 'Aimé Leon Dore x 550',
+      'Aimé Leon Dore x 990v4', 'Aimé Leon Dore x 993', 'JJJJound x 990v3',
+      'Kith x 990v3', 'Stone Island x 574', 'Bodega x 9060', 'Ronnie Fieg x 993',
+      'Teddy Santis x 990v6', 'Paperboy x 992', 'Size? x 550',
+    ],
+    ladies: ['574 (W)', '327 (W)', '550 (W)', '530 (W)', '9060 (W)', '1080v13 (W)', 'Fresh Foam X (W)', 'Aimé Leon Dore x 550 (W)'],
+    kids: ['574', '327', '530', '455', 'Fresh Foam', 'FuelCell'],
+    unisex: ['574', '327', '550', '2002R', '9060', '1906R', '993', 'Aimé Leon Dore x 550'],
+  },
+  Asics: {
+    men: [
+      ...gens('Gel-Kayano', ['14', '30', '31']),
+      ...gens('Gel-Nimbus', ['25', '26']),
+      ...gens('GT-2000', ['12', '13']),
+      ...gens('GT-1000', ['12', '13']),
+      ...gens('Gel-Cumulus', ['25', '26']),
+      ...gens('Gel-Contend', ['8', '9']),
+      ...gens('Gel-Venture', ['9', '10']),
+      ...gens('Novablast', ['4']),
+      ...gens('Superblast', ['2']),
+      ...gens('Metaspeed', ['Sky+', 'Edge+']),
+      ...gens('Gel-Trabuco', ['12']),
+      'Gel-Quantum 180', 'Gel-Quantum Kinetic', 'Gel-1130', 'Gel-Kahana 8',
+      'Jolt 5', 'Excite 10', 'Japan S', 'Japan S Sportstyle', 'Skycourt',
+      'Kiko Kostadinov x Gel-Kayano 14', 'Kiko Kostadinov x Gel-Quantum',
+      'Cecilie Bahnsen x Gel-Quantum', 'JJJJound x Gel-Kayano 14',
+      'Bodega x Gel-Kayano 14', 'Awake NY x Gel-Kayano 14', 'Kith x Gel-Kayano 14',
+      'GmbH x Gel-Kayano', 'Papergirl x Gel-1130',
+    ],
+    ladies: ['Gel-Kayano 31 (W)', 'Gel-Nimbus 26 (W)', 'GT-2000 13 (W)', 'Gel-Cumulus 26 (W)', 'Novablast 4 (W)', 'Gel-1130 (W)', 'Japan S (W)', 'Cecilie Bahnsen x Gel-Quantum'],
+    kids: [
+      'Gel-Contend', 'Pre Excite', 'Gel-Noosa Tri', 'Gel-Kayano', 'Gel-Cumulus',
+      'Japan S', 'Contend 8',
+    ],
+    unisex: [
+      ...gens('Gel-Kayano', ['31']),
+      ...gens('Novablast', ['4']),
+      'Gel-1130', 'Japan S', 'Gel-Quantum 180', 'Kiko Kostadinov x Gel-Kayano 14',
+    ],
   },
   Converse: {
-    men: ['Chuck Taylor All Star High', 'Chuck Taylor All Star Low', 'Chuck 70 High', 'Chuck 70 Low', 'One Star', 'Run Star Hike', 'Run Star Motion', 'Jack Purcell', 'G4'],
-    ladies: ['Chuck Taylor All Star', 'Chuck 70', 'Run Star Hike', 'Run Star Motion', 'One Star', 'Dainty'],
-    kids: ['Chuck Taylor All Star', 'Chuck 70', 'Run Star'],
-    unisex: ['Chuck 70', 'Chuck Taylor All Star'],
+    men: [
+      ...cuts('Chuck Taylor All Star', ['High', 'Low', '70 High', '70 Low', 'CX']),
+      'One Star', 'One Star Pro', 'Run Star Hike', 'Run Star Motion', 'Run Star Legacy CX',
+      'Jack Purcell', 'G4', 'Pro Leather', 'Weapon CX', 'Star Player 76',
+      'Chuck 70 Marquis', 'All Star BB Shift',
+      'Comme des Garçons x Chuck 70', 'Off-White x Chuck 70', 'CDG Play x Chuck 70',
+      'Supreme x Chuck Taylor', 'Rick Owens x Chuck 70', 'Tyler the Creator x Chuck 70',
+      'JW Anderson x Chuck 70', 'Carhartt x Chuck 70',
+    ],
+    ladies: ['Chuck 70 (W)', 'Chuck Taylor All Star (W)', 'Run Star Hike (W)', 'Dainty', 'JW Anderson x Chuck 70 (W)'],
+    kids: [
+      'Chuck Taylor All Star', 'Chuck 70', 'Run Star', 'One Star', 'Star Player 76',
+      'Chuck Taylor All Star High',
+    ],
+    unisex: ['Chuck 70', 'Chuck Taylor All Star', 'Jack Purcell', 'One Star',
+      'Comme des Garçons x Chuck 70', 'Off-White x Chuck 70'],
   },
   Vans: {
-    men: ['Old Skool', 'Authentic', 'Knu Skool', 'Sk8-Hi', 'Sk8-Low', 'Era', 'UltraRange EXO', 'Slip-On', 'Rowan', 'Gilbert Crockett'],
-    ladies: ['Old Skool', 'Authentic', 'Knu Skool', 'Slip-On', 'Era', 'Sk8-Hi'],
-    kids: ['Old Skool', 'Authentic', 'Slip-On', 'Sk8-Hi'],
-    unisex: ['Old Skool', 'Authentic', 'Slip-On', 'Sk8-Hi'],
+    men: [
+      ...cuts('Old Skool', ['', 'Platform', 'Overt CC']),
+      'Authentic', 'Authentic SF', 'Knu Skool', 'Sk8-Hi', 'Sk8-Low', 'Era', 'Slip-On',
+      'UltraRange EXO', 'UltraRange Neo VR3', 'Rowan', 'Gilbert Crockett', 'Kyle Walker',
+      'Half Cab', 'Mte Sk8-Hi', 'Wayvee', 'Varix WC', 'Sport Low',
+      'Supreme x Old Skool', 'Fear of God x Era', 'WTAPS x Old Skool', 'BAPE x Old Skool',
+      'Kith x Sk8-Hi', 'AAPE x Old Skool', 'Palace x Sk8-Hi', 'Billie Eilish x Old Skool',
+    ],
+    ladies: ['Old Skool (W)', 'Old Skool Platform', 'Authentic (W)', 'Slip-On (W)', 'Sk8-Hi (W)', 'Ward', 'Billie Eilish x Old Skool'],
+    kids: ['Old Skool', 'Authentic', 'Slip-On', 'Sk8-Hi', 'Ward', 'Asher'],
+    unisex: ['Old Skool', 'Authentic', 'Slip-On', 'Sk8-Hi', 'Knu Skool', 'Half Cab',
+      'Supreme x Old Skool'],
   },
   Skechers: {
-    men: ['Go Walk 7', 'Go Walk 6', "D'Lux Walker", 'Arch Fit', 'Max Cushioning', 'Summits', 'Uno', 'Work Relaxed Fit'],
-    ladies: ['Go Walk 7', "D'Lites", 'Arch Fit', 'Uno', 'Summits', 'Bobs', 'Max Cushioning'],
-    kids: ['S-Lights', 'Go Run', 'Uno', 'Twinkle Toes'],
-    unisex: ['Go Walk 7'],
+    men: [
+      ...gens('Go Walk', ['6', '7', 'Arch Fit 2.0']),
+      'Go Run Ride 11', 'Go Run Razor 4', "D'Lux Walker", 'Arch Fit 2.0',
+      'Max Cushioning Elite', 'Max Cushioning Premier', 'Summits', 'Uno', 'Uno Stand On Air',
+      'Work Relaxed Fit', 'After Burn', 'Vigor 3.0',
+    ],
+    ladies: [
+      ...gens('Go Walk', ['6', '7', 'Joy']),
+      "D'Lites", "D'Lites Fresh Start", 'Arch Fit 2.0', 'Uno', 'Summits', 'Bobs',
+      'Max Cushioning Elite', 'Go Run Ride 11', 'Cleo', 'Breathe-Easy',
+    ],
+    kids: ['S-Lights', 'Go Run', 'Uno', 'Twinkle Toes', 'Wavy Beams', 'Heart Lights'],
+    unisex: ['Go Walk 7', 'Arch Fit 2.0'],
   },
   'Under Armour': {
-    men: ['HOVR Phantom 3', 'HOVR Sonic 6', 'Charged Assert 10', 'Charged Rogue 4', 'Curry Flow 11', 'Curry 3Z', 'TriBase Reign 5', 'Project Rock 6'],
-    ladies: ['HOVR Phantom 3', 'HOVR Sonic 6', 'Charged Assert', 'Flow Dynamic'],
-    kids: ['Charged Rogue', 'Curry 3Z', 'Charged Assert'],
-    unisex: ['HOVR Sonic 6'],
+    men: ['HOVR Phantom 3', 'HOVR Sonic 6', 'HOVR Machina 3', 'Charged Assert 10',
+      'Charged Rogue 4', 'Charged Pursuit 3', 'Curry Flow 11', 'Curry 3Z', 'Curry 4 Flotro',
+      'TriBase Reign 5', 'Project Rock 6', 'Project Rock BSR 4'],
+    ladies: ['HOVR Phantom 3', 'HOVR Sonic 6', 'Charged Assert', 'Flow Dynamic',
+      'Charged Rogue 4', 'Project Rock BSR 4'],
+    kids: ['Charged Rogue', 'Curry 3Z', 'Assert', 'Surge 3'],
+    unisex: ['HOVR Sonic 6', 'Curry Flow 11'],
   },
   'On Running': {
-    men: ['Cloud 5', 'Cloud 5 Waterproof', 'Cloudmonster', 'Cloudmonster 2', 'Cloudswift 3', 'Cloudrunner 2', 'Cloudsurfer 7', 'Cloudvista 2', 'Cloudwander'],
-    ladies: ['Cloud 5', 'Cloudswift 3', 'Cloudrunner 2', 'Cloudsurfer 7', 'Cloud X 3'],
-    kids: ['Cloud Play', 'Cloudhero'],
-    unisex: ['Cloud 5', 'Cloudmonster'],
+    men: ['Cloud 5', 'Cloud 5 Waterproof', 'Cloudmonster', 'Cloudmonster 2', 'Cloudswift 3',
+      'Cloudrunner 2', 'Cloudsurfer 7', 'Cloudvista 2', 'Cloudwander', 'Cloud X 3',
+      'Cloud X 4', 'Cloudtilt', 'Cloudboom Echo 3', 'Cloudultra 2'],
+    ladies: ['Cloud 5', 'Cloudswift 3', 'Cloudrunner 2', 'Cloudsurfer 7', 'Cloud X 3',
+      'Cloud X 4', 'Cloudtilt', 'Cloud 5 Waterproof'],
+    kids: ['Cloud Play', 'Cloudhero', 'Cloud Sky'],
+    unisex: ['Cloud 5', 'Cloudmonster', 'Cloudtilt'],
   },
   Hoka: {
-    men: ['Clifton 9', 'Clifton 10', 'Bondi 8', 'Bondi 9', 'Arahi 7', 'Gaviota 5', 'Mach 6', 'Speedgoat 6', 'Rincon 4', 'Kaha 2'],
-    ladies: ['Clifton 9', 'Bondi 8', 'Arahi 7', 'Mach 6', 'Rincon 4', 'Gaviota 5'],
-    kids: ['Clifton 9', 'Torrent'],
-    unisex: ['Clifton 9', 'Bondi 8', 'Speedgoat 6'],
+    men: ['Clifton 9', 'Clifton 10', 'Bondi 8', 'Bondi 9', 'Arahi 7', 'Gaviota 5',
+      'Mach 6', 'Speedgoat 6', 'Rincon 4', 'Kaha 2', 'Mafate Speed 4', 'Tecton X 2',
+      'Skyward X', 'Challenger 7', 'Transport', 'Hopara'],
+    ladies: ['Clifton 9', 'Clifton 10', 'Bondi 8', 'Arahi 7', 'Mach 6', 'Rincon 4',
+      'Gaviota 5', 'Speedgoat 6', 'Skyward X', 'Transport'],
+    kids: ['Clifton 9', 'Torrent', 'Speedgoat 5'],
+    unisex: ['Clifton 9', 'Bondi 8', 'Speedgoat 6', 'Hopara'],
   },
   Salomon: {
-    men: ['Speedcross 6', 'Speedcross Peak', 'XT-6', 'XT-4', 'XT-Quest', 'Ultra Glide 2', 'Sense Ride 5', 'Pulsar Trail', 'ACS Pro'],
-    ladies: ['Speedcross 6', 'XT-6', 'Ultra Glide 2', 'Sense Ride 5', 'Pulsar Trail'],
-    kids: ['Speedcross', 'XT-6'],
-    unisex: ['XT-6', 'Speedcross 6', 'ACS Pro'],
+    men: ['Speedcross 6', 'Speedcross Peak', 'XT-6', 'XT-4', 'XT-Quest', 'XT-Wings 2',
+      'Ultra Glide 2', 'Sense Ride 5', 'Pulsar Trail', 'ACS Pro', 'XA Pro 3D',
+      'S/Lab Genesis', 'Thundercross', 'Genesis'],
+    ladies: ['Speedcross 6', 'XT-6', 'Ultra Glide 2', 'Sense Ride 5', 'Pulsar Trail',
+      'XA Pro 3D', 'Thundercross'],
+    kids: ['Speedcross', 'XT-6', 'XA Pro 3D'],
+    unisex: ['XT-6', 'Speedcross 6', 'ACS Pro', 'XA Pro 3D'],
   },
   Brooks: {
-    men: ['Ghost 16', 'Ghost 15', 'Adrenaline GTS 24', 'Adrenaline GTS 23', 'Glycerin 22', 'Glycerin 21', 'Launch 10', 'Levitate 6', 'Caldera 7', 'Beast 24'],
-    ladies: ['Ghost 16', 'Ghost 15', 'Adrenaline GTS 24', 'Adrenaline GTS 23', 'Glycerin 21', 'Launch 10', 'Trace 3'],
-    kids: ['Ghost', 'Adrenaline'],
-    unisex: ['Ghost 16'],
+    men: ['Ghost 16', 'Ghost 15', 'Ghost Max 2', 'Adrenaline GTS 24', 'Adrenaline GTS 23',
+      'Glycerin 22', 'Glycerin 21', 'Glycerin Max', 'Launch 10', 'Levitate 6',
+      'Caldera 7', 'Beast 24', 'Hyperion 2', 'Aurora BL 2'],
+    ladies: ['Ghost 16', 'Ghost 15', 'Ghost Max 2', 'Adrenaline GTS 24', 'Adrenaline GTS 23',
+      'Glycerin 21', 'Launch 10', 'Trace 3', 'Hyperion 2', 'Aurora BL 2'],
+    kids: ['Ghost', 'Adrenaline', 'Launch'],
+    unisex: ['Ghost 16', 'Caldera 7'],
   },
   Saucony: {
-    men: ['Endorphin Speed 3', 'Endorphin Pro 3', 'Kinvara 15', 'Kinvara 14', 'Ride 17', 'Ride 16', 'Guide 16', 'Triumph 21', 'Peregrine 13', 'Xodus Ultra 2'],
-    ladies: ['Kinvara 14', 'Ride 16', 'Guide 16', 'Endorphin Speed 3', 'Triumph 21'],
-    kids: ['Kinvara', 'Ride'],
-    unisex: ['Endorphin Speed 3'],
+    men: ['Endorphin Speed 3', 'Endorphin Speed 4', 'Endorphin Pro 3', 'Endorphin Elite',
+      'Kinvara 15', 'Kinvara 14', 'Ride 17', 'Ride 16', 'Guide 16', 'Triumph 21',
+      'Triumph 22', 'Peregrine 13', 'Xodus Ultra 2', 'Hurricane 24'],
+    ladies: ['Kinvara 15', 'Kinvara 14', 'Ride 16', 'Guide 16', 'Endorphin Speed 3',
+      'Triumph 21', 'Peregrine 13'],
+    kids: ['Kinvara', 'Ride', 'Cohesion'],
+    unisex: ['Endorphin Speed 3', 'Triumph 21'],
   },
   Mizuno: {
-    men: ['Wave Rider 28', 'Wave Rider 27', 'Wave Inspire 20', 'Wave Sky 7', 'Wave Rebellion', 'Wave Daichi 8', 'Wave Mujin 9', 'Wave Prophecy 12'],
-    ladies: ['Wave Rider 27', 'Wave Inspire 20', 'Wave Sky 7', 'Wave Rebellion'],
-    kids: ['Wave Rider', 'Wave Twister'],
-    unisex: ['Wave Rider 27'],
+    men: ['Wave Rider 28', 'Wave Rider 27', 'Wave Inspire 20', 'Wave Sky 7',
+      'Wave Rebellion', 'Wave Rebellion Pro 2', 'Wave Daichi 8', 'Wave Mujin 9',
+      'Wave Prophecy 12', 'Wave Neo Wind', 'Contend 9'],
+    ladies: ['Wave Rider 27', 'Wave Inspire 20', 'Wave Sky 7', 'Wave Rebellion',
+      'Wave Neo Wind', 'Contend 9'],
+    kids: ['Wave Rider', 'Wave Twister', 'Contend'],
+    unisex: ['Wave Rider 27', 'Wave Prophecy 12'],
   },
   Fila: {
-    men: ['Disruptor 2', 'Disruptor Premium', 'Ray Tracer', 'Memory Workshift', 'Original Fitness', 'Grant Hill 2'],
-    ladies: ['Disruptor 2', 'Ray Tracer', 'Memory Breaker', 'Original Fitness'],
-    kids: ['Disruptor 2', 'Ray Tracer'],
-    unisex: ['Disruptor 2'],
+    men: ['Disruptor 2', 'Disruptor Premium', 'Ray Tracer', 'Memory Workshift',
+      'Original Fitness', 'Grant Hill 2', 'Terraform', 'V94M'],
+    ladies: ['Disruptor 2', 'Ray Tracer', 'Memory Breaker', 'Original Fitness',
+      'Disruptor Premium', 'V94M'],
+    kids: ['Disruptor 2', 'Ray Tracer', 'Original Fitness'],
+    unisex: ['Disruptor 2', 'Ray Tracer'],
   },
   Campus: {
     men: ['Campus First', 'Campus Lloyd', 'Campus Bond', 'Campus Maximus', 'Campus Zoe'],
@@ -141,10 +371,13 @@ const SNEAKER_MODELS: Record<string, GenderModels> = {
     unisex: ['SM-421'],
   },
   Crocs: {
-    men: ['Classic Clog', 'LiteRide 360', 'Swiftwater', 'Baya Clog', 'Classic Slides'],
-    ladies: ['Classic Clog', 'LiteRide 360', 'Kadee', 'Baya Clog', 'Brooklyn'],
-    kids: ["Kids' Classic Clog", "Kids' Baya", "Kids' LiteRide"],
-    unisex: ['Classic Clog', 'LiteRide 360', 'Baya Clog'],
+    men: ['Classic Clog', 'LiteRide 360', 'Swiftwater', 'Baya Clog', 'Classic Slides',
+      'Echo Clog', 'Mellow Clog', 'Salehe Bembury x Pollex Clog'],
+    ladies: ['Classic Clog', 'LiteRide 360', 'Kadee', 'Baya Clog', 'Brooklyn',
+      'Echo Clog', 'Mellow Clog'],
+    kids: ["Kids' Classic Clog", "Kids' Baya", "Kids' LiteRide", "Kids' Echo"],
+    unisex: ['Classic Clog', 'LiteRide 360', 'Baya Clog', 'Echo Clog',
+      'Salehe Bembury x Pollex Clog'],
   },
   Bata: {
     men: ['Power Walker', 'Boss-Grip', 'Bata Tennis', 'North Star', 'Wind'],
@@ -159,8 +392,8 @@ const SNEAKER_MODELS: Record<string, GenderModels> = {
     unisex: ['GC 0951'],
   },
   Lacoste: {
-    men: ['Carnaby', 'Powercourt', 'L001', 'Rene', 'T-Clip', 'Court-Drive'],
-    ladies: ['Carnaby', 'L001', 'Rene', 'T-Clip'],
+    men: ['Carnaby', 'Powercourt', 'L001', 'Rene', 'T-Clip', 'Court-Drive', 'Arena'],
+    ladies: ['Carnaby', 'L001', 'Rene', 'T-Clip', 'Arena'],
     kids: ['Carnaby', 'T-Clip'],
     unisex: ['Carnaby'],
   },
@@ -168,23 +401,27 @@ const SNEAKER_MODELS: Record<string, GenderModels> = {
     men: [],
     ladies: [],
     kids: ['Boost 350 V2 Kids', 'Foam RNNR Kids', 'Slide Kids'],
-    unisex: ['Boost 350 V2', 'Boost 350 V2 CMPCT', 'Slide', 'Foam RNNR', '500', '700', 'QNTM'],
+    unisex: ['Boost 350 V2', 'Boost 350 V2 CMPT', 'Boost 350 V2 CMPCT', 'Boost 380',
+      'Boost 700', 'Boost 700 V2', '500', '500 High', 'Slide', 'Foam RNNR', 'QNTM',
+      'Desert Boot', 'Powerphase'],
   },
   Anta: {
-    men: ['KT 9', 'KT 8', 'Flash 6', 'Shock The Game', 'C202 GT'],
+    men: ['KT 9', 'KT 8', 'Flash 6', 'Shock The Game', 'C202 GT', 'GH 4', 'GH 5'],
     ladies: ['Anta Running', 'Anta Sneaker'],
     kids: ['Anta Kids'],
     unisex: ['Flash 6'],
   },
   'Li-Ning': {
-    men: ['Way of Wade 11', 'Way of Wade All City 12', 'Sonic 11', 'Feidian 4', 'Yueying 4'],
+    men: ['Way of Wade 11', 'Way of Wade All City 12', 'Way of Wade 10',
+      'Sonic 11', 'Feidian 4', 'Yueying 4', 'JB 3'],
     ladies: ['Li-Ning Running', 'Li-Ning Casual'],
     kids: ['Li-Ning Kids'],
     unisex: ['Feidian 4'],
   },
   Merrell: {
-    men: ['Moab 3', 'Moab Speed 2', 'Hydro Moc', 'Agility Peak 5', 'Trail Glove 7'],
-    ladies: ['Moab 3', 'Antora 3', 'Hydro Moc'],
+    men: ['Moab 3', 'Moab Speed 2', 'Hydro Moc', 'Agility Peak 5', 'Trail Glove 7',
+      'Moab Flight', 'Nova 3'],
+    ladies: ['Moab 3', 'Antora 3', 'Hydro Moc', 'Agility Peak 5', 'Nova 3'],
     kids: ['Moab', 'Bare Steps'],
     unisex: ['Hydro Moc'],
   },
@@ -198,61 +435,363 @@ const SNEAKER_MODELS: Record<string, GenderModels> = {
     men: [],
     ladies: [],
     kids: ['V-10 Kids'],
-    unisex: ['V-10', 'V-12', 'Campo', 'Esplar'],
+    unisex: ['V-10', 'V-12', 'Campo', 'Esplar', 'Campo Leather', 'Venturi'],
   },
   Balenciaga: {
     men: [],
     ladies: ['Track', 'Speed Trainer'],
     kids: [],
-    unisex: ['Triple S', 'Speed Trainer', 'Track', 'Drive'],
+    unisex: ['Triple S', 'Speed Trainer', 'Track', 'Drive', 'Defender', '3XL', 'Runner'],
   },
   Yonex: {
     men: [],
     ladies: [],
     kids: ['Power Cushion Kids'],
-    unisex: ['Power Cushion 65', 'Power Cushion Eclipsion', 'Aerus'],
+    unisex: ['Power Cushion 65', 'Power Cushion Eclipsion', 'Aerus', 'Power Cushion Comfort'],
+  },
+  'Onitsuka Tiger': {
+    men: [],
+    ladies: [],
+    kids: ['Mexico 66 Kids'],
+    unisex: ['Mexico 66', 'Mexico 66 Slip-On', 'Corsair', 'California 78', 'Serrano',
+      'Dentigre', 'Tai Chi', 'Delegation EX'],
+  },
+  Diadora: {
+    men: ['N9000', 'N9002', 'V7000', 'B.Elite', 'Mi Basket', 'Camaro', 'Game P', 'Borg Elite'],
+    ladies: ['N9000', 'V7000', 'Mi Basket', 'Game P'],
+    kids: ['N9000', 'Game P'],
+    unisex: ['N9000', 'B.Elite'],
+  },
+  Karhu: {
+    men: ['Fusion 2.0', 'Aria', 'Synchron', 'Albany', 'Legacy 96', 'Ikoni Ortix'],
+    ladies: ['Fusion 2.0', 'Aria', 'Albany'],
+    kids: [],
+    unisex: ['Fusion 2.0', 'Aria'],
+  },
+  Autry: {
+    men: ['Medalist Low', 'Medalist Mid', 'Dallas Low', 'Reelwind Low', 'CLC Low'],
+    ladies: ['Medalist Low', 'Dallas Low', 'CLC Low'],
+    kids: [],
+    unisex: ['Medalist Low'],
+  },
+  'Common Projects': {
+    men: ['Achilles Low', 'Achilles Retro', 'Original Achilles', 'Track Classic', 'BBall Low'],
+    ladies: ['Achilles Low', 'Original Achilles'],
+    kids: [],
+    unisex: ['Achilles Low', 'Original Achilles'],
+  },
+  'Golden Goose': {
+    men: ['Super-Star', 'Super-Star Classic', 'Star', 'Ball Star', 'Running Sole', 'Pure Star'],
+    ladies: ['Super-Star', 'Super-Star Classic', 'Ball Star', 'Running Sole', 'Pure Star'],
+    kids: ['Super-Star Kids', 'Star Kids'],
+    unisex: ['Super-Star', 'Ball Star'],
+  },
+  'Alexander McQueen': {
+    men: ['Oversized Sneaker', 'Tread Slick', 'Court Sneaker', 'Larry Oversized'],
+    ladies: ['Oversized Sneaker', 'Tread Slick', 'Court Sneaker'],
+    kids: ['Oversized Sneaker Kids'],
+    unisex: ['Oversized Sneaker', 'Tread Slick'],
+  },
+  'Off-White': {
+    men: [],
+    ladies: [],
+    kids: [],
+    unisex: ['Out of Office', 'OOO Sneaker', 'Vulcanized', 'Court 3.0', 'Low Vulcanized',
+      'Off-Court 3.0', 'Sponge Sneaker', 'Off-White x Nike Dunk Low'],
+  },
+  Bape: {
+    men: [],
+    ladies: [],
+    kids: ['Bapesta Kids'],
+    unisex: ['Bapesta', 'Bapesta FS-001', 'Bapesta Mid', 'Sk8 Sta', 'Court Sta',
+      'Road Sta', 'Block Sta', 'BAPE x Adidas Campus'],
+  },
+  'Fear of God': {
+    men: [],
+    ladies: [],
+    kids: [],
+    unisex: ['Fear of God 1', 'Fear of God 2', 'Aerospace', 'Moc 1', 'California',
+      'Eternal', 'Athletics 1'],
+  },
+  'Rick Owens': {
+    men: [],
+    ladies: [],
+    kids: [],
+    unisex: ['Ramones', 'Geobasket', 'Tech Runner', 'Turbowpn', 'Boaz', 'Vintage Sneaks'],
+  },
+  Timberland: {
+    men: ['6-Inch Boot', 'Field Boot', 'Euro Hiker', 'Chukka', 'Killington', 'Radford',
+      'Greenstride Motion 6'],
+    ladies: ['6-Inch Boot', 'Euro Hiker', 'Chukka', 'Greenstride Motion 6'],
+    kids: ['6-Inch Boot Kids', 'Euro Hiker Kids'],
+    unisex: ['6-Inch Boot', 'Euro Hiker'],
+  },
+  'Dr. Martens': {
+    men: ['1460', '1461', 'Combs', 'Bonny', 'Ramsey', 'Voss'],
+    ladies: ['1460', '1461', 'Jadon', 'Pascal', 'Combs'],
+    kids: ['1460 Kids', '1461 Kids'],
+    unisex: ['1460', '1461', 'Jadon'],
+  },
+  Vibram: {
+    men: ['FiveFingers V-Run', 'FiveFingers KSO', 'FiveFingers V-Trail', 'Furoshiki'],
+    ladies: ['FiveFingers V-Run', 'FiveFingers KSO', 'Furoshiki'],
+    kids: [],
+    unisex: ['FiveFingers V-Run', 'Furoshiki'],
+  },
+  Altra: {
+    men: ['Lone Peak 8', 'Olympus 5', 'Torin 7', 'Paradigm 7', 'Superior 6', 'Provision 7'],
+    ladies: ['Lone Peak 8', 'Olympus 5', 'Torin 7', 'Paradigm 7', 'Superior 6'],
+    kids: [],
+    unisex: ['Lone Peak 8', 'Olympus 5'],
+  },
+  'Topo Athletic': {
+    men: ['Magnifly 5', 'Phantom 3', 'Ultraventure 3', 'Pursuit 2', 'Cyclone 2', 'Trailventure 2'],
+    ladies: ['Magnifly 5', 'Phantom 3', 'Ultraventure 3', 'Pursuit 2'],
+    kids: [],
+    unisex: ['Phantom 3', 'Ultraventure 3'],
+  },
+  'Inov-8': {
+    men: ['Roclite G 345', 'Trailfly Ultra G 300', 'Parkclaw G 280', 'F-Lite 245', 'Mudclaw 300'],
+    ladies: ['Roclite G 345', 'Trailfly Ultra G 300', 'Parkclaw G 280'],
+    kids: [],
+    unisex: ['Roclite G 345', 'F-Lite 245'],
+  },
+  'Red Wing': {
+    men: ['Iron Ranger', 'Classic Moc', 'Blacksmith', 'Beckman', 'Work Chukka', 'Weekender', 'Logger', 'Pecos'],
+    ladies: [],
+    kids: [],
+    unisex: ['Iron Ranger', 'Classic Moc'],
+  },
+  Wolverine: {
+    men: ['1000 Mile', 'Floorhand', 'Legend', 'Raider', 'Piper', 'I-90'],
+    ladies: [],
+    kids: [],
+    unisex: ['1000 Mile'],
+  },
+  CAT: {
+    men: ['Colorado', 'Second Shift', 'Threshold', 'Streamline', 'Innovate', 'Excavator', 'Typhoon'],
+    ladies: [],
+    kids: ['Colorado Kids'],
+    unisex: [],
+  },
+  Ariat: {
+    men: ['Workhog', 'Groundbreaker', 'Rambler', 'VentTEK', 'Terrain', 'Heritage'],
+    ladies: [],
+    kids: ['Workhog Kids'],
+    unisex: ['Workhog'],
+  },
+  Clarks: {
+    men: ['Desert Boot', 'Wallabee', 'Weaver', 'Wallabee Low', 'Torhill', 'Step', 'Bushacre'],
+    ladies: [],
+    kids: ['Desert Boot Kids'],
+    unisex: ['Desert Boot', 'Wallabee'],
+  },
+  Blundstone: {
+    men: ['500', '550', '585', '1306', '1671', '2140'],
+    ladies: [],
+    kids: ['500 Kids', '550 Kids'],
+    unisex: ['500', '550'],
+  },
+  Solovair: {
+    men: ['8 Eye Derby', '6 Eye Boot', 'Gibson Shoe', 'Monkey Boot', 'Dealer Boot'],
+    ladies: [],
+    kids: [],
+    unisex: ['8 Eye Derby'],
+  },
+  Danner: {
+    men: ['Mountain Light', 'Trail 2650', 'Bull Run', 'Jag', 'Logger', 'Treadlight'],
+    ladies: [],
+    kids: ['Trail 2650 Kids'],
+    unisex: ['Mountain Light'],
+  },
+  Sorel: {
+    men: ['Caribou', 'Madson', 'Cheyanne', 'Kinetic', 'Out N About', 'Joan of Arctic'],
+    ladies: [],
+    kids: ['Caribou Kids', 'Out N About Kids'],
+    unisex: ['Caribou'],
+  },
+  UGG: {
+    men: ['Classic Mini', 'Classic Short', 'Neumel', 'Tasman', 'Venture Daze', 'Lowmel'],
+    ladies: [],
+    kids: ['Classic Mini Kids', 'Tasman Kids'],
+    unisex: ['Classic Mini', 'Tasman'],
+  },
+  Palladium: {
+    men: ['Pampa Hi', 'Pampa Ox', 'Pallabosse', 'Pallarue', 'Baggy'],
+    ladies: [],
+    kids: ['Pampa Hi Kids'],
+    unisex: ['Pampa Hi'],
+  },
+  Keen: {
+    men: ['Targhee III', 'Targhee IV', 'Newport H2', 'Ridge Flex', 'Revel IV', 'Anchorage'],
+    ladies: [],
+    kids: ['Newport H2 Kids', 'Targhee Kids'],
+    unisex: ['Newport H2', 'Targhee III'],
+  },
+  Lowa: {
+    men: ['Renegade GTX', 'Zephyr GTX', 'Camino GTX', 'Innox', 'Tibet GTX'],
+    ladies: [],
+    kids: ['Renegade Kids'],
+    unisex: ['Renegade GTX'],
+  },
+  Scarpa: {
+    men: ['Terra GTX', 'Mojito', 'Mescalito', 'Rush', 'Ribelle', 'Cyclone'],
+    ladies: [],
+    kids: [],
+    unisex: ['Mojito'],
+  },
+  'La Sportiva': {
+    men: ['Nepal Cube', 'Trango', 'TX4', 'Ultra Raptor', 'Bushido', 'Aequilibrium'],
+    ladies: [],
+    kids: [],
+    unisex: ['TX4'],
+  },
+  Ecco: {
+    men: ['Soft 7', 'Soft 8', 'Street Tray', 'Biom', 'Helsinki', 'Offroad'],
+    ladies: [],
+    kids: ['Soft 7 Kids'],
+    unisex: ['Soft 7'],
+  },
+  Camper: {
+    men: ['Pelotas', 'Runner', 'Beetle', 'Drift', 'Peu', 'Oruga'],
+    ladies: [],
+    kids: ['Pelotas Kids'],
+    unisex: ['Pelotas', 'Peu'],
+  },
+  Keds: {
+    men: ['Champion', 'Triple Kick', 'Crew Kick', 'Ace', 'Double Decker'],
+    ladies: [],
+    kids: ['Champion Kids'],
+    unisex: ['Champion'],
+  },
+  Superga: {
+    men: ['2750 Cotu', '2790', '2630', '2406'],
+    ladies: [],
+    kids: ['2750 Kids'],
+    unisex: ['2750 Cotu'],
+  },
+  Gola: {
+    men: ['Harrier', 'Elan', 'Grandslam', 'Daytona', 'Comet'],
+    ladies: [],
+    kids: ['Harrier Kids'],
+    unisex: ['Harrier'],
+  },
+  Hummel: {
+    men: ['Slimmer Stadil', 'Marathona', 'Victory', 'Court'],
+    ladies: [],
+    kids: ['Stadil Kids'],
+    unisex: ['Slimmer Stadil'],
+  },
+  'Le Coq Sportif': {
+    men: ['Arthur Ashe', 'LCS R800', 'Quartz', 'Court'],
+    ladies: [],
+    kids: [],
+    unisex: ['Arthur Ashe'],
+  },
+  Lotto: {
+    men: ['Stadio', 'Leggenda', 'Court', 'Vector'],
+    ladies: [],
+    kids: [],
+    unisex: ['Stadio'],
+  },
+  Umbro: {
+    men: ['Speciali', 'Venus', 'Neptune', 'Medway'],
+    ladies: [],
+    kids: [],
+    unisex: ['Speciali'],
+  },
+  Joma: {
+    men: ['Comet', 'Top Flex', 'Aguila', 'Champion'],
+    ladies: [],
+    kids: [],
+    unisex: ['Comet'],
+  },
+  Peak: {
+    men: ['Lou Williams', 'Tony Parker', 'Flash', 'Lightning', 'Taichi'],
+    ladies: [],
+    kids: [],
+    unisex: ['Flash'],
+  },
+  '361 Degrees': {
+    men: ['Spire 5', 'Flame 3', 'Meraki', 'Yushu'],
+    ladies: [],
+    kids: [],
+    unisex: ['Spire 5'],
+  },
+  Allbirds: {
+    men: ['Wool Runner', 'Tree Runner', 'Tree Dasher', 'Trail Runner', 'Wool Piper'],
+    ladies: [],
+    kids: ['Tree Runner Kids'],
+    unisex: ['Wool Runner', 'Tree Runner'],
+  },
+  'Hey Dude': {
+    men: ['Wally', 'Wally Sox', 'Wendy Sox', 'Wanderer'],
+    ladies: [],
+    kids: ['Wally Kids'],
+    unisex: ['Wally'],
+  },
+  Toms: {
+    men: ['Alpargata', 'Carlo', 'Trvl Lite', 'Paxton'],
+    ladies: [],
+    kids: ['Alpargata Kids'],
+    unisex: ['Alpargata'],
+  },
+  'No Bull': {
+    men: ['Trainer', 'Trainer Plus', 'Runner', 'Court Trainer', 'Diamond Trainer'],
+    ladies: [],
+    kids: [],
+    unisex: ['Trainer'],
+  },
+  Vivobarefoot: {
+    men: ['Primus Lite', 'Primus Trail', 'Magna Forest', 'Gobi', 'Geo Racer'],
+    ladies: [],
+    kids: ['Primus Kids'],
+    unisex: ['Primus Lite'],
+  },
+  'Xero Shoes': {
+    men: ['HFS', 'Speed Force', 'Prio', 'Mesa Trail', 'Z-Trail'],
+    ladies: [],
+    kids: ['Prio Kids'],
+    unisex: ['Prio'],
+  },
+  'The North Face': {
+    men: ['Vectiv Exploris', 'Vectiv Fastpack', 'Hedgehog', 'Ultra 112', 'Back to Berkeley'],
+    ladies: [],
+    kids: ['Hedgehog Kids'],
+    unisex: ['Hedgehog'],
+  },
+  Columbia: {
+    men: ['Newton Ridge', 'Fairbanks', 'Bugaboot', 'Konos', 'Trailstorm'],
+    ladies: [],
+    kids: ['Newton Ridge Kids', 'Bugaboot Kids'],
+    unisex: ['Newton Ridge'],
+  },
+  "Arc'teryx": {
+    men: ['Norvan LD 3', 'Norvan SL', 'Kopec', 'Vertex Alpine', 'Aerios'],
+    ladies: [],
+    kids: [],
+    unisex: ['Norvan LD 3'],
   },
 };
 
-const GENDER_KEY: Record<Exclude<SneakerGender, 'Unisex'>, keyof GenderModels> = {
-  Men: 'men',
-  Ladies: 'ladies',
-  Kids: 'kids',
-};
+/** Adults covers every grown-up model; Kids only what the brand makes for kids. */
+export const SNEAKER_AUDIENCES = ['Adults', 'Kids'] as const;
 
-/** Brands that make shoes for this gender. Unisex shows every brand. */
-export function getSneakerBrands(gender: string): string[] {
-  const brands = Object.keys(SNEAKER_MODELS).filter((brand) => {
-    // Unisex styling exists at every brand in the catalogue.
-    if (gender === 'Unisex' || !(gender in GENDER_KEY)) return true;
-    const models = SNEAKER_MODELS[brand];
-    const key = GENDER_KEY[gender as Exclude<SneakerGender, 'Unisex'>];
-    return models[key].length > 0 || models.unisex.length > 0;
-  });
-  return brands.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+const isKids = (audience: string) => audience === 'Kids';
+
+/** Brands sold for the picked audience (Kids hides brands with no kids shoes). */
+export function getSneakerBrands(audience: string): string[] {
+  return Object.keys(SNEAKER_MODELS)
+    .filter((brand) => (isKids(audience) ? SNEAKER_MODELS[brand].kids.length > 0 : true))
+    .sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
 }
 
-/** Models that brand sells for this gender, unisex models included. */
-export function getSneakerModels(brand: string, gender: string): string[] {
+/** Models that brand sells for the picked audience. */
+export function getSneakerModels(brand: string, audience: string): string[] {
   const models = SNEAKER_MODELS[brand];
   if (!models) return [];
-  let list: string[];
-  if (gender === 'Unisex') {
-    // Unisex asks for the shared styles; a brand with none falls back to its
-    // full catalogue so the picker is never empty behind a visible brand.
-    list = models.unisex.length > 0
-      ? models.unisex
-      : [...models.men, ...models.ladies, ...models.kids];
-  } else if (gender in GENDER_KEY) {
-    const key = GENDER_KEY[gender as Exclude<SneakerGender, 'Unisex'>];
-    list = [...models[key], ...models.unisex];
-  } else {
-    list = [...models.men, ...models.ladies, ...models.kids, ...models.unisex];
-  }
+  const list = isKids(audience)
+    ? models.kids
+    : [...models.men, ...models.ladies, ...models.unisex];
   return Array.from(new Set(list));
-}
-
-/** Kids listings only offer kids sizes; everything else uses adult sizes. */
-export function isKidsGender(gender: string): boolean {
-  return gender === 'Kids';
 }

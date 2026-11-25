@@ -25,8 +25,7 @@ import { getVehicleBrandsForType } from '../categoryBrands';
 import { VEHICLE_MODEL_OTHER, getVehicleModels } from '@/constants/vehicleCatalog';
 import { WATCH_OTHER, getWatchModels } from '@/constants/watchCatalog';
 import { getCameraModels } from '@/constants/cameraCatalog';
-import { SNEAKER_BRANDS } from '../categoryBrands';
-import { SNEAKER_GENDERS, getSneakerBrands, getSneakerModels } from '@/constants/sneakerCatalog';
+import { SNEAKER_AUDIENCES, getSneakerBrands, getSneakerModels } from '@/constants/sneakerCatalog';
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from '@/constants/thriftClothing';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
@@ -1827,69 +1826,75 @@ export default function CreateListing() {
 
             {step === 2 && (
               <div className="sell-pills space-y-2 max-w-lg mx-auto w-full">
-                {/* Sneaker details — gender first, then only that gender's brands,
-                    models and size scale (Kids listings get kids sizes only). */}
+                {/* Sneaker details — Adults or Kids first, then the brand, model
+                    and the size scale that matches (kids listings only offer kids
+                    models and kids sizes). */}
                 {category === 'sneakers' && (() => {
-                  const sneakerGender = details['sneakerGender'] ?? '';
+                  const audience = details['sneakerAudience'] || 'Adults';
                   const sneakerSize = details['sneakerSize'] ?? '';
                   const sneakerBrandVal = details['sneakerBrand'] ?? '';
                   const sneakerModelVal = details['sneakerModel'] ?? '';
-                  const sizeList = details['sneakerAudience'] === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
-                  const brandOptions = sneakerGender ? getSneakerBrands(sneakerGender) : SNEAKER_BRANDS.filter((b) => b !== 'Other');
-                  const modelOptions = sneakerBrandVal ? getSneakerModels(sneakerBrandVal, sneakerGender) : [];
+                  const sizeList = audience === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
+                  const brandOptions = getSneakerBrands(audience);
+                  const modelOptions = sneakerBrandVal ? getSneakerModels(sneakerBrandVal, audience) : [];
                   const sneakerLogo = sneakerBrandVal ? getSneakerBrandLogoUrl(sneakerBrandVal) : null;
-                  const pillCls = (filled: boolean) => `w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${filled ? '!text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none' : 'border-black text-gray-900 text-[9px] font-semibold'}`;
+                  const pillCls = (filled: boolean) => `w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-[8px] text-center [text-align-last:center] border-2 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${filled ? '!text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none' : 'border-black text-gray-900 text-[8px] font-semibold'}`;
                   return (
                     <div className="mb-6">
                       <div className="flex items-start justify-between gap-3">
-                        {/* Gender — drives brand, model and size */}
+                        {/* Adults / Kids — drives brand, model and size */}
                         <div className="flex-1 min-w-0 relative">
                           <select
-                            value={sneakerGender}
+                            value={audience}
                             onChange={(e) => {
-                              const g = e.target.value;
-                              setDetail('sneakerGender', g);
+                              setDetail('sneakerAudience', e.target.value);
                               setDetail('sneakerBrand', '');
                               setDetail('sneakerModel', '');
                               setDetail('sneakerSize', '');
-                              setDetail('sneakerAudience', g === 'Kids' ? 'Kids' : 'Adults');
                             }}
-                            aria-label="Sneaker gender"
-                            className={pillCls(!!sneakerGender)}
+                            aria-label="Sneaker audience"
+                            className={pillCls(true)}
                           >
-                            <option value="">Gender</option>
-                            {SNEAKER_GENDERS.map((g) => (
-                              <option key={g} value={g}>{g}</option>
+                            {SNEAKER_AUDIENCES.map((a) => (
+                              <option key={a} value={a}>{a}</option>
                             ))}
                           </select>
                           <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
                         </div>
-                        {/* Brand — only brands that make this gender's shoes */}
+                        {/* Brand — every brand for adults, only kids makers for kids;
+                            the picked brand shows its logo inside the button. */}
                         <div className="flex-[2] min-w-0 relative">
-                          <select
-                            value={sneakerBrandVal}
-                            disabled={!sneakerGender}
-                            onChange={(e) => { setDetail('sneakerBrand', e.target.value); setDetail('sneakerModel', ''); }}
-                            aria-label="Sneaker brand"
-                            className={`${pillCls(!!sneakerBrandVal)} ${sneakerLogo ? 'pl-10' : ''} ${!sneakerGender ? 'bg-slate-100 text-gray-400' : ''}`}
-                          >
-                            <option value="">Brand</option>
-                            {brandOptions.map((b) => (
-                              <option key={b} value={b}>{b}</option>
-                            ))}
-                          </select>
-                          {sneakerLogo && (
-                            <img decoding="async" src={sneakerLogo}
-                              alt=""
-                              className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 object-contain pointer-events-none"
-                              loading="lazy"
-                            />
-                          )}
+                          {(() => {
+                            const sneakerLogo = sneakerBrandVal ? getSneakerBrandLogoUrl(sneakerBrandVal) : null;
+                            return (
+                              <>
+                                <select
+                                  value={sneakerBrandVal}
+                                  onChange={(e) => { setDetail('sneakerBrand', e.target.value); setDetail('sneakerModel', ''); }}
+                                  aria-label="Sneaker brand"
+                                  className={`${pillCls(!!sneakerBrandVal)} ${sneakerLogo ? 'pl-10' : ''}`}
+                                >
+                                  <option value="">Brand</option>
+                                  {brandOptions.map((b) => (
+                                    <option key={b} value={b}>{b}</option>
+                                  ))}
+                                  <option value="Other">Other</option>
+                                </select>
+                                {sneakerLogo && (
+                                  <img decoding="async" src={sneakerLogo}
+                                    alt=""
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 object-contain pointer-events-none"
+                                    loading="lazy"
+                                  />
+                                )}
+                              </>
+                            );
+                          })()}
                           <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
                         </div>
                       </div>
                       <div className="flex items-start justify-between gap-3 mt-2">
-                        {/* Model — this brand's models for the picked gender */}
+                        {/* Model — the brand's adult range, or its kids models */}
                         <div className="flex-[2] min-w-0 relative">
                           <select
                             value={sneakerModelVal}
@@ -1906,7 +1911,7 @@ export default function CreateListing() {
                           </select>
                           <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
                         </div>
-                        {/* Size — kids scale for Kids, adult scale otherwise */}
+                        {/* Size — kids scale for Kids, adult scale for Adults */}
                         <div className="flex-1 min-w-0 relative">
                           <select
                             value={sneakerSize}

@@ -331,7 +331,8 @@ export const CATEGORY_DETAILS: CategoryDetailsConfig = {
   'tutoring-lessons': [
     { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...TUTORING_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
-  // Vintage: picked on the Title tab, same 21 as post enquiry.
+  // Vintage: picked on the Title tab, same 24 as post enquiry (the classic-car
+  // options replaced the single cars/motorcycles/automobilia line).
   vintage: [
     { key: 'subcategory', label: 'Subcategory', type: 'select', options: [...VINTAGE_SUBCATEGORIES], placeholder: 'Select', step: 'title' },
   ],
