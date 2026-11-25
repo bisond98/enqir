@@ -59,7 +59,9 @@ const MAX_DESC_CHARS = 60000;
 const countWords = (text: string) => (text.trim() ? text.trim().split(/\s+/).length : 0);
 const withinDescLimit = (text: string) => text.length <= MAX_DESC_CHARS && countWords(text) <= MAX_DESC_WORDS;
 import { getSneakerBrandLogoUrl } from "@/lib/sneakerBrandLogos";
+import { getCarBrandLogoUrl } from "@/lib/carBrandLogos";
 import { SNEAKER_SIZES_ADULTS, SNEAKER_SIZES_KIDS } from "@/modules/sell/categoryDetails";
+import { SNEAKER_GENDERS, getSneakerBrands, getSneakerModels } from "@/constants/sneakerCatalog";
 import {
   LAPTOP_BRAND_OPTIONS,
   LAPTOP_OTHER,
@@ -139,16 +141,15 @@ const AiDescriptionBar = ({ onRun, generating }: { onRun: () => void; generating
 );
 
 
-// Manual gearbox: circled H-pattern shifter gate (white on the black pill)
+// Manual gearbox: H-pattern shifter gate (no ring, so it matches the fuel glyph)
 const GearShifterIcon = ({ className = "" }: { className?: string }) => (
-  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="12" cy="12" r="10" />
-    <path d="M7 7v9.5M12 7v9.5M17 7v6M7 13h10" strokeWidth={2.4} />
-    <circle cx="7" cy="6.2" r="1.45" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="6.2" r="1.45" fill="currentColor" stroke="none" />
-    <circle cx="17" cy="6.2" r="1.45" fill="currentColor" stroke="none" />
-    <circle cx="7" cy="17.3" r="1.45" fill="currentColor" stroke="none" />
-    <circle cx="12" cy="17.3" r="1.45" fill="currentColor" stroke="none" />
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M6 5.5v13M12 5.5v13M18 5.5v8.5M6 14h12" />
+    <circle cx="6" cy="4.6" r="1.7" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="4.6" r="1.7" fill="currentColor" stroke="none" />
+    <circle cx="18" cy="4.6" r="1.7" fill="currentColor" stroke="none" />
+    <circle cx="6" cy="19.4" r="1.7" fill="currentColor" stroke="none" />
+    <circle cx="12" cy="19.4" r="1.7" fill="currentColor" stroke="none" />
   </svg>
 );
 
@@ -316,9 +317,11 @@ const DEADLINE_STEP = 5;
   // Watches details (brand -> model) — filled when the watches category is selected
   const [watchDetails, setWatchDetails] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
   const [watchCustom, setWatchCustom] = useState<{ brand: string; model: string }>({ brand: '', model: '' });
-  // Sneaker details (brand) — filled when the sneakers category is selected
+  // Sneaker details — gender leads, then only that gender's brands/models show.
+  const [sneakerGender, setSneakerGender] = useState<'' | 'Men' | 'Ladies' | 'Unisex' | 'Kids'>('');
   const [sneakerBrand, setSneakerBrand] = useState('');
-  // Sneaker audience + size (Adults is the default; Kids swaps the size scale)
+  const [sneakerModel, setSneakerModel] = useState('');
+  // Audience is derived from the gender (Kids swaps the size scale).
   const [sneakerAudience, setSneakerAudience] = useState<'Adults' | 'Kids'>('Adults');
   const [sneakerSize, setSneakerSize] = useState('');
   // Job enquiry direction: employer hiring vs seeker looking for work (jobs category only)
@@ -980,10 +983,10 @@ const DEADLINE_STEP = 5;
     // Fields marked data-no-hug keep their full width (stay type and the
     // gender dropdown under it read as normal selects, not chips).
     if (wrapper.closest('[data-no-hug]')) return;
-    // The budget tab's "Not fixed yet? … Click here" picker keeps a compact
-    // fixed width and hugs the right edge of its row instead of centring.
+    // The budget tab's "Not fixed yet? … Click here" picker is a compact
+    // capsule that hugs the right edge of its row.
     if (el.id === 'enquiry-budget-option') {
-      wrapper.style.width = '200px';
+      wrapper.style.width = '212px';
       el.style.width = '100%';
       wrapper.style.marginLeft = 'auto';
       wrapper.style.marginRight = '0';
@@ -1180,6 +1183,8 @@ const DEADLINE_STEP = 5;
         if (d.petTraining) setPetTraining(d.petTraining);
         if (Array.isArray(d.cleaningTypes)) setCleaningTypes(d.cleaningTypes);
         if (d.sneakerAudience) setSneakerAudience(d.sneakerAudience);
+        if (d.sneakerGender) setSneakerGender(d.sneakerGender);
+        if (d.sneakerModel) setSneakerModel(String(d.sneakerModel));
         if (d.sneakerSize) setSneakerSize(d.sneakerSize);
         if (d.referenceImageUrls) setReferenceImageUrls(d.referenceImageUrls);
         if (d.mobileNumber) setMobileNumber(d.mobileNumber);
@@ -1426,7 +1431,7 @@ const DEADLINE_STEP = 5;
             ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
             ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
               ...(sneakerBrand && { sneakerBrand }),
-              ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
+              ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...(jobDirection && { jobDirection }),
@@ -1603,7 +1608,7 @@ const DEADLINE_STEP = 5;
             ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
             ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
             ...(sneakerBrand && { sneakerBrand }),
-            ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
+            ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
@@ -1797,7 +1802,7 @@ const DEADLINE_STEP = 5;
             ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
             ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
             ...(sneakerBrand && { sneakerBrand }),
-            ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
+            ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
             ...(mobileDetails.ram && { ram: mobileDetails.ram }),
             ...(mobileDetails.memory && { memory: mobileDetails.memory }),
             ...(jobDirection && { jobDirection }),
@@ -2016,7 +2021,7 @@ const DEADLINE_STEP = 5;
             ...(bicycleDetails.storage && { bicycleStorage: bicycleDetails.storage }),
             ...(bicycleDetails.repair && { bicycleRepair: bicycleDetails.repair }),
               ...(sneakerBrand && { sneakerBrand }),
-              ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
+              ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
               ...(mobileDetails.ram && { ram: mobileDetails.ram }),
               ...(mobileDetails.memory && { memory: mobileDetails.memory }),
               ...((estateDealType && selectedCategories.includes('real-estate')) && { listingType: estateDealType }),
@@ -2800,7 +2805,7 @@ const DEADLINE_STEP = 5;
           ...(vehicleDetails.fuelType && { fuelType: vehicleDetails.fuelType }),
           ...(mobileDetails.brand && { mobileBrand: mobileDetails.brand }),
           ...(sneakerBrand && { sneakerBrand }),
-          ...((sneakerAudience || sneakerSize) && { sneakerAudience, ...(sneakerSize && { sneakerSize }) }),
+          ...((sneakerAudience || sneakerSize || sneakerGender || sneakerModel) && { sneakerAudience, ...(sneakerSize && { sneakerSize }), ...(sneakerGender && { sneakerGender }), ...(sneakerModel && { sneakerModel }) }),
           ...(mobileDetails.ram && { ram: mobileDetails.ram }),
           ...(mobileDetails.memory && { memory: mobileDetails.memory }),
           ...(jobDirection && { jobDirection }),
@@ -4176,13 +4181,17 @@ const DEADLINE_STEP = 5;
                         if (!isCarLike && !isBike) return null;
                         // Brand sits first for Car/Motorcycle and last for Vehicles, so it is
                         // built once and placed by the field order below.
+                        // A picked brand shows its logo in the dropdown instead of the name.
+                        const pickedBrandLogo = vehicleDetails.brand && vehicleDetails.brand !== 'Other'
+                          ? getCarBrandLogoUrl(vehicleDetails.brand)
+                          : null;
                         const brandField = (
                           <div className="flex-1 min-w-0">
                             <div className="relative">
                               <select
                                 value={vehicleDetails.brand}
                                 onChange={(e) => setVehicleDetails(v => ({ ...v, brand: e.target.value, model: '', variant: '', transmission: '', fuelType: '' }))}
-                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.brand) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-4 pr-9 ${!vehicleDetails.brand ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.brand) ? ` !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 ${pickedBrandLogo ? '!text-transparent' : '!text-white'} !border-blue-700 !shadow-none` : ''}`}
                               >
                                 <option value="">Brand</option>
                                 {(isBikeOnly
@@ -4196,7 +4205,21 @@ const DEADLINE_STEP = 5;
                                 ))}
                                 <option value="Other">Other</option>
                               </select>
-                              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              {pickedBrandLogo && (
+                                <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center pr-8">
+                                  {/* White backing so dark marks (Maserati, Lamborghini, Aston Martin) read on the blue pill. */}
+                                  <span className="flex h-8 max-w-[78%] items-center justify-center rounded-full bg-white px-2">
+                                    <img
+                                      decoding="async"
+                                      src={pickedBrandLogo}
+                                      alt=""
+                                      loading="lazy"
+                                      className="h-6 w-auto max-w-full object-contain"
+                                    />
+                                  </span>
+                                </span>
+                              )}
+                              <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${vehicleDetails.brand ? 'text-white' : 'text-gray-500'}`} />
                             </div>
                             <div className="h-3">
                             </div>
@@ -4596,13 +4619,41 @@ const DEADLINE_STEP = 5;
                           </div>
                         );
                       })()}
-                      {/* Sneaker details — brand + audience + size above the description when the sneakers category is selected */}
+                      {/* Sneaker details — gender first, then only that gender's brands,
+                          models and size scale (Kids listings get kids sizes only). */}
                       {selectedCategories.includes('sneakers') && (() => {
                         const sizeList = sneakerAudience === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
+                        const brandOptions = sneakerGender
+                          ? getSneakerBrands(sneakerGender)
+                          : SNEAKER_BRANDS.filter((b) => b !== 'Other');
+                        const modelOptions = sneakerBrand ? getSneakerModels(sneakerBrand, sneakerGender) : [];
+                        const pillCls = (filled: boolean) => `w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${filled ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : 'border-black text-gray-900 text-[9px] font-semibold'}`;
                         return (
                           <div className="mb-6">
                             <div className="flex items-start justify-between gap-3">
-                              {/* Brand — wider than size so the logo + name fit comfortably */}
+                              {/* Gender — drives the brand, model and size lists */}
+                              <div className="flex-1 min-w-0 relative">
+                                <select
+                                  value={sneakerGender}
+                                  onChange={(e) => {
+                                    const g = e.target.value as '' | 'Men' | 'Ladies' | 'Unisex' | 'Kids';
+                                    setSneakerGender(g);
+                                    setSneakerBrand('');
+                                    setSneakerModel('');
+                                    setSneakerSize('');
+                                    setSneakerAudience(g === 'Kids' ? 'Kids' : 'Adults');
+                                  }}
+                                  aria-label="Sneaker gender"
+                                  className={pillCls(!!sneakerGender)}
+                                >
+                                  <option value="">Gender</option>
+                                  {SNEAKER_GENDERS.map((g) => (
+                                    <option key={g} value={g}>{g}</option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                              {/* Brand — only the brands that make this gender's shoes */}
                               <div className="flex-[2] min-w-0 relative">
                                 {(() => {
                                   const sneakerLogo = sneakerBrand ? getSneakerBrandLogoUrl(sneakerBrand) : null;
@@ -4610,11 +4661,13 @@ const DEADLINE_STEP = 5;
                                     <>
                                       <select
                                         value={sneakerBrand}
-                                        onChange={(e) => setSneakerBrand(e.target.value)}
-                                        className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrand ? 'text-[9px] text-gray-900 font-semibold' : 'text-[11px] sm:text-sm text-black'}${(sneakerBrand) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                        disabled={!sneakerGender}
+                                        onChange={(e) => { setSneakerBrand(e.target.value); setSneakerModel(''); }}
+                                        aria-label="Sneaker brand"
+                                        className={`${pillCls(!!sneakerBrand)} ${!sneakerBrand && sneakerLogo ? 'pl-10' : ''} ${!sneakerGender ? 'bg-slate-100 text-gray-400' : ''}`}
                                       >
                                         <option value="">Brand</option>
-                                        {SNEAKER_BRANDS.map((b) => (
+                                        {brandOptions.map((b) => (
                                           <option key={b} value={b}>{b}</option>
                                         ))}
                                       </select>
@@ -4630,12 +4683,32 @@ const DEADLINE_STEP = 5;
                                 })()}
                                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
-                              {/* Size — options depend on the audience (Adults default) */}
+                            </div>
+                            <div className="flex items-start justify-between gap-3 mt-2">
+                              {/* Model — only this brand's models for the picked gender */}
+                              <div className="flex-[2] min-w-0 relative">
+                                <select
+                                  value={sneakerModel}
+                                  disabled={!sneakerBrand}
+                                  onChange={(e) => setSneakerModel(e.target.value)}
+                                  aria-label="Sneaker model"
+                                  className={`${pillCls(!!sneakerModel)} ${!sneakerBrand ? 'bg-slate-100 text-gray-400' : ''}`}
+                                >
+                                  <option value="">Model</option>
+                                  {modelOptions.map((m) => (
+                                    <option key={m} value={m}>{m}</option>
+                                  ))}
+                                  <option value="Other">Other</option>
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              </div>
+                              {/* Size — kids scale for Kids, adult scale otherwise */}
                               <div className="flex-1 min-w-0 relative">
                                 <select
                                   value={sneakerSize}
                                   onChange={(e) => setSneakerSize(e.target.value)}
-                                  className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-gray-900 font-semibold' : 'text-[11px] sm:text-sm text-black'}${(sneakerSize) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                  aria-label="Sneaker size"
+                                  className={pillCls(!!sneakerSize)}
                                 >
                                   <option value="">Size</option>
                                   {sizeList.map((s) => (
@@ -4644,27 +4717,6 @@ const DEADLINE_STEP = 5;
                                 </select>
                                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
                               </div>
-                            </div>
-                            {/* Adults / Kids — under brand+size row; switching resets the size */}
-                            <div className="flex items-center justify-center gap-1.5 mt-2">
-                              {(['Adults', 'Kids'] as const).map((aud) => (
-                                <button
-                                  key={aud}
-                                  type="button"
-                                  onClick={() => {
-                                    setSneakerAudience(aud);
-                                    if (sneakerAudience !== aud) setSneakerSize('');
-                                  }}
-                                  className={cn(
-                                    'px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-bold border-2 transition-all duration-150',
-                                    sneakerAudience === aud
-                                      ? 'bg-blue-600 text-white border-[3px] border-black'
-                                      : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
-                                  )}
-                                >
-                                  {aud}
-                                </button>
-                              ))}
                             </div>
                           </div>
                         );
@@ -4985,37 +5037,47 @@ const DEADLINE_STEP = 5;
                         </div>
                       </div>
                       {/* Open to discussion — alternative to entering a specific budget */}
-                      <div className="flex items-center justify-end gap-3">
-                        <div className="relative">
+                      <div className="w-full">
+                        {/* Same picker as the car category's Brand / Model dropdowns:
+                            a black capsule, centred text, soft depth, and the arrow
+                            in a black disc inside a white ring. */}
+                        <div className="relative w-full">
                           <select
                             id="enquiry-budget-option"
-                            value={budgetOpenToDiscussion ? 'open-to-discussion' : ''}
+                            value={budgetOpenToDiscussion ? 'open-to-discussion' : 'close'}
                             onChange={(e) => {
                               if (e.target.value === 'open-to-discussion') {
                                 setBudgetOpenToDiscussion(true);
                                 setBudget("");
                               } else {
+                                // Cancel clears the choice and leaves the field empty.
                                 setBudgetOpenToDiscussion(false);
                               }
                             }}
-                            className={`appearance-none text-right rounded-[12px] h-12 sm:h-14 min-h-[48px] max-w-full font-medium border-[1.5px] focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${budgetOpenToDiscussion ? 'border-black bg-blue-600 text-[11px] sm:text-xs font-bold text-white shadow-none' : 'border-slate-200 bg-white text-[10px] sm:text-xs font-semibold text-gray-900 font-semibold shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)]'}`}
+                            className={`w-full appearance-none rounded-full h-12 sm:h-14 text-center [text-align-last:center] font-semibold text-[10px] pl-5 pr-14 focus:outline-none transition-all duration-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] ${budgetOpenToDiscussion ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !shadow-none text-[11px] sm:text-xs font-bold' : 'bg-black text-white'}`}
                           >
-                            <option value="" className="bg-white text-black"></option>
-                            <option value="open-to-discussion" className="bg-white text-black">Open to discussion</option>
+                            {/* Cancel is the un-picked state and sits above the pick,
+                                so the dropdown has exactly two rows and no blank one.
+                                No colour classes: a styled option would repaint the
+                                closed capsule white. */}
+                            <option value="close">Cancel</option>
+                            <option value="open-to-discussion">Open to discussion</option>
                           </select>
-                          {/* Empty-state caption: the question sits at the left edge,
-                              "Click here" is pinned to the right next to the round
-                              chevron handle. Hidden once a value is picked. */}
+                          {/* Empty-state caption sits centred in the capsule, like the
+                              "Brand" / "Model" labels. Hidden once a value is picked. */}
+                          {/* A <div>, not a <span>: the wizard styles every
+                              aria-hidden span beside a select as the arrow's white
+                              disc, which painted a white box over this capsule. */}
                           {!budgetOpenToDiscussion && (
-                            <span
-                              aria-hidden="true"
-                              className="pointer-events-none absolute inset-0 flex items-center justify-between pl-4 pr-14 text-[10px] sm:text-xs font-semibold text-gray-900"
-                            >
+                            <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-3 rounded-full bg-black pr-12 text-[10px] font-semibold text-white">
                               <span>Not fixed yet?</span>
                               <span>Click here</span>
-                            </span>
+                            </div>
                           )}
-                          <ChevronDown className={`absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${budgetOpenToDiscussion ? 'text-white' : 'text-gray-800'}`} />
+                          <ChevronDown
+                            strokeWidth={2.75}
+                            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 box-content h-3.5 w-3.5 rounded-full border-[5px] border-white bg-black p-[7px] text-white"
+                          />
                         </div>
                       </div>
                     </div>

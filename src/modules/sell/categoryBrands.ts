@@ -3,13 +3,14 @@
 // 'Other' is always last so the free choice sits where people expect it.
 
 export const CAR_BRANDS = [
-  'Aston Martin', 'Audi', 'Bentley', 'BMW', 'BYD', 'Chevrolet', 'Citroën',
-  'Datsun', 'Ferrari', 'Fiat', 'Force', 'Ford', 'Hindustan Motors', 'Honda',
-  'Hyundai', 'Isuzu', 'Jaguar', 'Jeep', 'Kia', 'Lamborghini', 'Land Rover',
-  'Lexus', 'Mahindra', 'Maruti Suzuki', 'Maserati', 'Mercedes-Benz', 'MG', 'Mini',
-  'Mitsubishi', 'Nissan', 'Opel', 'Porsche', 'Premier', 'Renault',
-  'Rolls-Royce', 'Skoda', 'Tata', 'Tesla', 'Toyota', 'VinFast', 'Volkswagen',
-  'Volvo', 'Other',
+  'Aston Martin', 'Audi', 'Audi RS', 'Bentley', 'BMW', 'BMW M', 'BYD',
+  'Chevrolet', 'Citroën', 'Daewoo', 'Datsun', 'Ferrari', 'Fiat', 'Force',
+  'Ford', 'Hindustan Motors', 'Honda', 'Hyundai', 'Isuzu', 'Jaguar', 'Jeep',
+  'Kia', 'Lamborghini', 'Land Rover', 'Lexus', 'Mahindra', 'Maruti Suzuki',
+  'Maserati', 'McLaren', 'Mercedes-AMG', 'Mercedes-Benz', 'MG', 'Mini',
+  'Mitsubishi', 'Nissan', 'Opel', 'Peugeot', 'Porsche', 'Premier', 'Renault',
+  'Rolls-Royce', 'San Motors', 'Skoda', 'Tata', 'Tesla', 'Toyota', 'VinFast',
+  'Volkswagen', 'Volvo', 'Other',
 ];
 
 export const BIKE_BRANDS = [

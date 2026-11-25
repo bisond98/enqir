@@ -26,8 +26,10 @@ import { VEHICLE_MODEL_OTHER, getVehicleModels } from '@/constants/vehicleCatalo
 import { WATCH_OTHER, getWatchModels } from '@/constants/watchCatalog';
 import { getCameraModels } from '@/constants/cameraCatalog';
 import { SNEAKER_BRANDS } from '../categoryBrands';
+import { SNEAKER_GENDERS, getSneakerBrands, getSneakerModels } from '@/constants/sneakerCatalog';
 import { THRIFT_GENDERS, THRIFT_TYPES, thriftItemsFor, thriftSizesFor } from '@/constants/thriftClothing';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
+import { getCarBrandLogoUrl } from '@/lib/carBrandLogos';
 import type { ListingCondition, ListingPriceType } from '../types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MapLocationPickerLazy as MapLocationPicker } from '@/components/MapLocationPickerLazy';
@@ -1540,6 +1542,11 @@ export default function CreateListing() {
                       const titleDropdowns = fieldsForCategoryStep(category, 'title')
                         .filter((field) => !field.typeable && field.type !== 'text' && field.type !== 'number').length;
                       const hugText = isDropdown && titleDropdowns <= 1;
+                      // A picked car brand shows its logo in the dropdown instead of
+                      // the name, matching the Post Enquiry brand picker.
+                      const pickedBrandLogo = (category === 'car' || category === 'vehicles') && f.key === 'brand' && details['brand'] && details['brand'] !== 'Other'
+                        ? getCarBrandLogoUrl(details['brand'])
+                        : null;
                       return (
                       // A tab with exactly three dropdowns leaves the third one alone on
                       // the second line, so it is centred in that line instead of being
@@ -1778,13 +1785,27 @@ export default function CreateListing() {
                                   }
                                 }
                               }}
-                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details[f.key] ? (category === 'pets' ? 'text-[11px] sm:text-xs text-transparent' : 'text-[10px] text-transparent') : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
+                              className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? `!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 ${pickedBrandLogo ? '!text-transparent' : '!text-white'} !border-blue-700 !shadow-none` : '!bg-black !bg-none !border-black'} ${!details[f.key] ? (category === 'pets' ? 'text-[11px] sm:text-xs text-transparent' : 'text-[10px] text-transparent') : `text-[11px] sm:text-xs !font-bold ${pickedBrandLogo ? '!text-transparent' : '!text-white'}`}`}
                             >
                               <option value="">Cancel</option>
                               {fieldOptions.map((opt) => (
                                 <option key={opt} value={opt}>{opt}</option>
                               ))}
                             </select>
+                            {pickedBrandLogo && (
+                              <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center pr-10">
+                                {/* White backing so dark marks read on the blue pill. */}
+                                <span className="flex h-8 max-w-[78%] items-center justify-center rounded-full bg-white px-2">
+                                  <img
+                                    decoding="async"
+                                    src={pickedBrandLogo}
+                                    alt=""
+                                    loading="lazy"
+                                    className="h-6 w-auto max-w-full object-contain"
+                                  />
+                                </span>
+                              </span>
+                            )}
                             {!details[f.key] && (
                               <span className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2 truncate px-4 pr-12 text-center text-[10px] font-semibold text-white">
                                 {f.placeholder ?? 'Select'}
@@ -1806,25 +1827,54 @@ export default function CreateListing() {
 
             {step === 2 && (
               <div className="sell-pills space-y-2 max-w-lg mx-auto w-full">
-                {/* Sneaker details — brand + audience + size, styled like the Post Enquiry form */}
+                {/* Sneaker details — gender first, then only that gender's brands,
+                    models and size scale (Kids listings get kids sizes only). */}
                 {category === 'sneakers' && (() => {
-                  const sneakerAudience = details['sneakerAudience'] ?? 'Adults';
+                  const sneakerGender = details['sneakerGender'] ?? '';
                   const sneakerSize = details['sneakerSize'] ?? '';
                   const sneakerBrandVal = details['sneakerBrand'] ?? '';
-                  const sizeList = sneakerAudience === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
+                  const sneakerModelVal = details['sneakerModel'] ?? '';
+                  const sizeList = details['sneakerAudience'] === 'Kids' ? SNEAKER_SIZES_KIDS : SNEAKER_SIZES_ADULTS;
+                  const brandOptions = sneakerGender ? getSneakerBrands(sneakerGender) : SNEAKER_BRANDS.filter((b) => b !== 'Other');
+                  const modelOptions = sneakerBrandVal ? getSneakerModels(sneakerBrandVal, sneakerGender) : [];
                   const sneakerLogo = sneakerBrandVal ? getSneakerBrandLogoUrl(sneakerBrandVal) : null;
+                  const pillCls = (filled: boolean) => `w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${filled ? '!text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none' : 'border-black text-gray-900 text-[9px] font-semibold'}`;
                   return (
                     <div className="mb-6">
                       <div className="flex items-start justify-between gap-3">
-                        {/* Brand — wider than size so the logo + name fit comfortably */}
+                        {/* Gender — drives brand, model and size */}
+                        <div className="flex-1 min-w-0 relative">
+                          <select
+                            value={sneakerGender}
+                            onChange={(e) => {
+                              const g = e.target.value;
+                              setDetail('sneakerGender', g);
+                              setDetail('sneakerBrand', '');
+                              setDetail('sneakerModel', '');
+                              setDetail('sneakerSize', '');
+                              setDetail('sneakerAudience', g === 'Kids' ? 'Kids' : 'Adults');
+                            }}
+                            aria-label="Sneaker gender"
+                            className={pillCls(!!sneakerGender)}
+                          >
+                            <option value="">Gender</option>
+                            {SNEAKER_GENDERS.map((g) => (
+                              <option key={g} value={g}>{g}</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
+                        </div>
+                        {/* Brand — only brands that make this gender's shoes */}
                         <div className="flex-[2] min-w-0 relative">
                           <select
                             value={sneakerBrandVal}
-                            onChange={(e) => setDetail('sneakerBrand', e.target.value)}
-                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white ${sneakerLogo ? 'pl-10 pr-8' : 'pl-3 pr-8'} ${!sneakerBrandVal ? 'text-[9px] text-gray-900 font-semibold' : 'text-[11px] sm:text-sm !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                            disabled={!sneakerGender}
+                            onChange={(e) => { setDetail('sneakerBrand', e.target.value); setDetail('sneakerModel', ''); }}
+                            aria-label="Sneaker brand"
+                            className={`${pillCls(!!sneakerBrandVal)} ${sneakerLogo ? 'pl-10' : ''} ${!sneakerGender ? 'bg-slate-100 text-gray-400' : ''}`}
                           >
                             <option value="">Brand</option>
-                            {SNEAKER_BRANDS.map((b) => (
+                            {brandOptions.map((b) => (
                               <option key={b} value={b}>{b}</option>
                             ))}
                           </select>
@@ -1837,12 +1887,32 @@ export default function CreateListing() {
                           )}
                           <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
                         </div>
-                        {/* Size — options depend on the audience (Adults default) */}
+                      </div>
+                      <div className="flex items-start justify-between gap-3 mt-2">
+                        {/* Model — this brand's models for the picked gender */}
+                        <div className="flex-[2] min-w-0 relative">
+                          <select
+                            value={sneakerModelVal}
+                            disabled={!sneakerBrandVal}
+                            onChange={(e) => setDetail('sneakerModel', e.target.value)}
+                            aria-label="Sneaker model"
+                            className={`${pillCls(!!sneakerModelVal)} ${!sneakerBrandVal ? 'bg-slate-100 text-gray-400' : ''}`}
+                          >
+                            <option value="">Model</option>
+                            {modelOptions.map((m) => (
+                              <option key={m} value={m}>{m}</option>
+                            ))}
+                            <option value="Other">Other</option>
+                          </select>
+                          <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
+                        </div>
+                        {/* Size — kids scale for Kids, adult scale otherwise */}
                         <div className="flex-1 min-w-0 relative">
                           <select
                             value={sneakerSize}
                             onChange={(e) => setDetail('sneakerSize', e.target.value)}
-                            className={`w-full appearance-none rounded-full h-9 sm:h-10 font-semibold text-center [text-align-last:center] border-2 border-black shadow-[0_2px_0_0_rgba(0,0,0,0.10),0_0_8px_rgba(0,0,0,0.06),0_4px_10px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-1 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-8 ${!sneakerSize ? 'text-[9px] text-gray-900 font-semibold' : 'text-[11px] sm:text-sm !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                            aria-label="Sneaker size"
+                            className={pillCls(!!sneakerSize)}
                           >
                             <option value="">Size</option>
                             {sizeList.map((s) => (
@@ -1851,27 +1921,6 @@ export default function CreateListing() {
                           </select>
                           <ChevronDown className="absolute right-3 top-2.5 sm:top-3 h-4 w-4 text-gray-500 pointer-events-none" />
                         </div>
-                      </div>
-                      {/* Adults / Kids — under brand+size row; switching resets the size */}
-                      <div className="flex items-center justify-center gap-1.5 mt-2">
-                        {(['Adults', 'Kids'] as const).map((aud) => (
-                          <button
-                            key={aud}
-                            type="button"
-                            onClick={() => {
-                              setDetail('sneakerAudience', aud);
-                              if (sneakerAudience !== aud) setDetail('sneakerSize', '');
-                            }}
-                            className={cn(
-                              'px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-bold border-2 transition-all duration-150',
-                              sneakerAudience === aud
-                                ? 'bg-blue-600 text-white border-[3px] border-black'
-                                : 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700'
-                            )}
-                          >
-                            {aud}
-                          </button>
-                        ))}
                       </div>
                     </div>
                   );

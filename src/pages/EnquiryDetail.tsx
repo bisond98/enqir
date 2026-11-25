@@ -86,7 +86,7 @@ interface Enquiry {
   idBackImage?: string;
   isProfileVerified?: boolean;
   userVerified?: boolean;
-  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; mobileModel?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; petBreed?: string; petTraining?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string; audioBrand?: string; audioModel?: string } | null;
+  details?: { brand?: string; year?: string; variant?: string; transmission?: string; fuelType?: string; mobileBrand?: string; mobileModel?: string; ram?: string; memory?: string; jobDirection?: string; skills?: string; experience?: string; jobType?: string; workMode?: string; education?: string; stream?: string; listingType?: string; landArea?: string; builtUpArea?: string; houseArea?: string; houseBhk?: string; subcategory?: string; petBreed?: string; petTraining?: string; laptopBrand?: string; laptopModel?: string; laptopProcessor?: string; laptopStorage?: string; cameraBrand?: string; cameraModel?: string; audioBrand?: string; audioModel?: string; sneakerGender?: string; sneakerModel?: string } | null;
 }
 
 interface UserProfile {
@@ -1037,6 +1037,8 @@ const EnquiryDetail = () => {
                         d.laptopStorage && { label: 'Storage', value: String(d.laptopStorage), highlight: true },
                         d.sneakerBrand && { label: 'Brand', value: d.sneakerBrand, icon: 'sneakerBrand', logoUrl: getSneakerBrandLogoUrl(d.sneakerBrand), highlight: true },
                         (d.sneakerAudience && String(enquiry.category || '').toLowerCase().includes('sneaker')) && { label: null, value: String(d.sneakerAudience), icon: 'sneakerBrand', logoUrl: d.sneakerBrand ? getSneakerBrandLogoUrl(d.sneakerBrand) : null, highlight: true },
+                        d.sneakerGender && { label: 'For', value: String(d.sneakerGender), highlight: true },
+                        d.sneakerModel && { label: 'Model', value: String(d.sneakerModel), highlight: true },
                         d.sneakerSize && { label: 'Size', value: String(d.sneakerSize), highlight: true },
                         d.repairType && { label: 'Service type', value: d.repairType, highlight: true },
                         // Thrift dropdowns picked on the description step
@@ -1072,7 +1074,9 @@ const EnquiryDetail = () => {
                       );
                       const ChipIcon = ({ icon, logoUrl }: { icon?: string; logoUrl?: string | null }) => {
                         const isLogo = (icon === 'brand' || icon === 'mobileBrand' || icon === 'sneakerBrand') && !!logoUrl;
-                        if (isLogo) return <img decoding="async" src={logoUrl as string} alt="" className="h-5 w-5 shrink-0 rounded-full object-contain" loading="lazy" />;
+                        // Logos keep their own aspect ratio so wide marks (Bentley,
+                        // Land Rover) stay legible instead of shrinking into a square.
+                        if (isLogo) return <img decoding="async" src={logoUrl as string} alt="" className="h-6 w-auto max-w-[72px] shrink-0 object-contain" loading="lazy" />;
                         if (icon === 'dog') return <Dog className="h-3.5 w-3.5 shrink-0 text-green-600" strokeWidth={2.2} />;
                         if (icon === 'nopets') return <NoPetsIcon className="h-3.5 w-3.5 shrink-0" />;
                         const glyph = icon === 'gear' ? <GearShifterIcon className="h-[10px] w-[10px]" />

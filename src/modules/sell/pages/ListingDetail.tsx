@@ -989,6 +989,8 @@ export default function ListingDetail() {
                     furnishing: 'Furnishing',
                     sneakerBrand: 'Brand',
                     sneakerAudience: '',
+                    sneakerGender: 'For',
+                    sneakerModel: 'Model',
                     sneakerSize: 'Size',
                     salaryPeriod: 'Salary',
                     education: 'Education',
@@ -1036,7 +1038,7 @@ export default function ListingDetail() {
                         {key === 'transmission' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Joystick className="h-2.5 w-2.5 text-white" /></span>}
                         {key === 'fuel' && <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Fuel className="h-2.5 w-2.5 text-white" /></span>}
                         {label && key !== 'transmission' && key !== 'fuel' && !(brandLogo) && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-0 rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">{label}:</span>}
-                        {brandLogo && <img decoding="async" src={brandLogo} alt="" className="h-3.5 w-3.5 object-contain flex-shrink-0" loading="lazy" />}
+                        {brandLogo && <img decoding="async" src={brandLogo} alt="" className="h-4 w-auto max-w-[52px] object-contain flex-shrink-0" loading="lazy" />}
                         {key === 'facing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-0 rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Facing:</span>}
                         {key === 'furnishing' && !label && <span className="text-[6px] font-semibold text-white bg-red-600 uppercase tracking-wide border-0 rounded-[3px] px-[3px] py-[1px] leading-none whitespace-nowrap">Furnishing:</span>}
                         {key === 'petFriendly' ? (val === true || val === 'true' ? 'Yes' : 'No') : String(val)}
