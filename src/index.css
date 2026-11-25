@@ -2906,6 +2906,43 @@ body {
   border-bottom-width: 0 !important;
 }
 
+/* Exception: the first tab's "Need" field is a closed capsule, so it keeps a
+   light hairline on all four sides (and a blue one while focused). */
+.enq-form #enquiry-title {
+  border: 1px solid #0f172a !important;
+}
+.enq-form #enquiry-title:hover:not(:focus) {
+  border-color: #000 !important;
+}
+.enq-form #enquiry-title:focus,
+.enq-form #enquiry-title:focus-visible {
+  outline: none !important;
+  border: 2px solid #000 !important;
+  box-shadow: none !important;
+}
+
+/* Every other field thickens its open outline to black while selected, so the
+   focused field is unmistakable. */
+.enq-form input:focus,
+.enq-form input:focus-visible,
+.enq-form textarea:focus,
+.enq-form textarea:focus-visible {
+  outline: none !important;
+  border-top-width: 2px !important;
+  border-left-width: 2px !important;
+  border-right-width: 2px !important;
+  border-bottom-width: 0 !important;
+  border-color: #000 !important;
+  box-shadow: none !important;
+}
+
+.enq-form select:focus,
+.enq-form select:focus-visible {
+  outline: none !important;
+  border: 2px solid #000 !important;
+  box-shadow: none !important;
+}
+
 
 /* Firebase invisible reCAPTCHA: keep the widget mounted but out of the layout,
    and keep Google's floating badge off the Post Enquiry button. */

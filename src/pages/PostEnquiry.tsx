@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { Fragment, useState, useEffect, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { MapLocationPickerLazy as MapLocationPicker } from "@/components/MapLocationPickerLazy";
 import type { MapLocationAddress } from "@/types/mapLocation";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Headphones, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints, Globe, Watch } from "lucide-react";
+import { CalendarIcon, Shield, CheckCircle, ArrowLeft, Crown, Send, Upload, ChevronDown, X, Bot, Loader2, Pen, Rocket, Check, Briefcase, User, Wrench, Tractor, Landmark, Palette, Car, Baby, BookOpen, Flower2, Bike, Users, Smartphone, Trophy, HardHat, GraduationCap, Monitor, Headphones, Film, PartyPopper, Shirt, UtensilsCrossed, Gamepad2, Building2, HeartPulse, Sofa, ShieldCheck, Gem, Scale, Megaphone, Stamp, HandHeart, PawPrint, Factory, Home, Truck, Zap, Lock, MapPin, Mic, Camera, Dumbbell, TreePine, FileText, Sparkles, MoreHorizontal, Music, ChevronRight, ChevronLeft, IndianRupee, Search, Type, AlignLeft, LayoutGrid, Package, Tag, CheckCircle2, LogIn, UserPlus, UserSearch, Phone, Fuel, Footprints, Globe, Watch, Laptop } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -151,6 +151,57 @@ const GearShifterIcon = ({ className = "" }: { className?: string }) => (
     <circle cx="12" cy="19.4" r="1.7" fill="currentColor" stroke="none" />
   </svg>
 );
+
+// Three illustrations for the "how it works" strip on the first tab:
+// a person with a plus badge, a laptop with an enquiry note, a tick badge.
+const ProcessGlyph = ({ kind, className = "" }: { kind: 'post' | 'verify' | 'connect'; className?: string }) => {
+  if (kind === 'post') {
+    return (
+      <svg viewBox="0 0 64 64" className={className} fill="none" aria-hidden="true">
+        <circle cx="29" cy="24.5" r="9.5" fill="#111827" />
+        <path d="M12 50.5c0-9.2 7.6-15 17-15s17 5.8 17 15z" fill="#111827" />
+        <circle cx="47.5" cy="45.5" r="9" fill="#2f7cf6" stroke="#fff" strokeWidth="2.2" />
+        <path d="M47.5 41.5v8M43.5 45.5h8" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (kind === 'verify') {
+    return (
+      <svg viewBox="0 0 64 64" className={className} fill="none" aria-hidden="true">
+        {/* screen */}
+        <rect x="11" y="19" width="42" height="28" rx="3" fill="#fff" stroke="#0f172a" strokeWidth="1" />
+        {/* browser chrome */}
+        <path d="M11.5 25.5h41" stroke="#0f172a" strokeWidth="0.8" />
+        <circle cx="15.8" cy="22.4" r=".7" fill="#0f172a" />
+        <circle cx="18.8" cy="22.4" r=".7" fill="#0f172a" />
+        <circle cx="21.8" cy="22.4" r=".7" fill="#0f172a" />
+        {/* wordmark on the screen */}
+        <text
+          x="32"
+          y="39.5"
+          textAnchor="middle"
+          fontFamily="Inter, ui-sans-serif, system-ui, sans-serif"
+          fontSize="8.5"
+          fontWeight="700"
+          fill="#0f172a"
+          letterSpacing="-0.2"
+        >
+          enqir.in
+        </text>
+        {/* base */}
+        <path d="M6 49.5h52l-3.5 4.2H9.5z" fill="#0f172a" opacity="0.9" />
+        {/* enquiry note badge */}
+        <rect x="37.5" y="10.5" width="16" height="14" rx="3.5" fill="#2f7cf6" />
+        <path d="M41.5 15.5h8M41.5 19h5" stroke="#fff" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 64 64" className={className} fill="none" aria-hidden="true">
+      <path d="M20 33.5l7.5 7.5L44 24" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+};
 
 export default function PostEnquiry() {
   // Version: 3.0 - Multi-step wizard (matching sell listing flow)
@@ -3213,10 +3264,15 @@ const DEADLINE_STEP = 5;
           />
         </div>
         {/* Header - Matching Live Enquiries - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible flex items-center">
+        <div className="bg-[#05070d] text-white py-6 sm:py-12 lg:py-16 relative overflow-visible flex items-center">
+          {/* Restrained blue bloom in the top-right corner, like the reference hero. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_130%_at_100%_0%,rgba(47,124,246,0.38),rgba(47,124,246,0.10)_38%,transparent_62%)]"
+          />
           {/* Mural doodle filling the whole black header behind the text.
               Absolutely positioned, so the header keeps exactly its height. */}
-          <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/10">
+          <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/[0.05]">
             <EnquiryHeaderDoodles className="absolute inset-0 h-full w-full" />
           </div>
           {/* Back button — sits in the header's top-left corner, outside the
@@ -3237,18 +3293,29 @@ const DEADLINE_STEP = 5;
           >
             <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
           </Button>
-          {/* The heading row keeps the title centred in the black header. */}
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10 flex items-center justify-center min-h-[36px] sm:min-h-[44px]">
-            {/* Post Enquiry Heading in Black Header */}
+          {/* Heading row. The first tab carries the hero lockup (title + line of
+              reassurance, left aligned); every later tab keeps the centred title. */}
+          <div className={`max-w-4xl mx-auto px-4 sm:px-4 lg:px-8 relative z-10 flex items-center justify-center ${step === 0 ? 'min-h-[117px] sm:min-h-[44px]' : 'min-h-[36px] sm:min-h-[44px]'}`}>
+            {step === 0 ? (
+              <div className="w-full text-left">
+                <h1 className="text-[clamp(20px,5.6vw,23px)] font-bold leading-[1.15] tracking-[-0.02em] text-white dashboard-header-no-emoji">
+                  Post Your <span className="text-[#2f7cf6]">Enquiry.</span>
+                </h1>
+                <p className="mt-1.5 whitespace-nowrap text-[8.5px] sm:text-[11px] font-normal leading-4 tracking-[-0.01em] text-white/65">
+                  Tell us what you're looking for — and let verified sellers reach out to you.
+                </p>
+              </div>
+            ) : (
             <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
               <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
               <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{STEPS[step].key === 'category' ? 'Category' : 'Post Your Enquiry.'}</span>
               <MagnifierDoodle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white/25" />
             </h1>
+            )}
           </div>
           </div>
 
-        <div className="max-w-4xl mx-auto px-1 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
           {/* Success Message - Enhanced Professional Design */}
           {isSubmitted && (
             <Card className="border-2 border-green-200 shadow-lg mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-50 to-white overflow-hidden">
@@ -3310,11 +3377,11 @@ const DEADLINE_STEP = 5;
 
           {/* Main Form - Multi-step wizard (matching sell listing) */}
           {!isSubmitted && (
-            <Card className="enq-form border border-black border-t-0 rounded-none rounded-b-2xl sm:rounded-b-3xl bg-white shadow-none hover:shadow-none overflow-hidden">
+            <Card className="enq-form border border-slate-200/80 rounded-3xl bg-white shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] hover:shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] overflow-hidden">
 
                               {/* pt keeps the inputs exactly where they were when the progress
                     bar sat above them; the bar itself now lives under the card. */}
-                <CardContent className={`relative pb-6 flex flex-col ${step === 0 ? 'pt-12 sm:pt-14' : 'pt-1 sm:pt-2'}`}>
+                <CardContent className={`relative pb-6 flex flex-col ${step === 0 ? 'pt-6 sm:pt-7' : 'pt-1 sm:pt-2'}`}>
                 {/* The card is left clean: the old doodle watermark that sat
                     behind the form fields has been removed. */}
                 {/* Step icon retired by request. What is left is an invisible
@@ -3386,33 +3453,57 @@ const DEADLINE_STEP = 5;
 
                   {/* Step 0: Title */}
                   {step === 0 && (
-                    <div className="relative space-y-2 max-w-lg mx-auto w-full">
-                      <p className="text-[8px] font-bold text-black text-left tracking-wide">Need</p>
+                    <div className="relative space-y-3 max-w-xl mx-auto w-full">
+                      <p className="flex items-center gap-2 text-[15px] sm:text-base font-semibold text-slate-900 text-left">
+                        <span aria-hidden="true" className="h-4 w-[3px] rounded-full bg-blue-600" />
+                        Need
+                      </p>
                       <div className="relative">
+                      {/* Decorative magnifier inside the field — the input keeps
+                          its own value, focus and handlers untouched. */}
+                      <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-20 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       <Input
                         id="enquiry-title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder=""
-                        className="rounded-[12px] h-12 sm:h-14 min-h-[48px] w-full text-base font-medium bg-white border-x border-b-0 border-t border-black shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
+                        className="rounded-full h-16 min-h-[48px] w-full !text-[17px] font-normal bg-white border border-slate-200 !border-b shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:border-slate-300 focus-visible:border-blue-500 focus-visible:ring-4 focus-visible:ring-blue-500/10 transition-all duration-200 min-touch pl-12 pr-5 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
                         maxLength={1000}
                         autoFocus={canAutoFocus()}
                       />
                       {/* Rotating placeholder — dull question lines roll down inside the input box every 3s */}
                       {!title && (
-                        <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-[12px]" aria-hidden="true">
+                        <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-full" aria-hidden="true">
                           {titleHintIdx > 0 && (
-                            <span key={`need-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                            <span key={`need-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-11 pr-5 leading-tight text-[11px] font-semibold text-gray-400">
                               {NEED_HINTS[(titleHintIdx - 1 + NEED_HINTS.length) % NEED_HINTS.length]}
                             </span>
                           )}
-                          <span key={`need-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                          <span key={`need-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-11 pr-5 leading-tight text-[11px] font-semibold text-gray-400">
                             {NEED_HINTS[titleHintIdx % NEED_HINTS.length]}
                           </span>
                         </div>
-                      )}
+                                            )}
                       </div>
 
+                      {/* Example needs — quiet, non-interactive chips under the
+                          field (plain spans, nothing to click). */}
+                                              <div className="flex flex-nowrap items-center justify-center gap-1 pt-0.5">
+                        {[
+                          { Icon: Briefcase, label: 'Remote Job' },
+                          { Icon: Building2, label: 'Apartment' },
+                          { Icon: Smartphone, label: 'Smartphone' },
+                          { Icon: Laptop, label: 'Laptop' },
+                        ].map(({ Icon, label }) => (
+                          <span
+                            key={label}
+                            className="inline-flex h-[26px] select-none items-center gap-1 whitespace-nowrap rounded-full bg-slate-200 px-1.5 text-[9.5px] font-semibold text-slate-900"
+                          >
+                            <Icon aria-hidden="true" className="h-2.5 w-2.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.4} />
+                            {label}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
 
@@ -5521,6 +5612,65 @@ const DEADLINE_STEP = 5;
                     backgroundColor: '#15803d'
                   }}
                 />
+              </div>
+            </div>
+          )}
+
+          {/* First tab only — three reassurances and a three-step picture of what
+              happens after posting. Decorative: no state, no handlers. */}
+          {!isSubmitted && step === 0 && (
+            <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
+              <div className="mx-auto max-w-3xl">
+                <div className="flex items-center justify-between">
+                  {[
+                    { Icon: ShieldCheck, title: 'Verified Users', note: 'Real People' },
+                    { Icon: HandHeart, title: 'Trusted Deals', note: 'Buy & Sell Safely' },
+                    { Icon: Zap, title: 'Fast Responses', note: 'Get Replies Quickly' },
+                  ].map(({ Icon, title, note }, i) => (
+                    <Fragment key={title}>
+                      {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
+                      <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-1">
+                        <Icon aria-hidden="true" className="h-[18px] w-[18px] flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                        <span className="min-w-0 text-left">
+                          <span className="block text-[10.5px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
+                          <span className="block text-[8.5px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
+                        </span>
+                      </div>
+                    </Fragment>
+                  ))}
+                </div>
+
+                <div className="mt-7 sm:mt-9">
+                  <div className="flex items-start justify-between gap-1">
+                    {[
+                      { kind: 'post' as const, title: 'Post Your Enquiry', circle: 'bg-[#eef4ff]', disc: 'h-[36px] w-[36px] sm:h-[42px] sm:w-[42px]', size: 'h-[24px] w-[24px] sm:h-[28px] sm:w-[28px]' },
+                      { kind: 'verify' as const, title: 'Get Verified Responses', circle: 'bg-white', disc: 'h-[136px] w-[136px] sm:h-48 sm:w-48', size: 'h-[126px] w-[126px] sm:h-[172px] sm:w-[172px]' },
+                      { kind: 'connect' as const, title: 'Connect & Close the Deal', circle: 'bg-[#2f7cf6]', disc: 'h-[32px] w-[32px] sm:h-[38px] sm:w-[38px]', size: 'h-[17px] w-[17px] sm:h-[20px] sm:w-[20px]' },
+                    ].map(({ kind, title, circle, disc, size }, i) => (
+                      <Fragment key={title}>
+                        {i > 0 && (
+                          <ChevronRight
+                            aria-hidden="true"
+                            className="mt-[28px] sm:mt-[38px] h-4 w-4 flex-shrink-0 text-slate-300"
+                            strokeWidth={2}
+                          />
+                        )}
+                        <div className="flex min-w-0 flex-1 flex-col items-center gap-1 text-center">
+                          <span className="flex h-[136px] items-center justify-center sm:h-48">
+                            <span
+                              className={`flex flex-shrink-0 items-center justify-center rounded-full ${disc} ${circle}`}
+                            >
+                              <ProcessGlyph kind={kind} className={size} />
+                            </span>
+                          </span>
+                          <p className="whitespace-nowrap text-[9.5px] font-semibold leading-[1.2] tracking-[-0.02em] text-slate-800 sm:text-[11px]">
+                            {title}
+                          </p>
+                        </div>
+                      </Fragment>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}
