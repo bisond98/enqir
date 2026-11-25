@@ -81,7 +81,6 @@ import { LoadingAnimation } from "@/components/LoadingAnimation";
 // 2D doodles (buyer cartoon, price tag, coin, stars) — shared components in
 // @/components/doodles, used as light background decorations on wizard steps.
 import { EnquiryHeaderDoodles, MagnifierDoodle, DealFlowSketch } from "@/components/doodles";
-import EnquiryPosterDoodle from "@/components/enquiryPosterDoodle";
 // PRO PLAN - KEPT FOR FUTURE UPDATES
 // import { getUserPaymentPlan, hasProEnquiriesRemaining, decrementProEnquiriesRemaining, getProEnquiriesRemaining } from "@/services/paymentService";
 
@@ -1035,7 +1034,13 @@ const DEADLINE_STEP = 5;
     // is not visible never runs animation frames, which silently skipped the
     // reveal. revealStepTop retries until the heading exists, so a form that
     // mounts later (sign-in restore) is still covered.
-    revealNewStep('step-top', 10);
+    // The title tab opens at the top of the page so the black header stays in
+    // view; revealing #step-top here scrolled it off on load.
+    if (step === 0) {
+      if (canAutoScroll()) window.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+      revealNewStep('step-top', 10);
+    }
     // Keyboard handling below is mobile-only.
     if (!isMobile) return;
     const vv = (window as any).visualViewport as VisualViewport | undefined;
@@ -3208,65 +3213,39 @@ const DEADLINE_STEP = 5;
           />
         </div>
         {/* Header - Matching Live Enquiries - Full Width */}
-        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible">
+        <div className="bg-black text-white py-6 sm:py-12 lg:py-16 relative overflow-visible flex items-center">
           {/* Mural doodle filling the whole black header behind the text.
               Absolutely positioned, so the header keeps exactly its height. */}
-          <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/20">
+          <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden text-white/10">
             <EnquiryHeaderDoodles className="absolute inset-0 h-full w-full" />
           </div>
-          {/* Marketing poster pinned to the right edge of the header. Absolutely
-              positioned, so the header keeps exactly its height; only the left
-              edge fades, so the heading stays the first thing read. */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none select-none absolute inset-y-0 right-0 flex w-[52%] items-center justify-end pr-2 opacity-75 sm:w-[44%] sm:pr-3 sm:opacity-90"
+          {/* Back button — sits in the header's top-left corner, outside the
+              centred row, so it can never pull the heading off centre. */}
+          <Button
+            variant="ghost"
+            type="button"
+            onClick={() => {
+              // Inside the wizard: step back a tab (same as the bottom Back
+              // button). On the first tab: leave the form.
+              if (!isSubmitted && step > 0) {
+                goBack();
+                return;
+              }
+              window.history.back();
+            }}
+            className="absolute left-2 top-2 sm:left-4 sm:top-4 p-2 hover:bg-white/10 rounded-xl transition-colors z-50"
           >
-            <EnquiryPosterDoodle className="h-full max-h-[88%] w-auto max-w-full drop-shadow-[0_6px_16px_rgba(0,0,0,0.55)] [mask-image:linear-gradient(to_right,transparent,black_24%)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_24%)]" />
-          </div>
-          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10">
-            {/* Spacer Section to Match Dashboard/Profile */}
-            <div className="mb-4 sm:mb-6">
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
-                  type="button"
-                  onClick={() => {
-                    // Inside the wizard: step back a tab (same as the bottom
-                    // Back button). On the first tab: leave the form.
-                    if (!isSubmitted && step > 0) {
-                      goBack();
-                      return;
-                    }
-                    window.history.back();
-                  }}
-                  className="p-2 sm:p-2 hover:bg-white/10 rounded-xl transition-colors relative z-50"
-                >
-                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                </Button>
-                <div className="w-10 h-10"></div>
-              </div>
-              </div>
-              
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+          </Button>
+          {/* The heading row keeps the title centred in the black header. */}
+          <div className="max-w-4xl mx-auto px-1 sm:px-4 lg:px-8 relative z-10 flex items-center justify-center min-h-[36px] sm:min-h-[44px]">
             {/* Post Enquiry Heading in Black Header */}
-            <div className="flex justify-center items-center mb-4 sm:mb-6">
-              <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-                      <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
-                      <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Post Your Enquiry.</span>
-                      <MagnifierDoodle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white/25" />
-              </h1>
-                  </div>
-            
-            {/* Content Card - Black Background */}
-            <div className="bg-black rounded-lg p-4 sm:p-6 lg:p-8">
-              <div className="text-center">
-                <div className="flex justify-center items-center gap-3 sm:gap-4 mb-3 sm:mb-4 lg:mb-5">
-                  <p className="text-[8px] sm:text-[9px] lg:text-[10px] text-white text-center font-medium max-w-2xl mx-auto leading-relaxed">
-                    What in the world are you looking for?
-                  </p>
-                </div>
-                </div>
-              </div>
-            </div>
+            <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
+              <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
+              <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Post Your Enquiry.</span>
+              <MagnifierDoodle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white/25" />
+            </h1>
+          </div>
           </div>
 
         <div className="max-w-4xl mx-auto px-1 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
@@ -3332,19 +3311,10 @@ const DEADLINE_STEP = 5;
           {/* Main Form - Multi-step wizard (matching sell listing) */}
           {!isSubmitted && (
             <Card className="enq-form border border-black border-t-0 rounded-none rounded-b-2xl sm:rounded-b-3xl bg-white shadow-none hover:shadow-none overflow-hidden">
-              <div className="space-y-2 pb-4 px-5 sm:px-6 lg:px-8 pt-4">
-                <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
-                  <div
-                    className="h-full rounded-full transition-all duration-500 ease-out"
-                    style={{
-                      width: `${((step + 1) / totalSteps) * 100}%`,
-                      backgroundColor: '#15803d'
-                    }}
-                  />
-                </div>
-              </div>
 
-              <CardContent className="relative pt-2 sm:pt-4 pb-6 flex flex-col">
+                              {/* pt keeps the inputs exactly where they were when the progress
+                    bar sat above them; the bar itself now lives under the card. */}
+                <CardContent className="relative pt-12 sm:pt-14 pb-6 flex flex-col">
                 {/* The card is left clean: the old doodle watermark that sat
                     behind the form fields has been removed. */}
                 {/* Step icon retired by request. What is left is an invisible
@@ -3356,6 +3326,9 @@ const DEADLINE_STEP = 5;
 
                 {/* Step Title — styled like the "Enqir" wordmark on the phone sign-in page:
                     brush-swash stroke behind the text, no pill/background */}
+                {/* The first tab has no headline: its heading was the question the
+                    title input already asks, so the tab opens straight on the field. */}
+                {step !== 0 && (
                 <div id="step-title" className="text-center pt-3 sm:pt-4 mb-9 sm:mb-10">
                   <div className="relative mx-auto inline-flex max-w-full items-center justify-center select-none px-5 sm:px-9 py-4 sm:py-6">
                     {/* Painterly brush swash — same tapered stroke as the sign-in wordmark */}
@@ -3406,6 +3379,7 @@ const DEADLINE_STEP = 5;
                     </span>
                 </div>
                 </div>
+                )}
 
                 {/* Step Content */}
                 <div key={step} className="enquiry-wizard space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
@@ -5531,8 +5505,24 @@ const DEADLINE_STEP = 5;
                   )}
                 </div>
 
+
               </CardContent>
             </Card>
+          )}
+
+          {/* Progress bar sits outside the card, just above the phone doodle. */}
+          {!isSubmitted && (
+            <div className="px-5 sm:px-6 lg:px-8 pt-4">
+              <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
+                <div
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{
+                    width: `${((step + 1) / totalSteps) * 100}%`,
+                    backgroundColor: '#15803d'
+                  }}
+                />
+              </div>
+            </div>
           )}
 
           {/* Real-time Verification Status */}
