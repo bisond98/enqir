@@ -3242,7 +3242,7 @@ const DEADLINE_STEP = 5;
             {/* Post Enquiry Heading in Black Header */}
             <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
               <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
-              <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">Post Your Enquiry.</span>
+              <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{STEPS[step].key === 'category' ? 'Category' : 'Post Your Enquiry.'}</span>
               <MagnifierDoodle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white/25" />
             </h1>
           </div>
@@ -3314,7 +3314,7 @@ const DEADLINE_STEP = 5;
 
                               {/* pt keeps the inputs exactly where they were when the progress
                     bar sat above them; the bar itself now lives under the card. */}
-                <CardContent className="relative pt-12 sm:pt-14 pb-6 flex flex-col">
+                <CardContent className={`relative pb-6 flex flex-col ${step === 0 ? 'pt-12 sm:pt-14' : 'pt-1 sm:pt-2'}`}>
                 {/* The card is left clean: the old doodle watermark that sat
                     behind the form fields has been removed. */}
                 {/* Step icon retired by request. What is left is an invisible
@@ -3326,9 +3326,9 @@ const DEADLINE_STEP = 5;
 
                 {/* Step Title — styled like the "Enqir" wordmark on the phone sign-in page:
                     brush-swash stroke behind the text, no pill/background */}
-                {/* The first tab has no headline: its heading was the question the
-                    title input already asks, so the tab opens straight on the field. */}
-                {step !== 0 && (
+                {/* Neither the title tab nor the category tab carries a headline:
+                    the black header names the step, so the tab opens on its field. */}
+                {step > 1 && (
                 <div id="step-title" className="text-center pt-3 sm:pt-4 mb-9 sm:mb-10">
                   <div className="relative mx-auto inline-flex max-w-full items-center justify-center select-none px-5 sm:px-9 py-4 sm:py-6">
                     {/* Painterly brush swash — same tapered stroke as the sign-in wordmark */}
