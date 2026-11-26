@@ -3226,11 +3226,13 @@ export default function CreateListing() {
         </div>
       </div>
 
-      {/* Phones only: the sketch sits under the card on every tab, exactly as
-          the enquiry sketch does on the post-enquiry form */}
-      <div className="sm:hidden px-4 pt-14 text-gray-900">
-        <SellListingSketch className="w-full h-auto" />
-      </div>
+      {/* Phones only: the sketch sits under the card on the confirmation tab
+          only, keeping the very last screen warm like the enquiry sketch */}
+      {step === totalSteps - 1 && (
+        <div className="sm:hidden px-4 pt-14 text-gray-900">
+          <SellListingSketch className="w-full h-auto" />
+        </div>
+      )}
     </SellShell>
   );
 }
