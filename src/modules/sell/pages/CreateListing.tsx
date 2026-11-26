@@ -1413,7 +1413,7 @@ export default function CreateListing() {
               <div className="sell-pills relative flex flex-col space-y-2 max-w-lg mx-auto w-full">
                 {/* Quiet guidance above the pickers — the same compact card as
                     the enquiry tabs. Decorative, nothing to click. */}
-                <div className="order-first rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <div className="order-first rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   <div className="flex items-stretch justify-between">
                     {[
                       { Icon: Type, title: 'Be specific', note: 'Brand + model' },
@@ -1436,12 +1436,14 @@ export default function CreateListing() {
                 <SellerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
                 {/* Same tab furniture as the enquiry title tab: a short label on
                     a blue accent, then a capsule field with a quiet icon. */}
-                <p className="flex items-center gap-2 text-[15px] sm:text-base font-semibold text-slate-900 text-left">
+                {/* The tab name already sits in the header, so the small in-card
+                    label is hidden; it keeps its space so nothing else moves. */}
+                <p className="invisible flex items-center gap-2 text-[15px] sm:text-base font-semibold text-slate-900 text-left" aria-hidden="true">
                   <span aria-hidden="true" className="h-4 w-[3px] rounded-full bg-blue-600" />
                   Title
                 </p>
                 <div className="relative">
-                <Pen aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-20 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Pen aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-20 h-4 w-4 -translate-y-1/2 text-gray-800" />
                 <Input
                   id="listing-title"
                   value={title}
@@ -1532,11 +1534,11 @@ export default function CreateListing() {
                   return (
                     <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-full" aria-hidden="true">
                       {titleHintIdx > 0 && (
-                        <span key={`title-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-11 pr-5 leading-tight text-[11px] font-semibold text-gray-400">
+                        <span key={`title-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-11 pr-5 leading-tight text-[11px] font-semibold text-gray-800">
                           Title — {hints[(titleHintIdx - 1 + hints.length) % hints.length]}
                         </span>
                       )}
-                      <span key={`title-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-11 pr-5 leading-tight text-[11px] font-semibold text-gray-400">
+                      <span key={`title-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-11 pr-5 leading-tight text-[11px] font-semibold text-gray-800">
                         Title — {hints[titleHintIdx % hints.length]}
                       </span>
                     </div>
@@ -1610,7 +1612,9 @@ export default function CreateListing() {
                       // A tab with exactly three dropdowns leaves the third one alone on
                       // the second line, so it is centred in that line instead of being
                       // pushed to the right edge with the rest of the row.
-                      <div key={f.key} className={`relative ${category === 'pets' ? (f.key === 'petBreed' ? 'w-[62%]' : 'w-[47%]') : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={category === 'bicycles' && (f.key === 'subcategory' || f.key === 'year') ? { marginLeft: 'auto', marginRight: 'auto' } : hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', marginTop: '1rem' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
+                      // Dropdowns sit a touch lower than the field above them, moved
+                      // with a transform so the rows above and below stay put.
+                      <div key={f.key} className={`relative ${isDropdown ? 'translate-y-[28px]' : ''} ${category === 'pets' ? (f.key === 'petBreed' ? 'w-[62%]' : 'w-[47%]') : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={category === 'bicycles' && (f.key === 'subcategory' || f.key === 'year') ? { marginLeft: 'auto', marginRight: 'auto' } : hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', marginTop: '1rem' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
                         {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && f.key !== 'cleaningTypes' && category !== 'pets' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
                           // The bicycle year and the jobs "Listing for" pick add no
                           // label: their placeholder names them, and the node stays in
@@ -1888,7 +1892,7 @@ export default function CreateListing() {
               <div className="sell-pills space-y-2 max-w-lg mx-auto w-full">
                 {/* Quiet guidance — the same compact card as the enquiry tabs.
                     Decorative, nothing to click. */}
-                <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <div className="rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   <div className="flex items-stretch justify-between">
                     {[
                       { Icon: FileText, title: 'Be clear', note: 'Condition + specs' },
@@ -2464,7 +2468,7 @@ export default function CreateListing() {
             {step === 3 && (
               <div className="max-w-xl mx-auto w-full space-y-3">
                 {/* Guidance card — same two-tile card as the enquiry Location tab. */}
-                <div className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-2xl border border-slate-300 bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   {[
                     { Icon: MapPin, title: 'Pin the area', note: 'Buyers gauge the distance.' },
                     { Icon: Lock, title: 'Stay private', note: 'No street address is shown.' },
@@ -2485,7 +2489,7 @@ export default function CreateListing() {
                 <button
                   type="button"
                   onClick={() => setMapPickerOpen(true)}
-                  className="relative w-full flex items-center gap-3 overflow-hidden !rounded-2xl !border-[1.5px] !border-black bg-gradient-to-b from-white to-slate-50 hover:!from-white hover:!to-slate-100 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
+                  className="relative top-6 w-full flex items-center gap-3 overflow-hidden !rounded-2xl !border-[1.5px] !border-black bg-gradient-to-b from-white to-slate-50 hover:!from-white hover:!to-slate-100 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
                 >
                   {/* Faint dot grid inside the capsule, like a map surface */}
                   <span
@@ -2713,7 +2717,7 @@ export default function CreateListing() {
             {step === 5 && (
               <div className="price-pills max-w-md mx-auto w-full space-y-4">
                 {/* Quiet guidance — the same compact card as the other tabs. */}
-                <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <div className="rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   <div className="flex items-stretch justify-between">
                     {[
                       { Icon: IndianRupee, title: 'Set a price', note: 'Fixed or range' },
@@ -2882,7 +2886,7 @@ export default function CreateListing() {
             {step === 6 && (
               <div className="max-w-lg mx-auto w-full space-y-5">
                 {/* Quiet guidance — the same compact card the other tabs open on. */}
-                <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <div className="rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   <div className="flex items-stretch justify-between">
                     {[
                       { Icon: BadgeCheck, title: 'Check once', note: 'Title and price' },
