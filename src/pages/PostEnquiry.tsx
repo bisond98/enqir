@@ -125,6 +125,35 @@ const EXAMPLE_CHIPS = [
   { Icon: PawPrint, label: 'Pet' },
 ];
 
+// Dart landing in a bullseye — the icon set has no dart glyph, so this one is
+// drawn by hand in the same 24px stroke / round-cap style.
+const DartTargetIcon = ({ className = '' }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.9}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    className={className}
+  >
+    {/* target */}
+    <circle cx="7.8" cy="16.2" r="5.7" />
+    <circle cx="7.8" cy="16.2" r="2.5" />
+    <circle cx="7.8" cy="16.2" r="0.85" fill="currentColor" stroke="none" />
+    {/* dart shaft running into the bullseye */}
+    <path d="M22.6 1.4 9.9 14.1" />
+    {/* dart flight: two pairs of feathers at the tail */}
+    <path d="M22.6 1.4 18.1 2.3" />
+    <path d="M22.6 1.4 21.7 5.9" />
+    <path d="M20.5 3.5 17.4 4.3" />
+    <path d="M20.5 3.5 19.9 6.5" />
+    {/* dart point dug into the centre */}
+    <path d="M7.8 16.2 10.8 15 9 13.2Z" fill="currentColor" stroke="none" />
+  </svg>
+);
+
 // Job-related categories show "Salary Expected" instead of "Budget"
 const isJobEnquiry = (cats: string[], legacy?: string) =>
   [...cats, legacy ?? ''].some((c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job')));
@@ -3339,7 +3368,7 @@ const DEADLINE_STEP = 5;
             ) : (
             <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
               <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
-              <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{STEPS[step].key === 'category' ? 'Category' : 'Post Your Enquiry.'}</span>
+              <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{STEPS[step].key === 'category' ? 'Category' : 'Exact Demand.'}</span>
               <MagnifierDoodle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white/25" />
             </h1>
             )}
@@ -5584,6 +5613,13 @@ const DEADLINE_STEP = 5;
 
                 {/* Navigation Buttons — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
                 <div className={`mt-5 flex items-center gap-4 pt-2 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
+                  {/* First tab: a quiet promise sits to the left of the Next circle */}
+                  {step === 0 && (
+                    <p className="flex flex-1 min-w-0 items-center gap-1 whitespace-nowrap text-[8.5px] sm:text-[10px] font-bold leading-none text-slate-900">
+                      <DartTargetIcon className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0 text-black" />
+                      <span className="truncate translate-y-[3px] sm:translate-y-[4px]">Post your needs. Never compromise.</span>
+                    </p>
+                  )}
                   {/* Back circle — hidden entirely on the first tab (was a dead, disabled button there) */}
                   {step > 0 && (
                     <Button
@@ -5673,9 +5709,9 @@ const DEADLINE_STEP = 5;
                 <div className="mt-7 sm:mt-9">
                   <div className="flex items-start justify-between gap-1">
                     {[
-                      { kind: 'post' as const, title: 'Post Your Enquiry', circle: 'bg-[#eef4ff]', disc: 'h-[36px] w-[36px] sm:h-[42px] sm:w-[42px]', size: 'h-[24px] w-[24px] sm:h-[28px] sm:w-[28px]' },
-                      { kind: 'verify' as const, title: 'Get Verified Responses', circle: 'bg-white', disc: 'h-[136px] w-[136px] sm:h-48 sm:w-48', size: 'h-[126px] w-[126px] sm:h-[172px] sm:w-[172px]' },
-                      { kind: 'connect' as const, title: 'Connect & Close the Deal', circle: 'bg-[#2f7cf6]', disc: 'h-[32px] w-[32px] sm:h-[38px] sm:w-[38px]', size: 'h-[17px] w-[17px] sm:h-[20px] sm:w-[20px]' },
+                      { kind: 'post' as const, title: 'Real Demand', circle: 'bg-[#eef4ff]', disc: 'h-[36px] w-[36px] sm:h-[42px] sm:w-[42px]', size: 'h-[24px] w-[24px] sm:h-[28px] sm:w-[28px]' },
+                      { kind: 'verify' as const, title: 'Verified Responses', circle: 'bg-white', disc: 'h-[136px] w-[136px] sm:h-48 sm:w-48', size: 'h-[126px] w-[126px] sm:h-[172px] sm:w-[172px]' },
+                      { kind: 'connect' as const, title: 'Connect Safe', circle: 'bg-[#2f7cf6]', disc: 'h-[32px] w-[32px] sm:h-[38px] sm:w-[38px]', size: 'h-[17px] w-[17px] sm:h-[20px] sm:w-[20px]' },
                     ].map(({ kind, title, circle, disc, size }, i) => (
                       <Fragment key={title}>
                         {i > 0 && (
