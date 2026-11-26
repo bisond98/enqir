@@ -2921,6 +2921,19 @@ body {
   box-shadow: none !important;
 }
 
+/* Exception: the description box is a closed card too, so it keeps all four
+   borders while typing — the open-bottom rule above otherwise hid its bottom
+   edge on focus. */
+.enq-form #enquiry-desc {
+  border: 1.5px solid #000 !important;
+}
+.enq-form #enquiry-desc:focus,
+.enq-form #enquiry-desc:focus-visible {
+  outline: none !important;
+  border: 2px solid #000 !important;
+  box-shadow: none !important;
+}
+
 /* First tab's example chips tick leftwards in a continuous loop. The list is
    rendered twice, so the track can slide by half its width seamlessly.
    Purely visual: the chips stay plain, non-clickable spans. */
@@ -3016,6 +3029,18 @@ body {
 @media (min-width: 640px) {
   .wizard-desc-box {
     min-height: 180px !important;
+  }
+}
+
+/* Post Enquiry's description box runs a little shorter than the Sell listing's,
+   so the guidance card, the field and the buttons fit one phone screen. Scoped
+   to the enquiry form so the listing wizard keeps its own height. */
+.enq-form .wizard-desc-box {
+  min-height: 128px !important;
+}
+@media (min-width: 640px) {
+  .enq-form .wizard-desc-box {
+    min-height: 148px !important;
   }
 }
 

@@ -3667,24 +3667,32 @@ const DEADLINE_STEP = 5;
                   {/* Step 2: Description */}
                   {step === 2 && (
                     <div className="space-y-2 max-w-lg mx-auto w-full">
-                                            {/* Two-part coach above the field — the same icon + label +
-                          note rhythm as the title tab's trust row, kept to two
-                          items so the tab stays calm. Plain markup, no handlers. */}
-                      <div className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-                        {[
-                          { Icon: FileText, title: 'Be specific', note: 'Condition, size and what matters most.' },
-                          { Icon: Sparkles, title: 'Set expectations', note: 'What the seller should know first.' },
-                        ].map(({ Icon, title, note }) => (
-                          <div key={title} className="flex min-w-0 items-start gap-2">
-                            <span className="mt-px flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-900">
-                              <Icon aria-hidden="true" className="h-3 w-3" strokeWidth={2.4} />
-                            </span>
-                            <span className="min-w-0">
-                              <span className="block text-[10px] font-bold leading-tight text-slate-900">{title}</span>
-                              <span className="mt-0.5 block text-[9px] leading-snug text-slate-500">{note}</span>
-                            </span>
-                          </div>
-                        ))}
+                      {/* Writing help above the field — the title tab's trust-row
+                          rhythm (three solid icons, hairlines, label + note) plus
+                          one worked example. Static markup, nothing to click. */}
+                      <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                        <div className="flex items-stretch justify-between">
+                          {[
+                            { Icon: FileText, title: 'Include', note: 'Specs, condition' },
+                            { Icon: CheckCircle2, title: 'Skip', note: 'No contacts' },
+                            { Icon: Sparkles, title: 'Why it helps', note: 'Better matches' },
+                          ].map(({ Icon, title, note }, i) => (
+                            <Fragment key={title}>
+                              {i > 0 && <span aria-hidden="true" className="h-6 w-px flex-shrink-0 self-center bg-slate-200" />}
+                              <div className="flex min-w-0 flex-1 items-center justify-start gap-1 px-0.5">
+                                <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                                <span className="min-w-0 text-left">
+                                  <span className="block truncate whitespace-nowrap text-[9px] font-semibold leading-[1.15] text-slate-900">{title}</span>
+                                  <span className="block truncate whitespace-nowrap text-[7.5px] font-normal leading-[1.15] text-slate-500">{note}</span>
+                                </span>
+                              </div>
+                            </Fragment>
+                          ))}
+                        </div>
+                        <p className="mt-2.5 border-t border-slate-100 pt-2 text-[9.5px] leading-snug text-slate-500">
+                          <span className="font-semibold text-slate-700">Example: </span>
+                          <span className="italic">“Steel tip darts, 23g, with a sisal board — lightly used, box included.”</span>
+                        </p>
                       </div>
 
 
@@ -3838,8 +3846,11 @@ const DEADLINE_STEP = 5;
                               <div className="h-3" aria-hidden="true" />
                             </div>
                           )}
-                          {/* Pets allowed — Yes / No, shown for every stay type */}
-                          <div className="mt-3">
+                          {/* Pets allowed — Yes / No, shown for every stay type.
+                              It sits straight under the staying pick, using only
+                              the spacer above it, so the two dropdowns read as one
+                              pair instead of drifting apart. */}
+                          <div className="mt-0">
                             <div className="relative" data-no-hug="pet-friendly">
                               <select
                                 aria-label="Pet friendly"
@@ -5002,7 +5013,7 @@ const DEADLINE_STEP = 5;
                               }}
                               placeholder="Specifications, requirements, timeline..."
                               maxLength={MAX_DESC_CHARS}
-                              className="wizard-desc-box rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
+                              className="wizard-desc-box rounded-[12px] min-h-[128px] sm:min-h-[148px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus={canAutoFocus()}
                             />
                           </div>
@@ -5030,7 +5041,7 @@ const DEADLINE_STEP = 5;
                                   : 'Specifications, requirements, timeline...'
                               }
                               maxLength={MAX_DESC_CHARS}
-                              className="wizard-desc-box rounded-[12px] min-h-[160px] sm:min-h-[180px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
+                              className="wizard-desc-box rounded-[12px] min-h-[128px] sm:min-h-[148px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus={canAutoFocus()}
                             />
                           </div>
@@ -5044,12 +5055,35 @@ const DEADLINE_STEP = 5;
                       "Where do you want it?" was removed per request */}
                   {step === 3 && (
                     <div ref={locationStepRef} className="max-w-xl mx-auto w-full space-y-3 pb-6 sm:pb-8">
+                      {/* Quiet guidance card — same two-part rhythm as the
+                          Description tab. Plain markup, nothing to click. */}
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                        {[
+                          { Icon: MapPin, title: 'Pin the area', note: 'Sellers gauge the distance.' },
+                          { Icon: Lock, title: 'Stay private', note: 'No street address is shown.' },
+                        ].map(({ Icon, title, note }) => (
+                          <div key={title} className="flex min-w-0 items-start gap-2">
+                            <span className="mt-px flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 text-black">
+                              <Icon aria-hidden="true" className="h-3 w-3" fill="currentColor" strokeWidth={1.2} />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-[10px] font-bold leading-tight text-slate-900">{title}</span>
+                              <span className="mt-0.5 block text-[9px] leading-snug text-slate-500">{note}</span>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                       {/* Pin precise location on a map */}
                       <button
                         type="button"
                         onClick={() => setMapPickerOpen(true)}
-                        className="relative w-full flex items-center gap-3 !rounded-2xl !border-[1.5px] !border-black bg-white hover:!bg-gray-50 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
+                        className="relative w-full flex items-center gap-3 overflow-hidden !rounded-2xl !border-[1.5px] !border-black bg-gradient-to-b from-white to-slate-50 hover:!from-white hover:!to-slate-100 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
                       >
+                        {/* Faint dot grid inside the capsule, like a map surface */}
+                        <span
+                          aria-hidden="true"
+                          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(15,23,42,0.08)_1px,transparent_1px)] bg-[length:12px_12px] opacity-60"
+                        />
                         <div className="relative z-10 w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                           <MapPin className="h-4 w-4 text-white" />
                         </div>
@@ -5093,12 +5127,37 @@ const DEADLINE_STEP = 5;
                           }
                         }}
                       />
+                      <p className="flex items-center justify-center gap-1.5 pt-0.5 text-[9.5px] font-medium leading-tight text-slate-500">
+                        <Shield aria-hidden="true" className="h-3 w-3 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                        Only the area is shared — never your exact address.
+                      </p>
                     </div>
                   )}
 
                   {/* Step 4: Budget / Salary Expected */}
                   {step === 4 && (
                     <div className="max-w-md mx-auto w-full space-y-4">
+                      {/* Quiet guidance — the same compact card as the other tabs,
+                          worded for money. Plain markup, nothing to click. */}
+                      <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                        <div className="flex items-stretch justify-between">
+                          {[
+                            { Icon: IndianRupee, title: 'An estimate', note: 'Exact not needed' },
+                            { Icon: Scale, title: 'Negotiable', note: 'Sellers can counter' },
+                          ].map(({ Icon, title, note }, i) => (
+                            <Fragment key={title}>
+                              {i > 0 && <span aria-hidden="true" className="h-6 w-px flex-shrink-0 self-center bg-slate-200" />}
+                              <div className="flex min-w-0 flex-1 items-center justify-start gap-1 px-0.5">
+                                <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                                <span className="min-w-0 text-left">
+                                  <span className="block truncate whitespace-nowrap text-[9px] font-semibold leading-[1.15] text-slate-900">{title}</span>
+                                  <span className="block truncate whitespace-nowrap text-[7.5px] font-normal leading-[1.15] text-slate-500">{note}</span>
+                                </span>
+                              </div>
+                            </Fragment>
+                          ))}
+                        </div>
+                      </div>
                       <div className="space-y-2">
                         <Label htmlFor="enquiry-budget" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-1.5">
                           <IndianRupee className="h-3.5 w-3.5" />
@@ -5175,28 +5234,31 @@ const DEADLINE_STEP = 5;
                   {/* Step 5: Deadline & Notes */}
                   {step === 5 && (
                     <div className="max-w-lg mx-auto w-full space-y-6">
+                      {/* Quiet guidance — the same compact card as the other tabs.
+                          Plain markup, nothing to click. */}
+                      <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                        <div className="flex items-stretch justify-between">
+                          {[
+                            { Icon: CalendarIcon, title: 'Be realistic', note: 'When you need it' },
+                            { Icon: HandHeart, title: 'Flexible timing', note: 'Sellers can plan' },
+                          ].map(({ Icon, title, note }, i) => (
+                            <Fragment key={title}>
+                              {i > 0 && <span aria-hidden="true" className="h-6 w-px flex-shrink-0 self-center bg-slate-200" />}
+                              <div className="flex min-w-0 flex-1 items-center justify-start gap-1 px-0.5">
+                                <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                                <span className="min-w-0 text-left">
+                                  <span className="block truncate whitespace-nowrap text-[9px] font-semibold leading-[1.15] text-slate-900">{title}</span>
+                                  <span className="block truncate whitespace-nowrap text-[7.5px] font-normal leading-[1.15] text-slate-500">{note}</span>
+                                </span>
+                              </div>
+                            </Fragment>
+                          ))}
+                        </div>
+                      </div>
                       <div className="space-y-2">
                         <TimeLimitSelector value={deadline} onChange={setDeadline} className="w-full" />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="enquiry-notes" className="text-[9px] sm:text-[10px] font-bold text-black ml-1">
-                          Notes <span className="text-slate-500 font-medium">(Optional)</span>
-                        </Label>
-                        <Textarea
-                          id="enquiry-notes"
-                          value={notes}
-                          onChange={(e) => {
-                            if (e.target.value.length <= 50) setNotes(e.target.value);
-                          }}
-                          maxLength={50}
-                          placeholder="Additional requirements or preferences... (max 50 characters)"
-                          className="rounded-[12px] min-h-[120px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-4 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
-                        />
-                        <p className="text-[10px] text-gray-400 text-right">
-                          {notes.length}/50
-                        </p>
-                      </div>
-                    </div>
+                                          </div>
                   )}
 
                   {/* Step 6: Photos & Verify */}
@@ -5639,9 +5701,10 @@ const DEADLINE_STEP = 5;
           {/* Step progress now lives in the header on every tab, so nothing
               renders below the card here. */}
 
-          {/* First tab only — three reassurances and a three-step picture of what
-              happens after posting. Decorative: no state, no handlers. */}
-          {!isSubmitted && step === 0 && (
+          {/* Title and Description tabs — three reassurances and the three-step
+              picture of what happens after posting, sitting under the card and
+              above the phone doodle. Decorative: no state, no handlers. */}
+          {!isSubmitted && (step === 0 || step === 2) && (
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
               <div className="mx-auto max-w-3xl">
                 <div className="flex items-center justify-between">
