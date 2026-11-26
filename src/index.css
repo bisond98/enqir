@@ -2921,6 +2921,26 @@ body {
   box-shadow: none !important;
 }
 
+/* First tab's example chips tick leftwards in a continuous loop. The list is
+   rendered twice, so the track can slide by half its width seamlessly.
+   Purely visual: the chips stay plain, non-clickable spans. */
+.enq-chip-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+}
+@keyframes enqChipScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.enq-chip-track {
+  animation: enqChipScroll 60s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .enq-chip-track { animation: none; }
+}
+
 /* Every other field thickens its open outline to black while selected, so the
    focused field is unmistakable. */
 .enq-form input:focus,

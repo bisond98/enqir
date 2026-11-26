@@ -106,6 +106,25 @@ const NEED_HINTS: string[] = [
   'What do you want to find today?',
 ];
 
+// Example needs that tick along under the title field — visual only, plain
+// pills with no click handlers.
+const EXAMPLE_CHIPS = [
+  { Icon: Briefcase, label: 'Remote Job' },
+  { Icon: Building2, label: 'Apartment' },
+  { Icon: Smartphone, label: 'Smartphone' },
+  { Icon: Laptop, label: 'Laptop' },
+  { Icon: Bike, label: 'Bike' },
+  { Icon: Car, label: 'Car' },
+  { Icon: Camera, label: 'Camera' },
+  { Icon: Sofa, label: 'Sofa' },
+  { Icon: Headphones, label: 'Headphones' },
+  { Icon: Music, label: 'Guitar' },
+  { Icon: Watch, label: 'Watch' },
+  { Icon: Home, label: 'House Rent' },
+  { Icon: Wrench, label: 'Repair' },
+  { Icon: PawPrint, label: 'Pet' },
+];
+
 // Job-related categories show "Salary Expected" instead of "Budget"
 const isJobEnquiry = (cats: string[], legacy?: string) =>
   [...cats, legacy ?? ''].some((c) => c && (c === 'jobs' || c === 'job' || c.toLowerCase().includes('job')));
@@ -3297,13 +3316,25 @@ const DEADLINE_STEP = 5;
               reassurance, left aligned); every later tab keeps the centred title. */}
           <div className={`max-w-4xl mx-auto px-4 sm:px-4 lg:px-8 relative z-10 flex items-center justify-center ${step === 0 ? 'min-h-[117px] sm:min-h-[44px]' : 'min-h-[36px] sm:min-h-[44px]'}`}>
             {step === 0 ? (
-              <div className="w-full text-left">
+              <div className="relative w-full text-left">
                 <h1 className="text-[clamp(20px,5.6vw,23px)] font-bold leading-[1.15] tracking-[-0.02em] text-white dashboard-header-no-emoji">
                   Post Your <span className="text-[#2f7cf6]">Enquiry.</span>
                 </h1>
                 <p className="mt-1.5 whitespace-nowrap text-[8.5px] sm:text-[11px] font-normal leading-4 tracking-[-0.01em] text-white/65">
                   Tell us what you're looking for — and let verified sellers reach out to you.
                 </p>
+                {/* Step progress — the bar alone, sitting under the reassurance line.
+                    Absolutely placed so the heading and subtitle keep their exact
+                    positions and the header keeps its height. */}
+                <div className="absolute inset-x-0 top-full mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/20">
+                  <div
+                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    style={{
+                      width: `${((step + 1) / totalSteps) * 100}%`,
+                      backgroundColor: '#15803d'
+                    }}
+                  />
+                </div>
               </div>
             ) : (
             <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
@@ -3315,7 +3346,7 @@ const DEADLINE_STEP = 5;
           </div>
           </div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 sm:-mt-6 pb-6 sm:pb-8 lg:pb-10">
           {/* Success Message - Enhanced Professional Design */}
           {isSubmitted && (
             <Card className="border-2 border-green-200 shadow-lg mb-6 sm:mb-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-green-50 to-white overflow-hidden">
@@ -3488,21 +3519,19 @@ const DEADLINE_STEP = 5;
 
                       {/* Example needs — quiet, non-interactive chips under the
                           field (plain spans, nothing to click). */}
-                                              <div className="flex flex-nowrap items-center justify-center gap-1 pt-0.5">
-                        {[
-                          { Icon: Briefcase, label: 'Remote Job' },
-                          { Icon: Building2, label: 'Apartment' },
-                          { Icon: Smartphone, label: 'Smartphone' },
-                          { Icon: Laptop, label: 'Laptop' },
-                        ].map(({ Icon, label }) => (
+                                              <div className="enq-chip-marquee pt-0.5">
+                        <div className="enq-chip-track flex w-max items-center gap-1 pr-2">
+                        {[...EXAMPLE_CHIPS, ...EXAMPLE_CHIPS].map(({ Icon, label }, i) => (
                           <span
-                            key={label}
-                            className="inline-flex h-[26px] select-none items-center gap-1 whitespace-nowrap rounded-full bg-slate-200 px-1.5 text-[9.5px] font-semibold text-slate-900"
+                            key={`${label}-${i}`}
+                            aria-hidden={i >= EXAMPLE_CHIPS.length ? true : undefined}
+                            className="inline-flex h-[26px] select-none items-center gap-1 whitespace-nowrap rounded-full bg-[#eaedf2] px-1.5 text-[9.5px] font-semibold text-slate-900"
                           >
                             <Icon aria-hidden="true" className="h-2.5 w-2.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.4} />
                             {label}
                           </span>
                         ))}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -5601,8 +5630,9 @@ const DEADLINE_STEP = 5;
             </Card>
           )}
 
-          {/* Progress bar sits outside the card, just above the phone doodle. */}
-          {!isSubmitted && (
+          {/* Progress bar on the first tab now lives in the header under the
+              reassurance line; later tabs keep it here, above the phone doodle. */}
+          {!isSubmitted && step > 0 && (
             <div className="px-5 sm:px-6 lg:px-8 pt-4">
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
                 <div
