@@ -1041,15 +1041,12 @@ const DEADLINE_STEP = 5;
 
   const [aiGenerating, setAiGenerating] = useState(false);
 
-  // Every dropdown hugs the text it is showing: small for "Brand", wider once
-  // "Royal Enfield" or "Classic 350" is picked. Runs after each render so the
-  // box grows and shrinks with the selection.
+  // A tab that holds exactly ONE dropdown stretches it across the row: a lone
+  // picker is that tab's main control, so it fills the form card's width instead
+  // of hugging its label as a small chip.
   //
-  // Two rules keep it from disturbing the rest of the tab:
-  //  • only a tab that holds exactly ONE dropdown hugs its text — tabs with two
-  //    or more (brand + model, education + stream …) keep their normal widths;
-  //  • only the field's own wrapper is measured, never a flex row it shares
-  //    with another control, so the description box keeps its own size.
+  // Tabs with two or more dropdowns (brand + model, education + stream …) never
+  // reach the stretching rule and keep their own even widths untouched.
   useEffect(() => {
     const root = document.querySelector('.enq-form');
     if (!root) return;
@@ -1089,22 +1086,12 @@ const DEADLINE_STEP = 5;
       wrapper.style.marginRight = '0';
       return;
     }
-    const canvas = document.createElement('canvas').getContext('2d');
-    if (!canvas) return;
-    const option = el.selectedOptions[0];
-    const text = (option?.textContent ?? '').trim() || 'Select';
-    const style = window.getComputedStyle(el);
-    canvas.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-    const rowWidth = wrapper.parentElement?.getBoundingClientRect().width ?? 0;
-    const measured = Math.round(canvas.measureText(text).width) + 84;
-    const width = Math.min(360, rowWidth || 360, Math.max(measured, Math.round(rowWidth * 0.7)));
-    wrapper.style.width = `${width}px`;
+    // The tab's only picker takes the whole row, so it lines up with the
+    // description box instead of floating as a short capsule.
+    wrapper.style.width = '100%';
     el.style.width = '100%';
-    // A lone dropdown sits in the centre of its row — auto margins centre it
-    // in a flex row or a block container alike, and sibling controls are never
-    // squeezed because this only runs for the tab's single dropdown.
-    wrapper.style.marginLeft = 'auto';
-    wrapper.style.marginRight = 'auto';
+    wrapper.style.marginLeft = '0';
+    wrapper.style.marginRight = '0';
   });
 
   // A fresh visit always starts with auto-reveal available; the guard then
@@ -3680,12 +3667,37 @@ const DEADLINE_STEP = 5;
                   {/* Step 2: Description */}
                   {step === 2 && (
                     <div className="space-y-2 max-w-lg mx-auto w-full">
+                                            {/* Two-part coach above the field — the same icon + label +
+                          note rhythm as the title tab's trust row, kept to two
+                          items so the tab stays calm. Plain markup, no handlers. */}
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                        {[
+                          { Icon: FileText, title: 'Be specific', note: 'Condition, size and what matters most.' },
+                          { Icon: Sparkles, title: 'Set expectations', note: 'What the seller should know first.' },
+                        ].map(({ Icon, title, note }) => (
+                          <div key={title} className="flex min-w-0 items-start gap-2">
+                            <span className="mt-px flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-900">
+                              <Icon aria-hidden="true" className="h-3 w-3" strokeWidth={2.4} />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-[10px] font-bold leading-tight text-slate-900">{title}</span>
+                              <span className="mt-0.5 block text-[9px] leading-snug text-slate-500">{note}</span>
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+
                       {/* 'Need' floating label above the title input (step 1) is handled on the title step; here it refers to the enquiry itself */}
                       {/* Job direction — To hire / To apply in the same pill the
                           toggle used, so the control keeps its size. */}
                       {isJobEnquiry(selectedCategories, category) && (
                         <div className="mb-4 flex justify-center">
-                          <div className="relative inline-flex items-center bg-white rounded-full p-1 sm:p-1.5 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)]">
+                          {/* When no direction is picked yet this pill is the only
+                              pick on the tab, so it spans the full width; choosing
+                              a direction reveals the job details below and the pill
+                              shrinks back to its compact size. */}
+                          <div className={`relative flex items-center bg-white rounded-full p-1 sm:p-1.5 border border-black shadow-[0_4px_0_0_rgba(0,0,0,0.15)] ${jobDirection ? 'inline-flex' : 'w-full'}`}>
                             <select
                               aria-label="Job direction"
                               value={jobDirection}
@@ -3699,7 +3711,7 @@ const DEADLINE_STEP = 5;
                                   setJobSkills('');
                                 }
                               }}
-                              className={`job-direction-pill appearance-none rounded-full pl-5 pr-11 py-2.5 text-xs font-black text-center [text-align-last:center] focus:outline-none focus:ring-1 focus:ring-black ${jobDirection ? 'job-direction-on text-white' : 'text-black'}`}
+                              className={`job-direction-pill appearance-none rounded-full pl-5 pr-11 py-2.5 text-xs font-black text-center [text-align-last:center] focus:outline-none focus:ring-1 focus:ring-black ${jobDirection ? 'job-direction-on text-white' : 'w-full text-black'}`}
                             >
                               <option value="">To hire / To apply</option>
                               <option value="hiring">To hire</option>
