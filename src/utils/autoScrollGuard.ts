@@ -100,5 +100,31 @@ export function revealNewStep(anchorId = 'step-top', offset = 10): void {
   revealStepTop(anchorId, offset);
 }
 
+/**
+ * Puts the page back at the very top — black header, heading and step bar —
+ * rather than parking the new step on its first field. Uses the same retries
+ * as revealStepTop so late layout shifts cannot leave the tab half scrolled,
+ * and stops the moment the user takes over the page.
+ */
+export function revealPageTop(): void {
+  if (typeof window === 'undefined') return;
+  const apply = () => {
+    if (!canAutoScroll()) return;
+    if (window.scrollY <= 0) return;
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+  apply();
+  const retries = [120, 320, 650, 1000, 1500, 2200, 3000];
+  for (const ms of retries) {
+    window.setTimeout(apply, ms);
+  }
+}
+
+/** A step change opens the new tab at the top, with the reveal re-armed. */
+export function revealNewPageTop(): void {
+  resetAutoScrollGuard();
+  revealPageTop();
+}
+
 /** Focus-driven jumps count as automatic scrolling on the same terms. */
 export const canAutoFocus = canAutoScroll;

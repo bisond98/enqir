@@ -15,6 +15,10 @@ export default function SellShell({
   hidePanel,
   compactHeader,
   hideQuickNav,
+  headerTitle,
+  headerSubtitle,
+  headerProgress,
+  headerBadge,
 }: {
   title: string;
   children: React.ReactNode;
@@ -32,6 +36,16 @@ export default function SellShell({
   /** Listing detail: drop the quick-action rows (Marketplace/Sell/Dashboard
    *  on desktop, Sell/Shop/Panel on mobile) that sit under the header. */
   hideQuickNav?: boolean;
+  /** New listing wizard only: the step name shown in the hero, styled and
+   *  sized exactly like the Post Enquiry header lockup. */
+  headerTitle?: React.ReactNode;
+  /** New listing wizard only: the one-line description under the step name. */
+  headerSubtitle?: string;
+  /** New listing wizard only: step progress, 0-100, on the bar under the lockup. */
+  headerProgress?: number;
+  /** New listing wizard only: the picked category, shown in the header's
+   *  top-right corner so it stays visible on every tab. */
+  headerBadge?: React.ReactNode;
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -60,8 +74,11 @@ export default function SellShell({
               exactly its height; the scrim keeps the heading first. */}
           {isCreate && (
             <div aria-hidden="true" className="pointer-events-none select-none absolute inset-0 overflow-hidden">
-              <SellHeaderPoster className="absolute inset-0 h-full w-full" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/25 to-black/70" />
+              {/* The poster stays as texture but is dimmed hard behind the
+                  lockup, so the step name and its line read at full contrast. */}
+              <SellHeaderPoster className="absolute inset-0 h-full w-full opacity-80" />
+              <div className="absolute inset-0 bg-black/55" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/90" />
             </div>
           )}
           {/* The marketplace band wears a photographic trust poster behind the
@@ -83,6 +100,55 @@ export default function SellShell({
               {heading}
             </div>
           )}
+          {/* New listing wizard: the same hero lockup as Post Enquiry — left
+              aligned step name, one line of reassurance, step bar under it — so
+              both forms share one header size. */}
+          {isCreate && headerTitle ? (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  if (onBack) {
+                    onBack();
+                    return;
+                  }
+                  navigate(-1);
+                }}
+                className="absolute left-2 top-2 sm:left-4 sm:top-4 p-2 hover:bg-white/10 rounded-xl transition-colors z-50"
+              >
+                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+              </Button>
+              {/* Keeps the size the category chip had inside the card: same 10px
+                  black-weight uppercase type, just sitting in the header. */}
+              {headerBadge && (
+                <div className="absolute right-2 top-2 sm:right-4 sm:top-4 z-50 inline-flex max-w-[52%] items-center truncate rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[10px] sm:text-[11px] font-black uppercase leading-tight tracking-wide text-white backdrop-blur-sm">
+                  {headerBadge}
+                </div>
+              )}
+              <div className="max-w-4xl mx-auto px-4 sm:px-4 lg:px-8 relative z-10 flex w-full items-center justify-center min-h-[117px] sm:min-h-[44px]">
+                <div className="relative w-full max-w-[340px] min-w-0 flex-1 text-left">
+                  <h1 className="text-[clamp(20px,5.6vw,23px)] font-bold leading-[1.15] tracking-[-0.02em] text-white dashboard-header-no-emoji min-w-0">
+                    {headerTitle}
+                  </h1>
+                  {headerSubtitle && (
+                    <p className="mt-1.5 whitespace-nowrap text-[8.5px] sm:text-[11px] font-normal leading-4 tracking-[-0.01em] text-white/65">
+                      {headerSubtitle}
+                    </p>
+                  )}
+                  <div className="absolute inset-x-0 top-full mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/20">
+                    <div
+                      className="h-full rounded-full transition-all duration-500 ease-out"
+                      style={{
+                        width: `${Math.max(0, Math.min(100, headerProgress ?? 0))}%`,
+                        backgroundColor: '#15803d'
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
           <div className={`${compactHeader ? 'max-w-4xl px-4' : 'max-w-5xl px-1 sm:px-4 lg:px-8'} mx-auto relative z-10`}>
             <div className={compactHeader ? 'mb-3' : 'mb-4 sm:mb-6'}>
               <div className="flex items-center justify-between">
@@ -140,8 +206,9 @@ export default function SellShell({
               </div>
             )}
           </div>
+          )}
         </div>
-        <div className="max-w-5xl mx-auto px-2.5 sm:px-4 py-4 sm:py-6">
+        <div className={isCreate ? "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 sm:-mt-6 pb-6 sm:pb-8 lg:pb-10" : "max-w-5xl mx-auto px-2.5 sm:px-4 py-4 sm:py-6"}>
           {!hideQuickNav && <div className="hidden sm:flex items-center justify-end gap-2 mb-4">
             <Link to="/sell/marketplace">
               <Button variant="outline" size="sm" className="border border-black">

@@ -1,12 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type ClipboardEvent } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, type ClipboardEvent } from 'react';
 import SellShell from '../components/SellShell';
 import { SellListingSketch } from '@/components/doodles';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadToCloudinaryUnsigned } from '@/integrations/cloudinary';
 import { toast } from '@/hooks/use-toast';
@@ -38,7 +37,7 @@ import { PET_TYPES, PET_TRAINING_OPTIONS, petBreedsFor, OFFICE_SUPPLIES_SUBCATEG
 import { fieldsForCategoryStep, isFieldHiddenForDetails, PRODUCT_CONDITIONS, VISIBLE_DAMAGE_OPTIONS, DAMAGE_TYPES, DAMAGE_SEVERITIES, FUNCTIONAL_STATUSES, ANTIQUE_CONDITIONS, ANTIQUE_DAMAGE_TYPES, ANTIQUE_FUNCTIONAL_STATUSES } from '../categoryDetails';
 import { titleHintsFor } from '../titleHints';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
-import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealNewStep } from '@/utils/autoScrollGuard';
+import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealNewPageTop } from '@/utils/autoScrollGuard';
 import { prefetchCategoryTiles } from '@/utils/prefetchCategoryTiles';
 import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
@@ -243,6 +242,46 @@ const STEPS = [
   { key: 'price', label: 'Price & Photos', description: 'Set your numbers' },
   { key: 'extras', label: 'Confirmation', description: 'Finish strong' },
 ] as const;
+
+// The band under the form card speaks to the tab the seller is on, so the three
+// reassurances never describe a field they cannot see.
+const SELL_BAND: Record<(typeof STEPS)[number]['key'], { Icon: LucideIcon; title: string; note: string }[]> = {
+  category: [
+    { Icon: Tag, title: 'Pick category', note: 'Sets the form' },
+    { Icon: Users, title: 'Right buyers', note: 'Matched to it' },
+    { Icon: Zap, title: 'Faster post', note: 'Fewer fields' },
+  ],
+  title: [
+    { Icon: Pen, title: 'Be specific', note: 'Brand + model' },
+    { Icon: BadgeCheck, title: 'Searchable', note: 'Shows in search' },
+    { Icon: Tag, title: 'Price later', note: 'Step by step' },
+  ],
+  description: [
+    { Icon: FileText, title: 'Explain well', note: 'What it is' },
+    { Icon: BadgeCheck, title: 'Condition', note: 'Age and wear' },
+    { Icon: Gem, title: 'Valuables', note: 'What is inside' },
+  ],
+  location: [
+    { Icon: MapPin, title: 'Pin the area', note: 'Locality only' },
+    { Icon: Users, title: 'Local buyers', note: 'Nearby first' },
+    { Icon: Lock, title: 'Stay private', note: 'No address' },
+  ],
+  details: [
+    { Icon: Wrench, title: 'State condition', note: 'Used or new' },
+    { Icon: Scale, title: 'Fair price', note: 'Comparable deals' },
+    { Icon: ShieldCheck, title: 'Clear terms', note: 'No surprises' },
+  ],
+  price: [
+    { Icon: IndianRupee, title: 'Set the price', note: 'Fixed or range' },
+    { Icon: Camera, title: 'Real photos', note: 'Clear and lit' },
+    { Icon: BadgeCheck, title: 'Fair deal', note: 'No surprises' },
+  ],
+  extras: [
+    { Icon: BadgeCheck, title: 'Review', note: 'Check details' },
+    { Icon: Zap, title: 'Goes live', note: 'After review' },
+    { Icon: ShieldCheck, title: 'Sell safe', note: 'Moderated' },
+  ]
+};
 
 // Description limits — same 8000-word cap as the enquiry form. The character
 // ceiling only stops an unbroken paste from growing without bound.
@@ -643,14 +682,14 @@ export default function CreateListing() {
     prefetchCategoryTiles();
   }, []);
 
-  // The listing form opens already scrolled to its tab's title, and each step
-  // change opens the new tab on its title. Inside a tab the page stays put once
-  // the seller touches it.
+  // The listing form opens at the top of its tab, and every Next/Back lands the
+  // new tab at the very top as well, so the header, heading and step bar are all
+  // in view instead of the tab opening part-way down its fields.
   useEffect(() => {
     // Called straight away rather than from requestAnimationFrame: in a tab
     // that is not visible the browser never runs animation frames, so a
-    // deferred reveal was silently skipped and the form opened at scroll 0.
-    revealNewStep('step-top', 20);
+    // deferred reveal was silently skipped and the form opened mid-page.
+    revealNewPageTop();
   }, [step]);
 
   useEffect(() => {
@@ -914,10 +953,10 @@ export default function CreateListing() {
     }
   };
 
-  // Step changes open the new tab on its heading; once the seller touches that
-  // tab the page belongs to the finger, not the wizard.
+  // Step changes open the new tab at the top of the page; once the seller
+  // touches that tab the page belongs to the finger, not the wizard.
   const scrollToInput = () => {
-    revealNewStep('step-top', 20);
+    revealNewPageTop();
   };
 
   // Wipes every answer the seller filled on the other steps. Called only when
@@ -1130,6 +1169,19 @@ export default function CreateListing() {
   return (
     <SellShell
       title="Sell"
+      headerTitle={
+        <>
+          {STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}
+          <span className="text-[#2f7cf6]">.</span>
+        </>
+      }
+      headerSubtitle={(STEPS[step] as { description?: string }).description ?? ''}
+      headerProgress={progressPct}
+      headerBadge={
+        step > 0 && selectedCats.length > 0
+          ? selectedCats.map((c) => SELL_CATEGORIES.find((cat) => cat.value === c)?.label ?? c).join(' · ')
+          : undefined
+      }
       onBack={() => {
         // Inside the wizard: step back a tab (same as the bottom Back
         // button). On the first tab: leave the form via normal history.
@@ -1140,36 +1192,15 @@ export default function CreateListing() {
         navigate(-1);
       }}
     >
-      <Card className="sell-form-card border border-black rounded-2xl shadow-[0_6px_0_0_rgba(0,0,0,0.3)] overflow-hidden">
-        <CardHeader className="space-y-2 pb-4">
-          <Progress value={progressPct} className="h-2 rounded-full bg-slate-200 [&>div]:bg-[#15803d]" />
-        </CardHeader>
-
-        <CardContent className="pt-6 sm:pt-8 pb-6 flex flex-col">
+      <Card className="sell-form-card border border-slate-200/80 rounded-3xl bg-white shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] overflow-hidden">
+        <CardContent className={`relative pb-6 flex flex-col ${step === 0 ? 'pt-6 sm:pt-7' : 'pt-1 sm:pt-2'}`}>
           {/* Kept as the scroll anchor the step's Back button jumps to. */}
           <div id="step-top" />
 
-          {/* Picked category — carried on every step after the Category tab so the
-              seller can see what the form is being filled in for. */}
-          {step > 0 && selectedCats.length > 0 && (
-            <div className="flex flex-wrap items-center justify-center gap-1.5 -mb-1">
-              {selectedCats.map((catValue) => {
-                const catLabel = SELL_CATEGORIES.find((c) => c.value === catValue)?.label ?? catValue;
-                const Icon = CATEGORY_ICON[catValue] ?? LayoutGrid;
-                return (
-                  <span
-                    key={catValue}
-                    className="inline-flex items-center gap-1 px-1 py-1 text-[10px] font-black uppercase tracking-wide text-black"
-                  >
-                    <Icon className="h-3 w-3 flex-shrink-0" strokeWidth={2} />
-                    {catLabel}
-                  </span>
-                );
-              })}
-            </div>
-          )}
+          {/* The picked category now rides in the black header's right corner
+              (headerBadge), so the card opens straight on the step's field. */}
 
-          <div id="step-title" className="text-center pt-4 mb-4">
+          <div id="step-title" className="hidden">
             {/* Title styled like the "Enqir" wordmark on the phone sign-in page:
                 brush-swash stroke behind the text, no pill/background */}
             <div className="relative mx-auto inline-flex items-center justify-center select-none px-9 sm:px-14 py-7 sm:py-9">
@@ -1380,9 +1411,37 @@ export default function CreateListing() {
 
             {step === 1 && (
               <div className="sell-pills relative flex flex-col space-y-2 max-w-lg mx-auto w-full">
+                {/* Quiet guidance above the pickers — the same compact card as
+                    the enquiry tabs. Decorative, nothing to click. */}
+                <div className="order-first rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                  <div className="flex items-stretch justify-between">
+                    {[
+                      { Icon: Type, title: 'Be specific', note: 'Brand + model' },
+                      { Icon: BadgeCheck, title: 'Add details', note: 'Year or size' },
+                    ].map(({ Icon, title, note }, i) => (
+                      <Fragment key={title}>
+                        {i > 0 && <span aria-hidden="true" className="h-6 w-px flex-shrink-0 self-center bg-slate-200" />}
+                        <div className="flex min-w-0 flex-1 items-center justify-start gap-1 px-0.5">
+                          <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                          <span className="min-w-0 text-left">
+                            <span className="block truncate whitespace-nowrap text-[9px] font-semibold leading-[1.15] text-slate-900">{title}</span>
+                            <span className="block truncate whitespace-nowrap text-[7.5px] font-normal leading-[1.15] text-slate-500">{note}</span>
+                          </span>
+                        </div>
+                      </Fragment>
+                    ))}
+                  </div>
+                </div>
                 {/* Single quiet line-art doodle — seller offering */}
                 <SellerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
+                {/* Same tab furniture as the enquiry title tab: a short label on
+                    a blue accent, then a capsule field with a quiet icon. */}
+                <p className="flex items-center gap-2 text-[15px] sm:text-base font-semibold text-slate-900 text-left">
+                  <span aria-hidden="true" className="h-4 w-[3px] rounded-full bg-blue-600" />
+                  Title
+                </p>
                 <div className="relative">
+                <Pen aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-20 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <Input
                   id="listing-title"
                   value={title}
@@ -1462,7 +1521,7 @@ export default function CreateListing() {
                     }
                   }}
                   placeholder=""
-                  className="rounded-2xl h-12 sm:h-14 text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200"
+                  className="rounded-full h-16 min-h-[48px] w-full !text-[17px] font-normal bg-white border border-slate-200 !border-b shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:border-slate-300 focus-visible:border-blue-500 focus-visible:ring-4 focus-visible:ring-blue-500/10 transition-all duration-200 min-touch pl-12 pr-5 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
                   maxLength={1000}
                   autoFocus={canAutoFocus()}
                 />
@@ -1471,21 +1530,23 @@ export default function CreateListing() {
                 {!title && (() => {
                   const hints = titleHintsFor(category);
                   return (
-                    <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-2xl" aria-hidden="true">
+                    <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none rounded-full" aria-hidden="true">
                       {titleHintIdx > 0 && (
-                        <span key={`title-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                        <span key={`title-hint-out-${titleHintIdx}`} className="kw-roll-out absolute inset-0 flex items-center justify-start pl-11 pr-5 leading-tight text-[11px] font-semibold text-gray-400">
                           Title — {hints[(titleHintIdx - 1 + hints.length) % hints.length]}
                         </span>
                       )}
-                      <span key={`title-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-4 pr-4 leading-tight text-[11px] font-semibold text-gray-400">
+                      <span key={`title-hint-in-${titleHintIdx}`} className="kw-roll-down absolute inset-0 flex items-center justify-start pl-11 pr-5 leading-tight text-[11px] font-semibold text-gray-400">
                         Title — {hints[titleHintIdx % hints.length]}
                       </span>
                     </div>
                   );
                 })()}
                 </div>
+                {/* Tabs holding a single dropdown lose the gap under the row so the
+                    dropdown can sit lower without moving the title field. */}
                 {fieldsForCategoryStep(category, 'title').length > 0 && (
-                  <div className="order-first flex flex-wrap items-center justify-end gap-3 -mt-1" style={{ marginBottom: '1rem' }}>
+                  <div className="order-first flex flex-wrap items-center justify-end gap-3 -mt-1" style={{ marginBottom: fieldsForCategoryStep(category, 'title').filter((field) => !field.typeable && field.type !== 'text' && field.type !== 'number').length === 1 ? 0 : '1rem' }}>
                     {fieldsForCategoryStep(category, 'title').map((f, fieldIdx) => {
                       // Pets keep the breed/training pickers hidden until a pet type
                       // is chosen (same gating the Description-step fields use).
@@ -1533,7 +1594,6 @@ export default function CreateListing() {
                         : (f.options ?? []);
                       // Every dropdown hugs the text it shows (its placeholder, or
                       // the picked value once chosen) instead of a fixed column.
-                      const shortSubcategory = category === 'electronics' && f.key === 'subcategory';
                       const isDropdown = !f.typeable && f.type !== 'text' && f.type !== 'number';
                       // Only a tab that holds a single dropdown gets the hugs-text
                       // treatment; tabs with several (car, vehicles, bike) keep
@@ -1550,7 +1610,7 @@ export default function CreateListing() {
                       // A tab with exactly three dropdowns leaves the third one alone on
                       // the second line, so it is centred in that line instead of being
                       // pushed to the right edge with the rest of the row.
-                      <div key={f.key} className={`relative ${category === 'pets' ? (f.key === 'petBreed' ? 'w-[62%]' : 'w-[47%]') : shortSubcategory ? 'electronics-pill max-w-full' : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={category === 'bicycles' && (f.key === 'subcategory' || f.key === 'year') ? { marginLeft: 'auto', marginRight: 'auto' } : hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
+                      <div key={f.key} className={`relative ${category === 'pets' ? (f.key === 'petBreed' ? 'w-[62%]' : 'w-[47%]') : f.key === 'subcategory' ? 'max-w-full' : 'w-[48%]'} max-w-full`} style={category === 'bicycles' && (f.key === 'subcategory' || f.key === 'year') ? { marginLeft: 'auto', marginRight: 'auto' } : hugText ? { width: '70%', maxWidth: '360px', marginLeft: 'auto', marginRight: 'auto', marginTop: '1rem' } : f.key === 'repairType' ? { marginLeft: 'auto' } : titleDropdowns === 3 && fieldIdx === 2 ? { marginLeft: 'auto', marginRight: 'auto' } : undefined}>
                         {f.key !== 'brand' && f.key !== 'model' && f.key !== 'storage' && f.key !== 'subcategory' && f.key !== 'repairType' && f.key !== 'transmission' && f.key !== 'vehicleType' && f.key !== 'cleaningTypes' && category !== 'pets' && !((category === 'car' || category === 'bike') && f.key === 'year') && (
                           // The bicycle year and the jobs "Listing for" pick add no
                           // label: their placeholder names them, and the node stays in
@@ -1826,6 +1886,27 @@ export default function CreateListing() {
 
             {step === 2 && (
               <div className="sell-pills space-y-2 max-w-lg mx-auto w-full">
+                {/* Quiet guidance — the same compact card as the enquiry tabs.
+                    Decorative, nothing to click. */}
+                <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                  <div className="flex items-stretch justify-between">
+                    {[
+                      { Icon: FileText, title: 'Be clear', note: 'Condition + specs' },
+                      { Icon: ShieldCheck, title: 'No contacts', note: 'Keep it clean' },
+                    ].map(({ Icon, title, note }, i) => (
+                      <Fragment key={title}>
+                        {i > 0 && <span aria-hidden="true" className="h-6 w-px flex-shrink-0 self-center bg-slate-200" />}
+                        <div className="flex min-w-0 flex-1 items-center justify-start gap-1 px-0.5">
+                          <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                          <span className="min-w-0 text-left">
+                            <span className="block truncate whitespace-nowrap text-[9px] font-semibold leading-[1.15] text-slate-900">{title}</span>
+                            <span className="block truncate whitespace-nowrap text-[7.5px] font-normal leading-[1.15] text-slate-500">{note}</span>
+                          </span>
+                        </div>
+                      </Fragment>
+                    ))}
+                  </div>
+                </div>
                 {/* Sneaker details — Adults or Kids first, then the brand, model
                     and the size scale that matches (kids listings only offer kids
                     models and kids sizes). */}
@@ -2371,7 +2452,7 @@ export default function CreateListing() {
                           ? 'Describe your skills, strengths, technical abilities, and areas of expertise in detail. Detail your previous roles, responsibilities, achievements, and relevant work experience.'
                           : 'Condition, accessories, warranty, reason for selling…'}
                         maxLength={MAX_DESC_CHARS}
-                        className={`wizard-desc-box rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:font-medium placeholder:text-[11px] resize-y shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'jobs' && (details.jobListingFor === 'To hire' || details.jobListingFor === 'To apply') ? 'placeholder:text-gray-900 placeholder:font-semibold' : 'placeholder:text-gray-400'}`}
+                        className={`wizard-desc-box rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:font-medium placeholder:text-[11px] resize-y text-slate-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'jobs' && (details.jobListingFor === 'To hire' || details.jobListingFor === 'To apply') ? 'placeholder:text-gray-900 placeholder:font-semibold' : 'placeholder:text-gray-400'}`}
                         autoFocus={canAutoFocus()}
                       />
                     </div>
@@ -2382,13 +2463,35 @@ export default function CreateListing() {
 
             {step === 3 && (
               <div className="max-w-xl mx-auto w-full space-y-3">
+                {/* Guidance card — same two-tile card as the enquiry Location tab. */}
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                  {[
+                    { Icon: MapPin, title: 'Pin the area', note: 'Buyers gauge the distance.' },
+                    { Icon: Lock, title: 'Stay private', note: 'No street address is shown.' },
+                  ].map(({ Icon, title, note }) => (
+                    <div key={title} className="flex min-w-0 items-start gap-2">
+                      <span className="mt-px flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 text-black">
+                        <Icon aria-hidden="true" className="h-3 w-3" fill="currentColor" strokeWidth={1.2} />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[10px] font-bold leading-tight text-slate-900">{title}</span>
+                        <span className="mt-0.5 block text-[9px] leading-snug text-slate-500">{note}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
                 {/* Pin precise location on a map — the search bar above
                     "Where is it?" was removed per request */}
                 <button
                   type="button"
                   onClick={() => setMapPickerOpen(true)}
-                  className="w-full flex items-center gap-3 !rounded-2xl !border-[1.5px] !border-black bg-white hover:!bg-gray-50 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
+                  className="relative w-full flex items-center gap-3 overflow-hidden !rounded-2xl !border-[1.5px] !border-black bg-gradient-to-b from-white to-slate-50 hover:!from-white hover:!to-slate-100 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
                 >
+                  {/* Faint dot grid inside the capsule, like a map surface */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(15,23,42,0.08)_1px,transparent_1px)] bg-[length:12px_12px] opacity-60"
+                  />
                   <div className="relative z-10 w-9 h-9 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
                     <MapPin className="h-4 w-4 text-white" />
                   </div>
@@ -2427,6 +2530,10 @@ export default function CreateListing() {
                     }
                   }}
                 />
+                <p className="flex items-center justify-center gap-1.5 pt-0.5 text-[9.5px] font-medium leading-tight text-slate-500">
+                  <ShieldCheck aria-hidden="true" className="h-3 w-3 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                  Only the area is shared — never your exact address.
+                </p>
               </div>
             )}
 
@@ -2605,6 +2712,26 @@ export default function CreateListing() {
 
             {step === 5 && (
               <div className="price-pills max-w-md mx-auto w-full space-y-4">
+                {/* Quiet guidance — the same compact card as the other tabs. */}
+                <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                  <div className="flex items-stretch justify-between">
+                    {[
+                      { Icon: IndianRupee, title: 'Set a price', note: 'Fixed or range' },
+                      { Icon: Camera, title: 'Real photos', note: 'Clear and lit' },
+                    ].map(({ Icon, title, note }, i) => (
+                      <Fragment key={title}>
+                        {i > 0 && <span aria-hidden="true" className="h-6 w-px flex-shrink-0 self-center bg-slate-200" />}
+                        <div className="flex min-w-0 flex-1 items-center justify-start gap-1 px-0.5">
+                          <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                          <span className="min-w-0 text-left">
+                            <span className="block truncate whitespace-nowrap text-[9px] font-semibold leading-[1.15] text-slate-900">{title}</span>
+                            <span className="block truncate whitespace-nowrap text-[7.5px] font-normal leading-[1.15] text-slate-500">{note}</span>
+                          </span>
+                        </div>
+                      </Fragment>
+                    ))}
+                  </div>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="price-fixed" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-2 ml-1">
                     <IndianRupee className="h-3.5 w-3.5" />
@@ -2629,10 +2756,10 @@ export default function CreateListing() {
                 </div>
                 {/* Open to discussion — alternative to entering a specific price */}
                 <div className="flex items-center justify-end gap-3">
-                  <div className="relative ml-auto" style={{ marginRight: 0 }}>
+                  {/* Short capsule that hugs its prompt instead of the full row. */}
+                  <div className="relative ml-auto w-full max-w-[240px]">
                     <select
                       id="price-option"
-                      style={{ width: 200 }}
                       value={priceOption}
                       onChange={(e) => {
                         const v = e.target.value as '' | 'discussion';
@@ -2645,7 +2772,9 @@ export default function CreateListing() {
                       }}
                       className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] max-w-full font-medium border-[1.5px] focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${priceOption === 'discussion' ? 'border-black bg-blue-600 text-[11px] sm:text-xs font-bold text-white shadow-none' : 'border-slate-200 bg-white text-[10px] sm:text-xs font-semibold text-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)]'}`}
                     >
-                      <option value="" className="bg-white text-black"></option>
+                      {/* First row is the un-picked state, named like the enquiry
+                          budget picker so the menu has no blank row. */}
+                      <option value="" className="bg-white text-black">Cancel</option>
                       <option value="discussion" className="bg-white text-black">Open to discussion</option>
                     </select>
                     {/* Empty-state caption matches the post-enquiry budget picker:
@@ -2654,7 +2783,7 @@ export default function CreateListing() {
                     {!priceOption && (
                       <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute inset-0 flex items-center justify-between pl-4 pr-[52px] text-[10px] sm:text-xs font-semibold text-gray-900"
+                        className="pointer-events-none absolute inset-0 flex items-center justify-between pl-4 pr-[52px] text-[10px] sm:text-xs font-bold text-white"
                       >
                         <span>Not fixed yet?</span>
                         <span>Click here</span>
@@ -2701,7 +2830,7 @@ export default function CreateListing() {
                     </div>
                   )}
                   {images.length < 5 && (
-                  <div className="rounded-xl border-2 border-dashed border-black/30 bg-slate-50/80 p-4">
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 p-4">
                     <input
                       id="listing-images"
                       ref={listingImageInputRef}
@@ -2722,9 +2851,9 @@ export default function CreateListing() {
                       <p className="text-[8px] font-bold text-black tracking-wide">
                         {category === 'service' ? 'Your work, sites etc.' : ''}
                       </p>
-                      <p className="text-[11px] text-slate-600">
+                      <span className="rounded-full bg-white px-2 py-0.5 text-[8.5px] font-semibold leading-none text-slate-500 shadow-[0_0_0_1px_rgba(15,23,42,0.06)]">
                         {images.length}/5
-                      </p>
+                      </span>
                     </div>
                     {category === 'jobs' && (
                       <div className="flex items-center justify-between mt-3 pt-2 border-t border-black/10">
@@ -2752,6 +2881,26 @@ export default function CreateListing() {
 
             {step === 6 && (
               <div className="max-w-lg mx-auto w-full space-y-5">
+                {/* Quiet guidance — the same compact card the other tabs open on. */}
+                <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                  <div className="flex items-stretch justify-between">
+                    {[
+                      { Icon: BadgeCheck, title: 'Check once', note: 'Title and price' },
+                      { Icon: ShieldCheck, title: 'Sell safe', note: 'Moderated' },
+                    ].map(({ Icon, title, note }, i) => (
+                      <Fragment key={title}>
+                        {i > 0 && <span aria-hidden="true" className="h-6 w-px flex-shrink-0 self-center bg-slate-200" />}
+                        <div className="flex min-w-0 flex-1 items-center justify-start gap-1 px-0.5">
+                          <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                          <span className="min-w-0 text-left">
+                            <span className="block truncate whitespace-nowrap text-[9px] font-semibold leading-[1.15] text-slate-900">{title}</span>
+                            <span className="block truncate whitespace-nowrap text-[7.5px] font-normal leading-[1.15] text-slate-500">{note}</span>
+                          </span>
+                        </div>
+                      </Fragment>
+                    ))}
+                  </div>
+                </div>
                 {(() => {
                   const titleFields = fieldsForCategoryStep(category, 'title').filter((f) => details[f.key]);
                   const descFields = fieldsForCategoryStep(category, 'description').filter((f) => details[f.key]);
@@ -2761,8 +2910,10 @@ export default function CreateListing() {
                   const hasPhoto = images.length > 0;
                   return (
                     <>
-                      {/* Hero: photo + title + price */}
-                      <div className="rounded-xl border border-black bg-gray-100 p-4 sm:p-5 space-y-3">
+                      {/* Hero: photo + title + price — same preview card as the
+                          enquiry form's final tab. */}
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5 space-y-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                        <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">Preview</p>
                         {hasPhoto ? (
                           <div className="relative overflow-hidden rounded-lg">
                             <img loading="lazy" decoding="async" src={images[0]} alt="Listing" className="w-full h-40 sm:h-48 object-cover" />
@@ -2777,16 +2928,16 @@ export default function CreateListing() {
                           </div>
                         )}
                         <div className="space-y-1">
-                          <h3 className="text-[15px] sm:text-base font-semibold text-gray-900 leading-snug break-words">{title || 'Untitled listing'}</h3>
+                          <h3 className="text-[15px] sm:text-lg font-bold tracking-tight text-black leading-snug break-words">{title || 'Untitled listing'}</h3>
                           <div className="flex justify-center pt-4">
                             {priceOption === 'discussion' ? (
                               <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-800 text-white border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]"><IndianRupee className="h-3 w-3" />Open to discussion</span>
                             ) : (
-                              <span className="text-sm sm:text-base font-bold text-gray-900">{price ? `₹${price}` : 'Price not set'}</span>
+                              <span className="inline-flex items-center rounded-full bg-black px-2.5 py-1 text-[10.5px] font-black leading-none text-white">{price ? `₹${price}` : 'Price not set'}</span>
                             )}
                           </div>
                         </div>
-                        <div className="border-t border-gray-100" />
+                        <div className="border-t border-slate-200/70" />
                         <div className="flex flex-col items-start gap-1.5">
                             <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
                               {(() => { const Icon = CATEGORY_ICON[category] ?? LayoutGrid; return <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Icon className="h-2.5 w-2.5 text-white" /></span>; })()}
@@ -2807,8 +2958,8 @@ export default function CreateListing() {
 
                       {/* Specs — only filled ones, as compact chips */}
                       {hasSpecs && (
-                        <div className="rounded-2xl border border-black/15 bg-slate-50/70 p-3.5">
-                          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Details</p>
+                        <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                          <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-slate-400 mb-2">Details</p>
                           <div className="flex flex-wrap gap-1.5">
                             {[...titleFields, ...descFields, ...usedFields, ...priceFields].map((f) => {
                               const SpecIcon =
@@ -3032,9 +3183,52 @@ export default function CreateListing() {
         </CardContent>
       </Card>
 
+      {/* Under the card: three seller reassurances and a short listing flow, in
+          the same sizing as the post-enquiry bands. Decorative, nothing to click. */}
+      <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
+        <div className="mx-auto max-w-3xl">
+          <div className="flex items-center justify-between">
+            {SELL_BAND[STEPS[step].key].map(({ Icon, title, note }, i) => (
+              <Fragment key={title}>
+                {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
+                <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-0.5">
+                  <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-black sm:h-[18px] sm:w-[18px]" fill="currentColor" strokeWidth={1.2} />
+                  <span className="min-w-0 text-left">
+                    <span className="block truncate whitespace-nowrap text-[10px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
+                    <span className="block truncate whitespace-nowrap text-[8px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
+                  </span>
+                </div>
+              </Fragment>
+            ))}
+          </div>
+
+          {/* Listing flow: list it, it goes live, it sells */}
+          <div aria-hidden="true" className="mt-7 sm:mt-9">
+            <div className="relative">
+              <div className="absolute left-[16.666%] right-[16.666%] top-[13px] h-[2px] rounded-full bg-slate-200" />
+              <div className="relative flex items-start justify-between">
+                {[
+                  { label: 'List', note: '2 minutes', done: true },
+                  { label: 'Live', note: 'Buyers see it', done: true },
+                  { label: 'Sold', note: 'Deal closed', done: false },
+                ].map((s) => (
+                  <div key={s.label} className="flex w-1/3 flex-col items-center">
+                    <span className={`flex h-7 w-7 items-center justify-center rounded-full border-2 ${s.done ? 'border-[#15803d] bg-[#15803d]' : 'border-slate-300 bg-white'}`}>
+                      <span className={`h-2 w-2 rounded-full ${s.done ? 'bg-white' : 'bg-slate-400'}`} />
+                    </span>
+                    <span className="mt-1.5 text-[9.5px] font-bold leading-tight text-slate-900">{s.label}</span>
+                    <span className="text-[8px] leading-tight text-slate-500">{s.note}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Phones only: the sketch sits under the card on every tab, exactly as
           the enquiry sketch does on the post-enquiry form */}
-      <div className="sm:hidden px-4 pt-4 text-gray-900">
+      <div className="sm:hidden px-4 pt-14 text-gray-900">
         <SellListingSketch className="w-full h-auto" />
       </div>
     </SellShell>
