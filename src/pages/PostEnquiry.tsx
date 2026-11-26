@@ -1135,11 +1135,9 @@ const DEADLINE_STEP = 5;
     // mounts later (sign-in restore) is still covered.
     // The title tab opens at the top of the page so the black header stays in
     // view; revealing #step-top here scrolled it off on load.
-    if (step === 0) {
-      if (canAutoScroll()) window.scrollTo({ top: 0, behavior: 'auto' });
-    } else {
-      revealNewStep('step-top', 10);
-    }
+    // Every tab opens at the very top of the page, so the black header — which
+    // names the step and carries the progress bar — is always in view.
+    window.scrollTo({ top: 0, behavior: 'auto' });
     // Keyboard handling below is mobile-only.
     if (!isMobile) return;
     const vv = (window as any).visualViewport as VisualViewport | undefined;
@@ -3341,37 +3339,41 @@ const DEADLINE_STEP = 5;
           >
             <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
           </Button>
-          {/* Heading row. The first tab carries the hero lockup (title + line of
-              reassurance, left aligned); every later tab keeps the centred title. */}
-          <div className={`max-w-4xl mx-auto px-4 sm:px-4 lg:px-8 relative z-10 flex items-center justify-center ${step === 0 ? 'min-h-[117px] sm:min-h-[44px]' : 'min-h-[36px] sm:min-h-[44px]'}`}>
-            {step === 0 ? (
-              <div className="relative w-full text-left">
-                <h1 className="text-[clamp(20px,5.6vw,23px)] font-bold leading-[1.15] tracking-[-0.02em] text-white dashboard-header-no-emoji">
-                  Post Your <span className="text-[#2f7cf6]">Enquiry.</span>
-                </h1>
-                <p className="mt-1.5 whitespace-nowrap text-[8.5px] sm:text-[11px] font-normal leading-4 tracking-[-0.01em] text-white/65">
-                  Tell us what you're looking for — and let verified sellers reach out to you.
-                </p>
-                {/* Step progress — the bar alone, sitting under the reassurance line.
-                    Absolutely placed so the heading and subtitle keep their exact
-                    positions and the header keeps its height. */}
-                <div className="absolute inset-x-0 top-full mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/20">
-                  <div
-                    className="h-full rounded-full transition-all duration-500 ease-out"
-                    style={{
-                      width: `${((step + 1) / totalSteps) * 100}%`,
-                      backgroundColor: '#15803d'
-                    }}
-                  />
-                </div>
+          {/* Heading row. Every tab carries the same hero lockup: title, a line
+              of reassurance and the step bar, all left aligned. */}
+          <div className="max-w-4xl mx-auto px-4 sm:px-4 lg:px-8 relative z-10 flex w-full items-center justify-center min-h-[117px] sm:min-h-[44px]">
+            {/* One lockup on every tab — left-aligned title, a line of
+                reassurance and the step bar underneath — so the header keeps
+                exactly the same size and the bar never moves. */}
+            <div className="relative w-full max-w-[340px] min-w-0 flex-1 text-left">
+              <h1 className="text-[clamp(20px,5.6vw,23px)] font-bold leading-[1.15] tracking-[-0.02em] text-white dashboard-header-no-emoji min-w-0">
+                {step === 0 ? (
+                  <>Post Your <span className="text-[#2f7cf6]">Enquiry.</span></>
+                ) : (
+                  <>
+                    {STEPS[step].label}
+                    {!/[?.!]$/.test(STEPS[step].label) && <span className="text-[#2f7cf6]">.</span>}
+                  </>
+                )}
+              </h1>
+              <p className="mt-1.5 whitespace-nowrap text-[8.5px] sm:text-[11px] font-normal leading-4 tracking-[-0.01em] text-white/65">
+                {step === 0
+                  ? "Tell us what you're looking for — and let verified sellers reach out to you."
+                  : (STEPS[step] as { description?: string }).description ?? ''}
+              </p>
+              {/* Step progress — the bar alone, under the reassurance line.
+                  Absolutely placed so the heading and subtitle keep their exact
+                  positions and the header keeps its height. */}
+              <div className="absolute inset-x-0 top-full mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/20">
+                <div
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{
+                    width: `${((step + 1) / totalSteps) * 100}%`,
+                    backgroundColor: '#15803d'
+                  }}
+                />
               </div>
-            ) : (
-            <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji">
-              <Pen className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
-              <span className="bg-gradient-to-r from-white via-white to-blue-300 bg-clip-text text-transparent">{STEPS[step].key === 'category' ? 'Category' : 'Exact Demand.'}</span>
-              <MagnifierDoodle className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-white/25" />
-            </h1>
-            )}
+            </div>
           </div>
           </div>
 
@@ -3451,62 +3453,9 @@ const DEADLINE_STEP = 5;
                   <div aria-hidden="true" className="mx-auto mb-0 h-1 w-1 sm:h-2 sm:w-2" />
                 </div>
 
-                {/* Step Title — styled like the "Enqir" wordmark on the phone sign-in page:
-                    brush-swash stroke behind the text, no pill/background */}
-                {/* Neither the title tab nor the category tab carries a headline:
-                    the black header names the step, so the tab opens on its field. */}
-                {step > 1 && (
-                <div id="step-title" className="text-center pt-3 sm:pt-4 mb-9 sm:mb-10">
-                  <div className="relative mx-auto inline-flex max-w-full items-center justify-center select-none px-5 sm:px-9 py-4 sm:py-6">
-                    {/* Painterly brush swash — same tapered stroke as the sign-in wordmark */}
-                    <svg
-                      aria-hidden="true"
-                      viewBox="0 0 640 260"
-                      className="absolute inset-0 w-full h-full pointer-events-none"
-                      preserveAspectRatio="none"
-                      style={{ filter: 'drop-shadow(0 2px 0 rgba(17,24,39,0.24)) drop-shadow(0 4px 0 rgba(17,24,39,0.20)) drop-shadow(0 -2px 0 rgba(17,24,39,0.14)) drop-shadow(2px 0 0 rgba(17,24,39,0.16)) drop-shadow(-2px 0 0 rgba(17,24,39,0.16)) drop-shadow(0 10px 12px rgba(17,24,39,0.30))' }}
-                    >
-                      <defs>
-                        <linearGradient id="brushSwashStep" x1="0" y1="0" x2="1" y2="0.6">
-                          <stop offset="0%" stopColor={STEPS[step].key === 'deadline' ? '#fecaca' : '#bfdbfe'} />
-                          <stop offset="50%" stopColor={STEPS[step].key === 'deadline' ? '#fca5a5' : '#a9cdfb'} />
-                          <stop offset="100%" stopColor={STEPS[step].key === 'deadline' ? '#f87171' : '#93c5fd'} />
-                        </linearGradient>
-                      </defs>
-                      <path
-                        d="M18 158
-                           C 40 120, 96 96, 168 92
-                           C 250 86, 330 60, 420 62
-                           C 500 64, 570 84, 614 108
-                           C 620 112, 620 120, 610 126
-                           C 560 158, 470 178, 380 182
-                           C 290 186, 190 192, 112 184
-                           C 66 180, 30 172, 18 158 Z"
-                        fill="url(#brushSwashStep)"
-                      />
-                      <path
-                        d="M60 150 C 170 118, 330 96, 520 108"
-                        stroke={STEPS[step].key === 'deadline' ? '#fee2e2' : '#e0effe'}
-                        strokeWidth="16"
-                        strokeLinecap="round"
-                        fill="none"
-                        opacity="0.5"
-                      />
-                      <path
-                        d="M96 182 C 180 194, 300 192, 420 178"
-                        stroke={STEPS[step].key === 'deadline' ? '#dc2626' : '#6ea8e6'}
-                        strokeWidth="5"
-                        strokeLinecap="round"
-                        fill="none"
-                        opacity="0.45"
-                      />
-                    </svg>
-                    <span id="enquiry-step-heading" className="relative whitespace-nowrap text-center text-[clamp(14px,5vw,30px)] font-extrabold text-gray-950 tracking-tight leading-tight">
-                      {STEPS[step].key === 'budget' && isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered' : 'Salary Expected') : STEPS[step].label}
-                    </span>
-                </div>
-                </div>
-                )}
+                {/* No tab carries an in-card headline: the black header names the
+                    step, so every tab opens straight on its field. */}
+
 
                 {/* Step Content */}
                 <div key={step} className="enquiry-wizard space-y-4" style={{ animation: animDir === "up" ? "stepSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1)" : "stepSlideDown 0.35s cubic-bezier(0.22, 1, 0.36, 1)" }}>
@@ -4346,6 +4295,58 @@ const DEADLINE_STEP = 5;
                             </div>
                           </div>
                         );
+                        const yearField = (
+                          <div className={`min-w-0 ${isBike && !isCarLike ? 'basis-full flex justify-center' : 'flex-1'}`}>
+                            {/* The wrapper carries the width, so the box is exactly as
+                                big as a 4-digit year needs — nothing can stretch it. */}
+                            <div className={isBike && !isCarLike ? 'w-24' : 'w-full'}>
+                              <Input
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={4}
+                                value={vehicleDetails.year}
+                                onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
+                                placeholder="Year"
+                                className={`w-full rounded-[10px] text-sm font-medium border-[1.5px] border-gray-800 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus:outline-none transition-all duration-200 text-black placeholder:text-black placeholder:font-semibold placeholder:text-[11px] ${isBike && !isCarLike ? '!h-10 !min-h-0 px-1 py-0 text-center' : 'h-12 sm:h-14 min-h-[48px] pl-4 pr-4'}${vehicleDetails.year.length === 4 ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
+                              />
+                            </div>
+                            <div className="h-3">
+                            </div>
+                          </div>
+                        );
+                        const carVariantField = isCar && (
+                          <div className="flex-1 min-w-0">
+                            <div className="relative">
+                              {carVariantOptions.length > 0 ? (
+                                <select
+                                  value={vehicleDetails.variant}
+                                  onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
+                                  className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.variant) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
+                                >
+                                  <option value="">Variant</option>
+                                  {carVariantOptions.map((v) => (
+                                    <option key={v} value={v}>{v}</option>
+                                  ))}
+                                  <option value="Other">Other</option>
+                                </select>
+                              ) : (
+                                <Input
+                                  type="text"
+                                  maxLength={40}
+                                  value={vehicleDetails.variant}
+                                  onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
+                                  placeholder="Variant"
+                                  className="w-full rounded-[16px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-2 border-gray-800 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black pl-3 pr-3 text-black placeholder:text-black placeholder:font-semibold placeholder:text-[11px]"
+                                />
+                              )}
+                              {carVariantOptions.length > 0 && (
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+                              )}
+                            </div>
+                            <div className="h-3">
+                            </div>
+                          </div>
+                        );
                         return (
                           <div className={`mb-6 ${isCar ? 'car-pill no-field-border' : ''} ${isBike && !isCarLike ? 'bike-capsule' : ''}`}>
                             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -4416,25 +4417,9 @@ const DEADLINE_STEP = 5;
                                   </div>
                                 </div>
                               )}
-                              {/* Year — its own line under Brand/Model for bikes, kept
-                                  small and centred rather than stretched full width. */}
-                              <div className={`min-w-0 ${isBike && !isCarLike ? 'basis-full flex justify-center' : 'flex-1'}`}>
-                                {/* The wrapper carries the width, so the box is exactly as
-                                    big as a 4-digit year needs — nothing can stretch it. */}
-                                <div className={isBike && !isCarLike ? 'w-24' : 'w-full'}>
-                                  <Input
-                                    type="text"
-                                    inputMode="numeric"
-                                    maxLength={4}
-                                    value={vehicleDetails.year}
-                                    onChange={(e) => setVehicleDetails(v => ({ ...v, year: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
-                                    placeholder="Year"
-                                    className={`w-full rounded-[10px] text-sm font-medium border-[1.5px] border-gray-800 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus:outline-none transition-all duration-200 text-black placeholder:text-black placeholder:font-semibold placeholder:text-[11px] ${isBike && !isCarLike ? '!h-10 !min-h-0 px-1 py-0 text-center' : 'h-12 sm:h-14 min-h-[48px] pl-4 pr-4'}${vehicleDetails.year.length === 4 ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !placeholder:text-white !border-blue-700 !shadow-none' : ''}`}
-                                  />
-                                </div>
-                                <div className="h-3">
-                                </div>
-                              </div>
+                              {/* Year — trucks and bikes keep it in the first row;
+                                  cars move it down beside Variant (see below). */}
+                              {!isCar && yearField}
                               {isTruckLike && brandField}
                             </div>
                             {/* Model — real models of the picked maker (Signa 2823.K, Yodha 2.0 …) */}
@@ -4471,43 +4456,16 @@ const DEADLINE_STEP = 5;
                                 </div>
                               );
                             })()}
+                            {/* Year / Variant — second row on cars, two per line */}
+                            {isCar && (
+                              <div className="flex items-start justify-between gap-3 mt-3">
+                                {yearField}
+                                {carVariantField}
+                              </div>
+                            )}
                             {/* Transmission / Fuel Type / Ownership — cars & automobiles only */}
                             {isCarLike && (
                               <div className="flex items-start justify-between gap-3 mt-3">
-                                {/* Variant — only the trims this model is sold in */}
-                                {isCar && (
-                                  <div className="flex-1 min-w-0">
-                                    <div className="relative">
-                                      {carVariantOptions.length > 0 ? (
-                                        <select
-                                          value={vehicleDetails.variant}
-                                          onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
-                                          className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-2 border-gray-800 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-0 bg-white pl-3 pr-9 ${!vehicleDetails.variant ? 'text-[10px] text-black font-semibold' : 'text-[11px] sm:text-xs text-black'}${(vehicleDetails.variant) ? ' !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : ''}`}
-                                        >
-                                          <option value="">Variant</option>
-                                          {carVariantOptions.map((v) => (
-                                            <option key={v} value={v}>{v}</option>
-                                          ))}
-                                          <option value="Other">Other</option>
-                                        </select>
-                                      ) : (
-                                        <Input
-                                          type="text"
-                                          maxLength={40}
-                                          value={vehicleDetails.variant}
-                                          onChange={(e) => setVehicleDetails(v => ({ ...v, variant: e.target.value }))}
-                                          placeholder="Variant"
-                                          className="w-full rounded-[16px] h-12 sm:h-14 min-h-[48px] text-sm sm:text-base font-medium border-2 border-gray-800 bg-white shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] focus-visible:border-black focus:outline-none focus:ring-2 focus:ring-black pl-3 pr-3 text-black placeholder:text-black placeholder:font-semibold placeholder:text-[11px]"
-                                        />
-                                      )}
-                                      {carVariantOptions.length > 0 && (
-                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
-                                      )}
-                                    </div>
-                                    <div className="h-3">
-                                    </div>
-                                  </div>
-                                )}
                                 {/* Transmission — the widest of the three */}
                                 <div className="flex-1 min-w-0">
                                   <div className="relative">
@@ -5666,21 +5624,8 @@ const DEADLINE_STEP = 5;
             </Card>
           )}
 
-          {/* Progress bar on the first tab now lives in the header under the
-              reassurance line; later tabs keep it here, above the phone doodle. */}
-          {!isSubmitted && step > 0 && (
-            <div className="px-5 sm:px-6 lg:px-8 pt-4">
-              <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200">
-                <div
-                  className="h-full rounded-full transition-all duration-500 ease-out"
-                  style={{
-                    width: `${((step + 1) / totalSteps) * 100}%`,
-                    backgroundColor: '#15803d'
-                  }}
-                />
-              </div>
-            </div>
-          )}
+          {/* Step progress now lives in the header on every tab, so nothing
+              renders below the card here. */}
 
           {/* First tab only — three reassurances and a three-step picture of what
               happens after posting. Decorative: no state, no handlers. */}
