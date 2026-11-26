@@ -5264,6 +5264,26 @@ const DEADLINE_STEP = 5;
                   {/* Step 6: Photos & Verify */}
                   {step === 6 && (
                     <div className="max-w-lg mx-auto w-full space-y-6">
+                      {/* Quiet guidance — the same compact card as the other tabs. */}
+                      <div className="rounded-2xl border border-slate-200 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                        <div className="flex items-stretch justify-between">
+                          {[
+                            { Icon: Camera, title: 'Clear photos', note: 'Builds trust' },
+                            { Icon: ShieldCheck, title: 'Verify once', note: 'Faster approval' },
+                          ].map(({ Icon, title, note }, i) => (
+                            <Fragment key={title}>
+                              {i > 0 && <span aria-hidden="true" className="h-6 w-px flex-shrink-0 self-center bg-slate-200" />}
+                              <div className="flex min-w-0 flex-1 items-center justify-start gap-1 px-0.5">
+                                <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
+                                <span className="min-w-0 text-left">
+                                  <span className="block truncate whitespace-nowrap text-[9px] font-semibold leading-[1.15] text-slate-900">{title}</span>
+                                  <span className="block truncate whitespace-nowrap text-[7.5px] font-normal leading-[1.15] text-slate-500">{note}</span>
+                                </span>
+                              </div>
+                            </Fragment>
+                          ))}
+                        </div>
+                      </div>
                       {/* Reference Images (matching CreateListing style) */}
                       <div className="space-y-2">
                         <Label className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-1.5">
@@ -5308,9 +5328,11 @@ const DEADLINE_STEP = 5;
                                 ? (referenceImageUrls.length === 0 ? 'Choose File' : 'Add More Files')
                                 : (referenceImageUrls.length === 0 ? 'Reference' : 'Add More References')}
                             </label>
-                            <p className="text-[11px] text-slate-600 mt-2 text-right">
-                              {referenceImageUrls.length}/5
-                            </p>
+                            <div className="mt-2 flex justify-end">
+                              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[8.5px] font-semibold leading-none text-slate-500">
+                                {referenceImageUrls.length}/5
+                              </span>
+                            </div>
                             {uploadingImages && referenceUploadProgresses.length > 0 && (
                               <div className="mt-2 space-y-1">
                                 {referenceUploadProgresses.map((p, i) => (
@@ -5330,36 +5352,37 @@ const DEADLINE_STEP = 5;
 
 
                       {/* Enquiry Preview */}
-                      <div className="rounded-xl border border-black bg-gray-100 p-4 sm:p-5 space-y-3 -mt-1">
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5 space-y-3.5 -mt-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                        <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">Preview</p>
                         {/* Real-estate details first (real-estate only, not services) */}
                         {selectedCategories.includes('real-estate') && (
                           <div className="space-y-1.5">
                             {estateDealType && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Looking to</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Looking to</span>
                                 <span className="text-xs sm:text-sm font-bold text-black">{estateDealType}</span>
                               </div>
                             )}
                             {estateDetails.landArea.trim() && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Land / Plot</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Land / Plot</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{estateDetails.landArea.trim()} {estateDetails.landUnit}</span>
                               </div>
                             )}
                             {estateDetails.builtUpArea.trim() && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Buildings / Commercial</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Buildings / Commercial</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{estateDetails.builtUpArea.trim()} {estateDetails.builtUpUnit}</span>
                               </div>
                             )}
                             {estateDetails.houseArea.trim() && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">House / Flat</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">House / Flat</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{estateDetails.houseArea.trim()} {estateDetails.houseUnit}{estateDetails.houseBhk ? ` · ${estateDetails.houseBhk}` : ''}</span>
                               </div>
                             )}
                             {(estateDealType || estateDetails.landArea.trim() || estateDetails.builtUpArea.trim() || estateDetails.houseArea.trim()) && (
-                              <div className="border-t border-gray-200" />
+                              <div className="border-t border-slate-200" />
                             )}
                           </div>
                         )}
@@ -5367,81 +5390,81 @@ const DEADLINE_STEP = 5;
                         {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking' && (
                           <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Status</span>
+                              <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Status</span>
                               <span className="text-xs sm:text-sm font-bold text-black">Open To Work</span>
                             </div>
                             {jobDetails.education && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Education</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Education</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.education}</span>
                               </div>
                             )}
                             {jobDetails.stream.trim() && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Stream</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Stream</span>
                                 <span className="text-[10px] sm:text-xs font-bold text-black text-right truncate ml-4">{jobDetails.stream}</span>
                               </div>
                             )}
                             {jobSkills.trim() && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Skills</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Skills</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobSkills}</span>
                               </div>
                             )}
                             {jobDetails.experience && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Experience</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Experience</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.experience}</span>
                               </div>
                             )}
                             {jobDetails.jobType && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Job Type</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Job Type</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.jobType}</span>
                               </div>
                             )}
                             {jobDetails.workMode && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Work Mode</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Work Mode</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.workMode}</span>
                               </div>
                             )}
-                            <div className="border-t border-gray-200" />
+                            <div className="border-t border-slate-200" />
                           </div>
                         )}
                         {isJobEnquiry(selectedCategories, category) && jobDirection === 'hiring' && (
                           <div className="space-y-1.5">
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Looking to</span>
+                              <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Looking to</span>
                               <span className="text-xs sm:text-sm font-bold text-black">Hire</span>
                             </div>
                             {jobDetails.experience && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Experience Required</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Experience Required</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.experience}</span>
                               </div>
                             )}
                             {jobDetails.jobType && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Job Type</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Job Type</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.jobType}</span>
                               </div>
                             )}
                             {jobDetails.workMode && (
                               <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">Work Mode</span>
+                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Work Mode</span>
                                 <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.workMode}</span>
                               </div>
                             )}
-                            <div className="border-t border-gray-200" />
+                            <div className="border-t border-slate-200" />
                           </div>
                         )}
                         {/* Title + budget */}
                         <div className="space-y-1">
-                          <p className="text-[15px] sm:text-base font-semibold text-gray-900 leading-snug break-words">{title || 'Your enquiry title'}</p>
+                          <p className="text-[15px] sm:text-lg font-bold tracking-tight text-black leading-snug break-words">{title || 'Your enquiry title'}</p>
                           <div className="flex justify-center pt-4">
                             {budget ? (
-                              <p className="text-[11px] sm:text-xs font-semibold text-gray-700">₹{budget}</p>
+                              <span className="inline-flex items-center rounded-full bg-black px-2.5 py-1 text-[10.5px] font-black leading-none text-white">₹{budget}</span>
                             ) : budgetOpenToDiscussion ? (
                               <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-800 text-white border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]"><IndianRupee className="h-3 w-3" />Open to discussion</span>
                             ) : (
@@ -5449,7 +5472,7 @@ const DEADLINE_STEP = 5;
                             )}
                           </div>
                         </div>
-                        <div className="border-t border-gray-100" />
+                        <div className="border-t border-slate-200/70" />
                         {/* Details */}
                         <div className="space-y-2">
                           {/* Location */}
@@ -5929,11 +5952,229 @@ const DEADLINE_STEP = 5;
           )}
         </div>
 
+        {/* Photos & Verify tab: three reassurances and a small checklist strip,
+            sitting under the card and above the phone doodle. Decorative only. */}
+        {!isSubmitted && step === 6 && (
+          <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
+            <div className="mx-auto max-w-3xl">
+              <div className="flex items-center justify-between">
+                {[
+                  { Icon: Camera, title: 'Real photos', note: 'Clear and lit' },
+                  { Icon: ShieldCheck, title: 'ID private', note: 'Never shown' },
+                  { Icon: Zap, title: 'Goes live', note: 'After review' },
+                ].map(({ Icon, title, note }, i) => (
+                  <Fragment key={title}>
+                    {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
+                    <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-0.5">
+                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-black sm:h-[18px] sm:w-[18px]" fill="currentColor" strokeWidth={1.2} />
+                      <span className="min-w-0 text-left">
+                        <span className="block truncate whitespace-nowrap text-[10px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
+                        <span className="block truncate whitespace-nowrap text-[8px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
+                      </span>
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+
+              {/* Checklist strip: photos, verify, then it goes live */}
+              <div aria-hidden="true" className="mt-7 sm:mt-9">
+                <div className="relative">
+                  <div className="absolute left-[16.666%] right-[16.666%] top-[13px] h-[2px] rounded-full bg-slate-200" />
+                  <div className="relative flex items-start justify-between">
+                    {[
+                      { label: 'Photos', note: 'Optional', done: true },
+                      { label: 'Verify', note: 'Trust badge', done: true },
+                      { label: 'Post', note: 'After review', done: false },
+                    ].map((s) => (
+                      <div key={s.label} className="flex w-1/3 flex-col items-center">
+                        <span className={`flex h-7 w-7 items-center justify-center rounded-full border-2 ${s.done ? 'border-[#15803d] bg-[#15803d]' : 'border-slate-300 bg-white'}`}>
+                          <Check aria-hidden="true" className={`h-3 w-3 ${s.done ? 'text-white' : 'text-slate-300'}`} strokeWidth={3.5} />
+                        </span>
+                        <span className="mt-1.5 text-[9.5px] font-bold leading-tight text-slate-900">{s.label}</span>
+                        <span className="text-[8px] leading-tight text-slate-500">{s.note}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Location tab: three reassurances and a small distance strip, sitting
+            under the card and above the phone doodle. Decorative only — the pin
+            and its map picker are untouched. */}
+        {!isSubmitted && step === 3 && (
+          <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
+            <div className="mx-auto max-w-3xl">
+              <div className="flex items-center justify-between">
+                {[
+                  { Icon: MapPin, title: 'Pin the area', note: 'Just the locality' },
+                  { Icon: Lock, title: 'Stay private', note: 'No house number' },
+                  { Icon: Home, title: 'Local only', note: 'Nearby sellers' },
+                ].map(({ Icon, title, note }, i) => (
+                  <Fragment key={title}>
+                    {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
+                    <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-0.5">
+                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-black sm:h-[18px] sm:w-[18px]" fill="currentColor" strokeWidth={1.2} />
+                      <span className="min-w-0 text-left">
+                        <span className="block truncate whitespace-nowrap text-[10px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
+                        <span className="block truncate whitespace-nowrap text-[8px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
+                      </span>
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+
+              {/* Distance strip: how far the enquiry travels from your pin */}
+              <div aria-hidden="true" className="mt-7 sm:mt-9">
+                <div className="relative h-4">
+                  <div className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-slate-200" />
+                  <div className="absolute left-0 right-[50%] top-1/2 h-[6px] -translate-y-1/2 rounded-full bg-[#15803d]" />
+                  <span className="absolute left-0 top-1/2 h-[6px] w-[6px] -translate-y-1/2 rounded-full bg-[#15803d]" />
+                  <span className="absolute right-0 top-1/2 h-[6px] w-[6px] -translate-y-1/2 rounded-full bg-slate-300" />
+                  <span className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-[#15803d] shadow-[0_1px_3px_rgba(15,23,42,0.25)]" />
+                </div>
+                <div className="mt-1.5 flex items-baseline justify-between text-[8px] leading-tight text-slate-500">
+                  <span>Your area</span>
+                  <span className="text-[9px] font-bold text-slate-900">Nearby</span>
+                  <span>City wide</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Budget tab: three reassurances and a small price-range strip, sitting
+            under the card and above the phone doodle. Decorative only — the
+            budget field and the open-to-discussion picker stay as they are. */}
+        {!isSubmitted && step === 4 && (
+          <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
+            <div className="mx-auto max-w-3xl">
+              <div className="flex items-center justify-between">
+                {[
+                  { Icon: IndianRupee, title: 'Set a ballpark', note: 'Not binding' },
+                  { Icon: Scale, title: 'Talk price', note: 'Sellers counter' },
+                  { Icon: CheckCircle2, title: 'Best fit', note: 'Inside range' },
+                ].map(({ Icon, title, note }, i) => (
+                  <Fragment key={title}>
+                    {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
+                    <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-0.5">
+                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-black sm:h-[18px] sm:w-[18px]" fill="currentColor" strokeWidth={1.2} />
+                      <span className="min-w-0 text-left">
+                        <span className="block truncate whitespace-nowrap text-[10px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
+                        <span className="block truncate whitespace-nowrap text-[8px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
+                      </span>
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+
+              {/* Range strip: a quiet rail with the comfortable band shaded in */}
+              <div aria-hidden="true" className="mt-7 sm:mt-9">
+                <div className="relative h-4">
+                  <div className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-slate-200" />
+                  <div className="absolute left-[30%] right-[30%] top-1/2 h-[6px] -translate-y-1/2 rounded-full bg-[#15803d]" />
+                  <span className="absolute left-0 top-1/2 h-[6px] w-[6px] -translate-y-1/2 rounded-full bg-slate-300" />
+                  <span className="absolute right-0 top-1/2 h-[6px] w-[6px] -translate-y-1/2 rounded-full bg-slate-300" />
+                  <span className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-[#15803d] shadow-[0_1px_3px_rgba(15,23,42,0.25)]" />
+                </div>
+                <div className="mt-1.5 flex items-baseline justify-between text-[8px] leading-tight text-slate-500">
+                  <span>Too low</span>
+                  <span className="text-[9px] font-bold text-slate-900">Your range</span>
+                  <span>Too high</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Deadline tab: three reassurances and a small timeline, sitting under
+            the card and above the phone doodle. Decorative only — no state, no
+            handlers — and themed around timing rather than the posting flow. */}
+        {!isSubmitted && step === 5 && (
+          <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
+            <div className="mx-auto max-w-3xl">
+              <div className="flex items-center justify-between">
+                {[
+                  { Icon: CalendarIcon, title: 'Pick a date', note: 'Plan ahead' },
+                  { Icon: Zap, title: 'Clear urgency', note: 'Fast replies' },
+                  { Icon: CheckCircle2, title: 'Close on time', note: 'No loose ends' },
+                ].map(({ Icon, title, note }, i) => (
+                  <Fragment key={title}>
+                    {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
+                    <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-0.5">
+                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-black sm:h-[18px] sm:w-[18px]" fill="currentColor" strokeWidth={1.2} />
+                      <span className="min-w-0 text-left">
+                        <span className="block truncate whitespace-nowrap text-[10px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
+                        <span className="block truncate whitespace-nowrap text-[8px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
+                      </span>
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
+
+              {/* Timing strip: today → your deadline → the deal */}
+              <div aria-hidden="true" className="mt-7 sm:mt-9">
+                <div className="relative">
+                  {/* Rail runs dot-centre to dot-centre: each third is 33.3%, so the
+                      outer dots sit at 16.66% and 83.3% at any screen width. */}
+                  <div className="absolute left-[16.666%] right-[16.666%] top-[13px] h-[2px] rounded-full bg-slate-200" />
+                  <div className="relative flex items-start justify-between">
+                    {[
+                      { label: 'Today', note: 'You post', done: false },
+                      { label: 'Deadline', note: 'You decide', done: false },
+                      { label: 'Deal', note: 'On time', done: true },
+                    ].map((s, i) => (
+                      <div key={s.label} className="flex w-1/3 flex-col items-center">
+                        <span
+                          className={`flex h-7 w-7 items-center justify-center rounded-full border-2 ${s.done ? 'border-[#15803d] bg-[#15803d]' : i === 1 ? 'border-[#15803d] bg-white' : 'border-slate-300 bg-white'}`}
+                        >
+                          <span className={`h-2 w-2 rounded-full ${s.done ? 'bg-white' : i === 1 ? 'bg-[#15803d]' : 'bg-slate-400'}`} />
+                        </span>
+                        <span className="mt-1.5 text-[9.5px] font-bold leading-tight text-slate-900">{s.label}</span>
+                        <span className="text-[8px] leading-tight text-slate-500">{s.note}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Phones only, Budget and Deadline tabs: a quiet safety card filling the
+            space the sketch used to take. Decorative, plain markup. */}
+        {!isSubmitted && (step === 4 || step === 5) && (
+          <div className="sm:hidden px-4 pt-16 pb-2">
+            <div className="mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { Icon: ShieldCheck, title: 'Verified', note: 'Real people' },
+                  { Icon: Lock, title: 'Private', note: 'Contacts hidden' },
+                  { Icon: Stamp, title: 'Precise', note: 'Exact ask' },
+                ].map(({ Icon, title, note }) => (
+                  <div key={title} className="flex min-w-0 flex-col items-center gap-1 text-center">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-50">
+                      <Icon aria-hidden="true" className="h-3.5 w-3.5 text-black" fill="currentColor" strokeWidth={1.2} />
+                    </span>
+                    <span className="block w-full truncate whitespace-nowrap text-[9px] font-semibold leading-[1.15] text-slate-900">{title}</span>
+                    <span className="block w-full truncate whitespace-nowrap text-[7.5px] font-normal leading-[1.15] text-slate-500">{note}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Phones only: the sketch sits directly under the form card, using the
-            space that used to run empty down to the footer */}
-        <div className="sm:hidden px-4 pt-4 text-gray-900">
-          <DealFlowSketch className="w-full h-auto" />
-        </div>
+            space that used to run empty down to the footer. The Budget and
+            Deadline tabs carry their own strips instead, so it is skipped there. */}
+        {step !== 4 && step !== 5 && (
+          <div className={`sm:hidden px-4 text-gray-900 ${step === 3 ? 'pt-14' : 'pt-4'}`}>
+            <DealFlowSketch className="w-full h-auto" />
+          </div>
+        )}
       </div>
 
       {/* Simplified Payment Modal */}
