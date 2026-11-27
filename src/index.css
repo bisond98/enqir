@@ -3094,10 +3094,6 @@ body {
   background-image: none !important;
   border-color: #000 !important;
 }
-.sell-form-card #price-option ~ svg.lucide-chevron-down {
-  background-color: #fff !important;
-  color: #000 !important;
-}
 
 /* The jobs "Skills required" box keeps a dark, fully opaque hint. It sits
    outside the layers so it beats the placeholder utilities in the markup. */

@@ -39,7 +39,6 @@ import { titleHintsFor } from '../titleHints';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
 import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealNewPageTop } from '@/utils/autoScrollGuard';
 import { prefetchCategoryTiles } from '@/utils/prefetchCategoryTiles';
-import { SellerCartoon } from '@/components/doodles';
 import { categoriesRequireImage } from '@/lib/imageRequiredCategories';
 import { LoadingAnimation } from '@/components/LoadingAnimation';
 import { processPayment } from '@/services/paymentService';
@@ -782,12 +781,20 @@ export default function CreateListing() {
       toast({ title: 'Image limit reached', description: 'You can upload up to 5 images only.', variant: 'destructive' });
       return;
     }
+    const urls: string[] = [];
+    // Up to five photos per pick, and never more than the slots left; extras are
+    // dropped before any upload starts. The OS picker sheet itself cannot be
+    // capped by a web page, so the limit is enforced here.
+    const remainingSlots = 5 - images.length;
+    const selectedFiles = Array.from(files).slice(0, Math.min(5, remainingSlots));
+    if (files.length > selectedFiles.length) {
+      toast({
+        title: 'Only 5 images allowed',
+        description: `Only ${selectedFiles.length} image${selectedFiles.length === 1 ? '' : 's'} could be added — extra selected images were skipped.`,
+      });
+    }
     setUploading(true);
     try {
-      const urls: string[] = [];
-      const remainingSlots = 5 - images.length;
-      const selectedFiles = Array.from(files).slice(0, remainingSlots);
-      
       // Add placeholder progress entries
       const startIdx = images.length;
       setUploadProgresses(prev => [...prev, ...selectedFiles.map(() => 0)]);
@@ -812,9 +819,6 @@ export default function CreateListing() {
           return next;
         });
         urls.push(url);
-      }
-      if (files.length > selectedFiles.length) {
-        toast({ title: 'Only 5 images allowed', description: `Only ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'} could be added — extra selected images were skipped.` });
       }
       setImages((prev) => [...prev, ...urls].slice(0, 5));
       // Clear progress after a short delay
@@ -1193,7 +1197,7 @@ export default function CreateListing() {
         navigate(-1);
       }}
     >
-      <Card className="sell-form-card border border-slate-200/80 rounded-3xl bg-white shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] overflow-hidden">
+      <Card className="sell-form-card relative -top-3 border border-slate-200/80 rounded-3xl bg-white shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] overflow-hidden">
         <CardContent className={`relative pb-6 flex flex-col ${step === 0 ? 'pt-6 sm:pt-7' : 'pt-1 sm:pt-2'}`}>
           {/* Kept as the scroll anchor the step's Back button jumps to. */}
           <div id="step-top" />
@@ -1414,7 +1418,7 @@ export default function CreateListing() {
               <div className="sell-pills relative flex flex-col space-y-2 max-w-lg mx-auto w-full">
                 {/* Quiet guidance above the pickers — the same compact card as
                     the enquiry tabs. Decorative, nothing to click. */}
-                <div className="order-first rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
+                <div className="order-first relative top-1.5 rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   <div className="flex items-stretch justify-between">
                     {[
                       { Icon: Type, title: 'Be specific', note: 'Brand + model' },
@@ -1433,8 +1437,6 @@ export default function CreateListing() {
                     ))}
                   </div>
                 </div>
-                {/* Single quiet line-art doodle — seller offering */}
-                <SellerCartoon className="pointer-events-none absolute -top-8 -right-4 sm:-right-10 h-20 w-20 sm:h-24 sm:w-24 opacity-[0.6] select-none" aria-hidden="true" />
                 {/* Same tab furniture as the enquiry title tab: a short label on
                     a blue accent, then a capsule field with a quiet icon. */}
                 {/* The tab name already sits in the header, so the small in-card
@@ -1893,7 +1895,7 @@ export default function CreateListing() {
               <div className="sell-pills space-y-2 max-w-lg mx-auto w-full">
                 {/* Quiet guidance — the same compact card as the enquiry tabs.
                     Decorative, nothing to click. */}
-                <div className="rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
+                <div className="relative top-1.5 rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   <div className="flex items-stretch justify-between">
                     {[
                       { Icon: FileText, title: 'Be clear', note: 'Condition + specs' },
@@ -2457,7 +2459,7 @@ export default function CreateListing() {
                           ? 'Describe your skills, strengths, technical abilities, and areas of expertise in detail. Detail your previous roles, responsibilities, achievements, and relevant work experience.'
                           : 'Condition, accessories, warranty, reason for selling…'}
                         maxLength={MAX_DESC_CHARS}
-                        className={`wizard-desc-box rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:font-medium placeholder:text-[11px] resize-y text-slate-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${category === 'jobs' && (details.jobListingFor === 'To hire' || details.jobListingFor === 'To apply') ? 'placeholder:text-gray-900 placeholder:font-semibold' : 'placeholder:text-gray-400'}`}
+                        className={`wizard-desc-box rounded-2xl min-h-[160px] sm:min-h-[180px] text-base border-[1.5px] border-slate-200 bg-white focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 min-touch pl-4 pr-14 py-3 placeholder:font-medium placeholder:text-[11px] resize-y text-slate-900 transition-all duration-200 ${category === 'jobs' && (details.jobListingFor === 'To hire' || details.jobListingFor === 'To apply') ? 'placeholder:text-gray-900 placeholder:font-semibold' : 'placeholder:text-gray-400'}`}
                         autoFocus={canAutoFocus()}
                       />
                     </div>
@@ -2469,7 +2471,7 @@ export default function CreateListing() {
             {step === 3 && (
               <div className="max-w-xl mx-auto w-full space-y-3">
                 {/* Guidance card — same two-tile card as the enquiry Location tab. */}
-                <div className="grid grid-cols-2 gap-x-3 gap-y-2 rounded-2xl border border-slate-300 bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
+                <div className="relative top-1.5 grid grid-cols-2 gap-x-3 gap-y-2 rounded-2xl border border-slate-300 bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   {[
                     { Icon: MapPin, title: 'Pin the area', note: 'Buyers gauge the distance.' },
                     { Icon: Lock, title: 'Stay private', note: 'No street address is shown.' },
@@ -2541,8 +2543,25 @@ export default function CreateListing() {
 
             {step === 4 && (
               <div className="max-w-lg mx-auto w-full space-y-6">
+                {/* Guidance card — the same two-tile card the Location tab opens on. */}
+                <div className="relative top-1.5 grid grid-cols-2 gap-x-3 gap-y-2 rounded-2xl border border-slate-300 bg-white px-3.5 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
+                  {[
+                    { Icon: Wrench, title: 'State condition', note: 'New or used is enough.' },
+                    { Icon: ShieldCheck, title: 'Be honest', note: 'Wear is easier to sell.' },
+                  ].map(({ Icon, title, note }) => (
+                    <div key={title} className="flex min-w-0 items-start gap-2">
+                      <span className="mt-px flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 text-black">
+                        <Icon aria-hidden="true" className="h-3 w-3" fill="currentColor" strokeWidth={1.2} />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[10px] font-bold leading-tight text-slate-900">{title}</span>
+                        <span className="mt-0.5 block text-[9px] leading-snug text-slate-500">{note}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
                 {category !== 'jobs' && !hideCondition && (
-                <div className="space-y-2">
+                <div className="relative top-3 space-y-2">
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
@@ -2715,7 +2734,7 @@ export default function CreateListing() {
             {step === 5 && (
               <div className="price-pills max-w-md mx-auto w-full space-y-4">
                 {/* Quiet guidance — the same compact card as the other tabs. */}
-                <div className="rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
+                <div className="relative top-1.5 rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   <div className="flex items-stretch justify-between">
                     {[
                       { Icon: IndianRupee, title: 'Set a price', note: 'Fixed or range' },
@@ -2734,13 +2753,15 @@ export default function CreateListing() {
                     ))}
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="price-fixed" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-2 ml-1">
+                <div className="relative -top-3 space-y-2">
+                  {/* Hidden by request; the label keeps its space so the field
+                      and everything under it stay exactly where they were. */}
+                  <Label htmlFor="price-fixed" aria-hidden="true" className="invisible text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-2 ml-1">
                     <IndianRupee className="h-3.5 w-3.5" />
                     {category === 'jobs' ? 'Salary (INR)' : 'Your price (INR)'}
                   </Label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-500 z-10">₹</span>
+                    <IndianRupee aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-gray-800" />
                     <Input
                       id="price-fixed"
                       value={price}
@@ -2748,10 +2769,10 @@ export default function CreateListing() {
                         setPrice(formatPriceInput(e.target.value));
                         if (formatPriceInput(e.target.value)) setPriceOption('');
                       }}
-                      placeholder="25,000"
+                      placeholder="Your price (INR)"
                       inputMode="decimal"
                       maxLength={13}
-                      className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 transition-colors duration-200 min-touch pl-8 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold text-lg"
+                      className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 transition-colors duration-200 min-touch pl-10 pr-4 text-left placeholder:text-left placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold text-lg"
                       autoFocus={canAutoFocus()}
                     />
                   </div>
@@ -2772,7 +2793,7 @@ export default function CreateListing() {
                           setPriceMax('');
                         }
                       }}
-                      className={`appearance-none rounded-[12px] h-12 sm:h-14 min-h-[48px] max-w-full font-medium border-[1.5px] focus:outline-none focus:ring-3 focus:ring-black/15 transition-all duration-200 pl-4 pr-10 ${priceOption === 'discussion' ? 'border-black bg-blue-600 text-[11px] sm:text-xs font-bold text-white shadow-none' : 'border-slate-200 bg-white text-[10px] sm:text-xs font-semibold text-gray-900 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)]'}`}
+                      className={`w-full appearance-none rounded-full h-12 sm:h-14 min-h-[48px] max-w-full text-center [text-align-last:center] font-semibold text-[10px] pl-5 pr-14 focus:outline-none transition-all duration-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] ${priceOption === 'discussion' ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !shadow-none text-[11px] sm:text-xs font-bold' : 'bg-black text-white'}`}
                     >
                       {/* First row is the un-picked state, named like the enquiry
                           budget picker so the menu has no blank row. */}
@@ -2780,18 +2801,21 @@ export default function CreateListing() {
                       <option value="discussion" className="bg-white text-black">Open to discussion</option>
                     </select>
                     {/* Empty-state caption matches the post-enquiry budget picker:
-                        the question at the left edge, "Click here" near the round
-                        chevron handle. Hidden once a value is picked. */}
+                        centred in the black capsule, beside the round handle.
+                        Hidden once a value is picked. */}
                     {!priceOption && (
-                      <span
+                      <div
                         aria-hidden="true"
-                        className="pointer-events-none absolute inset-0 flex items-center justify-between pl-4 pr-[52px] text-[10px] sm:text-xs font-bold text-white"
+                        className="pointer-events-none absolute inset-0 flex items-center justify-center gap-3 rounded-full bg-black pr-12 text-[10px] font-semibold text-white"
                       >
                         <span>Not fixed yet?</span>
                         <span>Click here</span>
-                      </span>
+                      </div>
                     )}
-                    <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${priceOption === 'discussion' ? 'text-white' : 'text-gray-800'}`} />
+                    <ChevronDown
+                      strokeWidth={2.75}
+                      className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 box-content h-3.5 w-3.5 rounded-full border-[5px] border-white bg-black p-[7px] text-white"
+                    />
                   </div>
                 </div>
                 {fieldsForCategoryStep(category, 'price').map((f) => (
@@ -2813,7 +2837,9 @@ export default function CreateListing() {
                   </div>
                 ))}
                 <div className="space-y-2 !mt-8">
-                  <Label className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-2 ml-1">
+                  {/* Heading hidden by request; it keeps its space so the
+                      upload tile and everything under it stay put. */}
+                  <Label aria-hidden="true" className="invisible text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-2 ml-1">
                     <Upload className="h-3.5 w-3.5" />
                     Photos (up to 5){category === 'service' && <span className="font-normal text-slate-400">— optional</span>}
                   </Label>
@@ -2837,7 +2863,7 @@ export default function CreateListing() {
                       id="listing-images"
                       ref={listingImageInputRef}
                       type="file"
-                      multiple={images.length < 4}
+                      multiple={images.length < 5}
                       accept="image/*"
                       onChange={(e) => { onAddImages(e.target.files); if (listingImageInputRef.current) listingImageInputRef.current.value = ''; }}
                       disabled={uploading || images.length >= 5}
@@ -2884,7 +2910,7 @@ export default function CreateListing() {
             {step === 6 && (
               <div className="max-w-lg mx-auto w-full space-y-5">
                 {/* Quiet guidance — the same compact card the other tabs open on. */}
-                <div className="rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
+                <div className="relative top-1.5 rounded-2xl border border-slate-300 bg-white px-2.5 py-2.5 shadow-[0_1px_2px_rgba(15,23,42,0.05)]">
                   <div className="flex items-stretch justify-between">
                     {[
                       { Icon: BadgeCheck, title: 'Check once', note: 'Title and price' },
@@ -3147,7 +3173,7 @@ export default function CreateListing() {
             </div>
           )}
           {/* Nav — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
-          <div className={`mt-6 sm:mt-8 flex items-center gap-4 pt-2 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
+          <div className={`${step === 1 ? '-mt-1 sm:-mt-2' : step === 2 ? 'mt-3 sm:mt-4' : step === 5 ? 'mt-2 sm:mt-3' : 'mt-6 sm:mt-8'} flex items-center gap-4 pt-2 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
             {/* Back circle — hidden entirely on the first tab (was a dead, disabled button there) */}
             {step > 0 && (
               <Button

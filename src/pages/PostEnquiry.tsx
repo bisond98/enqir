@@ -3430,7 +3430,7 @@ const DEADLINE_STEP = 5;
 
           {/* Main Form - Multi-step wizard (matching sell listing) */}
           {!isSubmitted && (
-            <Card className="enq-form border border-slate-200/80 rounded-3xl bg-white shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] hover:shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] overflow-hidden">
+            <Card className="enq-form relative -top-3 border border-slate-200/80 rounded-3xl bg-white shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] hover:shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] overflow-hidden">
 
                               {/* pt keeps the inputs exactly where they were when the progress
                     bar sat above them; the bar itself now lives under the card. */}
@@ -5155,13 +5155,15 @@ const DEADLINE_STEP = 5;
                           ))}
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="enquiry-budget" className="text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-1.5">
+                      <div className="relative -top-6 space-y-2">
+                        {/* Heading hidden by request; it keeps its space so the
+                            field and the picker under it stay exactly put. */}
+                        <Label htmlFor="enquiry-budget" aria-hidden="true" className="invisible text-[9px] sm:text-[10px] font-bold text-black flex items-center gap-1.5">
                           <IndianRupee className="h-3.5 w-3.5" />
                           {isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered (INR)' : 'Salary Expected (INR)') : 'Budget (INR)'}
                         </Label>
                         <div className="relative">
-                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-gray-500 z-10">₹</span>
+                          <IndianRupee aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-gray-800" />
                           <Input
                             id="enquiry-budget"
                             value={budget}
@@ -5174,7 +5176,7 @@ const DEADLINE_STEP = 5;
                                 if (formattedValue) setBudgetOpenToDiscussion(false);
                               }
                             }}
-                            placeholder="50,000"
+                            placeholder="Budget (INR)"
                             inputMode="decimal"
                             className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 transition-colors duration-200 min-touch pl-8 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold text-lg"
                             autoFocus={canAutoFocus()}
@@ -5182,7 +5184,7 @@ const DEADLINE_STEP = 5;
                         </div>
                       </div>
                       {/* Open to discussion — alternative to entering a specific budget */}
-                      <div className="w-full">
+                      <div className="relative -top-6 w-full">
                         {/* Same picker as the car category's Brand / Model dropdowns:
                             a black capsule, centred text, soft depth, and the arrow
                             in a black disc inside a white ring. */}
@@ -5664,7 +5666,7 @@ const DEADLINE_STEP = 5;
                 <div id="recaptcha-container" aria-hidden="true" />
 
                 {/* Navigation Buttons — Back hugs the left corner, Next/submit hugs the right (both breakpoints); first tab has no Back, so Next stays right */}
-                <div className={`mt-5 flex items-center gap-4 pt-2 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
+                <div className={`${step === 4 ? '-mt-2' : 'mt-5'} flex items-center gap-4 pt-2 px-0.5 sm:px-2 ${step > 0 ? 'justify-between' : 'justify-end'}`}>
                   {/* First tab: a quiet promise sits to the left of the Next circle */}
                   {step === 0 && (
                     <p className="flex flex-1 min-w-0 items-center gap-1 whitespace-nowrap text-[8.5px] sm:text-[10px] font-bold leading-none text-slate-900">
