@@ -827,24 +827,25 @@ const EnquiryDetail = () => {
       <div className="min-h-screen bg-[#F6F6F3]">
         {/* Header - Matching Profile Background - Full Width */}
         {/* Header — slim editorial meta strip; the enquiry title lives once, in the card below */}
-        <div className="bg-black text-white">
-          <div className="mx-auto max-w-4xl px-4 pb-4 pt-4 sm:px-6 sm:pb-5 sm:pt-5">
-            <div className="flex items-center justify-between">
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => navigate(-1)}
-                aria-label="Go back"
-                className="-ml-2 rounded-full p-2 hover:bg-white/10 transition-colors relative z-50"
-              >
-                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-              </Button>
-              {enquiry.status === 'live' && (
-                <div className="z-50">{getStatusBadge(enquiry.status)}</div>
-              )}
-            </div>
-
-            <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div className="relative bg-black text-white flex items-start min-h-[165px] sm:min-h-[176px]">
+          {/* Back button pinned to the header's top-left corner, matching the
+              sell/enquiry form headers. */}
+          <Button
+            variant="ghost"
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+            className="absolute left-2 top-2 sm:left-4 sm:top-4 rounded-full p-2 hover:bg-white/10 transition-colors z-50"
+          >
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+          </Button>
+          {/* LIVE badge pinned to the header's top-right corner, level with the back button. */}
+          {enquiry.status === 'live' && (
+            <div className="absolute right-2 top-2 z-50 sm:right-4 sm:top-4">{getStatusBadge(enquiry.status)}</div>
+          )}
+          {/* Meta row sits high: just under the corner controls, not centred. */}
+          <div className="mx-auto w-full max-w-4xl px-4 pb-4 pt-12 sm:px-6 sm:pb-5 sm:pt-14">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
               <span className="inline-flex items-center rounded-md bg-red-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white">Need</span>
               {enquiry.category && (
                 <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/50">{enquiry.category}</span>
@@ -883,14 +884,16 @@ const EnquiryDetail = () => {
           </div>
         </div>
         {/* Content - Inside Container */}
-        <div className="max-w-[95rem] mx-auto px-1 sm:px-6 lg:px-8 py-5 sm:py-6">
+        {/* Lifted so the enquiry card overlaps the black band, exactly like the
+            For Sale listing detail card sits on its header. */}
+        <div className="relative z-10 max-w-[95rem] mx-auto px-1 sm:px-6 lg:px-8 -mt-10 sm:-mt-14 pb-5 sm:pb-6">
           <div className="space-y-4 sm:space-y-6">
               {/* Enquiry Details - Professional Design */}
               <Card className="border-0 bg-transparent shadow-none overflow-hidden relative">
                 {/* Card Content - Enhanced White Background */}
                 <CardContent className="relative z-10 p-1 sm:p-6 lg:p-7">
                   {/* Title block — LOOKING FOR pill, title, reference image, spec chips */}
-                  <div className={`relative ${plainLayout ? 'rounded-t-[18px] rounded-b-none bg-white px-5 pb-2 pt-5 shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_10px_14px_-8px_rgba(17,24,39,0.22)]' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
+                  <div className={`relative ${plainLayout ?                         'rounded-t-[18px] rounded-b-none bg-white px-5 pb-2 pt-5 shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_10px_14px_-8px_rgba(17,24,39,0.22)]' : 'rounded-[14px] border border-black/[0.08] bg-white p-4'}`}>
                     {/* More actions — plain black dots at the tile's top-right */}
                     <div className="absolute right-3 top-3 z-20">
                       <button
