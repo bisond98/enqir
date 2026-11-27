@@ -2887,6 +2887,21 @@ body {
   box-shadow: none !important;
 }
 
+/* Exception: the budget field is a closed box as well, so it keeps its own
+   light hairline on all four sides — the shared rule has no bottom edge, which
+   left the field looking open along the bottom. */
+.enq-form #enquiry-budget {
+  border: 1.5px solid #0f172a !important;
+}
+.enq-form #enquiry-budget:hover:not(:focus) {
+  border-color: #000 !important;
+}
+.enq-form #enquiry-budget:focus,
+.enq-form #enquiry-budget:focus-visible {
+  outline: none !important;
+  border: 1.5px solid #000 !important;
+}
+
 /* Sell form, Title tab: the title capsule keeps the same closed hairline as the
    enquiry "Need" field — the shared input rule drops the bottom edge, which left
    the pill looking open at the bottom. */
@@ -2900,6 +2915,21 @@ body {
 .sell-form-card #listing-title:focus-visible {
   outline: none !important;
   border: 2px solid #000 !important;
+  box-shadow: none !important;
+}
+
+/* Sell form, Price & Photos tab: the price field matches the enquiry budget
+   field — a flat box with a closed 1.5px hairline on all four sides. */
+.sell-form-card #price-fixed {
+  border: 1.5px solid #0f172a !important;
+}
+.sell-form-card #price-fixed:hover:not(:focus) {
+  border-color: #000 !important;
+}
+.sell-form-card #price-fixed:focus,
+.sell-form-card #price-fixed:focus-visible {
+  outline: none !important;
+  border: 1.5px solid #000 !important;
   box-shadow: none !important;
 }
 
