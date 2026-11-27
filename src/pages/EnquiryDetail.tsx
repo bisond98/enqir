@@ -1086,7 +1086,7 @@ const EnquiryDetail = () => {
                         // Logos keep their own aspect ratio so wide marks (Bentley,
                         // Land Rover) stay legible instead of shrinking into a square.
                         if (isLogo) return <img decoding="async" src={logoUrl as string} alt="" className="h-6 w-auto max-w-[72px] shrink-0 object-contain" loading="lazy" />;
-                        if (icon === 'dog') return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-600 bg-red-600 text-white"><Dog className="h-[10px] w-[10px]" strokeWidth={2.4} /></span>;
+                        if (icon === 'dog') return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-700 bg-red-700 text-white"><Dog className="h-[10px] w-[10px]" strokeWidth={2.4} /></span>;
                         if (icon === 'nopets') return <NoPetsIcon className="h-3.5 w-3.5 shrink-0" />;
                         const glyph = icon === 'gear' ? <GearShifterIcon className="h-[10px] w-[10px]" />
                           : icon === 'fuel' ? <Fuel className="h-[10px] w-[10px]" />
@@ -1094,7 +1094,7 @@ const EnquiryDetail = () => {
                           : icon === 'variant' ? <Tag className="h-[10px] w-[10px]" />
                           : null;
                         if (!glyph) return null;
-                        return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-600 bg-red-600 text-white">{glyph}</span>;
+                        return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-700 bg-red-700 text-white">{glyph}</span>;
                       };
                       return (
                         <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mb-4 mt-6 justify-center' : 'mb-1 mt-5 justify-center'}`}>
@@ -1315,7 +1315,7 @@ const EnquiryDetail = () => {
                         onClick={openShareMenu}
                         aria-label="Share enquiry"
                         title="Share"
-                        className="flex h-14 w-14 items-center justify-center rounded-full border-[1.5px] border-black bg-white text-black transition-colors hover:bg-neutral-50 active:scale-95 touch-manipulation"
+                        className="flex h-14 w-14 items-center justify-center rounded-full border-[1.5px] border-black bg-black text-white transition-colors hover:bg-neutral-900 active:scale-95 touch-manipulation"
                       >
                         <Share2 className="h-6 w-6" strokeWidth={2} />
                       </button>

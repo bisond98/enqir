@@ -171,6 +171,46 @@ export default function ListingDetail() {
   const [paymentDone, setPaymentDone] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
+  // The full-screen image viewer is state only, so the browser/device Back used
+  // to leave the listing entirely. While it is open we own one history entry,
+  // so Back closes the viewer and lands the user back on this same listing.
+  const closeImageViewer = () => {
+    setShowAllImages(false);
+    if ((window.history.state as { listingImageViewer?: boolean } | null)?.listingImageViewer) {
+      window.history.back();
+    }
+  };
+  useEffect(() => {
+    if (!showAllImages) return;
+    window.history.pushState({ ...(window.history.state || {}), listingImageViewer: true }, '');
+    const onPop = () => setShowAllImages(false);
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [showAllImages]);
+  // Swipe left/right on a real touch screen to move through the photos, the
+  // same gesture as the arrow buttons.
+  const swipeStartRef = useRef<{ x: number; y: number } | null>(null);
+  const handleViewerTouchStart = (event: React.TouchEvent) => {
+    const touch = event.touches[0];
+    if (touch) swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+  const handleViewerTouchEnd = (event: React.TouchEvent) => {
+    const start = swipeStartRef.current;
+    swipeStartRef.current = null;
+    const images = listing?.images;
+    if (!start || !images || images.length < 2) return;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    // Ignore taps and vertical drags; only a deliberate horizontal flick counts.
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy)) return;
+    setActiveImage((prev) =>
+      dx < 0
+        ? (prev === images.length - 1 ? 0 : prev + 1)
+        : (prev === 0 ? images.length - 1 : prev - 1),
+    );
+  };
   const [responsePage, setResponsePage] = useState(0);
   const RESPONSES_PER_PAGE = 5;
   const [searchParams] = useSearchParams();
@@ -669,7 +709,7 @@ export default function ListingDetail() {
 
   if (loading) {
     return (
-      <SellShell title="For Sale" hidePanel compactHeader hideQuickNav>
+      <SellShell title="For Sale" hidePanel compactHeader enquirySizedHeader hideQuickNav>
         <div className="flex flex-col items-center justify-center py-20 gap-3 w-full">
           <LoadingAnimation message="Loading listing" showBackButton={false} compact />
         </div>
@@ -684,7 +724,7 @@ export default function ListingDetail() {
   if (!listing || listing.status !== 'live' || deadlinePassed) {
     const expired = !!listing && (deadlinePassed || listing.status === 'expired');
     return (
-      <SellShell title="For Sale" hidePanel compactHeader hideQuickNav>
+      <SellShell title="For Sale" hidePanel compactHeader enquirySizedHeader hideQuickNav>
         <Card className="border-0 rounded-2xl bg-white transition-all duration-300 !shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:!shadow-[0_-2px_0_0_rgba(17,24,39,0.09),-2px_0_0_0_rgba(17,24,39,0.12),2px_0_0_0_rgba(17,24,39,0.12),0_3px_0_0_rgba(17,24,39,0.18),0_10px_18px_-8px_rgba(17,24,39,0.24)]">
           <CardContent className="py-16 text-center">
             <p className="text-sm font-semibold text-gray-700">
@@ -721,7 +761,7 @@ export default function ListingDetail() {
   const showDealChip = (['real-estate', 'real-estate-services', 'accommodations'].includes(listing.category || '') && !!detailsRec.listingFor);
 
   return (
-    <SellShell title={headerTitle} hidePanel compactHeader hideQuickNav>
+    <SellShell title={headerTitle} hidePanel compactHeader enquirySizedHeader hideQuickNav>
       {paymentDone && sending && createPortal(
         <div className="fixed inset-0 z-[999] overflow-y-auto bg-slate-50">
           <LoadingAnimation message="Creating Chat Room" showBackButton={false} className="min-h-screen" />
@@ -752,7 +792,7 @@ export default function ListingDetail() {
       )}
       <div className="space-y-4 pb-6">
         {/* Unified Listing Card — image + details in one card, single border around the whole block */}
-        <div className="relative rounded-2xl overflow-hidden border-0 bg-white transition-all duration-300 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.09),-2px_0_0_0_rgba(17,24,39,0.12),2px_0_0_0_rgba(17,24,39,0.12),0_3px_0_0_rgba(17,24,39,0.18),0_10px_18px_-8px_rgba(17,24,39,0.24)]">
+        <div className="relative rounded-2xl overflow-hidden border-[3px] border-white bg-white transition-all duration-300 shadow-[0_-2px_0_0_rgba(17,24,39,0.07),-2px_0_0_0_rgba(17,24,39,0.09),2px_0_0_0_rgba(17,24,39,0.09),0_2px_0_0_rgba(17,24,39,0.15),0_6px_12px_-6px_rgba(17,24,39,0.18)] hover:-translate-y-[2px] hover:shadow-[0_-2px_0_0_rgba(17,24,39,0.09),-2px_0_0_0_rgba(17,24,39,0.12),2px_0_0_0_rgba(17,24,39,0.12),0_3px_0_0_rgba(17,24,39,0.18),0_10px_18px_-8px_rgba(17,24,39,0.24)]">
         {/* Image Gallery */}
         {listing.images && listing.images.length > 0 && (
           <div className="relative">
@@ -1093,7 +1133,7 @@ export default function ListingDetail() {
                 <div className="relative w-full flex flex-row-reverse items-center justify-between gap-2.5 sm:w-auto sm:flex-col sm:items-start sm:justify-start sm:mx-0 sm:ml-auto">
                   <ShareButton
                     listing={listing}
-                    className="[&>svg]:!h-6 [&>svg]:!w-6 [&>svg]:!text-black !text-black !bg-white hover:!bg-neutral-50 !w-14 !h-14 !p-0 !rounded-full !border-[1.5px] !border-black !shadow-none flex items-center justify-center"
+                    className="[&>svg]:!h-6 [&>svg]:!w-6 [&>svg]:!text-white !text-white !bg-black hover:!bg-neutral-900 !w-14 !h-14 !p-0 !rounded-full !border-[1.5px] !border-black !shadow-none flex items-center justify-center"
                   />
                   {/* Dim + blur the page behind the ⋯ menu, like the share popup */}
                   {moreMenuOpen && (
@@ -1301,13 +1341,17 @@ export default function ListingDetail() {
               {activeImage + 1} / {listing.images.length}
             </p>
             <button
-              onClick={() => setShowAllImages(false)}
+              onClick={closeImageViewer}
               className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
             >
               <X className="h-4 w-4 text-white" />
             </button>
           </div>
-          <div className="flex-1 flex items-center justify-center px-4">
+          <div
+            className="flex-1 flex items-center justify-center px-4 touch-pan-y"
+            onTouchStart={handleViewerTouchStart}
+            onTouchEnd={handleViewerTouchEnd}
+          >
             <button
               onClick={() => setActiveImage((prev) => (prev === 0 ? listing.images.length - 1 : prev - 1))}
               className="absolute left-3 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"

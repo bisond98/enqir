@@ -14,6 +14,7 @@ export default function SellShell({
   onBack,
   hidePanel,
   compactHeader,
+  enquirySizedHeader,
   hideQuickNav,
   headerTitle,
   headerSubtitle,
@@ -34,6 +35,10 @@ export default function SellShell({
   /** Listing detail: match the enquiry page's compact black header — same
    *  width, no intro card, and no trailing gap after the title. */
   compactHeader?: boolean;
+  /** Listing detail: size the black band exactly like the Post Enquiry
+   *  header — same band padding and the same hero lockup height and title
+   *  size — so "For Sale" reads identically to the enquiry form header. */
+  enquirySizedHeader?: boolean;
   /** Listing detail: drop the quick-action rows (Marketplace/Sell/Dashboard
    *  on desktop, Sell/Shop/Panel on mobile) that sit under the header. */
   hideQuickNav?: boolean;
@@ -59,6 +64,9 @@ export default function SellShell({
   const isPanel = path === '/sell/dashboard';
   // Listing detail centres the title inside the black band; every other sell
   // page keeps it as a row under the back button.
+  // One heading for every sell band — the same lockup the Marketplace header
+  // uses (blue tag glyph, white-to-blue title, tight display tracking), so the
+  // "For Sale" listing band reads exactly like the Marketplace one.
   const heading = (
     <h1 className={`text-lg sm:text-2xl lg:text-3xl ${compactHeader ? '' : 'xl:text-4xl'} font-black text-white tracking-tighter text-center drop-shadow-2xl inline-flex items-center gap-2 dashboard-header-no-emoji`}>
       <Tag className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 xl:w-6 xl:h-6 flex-shrink-0 text-blue-400" />
@@ -71,7 +79,7 @@ export default function SellShell({
   return (
     <Layout>
       <div className={`min-h-screen ${pageBackground ?? 'bg-gradient-to-br from-slate-50 via-white to-slate-50'}`}>
-        <div className={`bg-black text-white ${compactHeader ? 'py-4 min-h-[116px] sm:min-h-[124px]' : 'py-6 sm:py-12 lg:py-16'} relative overflow-visible`}>
+        <div className={`${enquirySizedHeader ? 'bg-black flex items-center' : 'bg-black'} text-white ${compactHeader && !enquirySizedHeader ? 'py-4 min-h-[116px] sm:min-h-[124px]' : 'py-6 sm:py-12 lg:py-16'} relative overflow-visible`}>
           {/* Seller poster covering the whole black header behind the text —
               a wide print sliced to fill, so every header size crops into a
               composed poster. Absolutely positioned, so the header keeps
@@ -100,7 +108,9 @@ export default function SellShell({
             </div>
           )}
           {compactHeader && (
-            <div className="absolute inset-0 flex items-center justify-center px-16 pointer-events-none">
+            <div className={enquirySizedHeader
+              ? 'max-w-4xl mx-auto px-16 relative z-10 flex w-full items-center justify-center min-h-[117px] sm:min-h-[48px] pointer-events-none'
+              : 'absolute inset-0 flex items-center justify-center px-16 pointer-events-none'}>
               {heading}
             </div>
           )}
@@ -153,7 +163,9 @@ export default function SellShell({
               </div>
             </>
           ) : (
-          <div className={`${compactHeader ? 'max-w-4xl px-4' : 'max-w-5xl px-1 sm:px-4 lg:px-8'} mx-auto relative z-10`}>
+          <div className={enquirySizedHeader
+            ? 'absolute left-2 top-2 z-20'
+            : `${compactHeader ? 'max-w-4xl px-4' : 'max-w-5xl px-1 sm:px-4 lg:px-8'} mx-auto relative z-10`}>
             <div className={compactHeader ? 'mb-3' : 'mb-4 sm:mb-6'}>
               <div className="flex items-center justify-between">
                 <Button
@@ -212,7 +224,13 @@ export default function SellShell({
           </div>
           )}
         </div>
-        <div className={isCreate ? "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 sm:-mt-6 pb-6 sm:pb-8 lg:pb-10" : "max-w-5xl mx-auto px-2.5 sm:px-4 py-4 sm:py-6"}>
+        <div className={isCreate
+          ? "max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 sm:-mt-6 pb-6 sm:pb-8 lg:pb-10"
+          : enquirySizedHeader
+            /* Listing detail: lift the card so it overlaps the black band,
+               exactly like the Post Enquiry form's card sits on its header. */
+            ? "max-w-5xl mx-auto px-2.5 sm:px-4 -mt-10 sm:-mt-14 pb-4 sm:pb-6 relative z-10"
+            : "max-w-5xl mx-auto px-2.5 sm:px-4 py-4 sm:py-6"}>
           {!hideQuickNav && <div className="hidden sm:flex items-center justify-end gap-2 mb-4">
             <Link to="/sell/marketplace">
               <Button variant="outline" size="sm" className="border border-black">

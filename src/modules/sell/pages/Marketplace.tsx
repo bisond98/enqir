@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import SellShell from '../components/SellShell';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent } from '@/components/ui/card';
@@ -583,6 +583,30 @@ export default function Marketplace() {
   const totalPages = Math.ceil(displayListings.length / perPage);
   const pagedListings = displayListings.slice(page * perPage, (page + 1) * perPage);
 
+  // Grid tiles keep the save button at the tile's top-left, but a long price
+  // chip (₹1,00,000 and up) would run underneath it. Only those tiles move the
+  // save button down beside the title, so the amount stays fully readable.
+  const [stackedSaveIds, setStackedSaveIds] = useState<Set<string>>(new Set());
+  useLayoutEffect(() => {
+    if (viewMode !== 'grid') return;
+    const measure = () => {
+      const overlapping = new Set<string>();
+      document.querySelectorAll<HTMLElement>('[data-tile]').forEach((tile) => {
+        const chip = tile.querySelector<HTMLElement>('[data-price-chip]');
+        const id = tile.dataset.tile;
+        if (!id || !chip) return;
+        // top-left save slot: 4px inset + 44px touch target + 4px gap
+        if (chip.getBoundingClientRect().left < tile.getBoundingClientRect().left + 52) overlapping.add(id);
+      });
+      setStackedSaveIds((prev) =>
+        prev.size === overlapping.size && [...overlapping].every((id) => prev.has(id)) ? prev : overlapping,
+      );
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [viewMode, pagedListings]);
+
   // Keep the current page in range when filters shrink the result set.
   useEffect(() => {
     if (page > Math.max(0, totalPages - 1)) setPage(Math.max(0, totalPages - 1));
@@ -1165,8 +1189,8 @@ export default function Marketplace() {
         {viewMode === 'grid' && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {pagedListings.map((l) => (
-              <div key={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="relative block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer overflow-visible">
-                {formatPrice(l).length >= 9 && (l as any).priceType !== 'discussion' ? (
+              <div key={l.id} data-tile={l.id} onClick={(e) => { if (!e.defaultPrevented) navigate(`/sell/listing/${l.id}`); }} className="relative block border border-black/25 rounded-2xl hover:border-black hover:shadow-md transition-all bg-white shadow-[0_2px_0_0_rgba(0,0,0,0.05)] cursor-pointer overflow-visible">
+                {stackedSaveIds.has(l.id) ? (
                   /* Wide price chip would overlap a top-left save — stack save above share instead */
                   <div className="absolute bottom-1 right-1 z-10 flex flex-col items-center gap-1">
                     <button
@@ -1206,7 +1230,7 @@ export default function Marketplace() {
                 )}
                 </div>
                 {(l.price != null || (l as any).priceType === 'discussion') && (
-                  <div className="absolute top-2 right-2 z-10">
+                  <div className="absolute top-2 right-2 z-10" data-price-chip="">
                     {(l as any).priceType === 'discussion' ? (
                       <span className="text-[9px] sm:text-xs font-black text-white bg-red-600 border border-black !rounded-xl px-2 py-1 max-w-[9rem] truncate inline-flex items-center gap-0.5">
                         <IndianRupee className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
@@ -1220,7 +1244,8 @@ export default function Marketplace() {
                   </div>
                 )}
                 <div className="p-2.5">
-                  <div className="flex items-start gap-1">
+                  {/* pr-9 keeps the title clear of the save/share buttons at the card's bottom-right */}
+                  <div className="flex items-start gap-1 pr-9">
                     <h3 className="font-black text-black text-xs truncate flex-1 flex items-center gap-1">
                       {l.title}
                       {sellerProfiles[l.sellerId]?.isProfileVerified && (
@@ -1228,18 +1253,19 @@ export default function Marketplace() {
                       )}
                     </h3>
                   </div>
-                  <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                  {/* pr-9 keeps the chips clear of the save/share buttons stacked at the card's bottom-right */}
+                  <div className="flex items-center gap-1.5 mt-1.5 flex-wrap pr-9">
                     {['real-estate', 'real-estate-services'].includes(l.category) && l.details?.listingFor && (
-                      <span className={`text-[8px] font-black text-white !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] ${l.details.listingFor === 'Rent' ? 'bg-emerald-600' : l.details.listingFor === 'Lease' ? 'bg-purple-600' : 'bg-blue-600'}`}>
+                      <span className={`text-[8px] font-black text-white !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_3px_0_0_rgba(0,0,0,0.10)] ${l.details.listingFor === 'Rent' ? 'bg-emerald-600' : l.details.listingFor === 'Lease' ? 'bg-purple-600' : 'bg-blue-600'}`}>
                         FOR {l.details.listingFor.toUpperCase()}
                       </span>
                     )}
                     {l.condition && !NO_CONDITION_CATEGORIES.has(l.category || '') && l.category !== 'jobs' && !/-services$/.test(l.category || '') && (
-                      <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] uppercase">
+                      <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-2 py-0.5 flex-shrink-0 !shadow-[0_3px_0_0_rgba(0,0,0,0.10)] uppercase">
                         {l.condition}
                       </span>
                     )}
-                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-1.5 py-0.5 !shadow-[0_5px_0_0_rgba(0,0,0,0.15)] inline-flex items-center gap-0.5 max-w-full overflow-hidden">
+                    <span className="text-[8px] font-black text-black bg-white border border-black !rounded-2xl px-1.5 py-0.5 !shadow-[0_3px_0_0_rgba(0,0,0,0.10)] inline-flex items-center gap-0.5 max-w-full overflow-hidden">
                       <MapPin className="h-1.5 w-1.5 text-red-500 flex-shrink-0" /><span className="truncate">{l.location && l.location.length > 15 ? l.location.slice(0, 15) + '...' : l.location}</span>
                     </span>
 
