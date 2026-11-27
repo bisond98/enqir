@@ -13,6 +13,7 @@ import { trustedName } from "@/lib/userDisplayName";
 import { getPrivacyProtectedName, isUserVerified } from "@/utils/privacy";
 import VerificationBadge from "@/components/VerificationBadge";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
+import ImageLightbox from "@/components/ImageLightbox";
 import { withTimeout } from "@/lib/firestoreSafe";
 import { isDocumentUrl, attachmentFileName, downloadAttachment } from "@/lib/attachmentUrl";
 
@@ -57,6 +58,8 @@ const DetailedResponses = () => {
   const [responses, setResponses] = useState<SellerSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [userProfiles, setUserProfiles] = useState<{[key: string]: any}>({});
+  // Full-screen image open from a response's image grid
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   // Mark responses as viewed IMMEDIATELY when page loads
   useEffect(() => {
@@ -173,7 +176,7 @@ const DetailedResponses = () => {
   };
 
   const handleImageClick = (imageUrl: string) => {
-    window.open(imageUrl, '_blank');
+    setLightboxImage(imageUrl);
   };
 
   if (loading) {
@@ -454,6 +457,12 @@ const DetailedResponses = () => {
           )}
         </div>
       </div>
+
+      <ImageLightbox
+        src={lightboxImage}
+        alt="Response image"
+        onClose={() => setLightboxImage(null)}
+      />
     </Layout>
   );
 };

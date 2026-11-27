@@ -47,6 +47,7 @@ import { getMobileBrandLogoUrl } from '@/lib/mobileBrandLogos';
 import { getSneakerBrandLogoUrl } from '@/lib/sneakerBrandLogos';
 import { getAudioBrandLogoUrl } from '@/lib/audioBrandLogos';
 import PaymentPlanSelector from '@/components/PaymentPlanSelector';
+import ImageLightbox from '@/components/ImageLightbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { PAYMENT_PLANS, getUpgradeOptions } from '@/config/paymentPlans';
 import { buildEnquiryShareText } from '@/lib/enquiryShare';
@@ -155,6 +156,8 @@ const EnquiryDetail = () => {
   const [currentPlan, setCurrentPlan] = useState<string>('free');
   // Poster's profile — powers the "Posted by" line (username, else #userXXXX)
   const [posterProfile, setPosterProfile] = useState<any>(null);
+  // Full-screen image currently open (reference image tapped by the viewer)
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -971,11 +974,18 @@ const EnquiryDetail = () => {
                         </h1>
                       </div>
                       {enquiry.referenceImages?.[0] && (
-                        <img decoding="async" src={enquiry.referenceImages[0]}
-                          alt=""
-                          loading="lazy"
-                          className="h-[132px] w-[112px] shrink-0 rounded-xl object-cover sm:h-40 sm:w-36"
-                        />
+                        <button
+                          type="button"
+                          onClick={() => setLightboxImage(enquiry.referenceImages![0])}
+                          aria-label="View reference image larger"
+                          className="shrink-0 transition-all active:scale-[0.98] active:opacity-80"
+                        >
+                          <img decoding="async" src={enquiry.referenceImages[0]}
+                            alt=""
+                            loading="lazy"
+                            className="h-[132px] w-[112px] shrink-0 rounded-xl object-cover sm:h-40 sm:w-36"
+                          />
+                        </button>
                       )}
                     </div>
 
@@ -1232,8 +1242,8 @@ const EnquiryDetail = () => {
                               <button
                                 key={index}
                                 type="button"
-                                onClick={() => window.open(imageUrl, '_blank')}
-                                aria-label={`Open reference image ${index + 1}`}
+                                onClick={() => setLightboxImage(imageUrl)}
+                                aria-label={`View reference image ${index + 1} larger`}
                                 className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-black/[0.08] transition-all active:scale-[0.98] active:opacity-80"
                               >
                                 <img src={imageUrl} alt={`Reference image ${index + 1}`} className="h-full w-full object-cover" loading="lazy" decoding="async" />
@@ -1256,8 +1266,8 @@ const EnquiryDetail = () => {
                             <button
                               key={index}
                               type="button"
-                              onClick={() => window.open(imageUrl, '_blank')}
-                              aria-label={`Open reference image ${index + 1}`}
+                              onClick={() => setLightboxImage(imageUrl)}
+                              aria-label={`View reference image ${index + 1} larger`}
                               className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-black/[0.08] transition-all active:scale-[0.98] active:opacity-80"
                             >
                               <img src={imageUrl} alt={`Reference image ${index + 1}`} className="h-full w-full object-cover" loading="lazy" decoding="async" />
@@ -1454,6 +1464,13 @@ const EnquiryDetail = () => {
             </div>
 
         </div>
+
+        {/* Full-screen reference image viewer */}
+        <ImageLightbox
+          src={lightboxImage}
+          alt="Reference image"
+          onClose={() => setLightboxImage(null)}
+        />
 
         {/* Complete location popup — opens when the Location card is tapped */}
         {showLocationPopup && enquiry && (

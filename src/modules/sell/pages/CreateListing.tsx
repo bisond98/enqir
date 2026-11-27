@@ -1169,6 +1169,7 @@ export default function CreateListing() {
   return (
     <SellShell
       title="Sell"
+      pageBackground="bg-slate-300"
       headerTitle={
         <>
           {STEPS[step].key === 'price' && category === 'jobs' ? 'Salary & Photos' : STEPS[step].label}
@@ -2524,14 +2525,11 @@ export default function CreateListing() {
                     setLocation(text);
                     setLocationSearch(text);
                     setLocationDropdownOpen(false);
-                    // Mobile: the map sheet leaves the page scrolled mid-form, so glide
-                    // back to the top to reveal the chosen location card in place.
-                    if (window.matchMedia('(max-width: 640px)').matches) {
-                      window.setTimeout(() => {
-                        if (!canAutoScroll()) return;
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }, 150);
-                    }
+                    // The map sheet leaves the page scrolled mid-form. Picking a
+                    // pin is a deliberate move, so re-arm the reveal and take the
+                    // Location tab back up to the top on every screen size once
+                    // the chosen area has landed.
+                    window.setTimeout(() => revealNewPageTop(), 150);
                   }}
                 />
                 <p className="flex items-center justify-center gap-1.5 pt-0.5 text-[9.5px] font-medium leading-tight text-slate-500">

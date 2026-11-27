@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
  * PageTransitionFade — smooths route swaps without touching routing logic.
  *
  * When the route changes, the outgoing page is kept mounted (invisible) for
- * one animation frame while the incoming page fades in over ~140ms. If the
+ * one animation frame while the incoming page fades in over ~110ms. If the
  * new page is still loading (lazy chunk fetch), the Suspense spinner shows
  * as usual and the fade simply applies once it mounts.
  *
@@ -34,7 +34,7 @@ export const PageTransitionFade = ({ children }: { children: ReactNode }) => {
     <div
       style={{
         opacity: fadeIn ? 1 : 0,
-        transition: 'opacity 140ms ease-out',
+        transition: 'opacity 110ms ease-out',
         // Never trap pointer events mid-fade
         pointerEvents: fadeIn ? 'auto' : 'none',
       }}

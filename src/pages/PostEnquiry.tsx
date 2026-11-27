@@ -74,7 +74,7 @@ import { WATCH_BRAND_OPTIONS, WATCH_OTHER, getWatchModels } from '@/constants/wa
 import { processPayment, savePaymentRecord, updateUserPaymentPlan } from "@/services/paymentService";
 import { verifyIdNumberMatch } from '@/services/ai/idVerification';
 import { improveDescription, isVehicleCategory } from '@/services/ai/descriptionAssistant';
-import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealNewStep, revealStepTop } from '@/utils/autoScrollGuard';
+import { canAutoScroll, canAutoFocus, resetAutoScrollGuard, revealNewPageTop, revealNewStep, revealStepTop } from '@/utils/autoScrollGuard';
 import { prefetchCategoryTiles } from '@/utils/prefetchCategoryTiles';
 import { useToast } from "@/components/ui/use-toast";
 import { LoadingAnimation } from "@/components/LoadingAnimation";
@@ -3284,7 +3284,11 @@ const DEADLINE_STEP = 5;
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className={`min-h-screen ${
+        !isSubmitted
+          ? 'bg-slate-300'
+          : 'bg-gradient-to-br from-slate-50 via-white to-slate-50'
+      }`}>
         {/* Mobile scroll pill — a short, thin handle on the right edge instead of
             the full-height system scrollbar. */}
         <div
@@ -5077,7 +5081,7 @@ const DEADLINE_STEP = 5;
                       <button
                         type="button"
                         onClick={() => setMapPickerOpen(true)}
-                        className="relative w-full flex items-center gap-3 overflow-hidden !rounded-2xl !border-[1.5px] !border-black bg-gradient-to-b from-white to-slate-50 hover:!from-white hover:!to-slate-100 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
+                        className="relative top-6 w-full flex items-center gap-3 overflow-hidden !rounded-2xl !border-[1.5px] !border-black bg-gradient-to-b from-white to-slate-50 hover:!from-white hover:!to-slate-100 px-4 py-3 transition-all !duration-150 !shadow-[0_5px_0_0_rgba(0,0,0,0.85)] active:!shadow-[0_1px_0_0_rgba(0,0,0,0.85)] active:!translate-y-[4px] touch-manipulation select-none"
                       >
                         {/* Faint dot grid inside the capsule, like a map surface */}
                         <span
@@ -5111,23 +5115,16 @@ const DEADLINE_STEP = 5;
                           const text = addr.formatted_address || addr.city || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
                           setLocation(text);
                           setShowLocationSuggestions(false);
-                          // Mobile: bring the picked location card itself into view
-                          // (just below the header) instead of jumping to the top of the page
-                          if (window.matchMedia('(max-width: 640px)').matches && canAutoScroll()) {
-                            window.setTimeout(() => {
-                              const el = locationStepRef.current;
-                              if (!el) return;
-                              if (!canAutoScroll()) return;
-                              const r = el.getBoundingClientRect();
-                              const target = Math.max(0, window.scrollY + r.top - 96);
-                              if (Math.abs(target - window.scrollY) > 8) {
-                                window.scrollTo({ top: target, behavior: 'smooth' });
-                              }
-                            }, 200);
-                          }
+                          // The map sheet leaves the page scrolled mid-form. A
+                          // chosen pin is a deliberate move, so re-arm the reveal
+                          // and take the Location tab back up to the top on every
+                          // screen size once the area has landed.
+                          window.setTimeout(() => revealNewPageTop(), 200);
                         }}
                       />
-                      <p className="flex items-center justify-center gap-1.5 pt-0.5 text-[9.5px] font-medium leading-tight text-slate-500">
+                      {/* Rides with the button above (which is offset by the same
+                          amount) so the gap between them stays exactly as it was. */}
+                      <p className="relative top-6 flex items-center justify-center gap-1.5 pt-0.5 text-[9.5px] font-medium leading-tight text-slate-500">
                         <Shield aria-hidden="true" className="h-3 w-3 flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
                         Only the area is shared — never your exact address.
                       </p>
@@ -5730,22 +5727,19 @@ const DEADLINE_STEP = 5;
           {!isSubmitted && (step === 0 || step === 2) && (
             <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
               <div className="mx-auto max-w-3xl">
-                <div className="flex items-center justify-between">
+                <div className="mx-auto grid max-w-xl grid-cols-3 items-center gap-x-1">
                   {[
                     { Icon: ShieldCheck, title: 'Verified Users', note: 'Real People' },
                     { Icon: HandHeart, title: 'Trusted Deals', note: 'Buy & Sell Safely' },
                     { Icon: Zap, title: 'Fast Responses', note: 'Get Replies Quickly' },
-                  ].map(({ Icon, title, note }, i) => (
-                    <Fragment key={title}>
-                      {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
-                      <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-1">
-                        <Icon aria-hidden="true" className="h-[18px] w-[18px] flex-shrink-0 text-black" fill="currentColor" strokeWidth={1.2} />
-                        <span className="min-w-0 text-left">
-                          <span className="block text-[10.5px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
-                          <span className="block text-[8.5px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
-                        </span>
-                      </div>
-                    </Fragment>
+                  ].map(({ Icon, title, note }) => (
+                    <div key={title} className="flex min-w-0 items-center justify-center gap-1">
+                      <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black sm:h-4 sm:w-4" fill="currentColor" strokeWidth={1.2} />
+                      <span className="min-w-0 text-left">
+                        <span className="block whitespace-nowrap text-[9.5px] font-semibold leading-[1.2] text-slate-900 sm:text-[10.5px]">{title}</span>
+                        <span className="block whitespace-nowrap text-[8px] font-normal leading-[1.25] text-slate-500 sm:text-[9px]">{note}</span>
+                      </span>
+                    </div>
                   ))}
                 </div>
 
@@ -5957,22 +5951,19 @@ const DEADLINE_STEP = 5;
         {!isSubmitted && step === 6 && (
           <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
             <div className="mx-auto max-w-3xl">
-              <div className="flex items-center justify-between">
+              <div className="mx-auto grid max-w-xl grid-cols-3 items-center gap-x-1">
                 {[
                   { Icon: Camera, title: 'Real photos', note: 'Clear and lit' },
                   { Icon: ShieldCheck, title: 'ID private', note: 'Never shown' },
                   { Icon: Zap, title: 'Goes live', note: 'After review' },
-                ].map(({ Icon, title, note }, i) => (
-                  <Fragment key={title}>
-                    {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
-                    <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-0.5">
-                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-black sm:h-[18px] sm:w-[18px]" fill="currentColor" strokeWidth={1.2} />
-                      <span className="min-w-0 text-left">
-                        <span className="block truncate whitespace-nowrap text-[10px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
-                        <span className="block truncate whitespace-nowrap text-[8px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
-                      </span>
-                    </div>
-                  </Fragment>
+                ].map(({ Icon, title, note }) => (
+                  <div key={title} className="flex min-w-0 items-center justify-center gap-1">
+                    <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black sm:h-4 sm:w-4" fill="currentColor" strokeWidth={1.2} />
+                    <span className="min-w-0 text-left">
+                      <span className="block whitespace-nowrap text-[9.5px] font-semibold leading-[1.2] text-slate-900 sm:text-[10.5px]">{title}</span>
+                      <span className="block whitespace-nowrap text-[8px] font-normal leading-[1.25] text-slate-500 sm:text-[9px]">{note}</span>
+                    </span>
+                  </div>
                 ))}
               </div>
 
@@ -6007,22 +5998,19 @@ const DEADLINE_STEP = 5;
         {!isSubmitted && step === 3 && (
           <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
             <div className="mx-auto max-w-3xl">
-              <div className="flex items-center justify-between">
+              <div className="mx-auto grid max-w-xl grid-cols-3 items-center gap-x-1">
                 {[
                   { Icon: MapPin, title: 'Pin the area', note: 'Just the locality' },
                   { Icon: Lock, title: 'Stay private', note: 'No house number' },
                   { Icon: Home, title: 'Local only', note: 'Nearby sellers' },
-                ].map(({ Icon, title, note }, i) => (
-                  <Fragment key={title}>
-                    {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
-                    <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-0.5">
-                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-black sm:h-[18px] sm:w-[18px]" fill="currentColor" strokeWidth={1.2} />
-                      <span className="min-w-0 text-left">
-                        <span className="block truncate whitespace-nowrap text-[10px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
-                        <span className="block truncate whitespace-nowrap text-[8px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
-                      </span>
-                    </div>
-                  </Fragment>
+                ].map(({ Icon, title, note }) => (
+                  <div key={title} className="flex min-w-0 items-center justify-center gap-1">
+                    <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black sm:h-4 sm:w-4" fill="currentColor" strokeWidth={1.2} />
+                    <span className="min-w-0 text-left">
+                      <span className="block whitespace-nowrap text-[9.5px] font-semibold leading-[1.2] text-slate-900 sm:text-[10.5px]">{title}</span>
+                      <span className="block whitespace-nowrap text-[8px] font-normal leading-[1.25] text-slate-500 sm:text-[9px]">{note}</span>
+                    </span>
+                  </div>
                 ))}
               </div>
 
@@ -6051,22 +6039,19 @@ const DEADLINE_STEP = 5;
         {!isSubmitted && step === 4 && (
           <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
             <div className="mx-auto max-w-3xl">
-              <div className="flex items-center justify-between">
+              <div className="mx-auto grid max-w-xl grid-cols-3 items-center gap-x-1">
                 {[
                   { Icon: IndianRupee, title: 'Set a ballpark', note: 'Not binding' },
                   { Icon: Scale, title: 'Talk price', note: 'Sellers counter' },
                   { Icon: CheckCircle2, title: 'Best fit', note: 'Inside range' },
-                ].map(({ Icon, title, note }, i) => (
-                  <Fragment key={title}>
-                    {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
-                    <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-0.5">
-                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-black sm:h-[18px] sm:w-[18px]" fill="currentColor" strokeWidth={1.2} />
-                      <span className="min-w-0 text-left">
-                        <span className="block truncate whitespace-nowrap text-[10px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
-                        <span className="block truncate whitespace-nowrap text-[8px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
-                      </span>
-                    </div>
-                  </Fragment>
+                ].map(({ Icon, title, note }) => (
+                  <div key={title} className="flex min-w-0 items-center justify-center gap-1">
+                    <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black sm:h-4 sm:w-4" fill="currentColor" strokeWidth={1.2} />
+                    <span className="min-w-0 text-left">
+                      <span className="block whitespace-nowrap text-[9.5px] font-semibold leading-[1.2] text-slate-900 sm:text-[10.5px]">{title}</span>
+                      <span className="block whitespace-nowrap text-[8px] font-normal leading-[1.25] text-slate-500 sm:text-[9px]">{note}</span>
+                    </span>
+                  </div>
                 ))}
               </div>
 
@@ -6095,22 +6080,19 @@ const DEADLINE_STEP = 5;
         {!isSubmitted && step === 5 && (
           <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7">
             <div className="mx-auto max-w-3xl">
-              <div className="flex items-center justify-between">
+              <div className="mx-auto grid max-w-xl grid-cols-3 items-center gap-x-1">
                 {[
                   { Icon: CalendarIcon, title: 'Pick a date', note: 'Plan ahead' },
                   { Icon: Zap, title: 'Clear urgency', note: 'Fast replies' },
                   { Icon: CheckCircle2, title: 'Close on time', note: 'No loose ends' },
-                ].map(({ Icon, title, note }, i) => (
-                  <Fragment key={title}>
-                    {i > 0 && <span aria-hidden="true" className="h-8 w-px flex-shrink-0 self-center bg-slate-200" />}
-                    <div className="flex min-w-0 flex-1 items-center justify-start gap-1.5 px-0.5">
-                      <Icon aria-hidden="true" className="h-4 w-4 flex-shrink-0 text-black sm:h-[18px] sm:w-[18px]" fill="currentColor" strokeWidth={1.2} />
-                      <span className="min-w-0 text-left">
-                        <span className="block truncate whitespace-nowrap text-[10px] font-semibold leading-[1.2] text-slate-900 sm:text-[11px]">{title}</span>
-                        <span className="block truncate whitespace-nowrap text-[8px] font-normal leading-[1.2] text-slate-500 sm:text-[9.5px]">{note}</span>
-                      </span>
-                    </div>
-                  </Fragment>
+                ].map(({ Icon, title, note }) => (
+                  <div key={title} className="flex min-w-0 items-center justify-center gap-1">
+                    <Icon aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-black sm:h-4 sm:w-4" fill="currentColor" strokeWidth={1.2} />
+                    <span className="min-w-0 text-left">
+                      <span className="block whitespace-nowrap text-[9.5px] font-semibold leading-[1.2] text-slate-900 sm:text-[10.5px]">{title}</span>
+                      <span className="block whitespace-nowrap text-[8px] font-normal leading-[1.25] text-slate-500 sm:text-[9px]">{note}</span>
+                    </span>
+                  </div>
                 ))}
               </div>
 
@@ -6171,7 +6153,7 @@ const DEADLINE_STEP = 5;
             space that used to run empty down to the footer. The Budget and
             Deadline tabs carry their own strips instead, so it is skipped there. */}
         {step !== 4 && step !== 5 && (
-          <div className={`sm:hidden px-4 text-gray-900 ${step === 3 ? 'pt-14' : 'pt-4'}`}>
+          <div className={`sm:hidden px-4 text-gray-900 ${step === 3 ? 'pt-6' : 'pt-4'}`}>
             <DealFlowSketch className="w-full h-auto" />
           </div>
         )}

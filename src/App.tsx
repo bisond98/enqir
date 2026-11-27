@@ -165,6 +165,46 @@ if (typeof window !== 'undefined') {
     prefetchSecondaryRoutes();
   };
 
+  // Intent prefetch: the moment a pointer lands on (or keyboard focus enters)
+  // an in-app link, its chunk starts downloading — before the click. By the
+  // time the route actually changes the module is usually already parsed, so
+  // the tab swap paints instead of flashing the route spinner. Same chunks,
+  // same lazy() components; this only starts the fetch earlier.
+  const routeChunkLoaders: Record<string, () => Promise<unknown>> = {
+    '/': () => import('./pages/Landing'),
+    '/dashboard': () => import('./pages/Dashboard'),
+    '/enquiries': () => import('./pages/EnquiryWall'),
+    '/browse': () => import('./pages/EnquiryWall'),
+    '/post-enquiry': () => import('./pages/PostEnquiry'),
+    '/my-enquiries': () => import('./pages/MyEnquiries'),
+    '/my-responses': () => import('./pages/MyResponses'),
+    '/saved-enquiries': () => import('./pages/SavedEnquiries'),
+    '/profile': () => import('./pages/Profile'),
+    '/settings': () => import('./pages/Settings'),
+    '/notifications': () => import('./pages/Notifications'),
+    '/likes': () => import('./pages/MyLikes'),
+    '/my-chats': () => import('./pages/MyChats'),
+    '/all-chats': () => import('./pages/AllChats'),
+    '/help-guide': () => import('./pages/HelpGuide'),
+    '/sell/new': () => import('./modules/sell/pages/CreateListing'),
+    '/sell/marketplace': () => import('./modules/sell/pages/Marketplace'),
+    '/sell/dashboard': () => import('./modules/sell/pages/SellerDashboard'),
+  };
+
+  const warmRouteFor = (href: string | null | undefined) => {
+    if (!href || !href.startsWith('/')) return;
+    const path = href.split('?')[0].split('#')[0];
+    const loader = routeChunkLoaders[path];
+    if (loader) loader().catch(() => {});
+  };
+
+  const onLinkIntent = (e: Event) => {
+    const el = e.target as HTMLElement | null;
+    if (!el || typeof el.closest !== 'function') return;
+    const link = el.closest('a[href^="/"]') as HTMLAnchorElement | null;
+    if (link) warmRouteFor(link.getAttribute('href'));
+  };
+
   // Respect data-saver / very slow connections: warming chunks there costs
   // real bandwidth and delay the page the user actually asked for. Routes
   // still lazy-load exactly as before on navigation.
@@ -184,17 +224,24 @@ if (typeof window !== 'undefined') {
   if (canPrefetch) {
     // Tier 1 once the first paint's own chunk waterfall has cleared, so the
     // next-likely routes are warm well before anyone can click — without
-    // taking bandwidth from the page being drawn.
-    setTimeout(() => onIdle(prefetchPrimaryRoutes, 2500), 1200);
-    // Tier 2 a few seconds after the page itself has finished loading, so the
+    // taking bandwidth from the page being drawn. Kept early on purpose: the
+    // usual first click on a tab happens within a second or two, and a warm
+    // chunk is the difference between an instant tab and the route spinner.
+    setTimeout(() => onIdle(prefetchPrimaryRoutes, 1500), 600);
+    // Tier 2 shortly after the page itself has finished loading, so the
     // landing page never queues behind a dozen chunks it does not use. Any
     // navigation before then simply lazy-loads its chunk, as it always has.
-    const queueSecondary = () => setTimeout(() => onIdle(prefetchSecondaryRoutes, 8000), 4000);
+    const queueSecondary = () => setTimeout(() => onIdle(prefetchSecondaryRoutes, 4000), 1500);
     if (document.readyState === 'complete') {
       queueSecondary();
     } else {
       window.addEventListener('load', queueSecondary, { once: true });
     }
+
+    // Hover/focus prefetch: only registered on connections where warming
+    // chunks is cheap, so data-saver users get exactly the old behaviour.
+    window.addEventListener('pointerover', onLinkIntent, { passive: true });
+    window.addEventListener('focusin', onLinkIntent, { passive: true });
   }
 
   // First tap/keypress almost always precedes navigation — warm on intent.

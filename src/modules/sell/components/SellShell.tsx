@@ -19,6 +19,7 @@ export default function SellShell({
   headerSubtitle,
   headerProgress,
   headerBadge,
+  pageBackground,
 }: {
   title: string;
   children: React.ReactNode;
@@ -46,6 +47,9 @@ export default function SellShell({
   /** New listing wizard only: the picked category, shown in the header's
    *  top-right corner so it stays visible on every tab. */
   headerBadge?: React.ReactNode;
+  /** Page canvas override, so a wizard tab can use the grey canvas the Post
+   *  Enquiry wizard uses. Omitted keeps the default soft gradient. */
+  pageBackground?: string;
 }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -66,7 +70,7 @@ export default function SellShell({
   );
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className={`min-h-screen ${pageBackground ?? 'bg-gradient-to-br from-slate-50 via-white to-slate-50'}`}>
         <div className={`bg-black text-white ${compactHeader ? 'py-4 min-h-[116px] sm:min-h-[124px]' : 'py-6 sm:py-12 lg:py-16'} relative overflow-visible`}>
           {/* Seller poster covering the whole black header behind the text —
               a wide print sliced to fill, so every header size crops into a

@@ -32,9 +32,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
+    <div
       // Marks a full-page loading screen so the app-level stall guard can spot
       // a page that never finishes loading and recover it (see LoadingStallGuard).
       data-app-loading={compact ? undefined : "true"}
@@ -51,15 +49,9 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
         </button>
       )}
 
-      <motion.div 
-        initial={{ opacity: 1, y: 0 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center w-full max-w-2xl mx-auto flex flex-col items-center justify-center"
-      >
+      <div className="text-center w-full max-w-2xl mx-auto flex flex-col items-center justify-center">
         {/* Business Model Loading Animation */}
-        <motion.div 
-          initial={{ opacity: 1, scale: 1 }}
-          animate={{ opacity: 1, scale: 1 }}
+        <div
           className={compact
             ? "bg-white p-4 rounded-2xl shadow-md flex flex-col items-center justify-center w-full mx-auto"
             : "bg-white p-8 sm:p-12 lg:p-14 xl:p-16 rounded-2xl sm:rounded-3xl lg:rounded-lg xl:rounded-lg shadow-lg sm:shadow-xl flex flex-col items-center justify-center w-full mx-auto lg:max-w-4xl lg:min-h-[400px]"}
@@ -213,9 +205,7 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
               </rect>
             </g>
           </svg>
-          <motion.p 
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
+          <p
             className={compact
               ? "text-lg sm:text-xl font-black tracking-tighter leading-none font-heading text-black text-center"
               : "text-5xl sm:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none font-heading drop-shadow-2xl text-black text-center"}
@@ -228,11 +218,11 @@ export const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
             >
               ...
             </motion.span>
-          </motion.p>
+          </p>
           {children}
-        </motion.div>
-      </motion.div>
-    </motion.div>
+        </div>
+      </div>
+    </div>
   );
 };
 
