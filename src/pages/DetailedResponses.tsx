@@ -379,7 +379,7 @@ const DetailedResponses = () => {
                             {response.imageUrls.map((imageUrl, imgIndex) => (
                               <div
                                 key={imgIndex}
-                                className="aspect-square bg-slate-100 rounded-md sm:rounded-lg overflow-hidden border-[0.5px] border-black/40 cursor-pointer hover:opacity-90 transition-opacity"
+                                className="aspect-square bg-slate-100 rounded-full overflow-hidden border-[3px] border-black cursor-pointer hover:opacity-90 transition-opacity"
                                 onClick={() => {
                                   // Documents (resumes etc.) download directly;
                                   // images keep the existing fullscreen viewer

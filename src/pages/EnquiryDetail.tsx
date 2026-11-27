@@ -983,7 +983,7 @@ const EnquiryDetail = () => {
                           <img decoding="async" src={enquiry.referenceImages[0]}
                             alt=""
                             loading="lazy"
-                            className="h-[132px] w-[112px] shrink-0 rounded-xl object-cover sm:h-40 sm:w-36"
+                            className="h-[112px] w-[112px] shrink-0 rounded-full border-[3px] border-black object-cover sm:h-36 sm:w-36"
                           />
                         </button>
                       )}
@@ -1086,7 +1086,7 @@ const EnquiryDetail = () => {
                         // Logos keep their own aspect ratio so wide marks (Bentley,
                         // Land Rover) stay legible instead of shrinking into a square.
                         if (isLogo) return <img decoding="async" src={logoUrl as string} alt="" className="h-6 w-auto max-w-[72px] shrink-0 object-contain" loading="lazy" />;
-                        if (icon === 'dog') return <Dog className="h-3.5 w-3.5 shrink-0 text-green-600" strokeWidth={2.2} />;
+                        if (icon === 'dog') return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-600 bg-red-600 text-white"><Dog className="h-[10px] w-[10px]" strokeWidth={2.4} /></span>;
                         if (icon === 'nopets') return <NoPetsIcon className="h-3.5 w-3.5 shrink-0" />;
                         const glyph = icon === 'gear' ? <GearShifterIcon className="h-[10px] w-[10px]" />
                           : icon === 'fuel' ? <Fuel className="h-[10px] w-[10px]" />
@@ -1094,7 +1094,7 @@ const EnquiryDetail = () => {
                           : icon === 'variant' ? <Tag className="h-[10px] w-[10px]" />
                           : null;
                         if (!glyph) return null;
-                        return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-black bg-black text-white">{glyph}</span>;
+                        return <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-red-600 bg-red-600 text-white">{glyph}</span>;
                       };
                       return (
                         <div className={`flex flex-wrap gap-2 ${plainLayout ? 'mb-4 mt-6 justify-center' : 'mb-1 mt-5 justify-center'}`}>
@@ -1244,7 +1244,7 @@ const EnquiryDetail = () => {
                                 type="button"
                                 onClick={() => setLightboxImage(imageUrl)}
                                 aria-label={`View reference image ${index + 1} larger`}
-                                className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-black/[0.08] transition-all active:scale-[0.98] active:opacity-80"
+                                className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-[3px] border-black transition-all active:scale-[0.98] active:opacity-80"
                               >
                                 <img src={imageUrl} alt={`Reference image ${index + 1}`} className="h-full w-full object-cover" loading="lazy" decoding="async" />
                               </button>
@@ -1268,7 +1268,7 @@ const EnquiryDetail = () => {
                               type="button"
                               onClick={() => setLightboxImage(imageUrl)}
                               aria-label={`View reference image ${index + 1} larger`}
-                              className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-black/[0.08] transition-all active:scale-[0.98] active:opacity-80"
+                              className="h-20 w-20 shrink-0 overflow-hidden rounded-full border-[3px] border-black transition-all active:scale-[0.98] active:opacity-80"
                             >
                               <img src={imageUrl} alt={`Reference image ${index + 1}`} className="h-full w-full object-cover" loading="lazy" decoding="async" />
                             </button>
