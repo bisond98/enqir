@@ -163,6 +163,18 @@ const ENQUIRY_STORAGE_KEY = 'post_enquiry_draft';
 // ✨ AI description assistant — golden sparkle icon (no background) inside the
 // textarea's bottom-right corner. Same style as the respond form's AI button.
 
+// Every answer on the enquiry preview wears the same pill as the location and
+// description chips: white capsule, red round glyph, soft depth.
+const PreviewChip = ({ icon: Icon, label, children }: { icon: React.ComponentType<{ className?: string }>; label?: string; children: React.ReactNode }) => (
+  <span className="inline-flex max-w-full items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+    <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
+      <Icon className="h-2.5 w-2.5 text-white" />
+    </span>
+    {label ? <span className="flex-shrink-0 text-[8px] font-bold uppercase tracking-[0.1em] text-slate-500">{label}</span> : null}
+    <span className="break-words">{children}</span>
+  </span>
+);
+
 const AiDescriptionBar = ({ onRun, generating }: { onRun: () => void; generating: boolean }) => (
   <button
     type="button"
@@ -5017,7 +5029,7 @@ const DEADLINE_STEP = 5;
                               }}
                               placeholder="Specifications, requirements, timeline..."
                               maxLength={MAX_DESC_CHARS}
-                              className="wizard-desc-box rounded-[12px] min-h-[128px] sm:min-h-[148px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
+                              className="wizard-desc-box rounded-[12px] min-h-[128px] sm:min-h-[148px] text-base bg-white border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus={canAutoFocus()}
                             />
                           </div>
@@ -5045,7 +5057,7 @@ const DEADLINE_STEP = 5;
                                   : 'Specifications, requirements, timeline...'
                               }
                               maxLength={MAX_DESC_CHARS}
-                              className="wizard-desc-box rounded-[12px] min-h-[128px] sm:min-h-[148px] text-base bg-white border-[1.5px] border-slate-200 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 focus-visible:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_16px_rgba(0,0,0,0.13),0_8px_20px_rgba(0,0,0,0.16)] transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
+                              className="wizard-desc-box rounded-[12px] min-h-[128px] sm:min-h-[148px] text-base bg-white border-[1.5px] border-slate-200 focus-visible:border-black focus-visible:ring-3 focus-visible:ring-black/15 transition-all duration-200 min-touch pl-4 pr-14 py-3 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] resize-y"
                               autoFocus={canAutoFocus()}
                             />
                           </div>
@@ -5163,7 +5175,7 @@ const DEADLINE_STEP = 5;
                           {isJobEnquiry(selectedCategories, category) ? (jobDirection === 'hiring' ? 'Salary Offered (INR)' : 'Salary Expected (INR)') : 'Budget (INR)'}
                         </Label>
                         <div className="relative">
-                          <IndianRupee aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-gray-800" />
+                          <IndianRupee aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-20 h-4 w-4 -translate-y-1/2 text-slate-400" />
                           <Input
                             id="enquiry-budget"
                             value={budget}
@@ -5178,13 +5190,13 @@ const DEADLINE_STEP = 5;
                             }}
                             placeholder="Budget (INR)"
                             inputMode="decimal"
-                            className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 transition-colors duration-200 min-touch pl-8 pr-4 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold text-lg"
+                            className="rounded-full h-16 min-h-[48px] w-full !text-[17px] font-normal bg-white border border-slate-200 !border-b shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:border-slate-300 focus-visible:border-blue-500 focus-visible:ring-4 focus-visible:ring-blue-500/10 transition-all duration-200 min-touch pl-12 pr-5 placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
                             autoFocus={canAutoFocus()}
                           />
                         </div>
                       </div>
                       {/* Open to discussion — alternative to entering a specific budget */}
-                      <div className="relative -top-6 w-full">
+                      <div className="relative -top-6 sm:-top-4 w-full">
                         {/* Same picker as the car category's Brand / Model dropdowns:
                             a black capsule, centred text, soft depth, and the arrow
                             in a black disc inside a white ring. */}
@@ -5353,144 +5365,109 @@ const DEADLINE_STEP = 5;
                       {/* Enquiry Preview */}
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5 space-y-3.5 -mt-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                         <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">Preview</p>
-                        {/* Real-estate details first (real-estate only, not services) */}
-                        {selectedCategories.includes('real-estate') && (
-                          <div className="space-y-1.5">
-                            {estateDealType && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Looking to</span>
-                                <span className="text-xs sm:text-sm font-bold text-black">{estateDealType}</span>
-                              </div>
-                            )}
-                            {estateDetails.landArea.trim() && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Land / Plot</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{estateDetails.landArea.trim()} {estateDetails.landUnit}</span>
-                              </div>
-                            )}
-                            {estateDetails.builtUpArea.trim() && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Buildings / Commercial</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{estateDetails.builtUpArea.trim()} {estateDetails.builtUpUnit}</span>
-                              </div>
-                            )}
-                            {estateDetails.houseArea.trim() && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">House / Flat</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{estateDetails.houseArea.trim()} {estateDetails.houseUnit}{estateDetails.houseBhk ? ` · ${estateDetails.houseBhk}` : ''}</span>
-                              </div>
-                            )}
-                            {(estateDealType || estateDetails.landArea.trim() || estateDetails.builtUpArea.trim() || estateDetails.houseArea.trim()) && (
-                              <div className="border-t border-slate-200" />
-                            )}
-                          </div>
-                        )}
-                        {/* Job details first — looking to, experience, education etc. above Title/Category */}
-                        {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking' && (
-                          <div className="space-y-1.5">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Status</span>
-                              <span className="text-xs sm:text-sm font-bold text-black">Open To Work</span>
-                            </div>
-                            {jobDetails.education && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Education</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.education}</span>
-                              </div>
-                            )}
-                            {jobDetails.stream.trim() && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Stream</span>
-                                <span className="text-[10px] sm:text-xs font-bold text-black text-right truncate ml-4">{jobDetails.stream}</span>
-                              </div>
-                            )}
-                            {jobSkills.trim() && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Skills</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobSkills}</span>
-                              </div>
-                            )}
-                            {jobDetails.experience && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Experience</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.experience}</span>
-                              </div>
-                            )}
-                            {jobDetails.jobType && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Job Type</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.jobType}</span>
-                              </div>
-                            )}
-                            {jobDetails.workMode && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Work Mode</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.workMode}</span>
-                              </div>
-                            )}
-                            <div className="border-t border-slate-200" />
-                          </div>
-                        )}
-                        {isJobEnquiry(selectedCategories, category) && jobDirection === 'hiring' && (
-                          <div className="space-y-1.5">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Looking to</span>
-                              <span className="text-xs sm:text-sm font-bold text-black">Hire</span>
-                            </div>
-                            {jobDetails.experience && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Experience Required</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.experience}</span>
-                              </div>
-                            )}
-                            {jobDetails.jobType && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Job Type</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.jobType}</span>
-                              </div>
-                            )}
-                            {jobDetails.workMode && (
-                              <div className="flex items-center justify-between">
-                                <span className="text-[9px] text-slate-400 uppercase tracking-[0.12em] font-bold">Work Mode</span>
-                                <span className="text-xs sm:text-sm font-bold text-black text-right truncate ml-4">{jobDetails.workMode}</span>
-                              </div>
-                            )}
-                            <div className="border-t border-slate-200" />
-                          </div>
-                        )}
-                        {/* Title + budget */}
-                        <div className="space-y-1">
-                          <p className="text-[15px] sm:text-lg font-bold tracking-tight text-black leading-snug break-words">{title || 'Your enquiry title'}</p>
-                          <div className="flex justify-center pt-4">
-                            {budget ? (
-                              <span className="inline-flex items-center rounded-full bg-black px-2.5 py-1 text-[10.5px] font-black leading-none text-white">₹{budget}</span>
-                            ) : budgetOpenToDiscussion ? (
-                              <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-800 text-white border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]"><IndianRupee className="h-3 w-3" />Open to discussion</span>
-                            ) : (
-                              <p className="text-[13px] font-semibold text-gray-400">—</p>
-                            )}
-                          </div>
+                        {/* Every answer, top to bottom in the order the tabs ask
+                            for it: Title → Category → Description (and the picks
+                            that sit on that tab) → Location → Budget → Deadline
+                            & Notes → Photos & Verify. */}
+                        {/* The title wears the same pill, one size up. */}
+                        <div className="flex flex-wrap items-start">
+                          <span className="inline-flex max-w-full items-center gap-1.5 rounded-2xl bg-white px-3.5 py-2 text-left text-[15px] sm:text-lg font-bold tracking-tight leading-snug text-black shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+                            <span className="w-5 h-5 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Type className="h-3 w-3 text-white" /></span>
+                            <span className="break-words">{title || 'Your enquiry title'}</span>
+                          </span>
                         </div>
-                        <div className="border-t border-slate-200/70" />
-                        {/* Details */}
-                        <div className="space-y-2">
-                          {/* Location */}
-                          <div className="flex items-start">
-                            <span className="inline-flex max-w-full items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
-                              <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><MapPin className="h-2.5 w-2.5 text-white" /></span>
-                              <span className="break-words">{location || '—'}</span>
-                            </span>
-                          </div>
-                          {/* Description */}
-                          {description.trim() && (
-                            <span className="max-w-full inline-flex items-start gap-1 text-left text-[11px] font-bold font-chip bg-white text-black border-0 px-3 py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] whitespace-pre-wrap break-words leading-relaxed">
-                              <span className="mt-0.5 w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><FileText className="h-2.5 w-2.5 text-white" /></span>
-                              <span className="break-words">{description}</span>
-                            </span>
+                        <div className="flex flex-wrap items-start gap-1.5">
+                          {/* Tab 1 — Category */}
+                          {selectedCategories.map(c => {
+                            const cat = categories.find(item => item.value === c);
+                            return cat ? (<PreviewChip key={c} icon={Tag}>{cat.label}</PreviewChip>) : null;
+                          })}
+                          {/* Tab 2 — job answers, then every detail pick in the order
+                              those pickers appear on the Description tab. */}
+                          {isJobEnquiry(selectedCategories, category) && jobDirection === 'seeking' && (
+                            <>
+                              <PreviewChip icon={User} label="Status">Open To Work</PreviewChip>
+                              {jobDetails.education && <PreviewChip icon={GraduationCap} label="Education">{jobDetails.education}</PreviewChip>}
+                              {jobDetails.stream.trim() && <PreviewChip icon={BookOpen} label="Stream">{jobDetails.stream}</PreviewChip>}
+                              {jobSkills.trim() && <PreviewChip icon={Sparkles} label="Skills">{jobSkills}</PreviewChip>}
+                              {jobDetails.experience && <PreviewChip icon={Briefcase} label="Experience">{jobDetails.experience}</PreviewChip>}
+                              {jobDetails.jobType && <PreviewChip icon={Briefcase} label="Job Type">{jobDetails.jobType}</PreviewChip>}
+                              {jobDetails.workMode && <PreviewChip icon={Globe} label="Work Mode">{jobDetails.workMode}</PreviewChip>}
+                            </>
                           )}
-                          {/* Stay type — accommodation subtypes, e.g. "Female only Hostel" */}
+                          {isJobEnquiry(selectedCategories, category) && jobDirection === 'hiring' && (
+                            <>
+                              <PreviewChip icon={User} label="Looking to">Hire</PreviewChip>
+                              {jobDetails.experience && <PreviewChip icon={Briefcase} label="Experience Required">{jobDetails.experience}</PreviewChip>}
+                              {jobDetails.jobType && <PreviewChip icon={Briefcase} label="Job Type">{jobDetails.jobType}</PreviewChip>}
+                              {jobDetails.workMode && <PreviewChip icon={Globe} label="Work Mode">{jobDetails.workMode}</PreviewChip>}
+                            </>
+                          )}
+                          {(selectedCategories.includes('service') || category === 'service') && repairType && (
+                            <PreviewChip icon={Wrench} label="Repair">{repairType}</PreviewChip>
+                          )}
+                          {laptopDetails.brand && <PreviewChip icon={Monitor} label="Laptop brand">{laptopDetails.brand}</PreviewChip>}
+                          {laptopModelValue && <PreviewChip icon={Monitor} label="Laptop model">{laptopModelValue}</PreviewChip>}
+                          {laptopProcessorValue && <PreviewChip icon={Zap} label="Processor">{laptopProcessorValue}</PreviewChip>}
+                          {laptopStorageValue && <PreviewChip icon={Package} label="Storage">{laptopStorageValue}</PreviewChip>}
+                          {cameraDetails.brand && <PreviewChip icon={Camera} label="Camera brand">{cameraDetails.brand}</PreviewChip>}
+                          {cameraModelValue && <PreviewChip icon={Camera} label="Camera model">{cameraModelValue}</PreviewChip>}
+                          {audioBrandValue && <PreviewChip icon={Headphones} label="Headphones brand">{audioBrandValue}</PreviewChip>}
+                          {audioModelValue && <PreviewChip icon={Headphones} label="Headphones model">{audioModelValue}</PreviewChip>}
+                          {watchBrandValue && <PreviewChip icon={Watch} label="Watch brand">{watchBrandValue}</PreviewChip>}
+                          {watchModelValue && <PreviewChip icon={Watch} label="Watch model">{watchModelValue}</PreviewChip>}
+                          {isPets && petTraining && <PreviewChip icon={GraduationCap} label="Training">{petTraining}</PreviewChip>}
+                          {subcategoryOptions && !isBicycles && subcategory && <PreviewChip icon={LayoutGrid} label="Type">{subcategory}</PreviewChip>}
+                          {isPets && petBreed && (
+                            <PreviewChip icon={PawPrint} label={subcategory === 'Pet Food & Supplies' ? 'Supply type' : subcategory === 'Fish' ? 'Fish type' : subcategory === 'Bird' ? 'Bird species' : 'Breed'}>{petBreed}</PreviewChip>
+                          )}
+                          {vehicleDetails.type && <PreviewChip icon={Truck} label="Vehicle type">{vehicleDetails.type}</PreviewChip>}
+                          {vehicleDetails.brand && <PreviewChip icon={Car} label="Vehicle brand">{vehicleDetails.brand}</PreviewChip>}
+                          {vehicleDetails.model && <PreviewChip icon={Car} label="Vehicle model">{vehicleDetails.model}</PreviewChip>}
+                          {vehicleDetails.year && <PreviewChip icon={CalendarIcon} label="Vehicle year">{vehicleDetails.year}</PreviewChip>}
+                          {vehicleDetails.variant && <PreviewChip icon={Tag} label="Variant">{vehicleDetails.variant}</PreviewChip>}
+                          {vehicleDetails.transmission && <PreviewChip icon={Zap} label="Transmission">{vehicleDetails.transmission}</PreviewChip>}
+                          {vehicleDetails.fuelType && <PreviewChip icon={Fuel} label="Fuel">{vehicleDetails.fuelType}</PreviewChip>}
+                          {mobileDetails.brand && <PreviewChip icon={Smartphone} label="Mobile brand">{mobileDetails.brand}</PreviewChip>}
+                          {mobileDetails.model && <PreviewChip icon={Smartphone} label="Mobile model">{mobileDetails.model}</PreviewChip>}
+                          {mobileDetails.ram && <PreviewChip icon={Package} label="RAM">{mobileDetails.ram}</PreviewChip>}
+                          {mobileDetails.memory && <PreviewChip icon={Package} label="Memory">{mobileDetails.memory}</PreviewChip>}
+                          {bicycleDetails.subcategory && <PreviewChip icon={Bike} label="Bicycle type">{bicycleDetails.subcategory}</PreviewChip>}
+                          {bicycleDetails.brand && <PreviewChip icon={Bike} label="Bicycle brand">{bicycleDetails.brand}</PreviewChip>}
+                          {bicycleDetails.model && <PreviewChip icon={Bike} label="Bicycle model">{bicycleDetails.model}</PreviewChip>}
+                          {bicycleDetails.year && <PreviewChip icon={CalendarIcon} label="Bicycle year">{bicycleDetails.year}</PreviewChip>}
+                          {bicycleDetails.frames && <PreviewChip icon={Bike} label="Frames">{bicycleDetails.frames}</PreviewChip>}
+                          {bicycleDetails.parts && <PreviewChip icon={Bike} label="Parts">{bicycleDetails.parts}</PreviewChip>}
+                          {bicycleDetails.accessories && <PreviewChip icon={Bike} label="Accessories">{bicycleDetails.accessories}</PreviewChip>}
+                          {bicycleDetails.storage && <PreviewChip icon={Package} label="Storage & carriers">{bicycleDetails.storage}</PreviewChip>}
+                          {bicycleDetails.repair && <PreviewChip icon={Wrench} label="Maintenance">{bicycleDetails.repair}</PreviewChip>}
+                          {selectedCategories.includes('sneakers') && <PreviewChip icon={Footprints} label="Sneakers for">{sneakerAudience}</PreviewChip>}
+                          {sneakerBrand && <PreviewChip icon={Footprints} label="Sneaker brand">{sneakerBrand}</PreviewChip>}
+                          {sneakerModel && <PreviewChip icon={Footprints} label="Sneaker model">{sneakerModel}</PreviewChip>}
+                          {sneakerSize && <PreviewChip icon={Footprints} label="Sneaker size">{sneakerSize}</PreviewChip>}
+                          {thriftGender && <PreviewChip icon={Shirt} label="Thrift for">{thriftGender}</PreviewChip>}
+                          {thriftType && <PreviewChip icon={Shirt} label="Thrift type">{thriftType}</PreviewChip>}
+                          {thriftItem && <PreviewChip icon={Shirt} label="Thrift item">{thriftItem}</PreviewChip>}
+                          {thriftSize && <PreviewChip icon={Footprints} label="Thrift size">{thriftSize}</PreviewChip>}
+                          {selectedCategories.includes('real-estate') && estateDealType && (
+                            <PreviewChip icon={Scale} label="Looking to">{estateDealType}</PreviewChip>
+                          )}
+                          {selectedCategories.includes('real-estate') && estateType && (
+                            <PreviewChip icon={Home} label="Property">
+                              {({ land: 'Land / Plot', built: 'Buildings / Commercial', house: 'House', flat: 'Flat', other: 'Others' } as Record<string, string>)[estateType] || estateType}
+                            </PreviewChip>
+                          )}
+                          {selectedCategories.includes('real-estate') && estateDetails.landArea.trim() && (
+                            <PreviewChip icon={Home} label="Land / Plot">{estateDetails.landArea.trim() + ' ' + estateDetails.landUnit}</PreviewChip>
+                          )}
+                          {selectedCategories.includes('real-estate') && estateDetails.builtUpArea.trim() && (
+                            <PreviewChip icon={Home} label="Buildings / Commercial">{estateDetails.builtUpArea.trim() + ' ' + estateDetails.builtUpUnit}</PreviewChip>
+                          )}
+                          {selectedCategories.includes('real-estate') && estateDetails.houseArea.trim() && (
+                            <PreviewChip icon={Home} label="House / Flat">{estateDetails.houseArea.trim() + ' ' + estateDetails.houseUnit + (estateDetails.houseBhk ? ' · ' + estateDetails.houseBhk : '')}</PreviewChip>
+                          )}
                           {isAccom && accommodationType && (
-                            <p className="text-[11px] text-gray-600 leading-relaxed">
+                            <PreviewChip icon={Home}>
                               {(() => {
                                 const subtypeLabel = ACCOMMODATION_SUBTYPES.find(s => s.value === accommodationType)?.label ?? accommodationType;
                                 const genderPrefix = accommodationType && GENDER_RELEVANT_ACCOMMODATION_TYPES.has(accommodationType)
@@ -5498,22 +5475,41 @@ const DEADLINE_STEP = 5;
                                   : undefined;
                                 return genderPrefix && genderPrefix !== 'Any' ? `${genderPrefix} ${subtypeLabel}` : subtypeLabel;
                               })()}
-                            </p>
+                            </PreviewChip>
                           )}
-                          {/* Cleaning type — selected cleaning services subtypes */}
+                          {isAccom && accommodationType && ACCOMMODATION_GENDER_OPTIONS.find(g => g.value === accommodationGender)?.label === 'Any' && (
+                            <PreviewChip icon={Users} label="Gender">Any</PreviewChip>
+                          )}
+                          {isAccom && accommodationType && accommodationPetFriendly && (
+                            <PreviewChip icon={PawPrint} label="Pets allowed">{accommodationPetFriendly === 'yes' ? 'Yes' : 'No'}</PreviewChip>
+                          )}
                           {isCleaning && cleaningTypes.length > 0 && (
-                            <p className="text-[11px] text-gray-600 leading-relaxed">{cleaningTypes.join(', ')}</p>
+                            <PreviewChip icon={Sparkles}>{cleaningTypes.join(', ')}</PreviewChip>
                           )}
-                          {/* Categories */}
-                          <div className="flex flex-wrap gap-1.5 pt-0.5">
-                            {selectedCategories.map(c => {
-                              const cat = categories.find(cat => cat.value === c);
-                              return cat ? (
-                                <span key={c} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
-                                  <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Tag className="h-2.5 w-2.5 text-white" /></span>{cat.label}</span>
-                              ) : null;
-                            })}
-                          </div>
+                          {/* Tab 2 — the description box, last on that tab */}
+                          {description.trim() && (
+                            <span className="max-w-full inline-flex items-start gap-1 text-left text-[11px] font-bold font-chip bg-white text-black border-0 px-3 py-1.5 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)] whitespace-pre-wrap break-words leading-relaxed">
+                              <span className="mt-0.5 w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><FileText className="h-2.5 w-2.5 text-white" /></span>
+                              <span className="break-words">{description}</span>
+                            </span>
+                          )}
+                          {/* Tab 3 — Location */}
+                          <PreviewChip icon={MapPin}>{location || '—'}</PreviewChip>
+                          {/* Tab 4 — Budget / Salary */}
+                          <PreviewChip icon={IndianRupee} label={isJobEnquiry(selectedCategories, category) ? 'Salary' : 'Budget'}>
+                            {budget ? '₹' + budget : budgetOpenToDiscussion ? 'Open to discussion' : '—'}
+                          </PreviewChip>
+                          {/* Tab 5 — Deadline & Notes */}
+                          {deadline && (
+                            <PreviewChip icon={CalendarIcon} label="Deadline">
+                              {deadline.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            </PreviewChip>
+                          )}
+                          {notes.trim() && <PreviewChip icon={AlignLeft} label="Notes">{notes}</PreviewChip>}
+                          {/* Tab 6 — Photos & Verify */}
+                          {referenceImageUrls.length > 0 && (
+                            <PreviewChip icon={Camera} label="Photos">{referenceImageUrls.length + ' added'}</PreviewChip>
+                          )}
                         </div>
                       </div>
 
@@ -5570,7 +5566,7 @@ const DEADLINE_STEP = 5;
                     {/* India only — the country code is fixed, not selectable */}
                     <span
                       aria-label="Country code India +91"
-                      className="!h-12 shrink-0 !w-[76px] inline-flex items-center justify-center !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold select-none !shadow-[0_3px_0_0_rgba(0,0,0,0.14)]"
+                      className="!h-16 shrink-0 !w-[76px] inline-flex items-center justify-center !rounded-full !border !border-[#0f172a] bg-white text-black !text-[11px] !font-bold select-none !shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                     >
                       🇮🇳 +91
                     </span>
@@ -5592,7 +5588,7 @@ const DEADLINE_STEP = 5;
                       }}
                       maxLength={countryCode === '+91' ? 11 : 14}
                       placeholder={'Enter your phone number'}
-                      className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-sm !font-medium placeholder:!text-gray-900 placeholder:!font-semibold placeholder:!text-[11px] focus:outline-none focus-visible:!border-black focus-visible:!ring-3 focus-visible:!ring-black/15 transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation"
+                      className="flex-1 min-w-0 !h-16 min-h-[48px] px-5 !rounded-full !border !border-slate-200 !border-b bg-white text-black !text-[17px] !font-normal placeholder:!text-gray-900 placeholder:!font-semibold placeholder:!text-[11px] focus:outline-none transition-all !duration-200 !shadow-[0_1px_2px_rgba(15,23,42,0.04)] touch-manipulation"
                     />
                     {/* Verify only for a complete number that isn't the verified one */}
                     {showMobileVerify && (
@@ -5600,7 +5596,7 @@ const DEADLINE_STEP = 5;
                         type="button"
                         onClick={handleEnquiryOtpSend}
                         disabled={sendingOtp || confirmingOtp}
-                        className="!h-12 shrink-0 !px-3 !text-[11px] !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-0 disabled:!opacity-60 inline-flex items-center gap-1 !shadow-[0_3px_0_0_rgba(0,0,0,0.14)]"
+                        className="!h-16 shrink-0 !px-4 !text-[11px] !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-full !border-0 disabled:!opacity-60 inline-flex items-center gap-1 !shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                       >
                         {sendingOtp ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Shield className="h-3.5 w-3.5" />}
                         Verify

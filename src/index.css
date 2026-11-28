@@ -2887,11 +2887,27 @@ body {
   box-shadow: none !important;
 }
 
-/* Exception: the budget field is a closed box as well, so it keeps its own
-   light hairline on all four sides — the shared rule has no bottom edge, which
-   left the field looking open along the bottom. */
+/* The contact number field on the last tab wears the same closed capsule as the
+   first tab's "Need" field: a hairline on all four sides, and a heavier black
+   edge while focused. */
+.enq-form #enquiry-mobile {
+  border: 1px solid #0f172a !important;
+}
+.enq-form #enquiry-mobile:hover:not(:focus) {
+  border-color: #000 !important;
+}
+.enq-form #enquiry-mobile:focus,
+.enq-form #enquiry-mobile:focus-visible {
+  outline: none !important;
+  border: 2px solid #000 !important;
+  box-shadow: none !important;
+}
+
+/* Exception: the budget field is a closed capsule too, so it carries exactly
+   the same hairline as the first tab's "Need" field — all four sides, and a
+   heavier black edge while focused. */
 .enq-form #enquiry-budget {
-  border: 1.5px solid #0f172a !important;
+  border: 1px solid #0f172a !important;
 }
 .enq-form #enquiry-budget:hover:not(:focus) {
   border-color: #000 !important;
@@ -2899,7 +2915,8 @@ body {
 .enq-form #enquiry-budget:focus,
 .enq-form #enquiry-budget:focus-visible {
   outline: none !important;
-  border: 1.5px solid #000 !important;
+  border: 2px solid #000 !important;
+  box-shadow: none !important;
 }
 
 /* Sell form, Title tab: the title capsule keeps the same closed hairline as the
