@@ -5363,7 +5363,7 @@ const DEADLINE_STEP = 5;
 
 
                       {/* Enquiry Preview */}
-                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5 space-y-3.5 -mt-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                      <div className="rounded-2xl border border-slate-400 bg-slate-200 p-4 sm:p-5 space-y-3.5 -mt-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                         <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">Preview</p>
                         {/* Every answer, top to bottom in the order the tabs ask
                             for it: Title → Category → Description (and the picks
