@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useRef, useState, type ClipboardEvent } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, type ClipboardEvent, type ReactNode } from 'react';
 import SellShell from '../components/SellShell';
 import { SellListingSketch } from '@/components/doodles';
 import { Card, CardContent } from '@/components/ui/card';
@@ -231,6 +231,18 @@ const CATEGORY_ICON: Record<string, LucideIcon> = {
   appliances: Armchair,
   other: LayoutGrid,
 };
+
+// The listing preview's chips wear the same white pill, red round glyph and soft
+// depth as the enquiry form's preview, so both forms end on the same note.
+const SellPreviewChip = ({ icon: Icon, label, children }: { icon: LucideIcon; label?: string; children: ReactNode }) => (
+  <span className="inline-flex max-w-full items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+    <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0">
+      <Icon className="h-2.5 w-2.5 text-white" />
+    </span>
+    {label ? <span className="flex-shrink-0 text-[8px] font-bold uppercase tracking-[0.1em] text-slate-500">{label}</span> : null}
+    <span className="break-words">{children}</span>
+  </span>
+);
 
 const STEPS = [
   { key: 'category', label: 'Category', description: 'What are you selling?' },
@@ -2602,7 +2614,7 @@ export default function CreateListing() {
                       <select
                         value={details['productCondition'] ?? ''}
                         onChange={(e) => setDetail('productCondition', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['productCondition'] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details['productCondition'] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details['productCondition'] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                       >
                         <option value="" disabled>Product Condition</option>
                         {conditionGrades.map((c) => (
@@ -2610,13 +2622,18 @@ export default function CreateListing() {
                         ))}
                         <option value="">Cancel</option>
                       </select>
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                      {!details['productCondition'] && (
+                        <span className="pointer-events-none absolute left-0 right-0 top-1/2 flex -translate-y-1/2 items-center justify-center px-4 pr-12 text-center text-[10px] font-semibold text-white">Product Condition</span>
+                      )}
+                      <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                        <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+                      </span>
                     </div>
                     <div className="relative">
                       <select
                         value={details['visibleDamage'] ?? ''}
                         onChange={(e) => setDetail('visibleDamage', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['visibleDamage'] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details['visibleDamage'] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details['visibleDamage'] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                       >
                         <option value="" disabled>Visible damage?</option>
                         {VISIBLE_DAMAGE_OPTIONS.map((v) => (
@@ -2624,13 +2641,18 @@ export default function CreateListing() {
                         ))}
                         <option value="">Cancel</option>
                       </select>
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                      {!details['visibleDamage'] && (
+                        <span className="pointer-events-none absolute left-0 right-0 top-1/2 flex -translate-y-1/2 items-center justify-center px-4 pr-12 text-center text-[10px] font-semibold text-white">Visible damage?</span>
+                      )}
+                      <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                        <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+                      </span>
                     </div>
                     <div className="relative">
                       <select
                         value={details['damageType'] ?? ''}
                         onChange={(e) => setDetail('damageType', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['damageType'] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details['damageType'] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details['damageType'] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                       >
                         <option value="" disabled>Damage Type</option>
                         {damageTypeOptions.map((d) => (
@@ -2638,13 +2660,18 @@ export default function CreateListing() {
                         ))}
                         <option value="">Cancel</option>
                       </select>
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                      {!details['damageType'] && (
+                        <span className="pointer-events-none absolute left-0 right-0 top-1/2 flex -translate-y-1/2 items-center justify-center px-4 pr-12 text-center text-[10px] font-semibold text-white">Damage Type</span>
+                      )}
+                      <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                        <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+                      </span>
                     </div>
                     <div className="relative">
                       <select
                         value={details['damageSeverity'] ?? ''}
                         onChange={(e) => setDetail('damageSeverity', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['damageSeverity'] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details['damageSeverity'] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details['damageSeverity'] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                       >
                         <option value="" disabled>Damage Severity</option>
                         {DAMAGE_SEVERITIES.map((d) => (
@@ -2652,13 +2679,18 @@ export default function CreateListing() {
                         ))}
                         <option value="">Cancel</option>
                       </select>
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                      {!details['damageSeverity'] && (
+                        <span className="pointer-events-none absolute left-0 right-0 top-1/2 flex -translate-y-1/2 items-center justify-center px-4 pr-12 text-center text-[10px] font-semibold text-white">Damage Severity</span>
+                      )}
+                      <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                        <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+                      </span>
                     </div>
                     <div className="relative">
                       <select
                         value={details['functionalStatus'] ?? ''}
                         onChange={(e) => setDetail('functionalStatus', e.target.value)}
-                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details['functionalStatus'] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                        className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details['functionalStatus'] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details['functionalStatus'] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                       >
                         <option value="" disabled>Functional Status</option>
                         {functionalStatusOptions.map((f) => (
@@ -2666,7 +2698,12 @@ export default function CreateListing() {
                         ))}
                         <option value="">Cancel</option>
                       </select>
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                      {!details['functionalStatus'] && (
+                        <span className="pointer-events-none absolute left-0 right-0 top-1/2 flex -translate-y-1/2 items-center justify-center px-4 pr-12 text-center text-[10px] font-semibold text-white">Functional Status</span>
+                      )}
+                      <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                        <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+                      </span>
                     </div>
                   </div>
                 )}
@@ -2679,14 +2716,21 @@ export default function CreateListing() {
                           <select
                             value={details[f.key] ?? ''}
                             onChange={(e) => setDetail(f.key, e.target.value)}
-                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-10 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${!details[f.key] ? 'text-[11px] font-semibold text-gray-900 font-semibold' : 'text-[11px] sm:text-xs !text-white !bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !border-blue-700 !shadow-none'}`}
+                            className={`w-full appearance-none rounded-2xl h-12 sm:h-14 font-medium border-[1.5px] border-slate-200 focus-visible:border-black focus:outline-none focus:ring-3 focus:ring-black/15 bg-white pl-4 pr-9 shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] transition-all duration-200 ${details[f.key] ? '!bg-blue-600 !bg-gradient-to-b !from-blue-500 !to-blue-700 !text-white !border-blue-700 !shadow-none' : '!bg-black !bg-none !border-black'} ${!details[f.key] ? 'text-[10px] text-transparent' : 'text-[11px] sm:text-xs !font-bold !text-white'}`}
                           >
                             <option value="">{f.placeholder ?? 'Select'}</option>
                             {f.options?.map((opt) => (
                               <option key={opt} value={opt}>{opt}</option>
                             ))}
                           </select>
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-800 pointer-events-none" />
+                          {!details[f.key] && (
+                            <span className="pointer-events-none absolute left-0 right-0 top-1/2 flex -translate-y-1/2 items-center justify-center px-4 pr-12 text-center text-[10px] font-semibold text-white">
+                              {f.placeholder ?? 'Select'}
+                            </span>
+                          )}
+                          <span className="pointer-events-none absolute right-1.5 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black">
+                            <ChevronDown className="h-4 w-4" strokeWidth={2.5} />
+                          </span>
                         </>
                       ) : (
                         <Input
@@ -2761,7 +2805,7 @@ export default function CreateListing() {
                     {category === 'jobs' ? 'Salary (INR)' : 'Your price (INR)'}
                   </Label>
                   <div className="relative">
-                    <IndianRupee aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-gray-800" />
+                    <IndianRupee aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 z-20 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <Input
                       id="price-fixed"
                       value={price}
@@ -2772,13 +2816,15 @@ export default function CreateListing() {
                       placeholder="Your price (INR)"
                       inputMode="decimal"
                       maxLength={13}
-                      className="rounded-[12px] h-12 sm:h-14 min-h-[48px] text-base bg-white border-[1.5px] border-slate-200 transition-colors duration-200 min-touch pl-10 pr-4 text-left placeholder:text-left placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] font-bold text-lg"
+                      className="rounded-full h-16 min-h-[48px] w-full !text-[17px] font-normal bg-white border border-slate-200 !border-b shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:border-slate-300 focus-visible:border-blue-500 focus-visible:ring-4 focus-visible:ring-blue-500/10 transition-all duration-200 min-touch pl-12 pr-5 text-left placeholder:text-left placeholder:text-gray-900 placeholder:font-semibold placeholder:text-[11px] text-slate-900"
                       autoFocus={canAutoFocus()}
                     />
                   </div>
                 </div>
-                {/* Open to discussion — alternative to entering a specific price */}
-                <div className="flex items-center justify-end gap-3">
+                {/* Open to discussion — alternative to entering a specific price.
+                    Lifted by the height the price capsule gained, so the picker
+                    keeps the gap it had under the field. */}
+                <div className="relative -top-4 sm:-top-2 flex items-center justify-end gap-3">
                   {/* Short capsule that hugs its prompt instead of the full row. */}
                   <div className="relative ml-auto w-full max-w-[240px]">
                     <select
@@ -2934,13 +2980,13 @@ export default function CreateListing() {
                   const descFields = fieldsForCategoryStep(category, 'description').filter((f) => details[f.key]);
                   const usedFields = (condition === 'used' || hideCondition) ? fieldsForCategoryStep(category, 'details').filter((f) => details[f.key]) : [];
                   const priceFields = fieldsForCategoryStep(category, 'price').filter((f) => details[f.key]);
-                  const hasSpecs = titleFields.length + descFields.length + usedFields.length + priceFields.length > 0;
                   const hasPhoto = images.length > 0;
                   return (
                     <>
-                      {/* Hero: photo + title + price — same preview card as the
-                          enquiry form's final tab. */}
-                      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5 space-y-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                      {/* Preview — the same grey panel and chips as the enquiry
+                          form's final tab: the title pill on top, then every
+                          answer as its own chip. */}
+                      <div className="rounded-2xl border border-slate-400 bg-slate-200 p-4 sm:p-5 space-y-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                         <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-slate-500">Preview</p>
                         {hasPhoto ? (
                           <div className="relative overflow-hidden rounded-lg">
@@ -2955,75 +3001,55 @@ export default function CreateListing() {
                             <span className="text-[9px] text-gray-400 font-medium">No photos added yet</span>
                           </div>
                         )}
-                        <div className="space-y-1">
-                          <h3 className="text-[15px] sm:text-lg font-bold tracking-tight text-black leading-snug break-words">{title || 'Untitled listing'}</h3>
-                          <div className="flex justify-center pt-4">
-                            {priceOption === 'discussion' ? (
-                              <span className="inline-flex items-center gap-1.5 text-[11px] font-black font-chip bg-green-800 text-white border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]"><IndianRupee className="h-3 w-3" />Open to discussion</span>
-                            ) : (
-                              <span className="inline-flex items-center rounded-full bg-black px-2.5 py-1 text-[10.5px] font-black leading-none text-white">{price ? `₹${price}` : 'Price not set'}</span>
-                            )}
-                          </div>
+                        <div className="flex flex-wrap items-start">
+                          <span className="inline-flex max-w-full items-center gap-1.5 rounded-2xl bg-white px-3.5 py-2 text-left text-[15px] sm:text-lg font-bold tracking-tight leading-snug text-black shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
+                            <span className="w-5 h-5 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Type className="h-3 w-3 text-white" /></span>
+                            <span className="break-words">{title || 'Untitled listing'}</span>
+                          </span>
                         </div>
-                        <div className="border-t border-slate-200/70" />
-                        <div className="flex flex-col items-start gap-1.5">
-                            <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
-                              {(() => { const Icon = CATEGORY_ICON[category] ?? LayoutGrid; return <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><Icon className="h-2.5 w-2.5 text-white" /></span>; })()}
-                              {SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}
-                            </span>
-                            {!hideCondition && category !== 'jobs' && (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl capitalize shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
-                              <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><BadgeCheck className="h-2.5 w-2.5 text-white" /></span>{condition}
-                            </span>
-                            )}
-                            {location && (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
-                                <span className="w-4 h-4 rounded-full bg-red-600 border-[1.5px] border-black flex items-center justify-center flex-shrink-0"><MapPin className="h-2.5 w-2.5 text-white" /></span>{location}
-                              </span>
-                            )}
+                        <div className="flex flex-wrap items-start gap-1.5">
+                          <SellPreviewChip icon={IndianRupee} label={category === 'jobs' ? 'Salary' : 'Price'}>
+                            {priceOption === 'discussion' ? 'Open to discussion' : price ? '₹' + price : 'Price not set'}
+                          </SellPreviewChip>
+                          <SellPreviewChip icon={CATEGORY_ICON[category] ?? LayoutGrid}>
+                            {SELL_CATEGORIES.find((c) => c.value === category)?.label ?? category}
+                          </SellPreviewChip>
+                          {!hideCondition && category !== 'jobs' && (
+                            <SellPreviewChip icon={BadgeCheck} label="Condition">{condition}</SellPreviewChip>
+                          )}
+                          {location && <SellPreviewChip icon={MapPin}>{location}</SellPreviewChip>}
+                          {[...titleFields, ...descFields, ...usedFields, ...priceFields].map((f) => {
+                            const SpecIcon =
+                              f.key === 'variant' ? Cog :
+                              f.key === 'brand' ? Tag :
+                              f.key === 'year' ? CalendarDays :
+                              f.key === 'transmission' ? GearShiftIcon :
+                              f.key === 'fuel' ? Fuel :
+                              f.key === 'kmsDriven' ? Gauge :
+                              f.key === 'ownership' ? User :
+                              f.key === 'storage' ? HardDrive :
+                              f.key === 'processor' ? Cpu :
+                              f.key === 'warranty' ? ShieldCheck :
+                              f.key === 'experience' ? Briefcase :
+                              f.key === 'jobListingFor' ? Tag :
+                              f.key === 'jobType' ? Clock :
+                              f.key === 'workMode' ? Home :
+                              f.key === 'salaryPeriod' ? IndianRupee :
+                              f.key === 'bhk' ? Home :
+                              f.key === 'landArea' || f.key === 'builtUpArea' || f.key === 'houseArea' || f.key === 'otherArea' ? Ruler :
+                              f.key === 'furnishing' ? Armchair :
+                              f.key === 'houseBhk' ? Home :
+                              f.key === 'facing' ? Compass :
+                              f.key === 'listingFor' ? Tag :
+                              Tag;
+                            return (
+                              <SellPreviewChip key={f.key} icon={SpecIcon}>
+                                {details[f.key]}{f.suffix ? ' ' + f.suffix : ''}
+                              </SellPreviewChip>
+                            );
+                          })}
                         </div>
                       </div>
-
-                      {/* Specs — only filled ones, as compact chips */}
-                      {hasSpecs && (
-                        <div className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-                          <p className="text-[8px] font-bold uppercase tracking-[0.18em] text-slate-400 mb-2">Details</p>
-                          <div className="flex flex-wrap gap-1.5">
-                            {[...titleFields, ...descFields, ...usedFields, ...priceFields].map((f) => {
-                              const SpecIcon =
-                                f.key === 'variant' ? Cog :
-                                f.key === 'brand' ? Tag :
-                                f.key === 'year' ? CalendarDays :
-                                f.key === 'transmission' ? GearShiftIcon :
-                                f.key === 'fuel' ? Fuel :
-                                f.key === 'kmsDriven' ? Gauge :
-                                f.key === 'ownership' ? User :
-                                f.key === 'storage' ? HardDrive :
-                                f.key === 'storage' ? Cpu :
-                                f.key === 'processor' ? Cpu :
-                                f.key === 'warranty' ? ShieldCheck :
-                                f.key === 'experience' ? Briefcase :
-                                f.key === 'jobListingFor' ? Tag :
-                                f.key === 'jobType' ? Clock :
-                                f.key === 'workMode' ? Home :
-                                f.key === 'salaryPeriod' ? IndianRupee :
-                                f.key === 'bhk' ? Home :
-                                f.key === 'landArea' || f.key === 'builtUpArea' || f.key === 'houseArea' || f.key === 'otherArea' ? Ruler :
-                                f.key === 'furnishing' ? Armchair :
-                                f.key === 'houseBhk' ? Home :
-                                f.key === 'facing' ? Compass :
-                                f.key === 'listingFor' ? Tag :
-                                null;
-                              return (
-                                <span key={f.key} className="inline-flex items-center gap-1 text-[11px] font-black font-chip bg-white text-black border-0 px-2.5 py-1 rounded-xl shadow-[0_-1.5px_0_0_rgba(17,24,39,0.10),-1.5px_0_0_0_rgba(17,24,39,0.10),1.5px_0_0_0_rgba(17,24,39,0.10),0_3px_0_0_rgba(17,24,39,0.22),0_8px_12px_-6px_rgba(17,24,39,0.22)]">
-                                  {SpecIcon && <SpecIcon className="h-3 w-3 text-black" />}
-                                  {details[f.key]}{f.suffix ? ` ${f.suffix}` : ''}
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
                     </>
                   );
                 })()}
@@ -3083,7 +3109,7 @@ export default function CreateListing() {
                 {/* India only — the country code is fixed, not selectable */}
                 <span
                   aria-label="Country code India +91"
-                  className="!h-12 shrink-0 !w-[76px] inline-flex items-center justify-center !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-xs !font-bold select-none !shadow-[0_3px_0_0_rgba(0,0,0,0.14)]"
+                  className="!h-16 shrink-0 !w-[76px] inline-flex items-center justify-center !rounded-full !border !border-[#0f172a] bg-white text-black !text-[11px] !font-bold select-none !shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                 >
                   🇮🇳 +91
                 </span>
@@ -3099,7 +3125,7 @@ export default function CreateListing() {
                   }}
                   maxLength={11}
                   placeholder="98765 43210"
-                  className="flex-1 min-w-0 !h-12 px-4 !rounded-2xl !border-[1.5px] !border-slate-200 bg-white text-black !text-sm !font-medium placeholder:!text-gray-900 placeholder:!font-semibold placeholder:!text-[11px] focus:outline-none focus-visible:!border-black focus-visible:!ring-3 focus-visible:!ring-black/15 transition-all !duration-200 !shadow-[0_3px_0_0_rgba(0,0,0,0.14),0_0_11px_rgba(0,0,0,0.09),0_6px_14px_rgba(0,0,0,0.12)] hover:!shadow-[0_4px_0_0_rgba(0,0,0,0.16),0_0_14px_rgba(0,0,0,0.11),0_8px_18px_rgba(0,0,0,0.14)] touch-manipulation"
+                  className="flex-1 min-w-0 !h-16 min-h-[48px] px-5 !rounded-full !border !border-slate-200 !border-b bg-white text-black !text-[17px] !font-normal placeholder:!text-gray-900 placeholder:!font-semibold placeholder:!text-[11px] focus:outline-none transition-all !duration-200 !shadow-[0_1px_2px_rgba(15,23,42,0.04)] touch-manipulation"
                 />
                 {/* Verify only for a complete number that isn't the verified one */}
                 {showMobileVerify && (
@@ -3107,7 +3133,7 @@ export default function CreateListing() {
                     type="button"
                     onClick={handleListingOtpSend}
                     disabled={sendingOtp || confirmingOtp}
-                    className="!h-12 shrink-0 !px-3 !text-[11px] !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-2xl !border-0 disabled:!opacity-60 inline-flex items-center gap-1 !shadow-[0_3px_0_0_rgba(0,0,0,0.14)]"
+                    className="!h-16 shrink-0 !px-4 !text-[11px] !font-black !bg-black hover:!bg-gray-900 !text-white !rounded-full !border-0 disabled:!opacity-60 inline-flex items-center gap-1 !shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                   >
                     {sendingOtp ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
                     Verify
